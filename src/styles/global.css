@@ -25,7 +25,7 @@
   --text-primary: #f5f5f7;
   --text-secondary: rgba(235,235,245,0.5);
   --text-tertiary: rgb(211, 211, 211);
-  --text-quaternary: rgba(235,235,245,0.15);
+  --text-quaternary: rgba(235,235,245,0.70);
 
   --blur-heavy: blur(40px) saturate(180%);
   --blur-medium: blur(30px) saturate(160%);

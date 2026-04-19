@@ -1,7 +1,7 @@
 # 🍽 Vajilla CRM — Córdoba Capital
 
-![alt text](image.png)
-![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
 
 Mini CRM para vender vajillas Paris (cucharas de postre ×146 + tenedores) a negocios de alquiler en Córdoba.
 

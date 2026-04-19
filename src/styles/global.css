@@ -16,7 +16,7 @@
   --c-media: #FF9F0A;
   --c-baja: #636366;
 
-  --glass-bg: rgba(20,20,24,0.4);
+  --glass-bg: rgba(145, 145, 148, 0.4);
   --glass-bg-light: rgba(255,255,255,0.07);
   --glass-border: rgba(255,255,255,0.12);
   --glass-border-focus: rgba(10,132,255,0.5);
@@ -24,7 +24,7 @@
 
   --text-primary: #f5f5f7;
   --text-secondary: rgba(235,235,245,0.5);
-  --text-tertiary: rgba(235,235,245,0.25);
+  --text-tertiary: rgb(211, 211, 211);
   --text-quaternary: rgba(235,235,245,0.15);
 
   --blur-heavy: blur(40px) saturate(180%);
@@ -179,7 +179,7 @@ body {
 
 /* ---- Labels ---- */
 .label-xs {
-  font-size: 10px; font-weight: 600;
+  font-size: 15px; font-weight: 600;
   color: var(--text-quaternary);
   text-transform: uppercase; letter-spacing: 1.5px;
 }

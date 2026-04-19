@@ -8,7 +8,6 @@ export default function DetailSheet({ contact, notes, onUpdateNotes, onUpdateFie
 
   const content = (
     <>
-      <div className="sheet-handle" />
 
       {/* Close (desktop) */}
       {isDesktop && (
@@ -143,11 +142,32 @@ export default function DetailSheet({ contact, notes, onUpdateNotes, onUpdateFie
     );
   }
 
-  // Mobile: bottom sheet with overlay
+  // Mobile: bottom sheet with tappable overlay above
   return (
     <>
-      <div className="overlay detail-overlay" onClick={onClose} />
-      <div className="sheet detail-sheet glass">{content}</div>
+      {/* Overlay — tap anywhere above the sheet to close */}
+      <div
+        className="overlay detail-overlay"
+        onClick={onClose}
+        style={{ zIndex: 90 }}
+      />
+      {/* Sheet — 65% max height so overlay is always visible above */}
+      <div
+        className="sheet detail-sheet glass"
+        style={{ maxHeight: '65vh', paddingTop: 6 }}
+      >
+        {/* Handle — visual cue that it's dismissible */}
+        <div
+          onClick={onClose}
+          style={{
+            width: 40, height: 5, borderRadius: 3,
+            background: 'rgba(255,255,255,0.3)',
+            margin: '8px auto 16px',
+            cursor: 'pointer',
+          }}
+        />
+        {content}
+      </div>
     </>
   );
 }

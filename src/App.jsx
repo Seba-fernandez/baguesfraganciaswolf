@@ -64,7 +64,7 @@ export default function App() {
               </p>
             </div>
             <input
-              type="text" placeholder="⌕  Buscar contacto..."
+              type="text" placeholder="Buscar contacto..."
               value={search} onChange={e => setSearch(e.target.value)}
               style={{
                 width: 280, padding: '10px 18px', borderRadius: 14,

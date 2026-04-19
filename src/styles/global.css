@@ -95,8 +95,18 @@ body {
   transition: all .25s ease; cursor: pointer;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  position: relative; overflow: hidden;
 }
-.row-card:hover { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.14); box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 4px 20px rgba(0,0,0,.15); }
+.row-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 100%);
+  pointer-events: none;
+}
+.row-card:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.18); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 4px 20px rgba(0,0,0,.15); }
 .row-card:active { transform: scale(.99); }
 .row-card.active { background:rgba(10,132,255,.06); border-color:rgba(10,132,255,.15); }
 
@@ -107,9 +117,23 @@ body {
   align-items: center; gap: 8px;
   padding: 13px 18px; border-radius: var(--r-sm); margin: 2px 0;
   transition: all .2s ease; cursor: pointer;
+  position: relative; overflow: hidden;
 }
-.table-row:hover { background: rgba(255,255,255,.06); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
-.table-row.active { background: rgba(10,132,255,.06); }
+.table-row::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+.table-row:hover { background: rgba(255,255,255,.06); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+.table-row:hover::before { opacity: 1; }
+.table-row.active { background: rgba(10,132,255,.06); border: 1px solid rgba(10,132,255,.12); }
+.table-row.active::before { opacity: 1; background: linear-gradient(180deg, rgba(10,132,255,0.04) 0%, transparent 100%); }
 
 /* ---- Chips ---- */
 .chip {

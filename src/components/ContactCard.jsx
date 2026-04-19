@@ -16,7 +16,7 @@ export default function ContactCard({ contact, isActive, onClick, index, isDeskt
         <span style={{ fontSize: 12, color: 'var(--text-quaternary)', fontWeight: 500, textAlign: 'center', fontVariantNumeric: 'tabular-nums' }}>{contact.id}</span>
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: -.2 }}>{contact.n}</div>
-          <div style={{ fontSize: 11, color: 'var(--text-quaternary)', marginTop: 1 }}>
+          <div style={{ fontSize: 13, color: 'var(--text-quaternary)', marginTop: 1 }}>
             {contact.tel ? `📞 ${contact.telShow}` : contact.fuente}
           </div>
         </div>

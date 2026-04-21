@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { contactsData } from './data/contacts';
+import { useState, useCallback } from 'react';
 import { ESTADOS } from './data/constants';
 import useIsDesktop from './hooks/useIsDesktop';
+import useContacts from './hooks/useContacts';
 import AmbientOrbs from './components/AmbientOrbs';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -11,20 +11,23 @@ import DetailSheet from './components/DetailSheet';
 import MenuSheet from './components/MenuSheet';
 
 export default function App() {
-  const [contacts, setContacts] = useState(contactsData);
+  const { contacts, loading, updateField } = useContacts();
+
   const [search, setSearch] = useState('');
   const [view, setView] = useState('todos');
   const [selectedId, setSelectedId] = useState(null);
-  const [notes, setNotes] = useState({});
   const [menuOpen, setMenuOpen] = useState(false);
   const isDesktop = useIsDesktop(768);
 
-  // Stats
+  const toggleSelect = useCallback((id) => {
+    setSelectedId(prev => prev === id ? null : id);
+  }, []);
+
+  // Derived
   const stats = {};
   Object.keys(ESTADOS).forEach(k => { stats[k] = contacts.filter(c => c.estado === k).length; });
   const convRate = contacts.length ? Math.round(((stats.interesado || 0) + (stats.vendido || 0)) / contacts.length * 100) : 0;
 
-  // Filter
   const filtered = contacts.filter(c => {
     if (view !== 'todos' && c.estado !== view) return false;
     if (search) {
@@ -34,20 +37,28 @@ export default function App() {
     return true;
   });
 
-  const selected = contacts.find(c => c.id === selectedId) || null;
-  const updateField = (id, f, v) => setContacts(p => p.map(c => c.id === id ? { ...c, [f]: v } : c));
-  const updateNotes = (id, v) => setNotes(p => ({ ...p, [id]: v }));
+  const selected = selectedId ? contacts.find(c => c.id === selectedId) : null;
 
-  // ---- DESKTOP LAYOUT ----
+  // Loading state
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', color: 'var(--text-tertiary)', fontFamily: 'inherit' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 36, marginBottom: 12 }}>🍽</div>
+          <div style={{ fontSize: 14 }}>Cargando contactos...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- DESKTOP ----
   if (isDesktop) {
     return (
       <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', position: 'relative' }}>
         <AmbientOrbs />
         <Sidebar view={view} stats={stats} totalContacts={contacts.length} convRate={convRate} onChangeView={setView} />
 
-        {/* Main area */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1, minWidth: 0 }}>
-          {/* Top bar */}
           <div style={{
             padding: '20px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             borderBottom: '1px solid rgba(255,255,255,.08)',
@@ -78,12 +89,10 @@ export default function App() {
             />
           </div>
 
-          {/* Stats chips */}
           <div style={{ padding: '0 32px' }}>
             <StatsBar stats={stats} view={view} onChangeView={setView} isDesktop />
           </div>
 
-          {/* Table header */}
           <div style={{
             padding: '12px 32px 4px',
             display: 'grid', gridTemplateColumns: '40px 1.6fr 1fr 1fr 120px 80px 130px',
@@ -94,13 +103,12 @@ export default function App() {
             ))}
           </div>
 
-          {/* List */}
           <div style={{ flex: 1, overflow: 'auto', padding: '0 28px 28px' }}>
             {filtered.map((c, i) => (
               <ContactCard
                 key={c.id} contact={c} isDesktop
                 isActive={selectedId === c.id}
-                onClick={() => setSelectedId(selectedId === c.id ? null : c.id)}
+                onClick={() => toggleSelect(c.id)}
                 index={i}
               />
             ))}
@@ -113,11 +121,11 @@ export default function App() {
           </div>
         </div>
 
-        {/* Detail panel */}
         {selected && (
           <DetailSheet
-            contact={selected} notes={notes[selected.id]}
-            onUpdateNotes={updateNotes} onUpdateField={updateField}
+            contact={selected} notes={selected.notasPersonales}
+            onUpdateNotes={(id, v) => updateField(id, 'notasPersonales', v)}
+            onUpdateField={updateField}
             onClose={() => setSelectedId(null)} isDesktop
           />
         )}
@@ -125,16 +133,15 @@ export default function App() {
     );
   }
 
-  // ---- MOBILE LAYOUT ----
+  // ---- MOBILE ----
   return (
     <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
       <AmbientOrbs />
       <Header onOpenMenu={() => setMenuOpen(true)} isDesktop={false} />
 
-      {/* Search */}
       <div style={{ padding: '12px 20px 8px', position: 'relative', zIndex: 1 }}>
         <input
-          type="text" placeholder="⌕  Buscar contacto..."
+          type="text" placeholder="Buscar contacto..."
           value={search} onChange={e => setSearch(e.target.value)}
           style={{
             width: '100%', padding: '12px 18px', borderRadius: 16,
@@ -154,13 +161,12 @@ export default function App() {
         {filtered.length} resultado{filtered.length !== 1 ? 's' : ''}
       </div>
 
-      {/* Cards */}
       <div style={{ padding: '4px 14px 120px', position: 'relative', zIndex: 1 }}>
         {filtered.map((c, i) => (
           <ContactCard
             key={c.id} contact={c} isDesktop={false}
             isActive={selectedId === c.id}
-            onClick={() => setSelectedId(selectedId === c.id ? null : c.id)}
+            onClick={() => toggleSelect(c.id)}
             index={i}
           />
         ))}
@@ -174,8 +180,9 @@ export default function App() {
 
       {selected && (
         <DetailSheet
-          contact={selected} notes={notes[selected.id]}
-          onUpdateNotes={updateNotes} onUpdateField={updateField}
+          contact={selected} notes={selected.notasPersonales}
+          onUpdateNotes={(id, v) => updateField(id, 'notasPersonales', v)}
+          onUpdateField={updateField}
           onClose={() => setSelectedId(null)} isDesktop={false}
         />
       )}

@@ -67,6 +67,8 @@ src/
 - Buscar por nombre o dirección
 - Filtrar por estado y prioridad
 - WhatsApp directo (wa.me/54...)
+
+- <!-- v2: auth redesign branch -->
 - Llamar (tel:+54...)
 - Instagram / Facebook / Web directos
 - Botones solo aparecen si el canal existe

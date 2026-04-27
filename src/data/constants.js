@@ -1,27 +1,55 @@
-/**
- * Configuración visual de estados y prioridades
- * g = RGB string para generar rgba() dinámicos
- */
+// Estados con la paleta nueva del diseño v2
+// color: hex principal (texto y dot)
+// bg: tinted background del badge
+// rim: border del badge
 
 export const ESTADOS = {
-  pendiente:     { label: "Pendiente",   color: "#8E8E93", g: "142,142,147" },
-  contactado:    { label: "Contactado",  color: "#0A84FF", g: "10,132,255"  },
-  interesado:    { label: "Interesado",  color: "#30D158", g: "48,209,88"   },
-  no_interesado: { label: "No interesa", color: "#FF453A", g: "255,69,58"   },
-  vendido:       { label: "Vendido",     color: "#BF5AF2", g: "191,90,242"  },
+  pendiente: {
+    id: 'pendiente',
+    label: 'Pendiente',
+    color: '#818cf8',
+    bg: 'rgba(99, 102, 241, 0.25)',
+    rim: 'rgba(99, 102, 241, 0.6)',
+  },
+  contactado: {
+    id: 'contactado',
+    label: 'Contactado',
+    color: '#22d3ee',
+    bg: 'rgba(6, 182, 212, 0.25)',
+    rim: 'rgba(6, 182, 212, 0.6)',
+  },
+  interesado: {
+    id: 'interesado',
+    label: 'Interesado',
+    color: '#fbbf24',
+    bg: 'rgba(245, 158, 11, 0.25)',
+    rim: 'rgba(245, 158, 11, 0.6)',
+  },
+  no_interesa: {
+    id: 'no_interesa',
+    label: 'No interesa',
+    color: '#94a3b8',
+    bg: 'rgba(100, 116, 139, 0.2)',
+    rim: 'rgba(100, 116, 139, 0.5)',
+  },
+  vendido: {
+    id: 'vendido',
+    label: 'Vendido',
+    color: '#34d399',
+    bg: 'rgba(16, 185, 129, 0.25)',
+    rim: 'rgba(16, 185, 129, 0.6)',
+  },
 };
 
 export const PRIORIDADES = {
-  alta:  { label: "Alta",  color: "#FF453A" },
-  media: { label: "Media", color: "#FF9F0A" },
-  baja:  { label: "Baja",  color: "#636366" },
+  alta: { label: 'Alta', color: '#f43f5e' },
+  media: { label: 'Media', color: '#fbbf24' },
+  baja: { label: 'Baja', color: '#94a3b8' },
 };
 
+// Para retrocompatibilidad con el código viejo
 export const NAV_ITEMS = [
-  { key: "todos",         icon: "☰", label: "Todos" },
-  { key: "pendiente",     icon: "◌", label: "Pendientes" },
-  { key: "contactado",    icon: "◉", label: "Contactados" },
-  { key: "interesado",    icon: "✦", label: "Interesados" },
-  { key: "no_interesado", icon: "⊘", label: "Descartados" },
-  { key: "vendido",       icon: "✧", label: "Vendidos" },
+  { id: 'contacts', label: 'Contactos', path: '/' },
+  { id: 'pipeline', label: 'Pipeline', path: '/pipeline' },
+  { id: 'settings', label: 'Config', path: '/settings' },
 ];

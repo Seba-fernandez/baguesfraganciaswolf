@@ -1,6 +1,51 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'
 
-export const supabase = createClient(
-  'https://wynownataftnompltsok.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5bm93bmF0YWZ0bm9tcGx0c29rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MjMwODcsImV4cCI6MjA5MjE5OTA4N30.nrrpT9WsLsjAMyzaWGSYlIHh5G3Bbnh86X5oaKSHEec'
-);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+  },
+})
+
+// Helpers de auth
+export const authHelpers = {
+  signUp: async (email, password) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+    return { data, error }
+  },
+
+  signIn: async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    return { data, error }
+  },
+
+  signInWithGoogle: async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/`,
+      },
+    })
+    return { data, error }
+  },
+
+  signOut: async () => {
+    const { error } = await supabase.auth.signOut()
+    return { error }
+  },
+
+  getSession: async () => {
+    const { data, error } = await supabase.auth.getSession()
+    return { session: data?.session, error }
+  },
+}

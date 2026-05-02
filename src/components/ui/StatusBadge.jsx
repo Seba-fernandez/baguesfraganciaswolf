@@ -1,19 +1,16 @@
 import { ESTADOS } from '../../data/constants';
+import st from './StatusBadge.module.css';
 
 export default function StatusBadge({ statusId, small = false }) {
-  const s = ESTADOS[statusId] || ESTADOS.pendiente;
+  const cfg = ESTADOS[statusId] || ESTADOS.pendiente;
 
   return (
     <span
-      className={`status-badge ${small ? 'status-badge--small' : ''}`}
-      style={{
-        '--badge-color': s.color,
-        '--badge-bg': s.bg,
-        '--badge-rim': s.rim,
-      }}
+      className={`${st.badge} ${small ? st.small : ''} status-badge`}
+      style={{ '--badge-color': cfg.color, '--badge-bg': cfg.bg, '--badge-rim': cfg.rim }}
     >
-      <span className="status-badge__dot" />
-      {s.label}
+      <span className={st.dot} />
+      {cfg.label}
     </span>
   );
 }

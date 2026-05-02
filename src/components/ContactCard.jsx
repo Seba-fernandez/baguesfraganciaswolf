@@ -1,57 +1,34 @@
-import StatusChip from './StatusChip';
+import StatusBadge from './ui/StatusBadge';
 import ChannelButtons from './ChannelButtons';
+import Avatar from './ui/Avatar';
 import { PRIORIDADES } from '../data/constants';
+import s from './ContactCard.module.css';
 
 export default function ContactCard({ contact, isActive, onClick, index, isDesktop }) {
-  const pc = PRIORIDADES[contact.prior];
+  const pc = PRIORIDADES[contact.prior] || PRIORIDADES.media;
+  const stagger = { animation: `fadeUp .35s cubic-bezier(.34,1.56,.64,1) ${index * 0.03}s both` };
+  const cls = `${s.card} glass ${isActive ? s.isActive : ''} ${isDesktop ? s.desktop : ''}`;
 
-  // ---- DESKTOP: Table row ----
-  if (isDesktop) {
-    return (
-      <div
-        className={`table-row ${isActive ? 'active' : ''}`}
-        onClick={onClick}
-        style={{ animation: `fadeUp .3s ease ${index * .02}s both` }}
-      >
-        <span style={{ fontSize: 12, color: 'var(--text-quaternary)', fontWeight: 500, textAlign: 'center', fontVariantNumeric: 'tabular-nums' }}>{contact.id}</span>
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: -.2 }}>{contact.n}</div>
-          <div style={{ fontSize: 13, color: 'var(--text-quaternary)', marginTop: 1 }}>
-            {contact.tel ? `📞 ${contact.telShow}` : contact.fuente}
-          </div>
-        </div>
-        <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{contact.tipo}</span>
-        <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{contact.dir}</span>
-        <StatusChip estado={contact.estado} />
-        <span style={{ fontSize: 10, fontWeight: 700, color: pc.color, textAlign: 'center' }}>{pc.label}</span>
-        <div onClick={e => e.stopPropagation()}>
-          <ChannelButtons contact={contact} layout="row" />
-        </div>
-      </div>
-    );
-  }
-
-  // ---- MOBILE: Card ----
   return (
-    <div
-      className={`row-card ${isActive ? 'active' : ''}`}
-      onClick={onClick}
-      style={{ animation: `fadeUp .3s ease ${index * .03}s both` }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: -.2, marginBottom: 2 }}>{contact.n}</div>
-          <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{contact.dir}</div>
+    <div className={cls} onClick={onClick} role="button" tabIndex={0} style={stagger}>
+      <div className={s.top}>
+        <Avatar name={contact.n} size={isDesktop ? 48 : 42} radius={14} />
+        <div className={s.info}>
+          <h3 className={s.name}>{contact.n}</h3>
+          <p className={s.address}>{contact.dir || '—'}</p>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0, marginLeft: 12 }}>
-          <StatusChip estado={contact.estado} />
-          <span style={{ fontSize: 10, fontWeight: 700, color: pc.color }}>{pc.label}</span>
+        <div className={s.meta}>
+          <StatusBadge statusId={contact.estado} small />
+          <span className={s.priority} style={{ color: pc.color }}>{pc.label}</span>
         </div>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: 11, color: 'var(--text-quaternary)', fontWeight: 500 }}>{contact.tipo} · {contact.fuente}</span>
+      <div className={s.divider} />
+      <div className={s.bottom}>
+        <span className={s.source}>
+          {[contact.tipo, contact.fuente].filter(Boolean).join(' · ') || 'Sin info adicional'}
+        </span>
         <div onClick={e => e.stopPropagation()}>
-          <ChannelButtons contact={contact} layout="row" />
+          <ChannelButtons contact={contact} />
         </div>
       </div>
     </div>

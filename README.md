@@ -48,7 +48,7 @@ src/
 │   ├── ChannelButtons.jsx   # Botones WA/Tel/IG/FB/Web (solo si existen)
 │   ├── DetailSheet.jsx      # Bottom sheet (mobile) / Side panel (desktop)
 │   ├── MenuSheet.jsx        # Pipeline menu (solo mobile)
-│   └── StatusChip.jsx       # Pill de estado con glow
+│   └── StatusBadge.jsx       # Pill de estado con glow
 └── styles/
     └── global.css           # Variables + glass + animaciones + media queries
 ```

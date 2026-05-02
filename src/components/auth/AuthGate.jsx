@@ -2,15 +2,16 @@ import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import Login from './Login'
 import Register from './Register'
+import s from './Auth.module.css'
 
 export default function AuthGate({ children }) {
   const { user, loading } = useAuth()
-  const [mode, setMode] = useState('login') // 'login' | 'register'
+  const [mode, setMode] = useState('login')
 
   if (loading) {
     return (
-      <div className="auth-screen">
-        <div className="auth-loader">Cargando...</div>
+      <div className={s.screen}>
+        <div className={s.loader}>Cargando...</div>
       </div>
     )
   }

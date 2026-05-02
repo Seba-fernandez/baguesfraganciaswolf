@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import st from './BottomNav.module.css';
 
 const ContactsIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -32,17 +33,17 @@ const items = [
 
 export default function BottomNav() {
   return (
-    <nav className="bottom-nav glass-strong">
+    <nav className={`${st.nav} glass-strong`}>
       {items.map(item => (
         <NavLink
           key={item.to}
           to={item.to}
           end={item.end}
-          className={({ isActive }) => `bottom-nav__item ${isActive ? 'is-active' : ''}`}
+          className={({ isActive }) => `${st.item} ${isActive ? st.active : ''}`}
         >
-          <span className="bottom-nav__icon">{item.icon}</span>
-          <span className="bottom-nav__label">{item.label}</span>
-          <span className="bottom-nav__indicator" aria-hidden="true" />
+          <span className={st.icon}>{item.icon}</span>
+          <span className={st.label}>{item.label}</span>
+          <span className={st.dot} aria-hidden="true" />
         </NavLink>
       ))}
     </nav>

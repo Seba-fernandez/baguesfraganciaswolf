@@ -1,0 +1,17 @@
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  background: radial-gradient(135deg at 30% 30%, var(--avatar-color) 0%, color-mix(in srgb, var(--avatar-color) 60%, transparent) 100%);
+  background-color: color-mix(in srgb, var(--avatar-color) 35%, transparent);
+  border: 1px solid color-mix(in srgb, var(--avatar-color) 45%, transparent);
+  box-shadow:
+    0 4px 16px color-mix(in srgb, var(--avatar-color) 25%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}

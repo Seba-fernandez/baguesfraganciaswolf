@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
+import s from './TopBar.module.css';
 
 const SunIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -15,20 +16,15 @@ const MoonIcon = () => (
 );
 
 function useClock() {
-  const [time, setTime] = useState(() => {
+  const fmt = () => {
     const n = new Date();
     return `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`;
-  });
-
+  };
+  const [time, setTime] = useState(fmt);
   useEffect(() => {
-    const tick = () => {
-      const n = new Date();
-      setTime(`${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`);
-    };
-    const iv = setInterval(tick, 10000);
+    const iv = setInterval(() => setTime(fmt()), 10000);
     return () => clearInterval(iv);
   }, []);
-
   return time;
 }
 
@@ -37,11 +33,11 @@ export default function TopBar({ title = 'Vajilla CRM' }) {
   const { theme, toggle } = useTheme();
 
   return (
-    <header className="top-bar glass">
-      <div className="top-bar__title">{title}</div>
-      <div className="top-bar__clock">{time}</div>
+    <header className={`${s.bar} glass`}>
+      <div className={s.title}>{title}</div>
+      <div className={s.clock}>{time}</div>
       <button
-        className="top-bar__theme-toggle"
+        className={s.toggle}
         onClick={toggle}
         aria-label={`Cambiar a tema ${theme === 'dark' ? 'claro' : 'oscuro'}`}
       >

@@ -1,0 +1,76 @@
+.screen { padding: 0 4px; }
+
+.title {
+  font-family: 'Sora', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-shadow: var(--text-shadow-strong);
+  letter-spacing: -0.02em;
+  margin: 16px 4px 4px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  text-align: left;
+  transition: transform 0.2s;
+}
+
+.item:not(.disabled):hover { transform: translateY(-1px); }
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.itemIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.itemText {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemLabel {
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-shadow: var(--text-shadow);
+}
+
+.itemSub {
+  font-size: 12px;
+  color: var(--text-quaternary);
+  margin-top: 2px;
+}
+
+.logout {
+  width: 100%;
+  padding: 13px;
+  border-radius: 50px;
+  border: 1px solid var(--danger-rim);
+  background: var(--danger-bg);
+  backdrop-filter: blur(12px);
+  color: var(--danger);
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.logout:hover { filter: brightness(1.15); }

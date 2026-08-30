@@ -27,10 +27,17 @@ export default function Login({ onSwitchToRegister }) {
     setLoading(false)
   }
 
+  const [googleLoading, setGoogleLoading] = useState(false)
+
   const handleGoogle = async () => {
     setError('')
+    setGoogleLoading(true)
     const { error } = await signInWithGoogle()
-    if (error) setError(error.message)
+    if (error) {
+      setError(error.message)
+      setGoogleLoading(false)
+    }
+    // si no hay error, el navegador redirige a Google en este mismo instante
   }
 
   return (
@@ -71,9 +78,9 @@ export default function Login({ onSwitchToRegister }) {
 
         <div className={s.divider}><span>o</span></div>
 
-        <button onClick={handleGoogle} className={`${s.btn} ${s.google}`}>
+        <button onClick={handleGoogle} className={`${s.btn} ${s.google}`} disabled={googleLoading}>
           <GoogleIcon />
-          Continuar con Google
+          {googleLoading ? 'Abriendo Google…' : 'Continuar con Google'}
         </button>
 
         <p className={s.switch}>

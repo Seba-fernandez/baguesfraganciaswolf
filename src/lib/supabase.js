@@ -33,14 +33,19 @@ export const authHelpers = {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
+        // Vuelve a la raíz (ya está en la allowlist de Supabase). App.jsx
+        // deja que Supabase procese el ?code antes de redirigir a /panel.
         redirectTo: `${window.location.origin}/`,
+        queryParams: { prompt: 'select_account' },
       },
     })
+    if (error) console.error('OAuth Google:', error)
     return { data, error }
   },
 
   signOut: async () => {
-    const { error } = await supabase.auth.signOut()
+    // scope 'local': cierra solo esta sesión/dispositivo, sin tocar otras.
+    const { error } = await supabase.auth.signOut({ scope: 'local' })
     return { error }
   },
 

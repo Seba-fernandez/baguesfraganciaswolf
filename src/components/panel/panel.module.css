@@ -59,12 +59,24 @@
 .sheet {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
   max-width: 480px; margin: 0 auto;
-  max-height: 90vh; overflow-y: auto; scrollbar-width: none;
-  border-radius: 24px 24px 0 0; padding: 8px 18px 32px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  border-radius: 24px 24px 0 0;
+  /* el padding inferior deja pasar la barra de navegación flotante */
+  padding: 8px 18px calc(96px + env(safe-area-inset-bottom));
   animation: sheetUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
+.sheet::-webkit-scrollbar { display: none; }
 @media (min-width: 768px) {
-  .sheet { left: auto; right: 24px; bottom: 24px; border-radius: 24px; max-width: 420px; }
+  .sheet {
+    left: auto; right: 24px; bottom: 24px; border-radius: 24px; max-width: 420px;
+    max-height: calc(100dvh - 48px);
+    padding-bottom: 28px;
+  }
 }
 .handle { display: block; width: 40px; height: 4px; border-radius: 3px; background: var(--text-quaternary); margin: 6px auto 16px; }
 .sheetTitle { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }

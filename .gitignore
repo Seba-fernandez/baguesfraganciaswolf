@@ -2,3 +2,7 @@ node_modules
 dist
 .env
 .env.local
+
+# Skills de la comunidad: se reinstalan con `npx skills install` (skills-lock.json sí se versiona)
+.claude/skills/
+.agents/

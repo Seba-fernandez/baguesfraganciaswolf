@@ -36,8 +36,8 @@ export default function Login({ onSwitchToRegister }) {
   return (
     <div className={s.screen}>
       <div className={`${s.card} glass`}>
-        <h1 className={s.title}>Vajilla CRM</h1>
-        <p className={s.subtitle}>Gestioná tus contactos</p>
+        <h1 className={s.title}>Bagues Grupo Wolf</h1>
+        <p className={s.subtitle}>Panel de gestión · acceso privado</p>
 
         <form onSubmit={handleSubmit} className={s.form}>
           <label className={s.label}>EMAIL</label>

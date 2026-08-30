@@ -60,7 +60,7 @@ export default function Register({ onSwitchToLogin }) {
     <div className={s.screen}>
       <div className={`${s.card} glass`}>
         <h1 className={s.title}>Crear cuenta</h1>
-        <p className={s.subtitle}>Empezá a gestionar tus contactos</p>
+        <p className={s.subtitle}>Bagues Grupo Wolf</p>
 
         <form onSubmit={handleSubmit} className={s.form}>
           <label className={s.label}>EMAIL</label>

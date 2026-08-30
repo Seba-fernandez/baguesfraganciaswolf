@@ -28,7 +28,7 @@ function useClock() {
   return time;
 }
 
-export default function TopBar({ title = 'Vajilla CRM' }) {
+export default function TopBar({ title = 'Bagues Grupo Wolf' }) {
   const time = useClock();
   const { theme, toggle } = useTheme();
 

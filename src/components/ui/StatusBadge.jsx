@@ -1,8 +1,9 @@
-import { ESTADOS } from '../../data/constants';
+import { ESTADOS_PEDIDO } from '../../data/constants';
 import st from './StatusBadge.module.css';
 
+/** Badge del estado de un pedido. `statusId` ∈ ESTADOS_PEDIDO. */
 export default function StatusBadge({ statusId, small = false }) {
-  const cfg = ESTADOS[statusId] || ESTADOS.pendiente;
+  const cfg = ESTADOS_PEDIDO[statusId] || ESTADOS_PEDIDO.nuevo;
 
   return (
     <span

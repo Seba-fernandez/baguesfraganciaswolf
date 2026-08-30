@@ -493,18 +493,26 @@ filtros/wa-link (portada a React) y `docs/direccion-de-arte.md`.
 **Resultado:** base de datos de perfumes lista y verificada. Las migraciones
 quedaron en `supabase/migrations/` (fuente de verdad versionada).
 
-### **FASE 1 — Panel admin (lo que más te urge)**
-- [ ] Reescribir `App.jsx`: rutas `/panel/*` detrás de `AuthGate`, restringido a tu email.
-- [ ] `useProducts`, `useOrders`, `useCustomers`.
-- [ ] `ProductosScreen` + `ProductoEditor` + `ImageUpload` + `Toggle`
-      (alta de perfumes, foto, presentaciones, prender/apagar, editar precio).
-- [ ] `PedidosScreen` (tablero por estado) + `PedidoCard` + `PedidoSheet`
-      (cambiar estado, pago, notas de conversación, ítems).
-- [ ] `NuevoPedidoForm` — cargar a mano un pedido que te llegó por WhatsApp.
-- [ ] `ClientesScreen` + `ClienteSheet` (historial por cliente).
-- [ ] `AjustesScreen` (tu WhatsApp, textos, tema, logout).
+### **FASE 1 — Panel admin** ✅ *(completada 30/08/2026)*
+- [x] `App.jsx` reescrito: rutas `/panel/*` detrás de `AuthGate`. `AuthGate` ahora
+      corta si el email no está en `ADMIN_EMAILS` (coincide con `es_admin()` de la DB).
+- [x] Hooks: `useProducts`, `useOrders` (con Realtime), `useCustomers`, `useSettings`.
+- [x] `lib/whatsapp.js` (links `wa.me` + textos) y `lib/format.js` (pesos, fechas).
+- [x] `ProductosScreen` + `ProductoEditor` + `ui/ImageUpload` (sube a Storage) + `ui/Toggle`:
+      alta/edición de perfumes, foto, pirámide olfativa, presentaciones (ml + precio +
+      disponible), destacado, y el **toggle activo** directo en la lista.
+- [x] `PedidosScreen` — tablero por estado (columnas de estados abiertos, "Todos" para ver cerrados).
+- [x] `PedidoSheet` — cambiar estado, pago, seña, fecha de retiro, notas de conversación,
+      y botón "Escribir al cliente" (abre WhatsApp con texto según el estado).
+- [x] `NuevoPedidoForm` — cargar a mano un pedido (elegís del catálogo o escribís libre;
+      el precio se autocompleta del producto).
+- [x] `ClientesScreen` + `ClienteSheet` — se crean solos al cargar pedidos; historial por cliente.
+- [x] `AjustesScreen` — tu WhatsApp, Instagram, textos del checkout, tema, logout.
+- [x] Borradas todas las pantallas/hooks del CRM de vajilla viejo.
+- [x] `npm run build` en verde; la app monta sin errores de consola.
 
-**Resultado:** dejás de anotar en Notas. Ya cargás clientes, pedidos y estados.
+**Resultado:** ya podés cargar clientes, pedidos y moverlos por estado, y administrar
+el catálogo con el toggle on/off. Falta la web pública (Fase 2) y el aviso automático (Fase 3).
 
 ### **FASE 2 — Web pública (tienda neofuturista)**
 - [ ] `docs/neofuturismo.md` + `styles/tienda.css` (tokens del sistema visual).
@@ -638,18 +646,18 @@ lados:
 |---|---|
 | Plan maestro | ✅ redactado y revisado — 29/08/2026 |
 | Fase 0 | ✅ completada — 30/08/2026 (DB nueva verificada, skills, renombrado) |
-| Fase 1 | ⬜ próxima — panel admin |
-| Fase 2 | ⬜ |
+| Fase 1 | ✅ completada — 30/08/2026 (panel admin: pedidos, catálogo, clientes, ajustes) |
+| Fase 2 | ⬜ próxima — web pública neofuturista |
 | Fase 3 | ⬜ |
 | Fase 4 | ⬜ |
 
-**Próximo paso:** Fase 1 — reescribir `App.jsx` (rutas `/panel/*` + `AuthGate`
-restringido a tu email), y el CRUD de productos con toggle + el tablero de pedidos.
+**Próximo paso:** Fase 2 — la tienda pública en `/`: sistema visual neofuturista
+(`docs/neofuturismo.md` + `styles/tienda.css`), hero, catálogo desde `products`,
+modal con pirámide olfativa, carrito y checkout → `crear_pedido_web()` → `wa.me`.
 
-### Cambios sin commitear en la rama `feature/migracion-perfumes`
-- `PLAN-MAESTRO.md` (este doc)
-- `supabase/migrations/*.sql` (0001–0006)
-- `.gitignore` (ignora `.claude/skills/` y `.agents/`)
-- `skills-lock.json` (versiones de skills)
-- `package.json` / `index.html` (renombrado + `vite-plugin-pwa`)
-- `.claude/skills/` (12 skills, NO se versionan — se reinstalan con `npx skills install`)
+### Cómo probar la Fase 1
+1. `npm run dev` → abre `http://localhost:5173` (redirige a `/panel`).
+2. Iniciá sesión con Google usando **sebixtar@gmail.com** (cualquier otro email
+   ve "acceso denegado").
+3. En **Catálogo** ya hay 6 perfumes de ejemplo: editalos, subí fotos, prendé/apagá.
+4. En **Pedidos** tocá **+** para cargar un pedido de prueba y movelo por estados.

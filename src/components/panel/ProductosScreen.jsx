@@ -4,6 +4,7 @@ import { pesos } from '../../lib/format';
 import Toggle from '../ui/Toggle';
 import FAB from '../ui/FAB';
 import ProductoEditor from './ProductoEditor';
+import ProductosTabla from './ProductosTabla';
 import s from './panel.module.css';
 
 const rango = (presentaciones = []) => {
@@ -18,6 +19,7 @@ export default function ProductosScreen() {
   const { products, loading, createProduct, updateProduct, toggleActivo, deleteProduct } = useProducts();
   const [filtro, setFiltro] = useState('todos');
   const [editando, setEditando] = useState(null); // producto | 'nuevo' | null
+  const [vista, setVista] = useState('tarjetas'); // tarjetas | tabla
 
   const visibles = useMemo(() => {
     if (filtro === 'activos') return products.filter((p) => p.activo);
@@ -36,16 +38,29 @@ export default function ProductosScreen() {
         <span className={s.subtitle}>{activos} activos · {products.length} en total</span>
       </div>
 
-      <div className={s.chips}>
-        {[['todos', 'Todos'], ['activos', 'Activos'], ['pausados', 'Pausados']].map(([id, label]) => (
-          <button
-            key={id}
-            className={`${s.chip} ${filtro === id ? s.chipOn : ''}`}
-            onClick={() => setFiltro(id)}
-          >
-            {label}
-          </button>
-        ))}
+      <div className={s.cardRow}>
+        <div className={s.chips} style={{ flex: 1 }}>
+          {[['todos', 'Todos'], ['activos', 'Activos'], ['pausados', 'Pausados']].map(([id, label]) => (
+            <button
+              key={id}
+              className={`${s.chip} ${filtro === id ? s.chipOn : ''}`}
+              onClick={() => setFiltro(id)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className={s.chips}>
+          {[['tarjetas', '▦ Tarjetas'], ['tabla', '☰ Tabla rápida']].map(([id, label]) => (
+            <button
+              key={id}
+              className={`${s.chip} ${vista === id ? s.chipOn : ''}`}
+              onClick={() => setVista(id)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {visibles.length === 0 ? (
@@ -53,6 +68,8 @@ export default function ProductosScreen() {
           <span className={s.emptyIcon}>🧴</span>
           Todavía no hay perfumes en esta vista. Tocá + para agregar.
         </div>
+      ) : vista === 'tabla' ? (
+        <ProductosTabla products={visibles} onUpdate={updateProduct} onOpen={setEditando} />
       ) : (
         <div className={s.list}>
           {visibles.map((p) => (

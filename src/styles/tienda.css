@@ -1,0 +1,116 @@
+/* ============================================================================
+   TIENDA.CSS — sistema visual "Vitrina Ácida" (MASTER.md v4)
+   Solo se importa en la zona pública (/). El panel admin usa global.css.
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,340;9..144,440;9..144,600&family=Fraunces:ital,opsz,wght@1,9..144,440&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Onest:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+.tienda {
+  --bg: #191a17;
+  --bg-2: #212220;
+  --bg-3: #2b2c29;
+  --ink: #f3f4ef;
+  --ink-dim: #a4a59d;
+  --ink-faint: #6f7168;
+  --line: rgba(243, 244, 239, 0.11);
+  --line-bright: rgba(243, 244, 239, 0.22);
+  --acid: #b7e04c;
+  --acid-deep: #9bc93a;
+  --rose: #f0355e;
+  --rose-deep: #cf1e46;
+  --warn: #ffc861;
+
+  --r-card: 22px;
+  --r-pill: 999px;
+  --r-sq: 16px;
+  --sh-card: 0 20px 50px -24px rgba(0, 0, 0, 0.65);
+  --sh-lift: 0 32px 70px -28px rgba(0, 0, 0, 0.8);
+
+  --dur-fast: 160ms;
+  --dur: 300ms;
+  --dur-slow: 560ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --wrap: min(1240px, 92vw);
+
+  --f-display: 'Fraunces', 'Iowan Old Style', ui-serif, Georgia, serif;
+  --f-ui: 'Bricolage Grotesque', system-ui, sans-serif;
+  --f-body: 'Onest', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(120% 60% at 50% -10%, #26271f 0%, transparent 60%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+.tienda * { box-sizing: border-box; }
+
+.tw { width: var(--wrap); margin-inline: auto; }
+
+.tmono {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+.tmono.up { text-transform: uppercase; letter-spacing: 0.08em; }
+
+.tienda h1, .tienda h2, .tienda h3 {
+  font-family: var(--f-display); font-weight: 600; font-optical-sizing: auto;
+  letter-spacing: -0.01em; line-height: 1.02; color: var(--ink);
+}
+
+.tienda a { color: inherit; text-decoration: none; }
+.tienda button { font-family: inherit; }
+
+/* ---------- botones ---------- */
+.tbtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 13px 13px 13px 22px; border-radius: var(--r-pill);
+  background: var(--acid); color: var(--bg); border: 0;
+  font-family: var(--f-mono); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  min-height: 48px;
+}
+.tbtn .circ {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--rose);
+  display: grid; place-items: center; color: var(--bg); flex-shrink: 0;
+  transition: transform var(--dur) var(--ease);
+}
+.tbtn:hover { transform: scale(1.015); }
+.tbtn:hover .circ { transform: rotate(-45deg); }
+.tbtn:active { transform: scale(0.98); background: var(--acid-deep); }
+.tbtn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.tbtn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+.tbtn.ghost { background: none; color: var(--ink-dim); border: 1px solid var(--line); padding: 12px 22px; }
+.tbtn.ghost:hover { color: var(--ink); border-color: var(--line-bright); }
+
+.tbtn.dark { background: var(--bg-2); color: var(--ink); }
+.tbtn.dark .circ { background: var(--acid); color: var(--bg); }
+
+.tbtn.wide { width: 100%; }
+
+/* ---------- cards / superficies ---------- */
+.tcard { background: var(--bg-2); border-radius: var(--r-card); box-shadow: var(--sh-card); }
+
+/* ---------- reveal (IntersectionObserver) ---------- */
+.treveal { opacity: 0; transform: translateY(24px); }
+.trevealed { opacity: 1; transform: none; transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tienda .treveal { opacity: 1; transform: none; }
+  .tienda * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+}
+
+/* ---------- scrollbar chico en chips/filtros ---------- */
+.tienda .tscroll-x { scrollbar-width: none; }
+.tienda .tscroll-x::-webkit-scrollbar { display: none; }

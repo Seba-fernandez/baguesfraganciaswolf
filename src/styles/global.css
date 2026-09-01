@@ -80,8 +80,10 @@ body {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
   transition: background 0.5s ease;
+  /* Sin overflow:hidden acá: lo necesita el panel (shell de altura fija con
+     scroll interno en .app-main), pero bloquearía el scroll normal de la
+     tienda pública. .app-shell ya trae su propio overflow:hidden. */
 }
 
 button { font-family: inherit; background: none; border: none; color: inherit; cursor: pointer; }

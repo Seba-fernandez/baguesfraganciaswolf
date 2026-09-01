@@ -33,8 +33,9 @@ export const authHelpers = {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Vuelve a la raíz (ya está en la allowlist de Supabase). App.jsx
-        // deja que Supabase procese el ?code antes de redirigir a /panel.
+        // Vuelve a la raíz (es la URL que ya está en la allowlist de Supabase;
+        // agregar /panel ahí requeriría tocar la config del proyecto). App.jsx
+        // detecta el ?code= en "/" y manda al admin a /panel apenas resuelve.
         redirectTo: `${window.location.origin}/`,
         queryParams: { prompt: 'select_account' },
       },

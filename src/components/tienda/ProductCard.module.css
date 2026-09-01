@@ -1,0 +1,32 @@
+.card {
+  background: var(--bg-2); border-radius: var(--r-card); overflow: hidden;
+  box-shadow: var(--sh-card); position: relative;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.card:hover { transform: translateY(-4px); box-shadow: var(--sh-lift); }
+
+.thumbBtn { display: block; width: 100%; aspect-ratio: 1; border: 0; padding: 0; cursor: pointer; background: none; }
+.thumbBtn:hover img { transform: scale(1.05); }
+.thumb { width: 100%; height: 100%; }
+
+.arr {
+  position: absolute; right: 12px; top: 12px; font-family: var(--f-mono); color: var(--ink);
+  opacity: 0; transition: opacity var(--dur) var(--ease); pointer-events: none;
+}
+.card:hover .arr { opacity: 1; }
+
+.body { padding: 14px 14px 16px; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.name { font-size: 1.05rem; font-weight: 700; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; color: var(--ink); }
+.name:hover { color: var(--acid); }
+.meta { font-family: var(--f-mono); font-size: 0.68rem; color: var(--ink-faint); margin-top: 4px; }
+.price { font-family: var(--f-mono); font-size: 0.85rem; margin-top: 8px; }
+
+.add {
+  width: 46px; height: 46px; border-radius: var(--r-sq);
+  background: var(--acid); color: var(--bg); border: 0;
+  display: grid; place-items: center; font-size: 1.3rem; cursor: pointer; flex-shrink: 0;
+  transition: transform var(--dur-fast) var(--ease);
+}
+.add:active { transform: scale(0.92); }
+.add:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.card.rose .add { background: var(--rose); }

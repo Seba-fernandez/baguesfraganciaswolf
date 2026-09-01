@@ -25,6 +25,12 @@
       "skillPath": "SKILL.md",
       "computedHash": "40627c0c13e28c8a615f5dd75a8447aa4be9961ec0e35752acb12df749e94399"
     },
+    "design-taste-frontend-v1": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill-v1/SKILL.md",
+      "computedHash": "0a226c13d69639553cf8a7c40aa5527b026820f8ddaf7a6b263988e32ab44a27"
+    },
     "gsap": {
       "source": "athevon/genjutsu",
       "sourceType": "github",

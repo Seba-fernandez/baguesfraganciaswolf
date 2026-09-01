@@ -514,16 +514,20 @@ quedaron en `supabase/migrations/` (fuente de verdad versionada).
 **Resultado:** ya podés cargar clientes, pedidos y moverlos por estado, y administrar
 el catálogo con el toggle on/off. Falta la web pública (Fase 2) y el aviso automático (Fase 3).
 
-### **FASE 2 — Web pública (tienda neofuturista)**
-- [ ] `docs/neofuturismo.md` + `styles/tienda.css` (tokens del sistema visual).
-- [ ] `TiendaLayout`, `Hero`, `PromoStrip`.
-- [ ] `ProductGrid` + `ProductCard` + `CatalogFilters` (lee `products` activos).
-- [ ] `ProductModal` con pirámide olfativa.
-- [ ] `CartContext` + `CartButton` + `CartSheet` (localStorage).
-- [ ] `CheckoutForm` → `crear_pedido_web()` → abre `wa.me` con el resumen.
-- [ ] `PromosScreen` en el panel (editar hero/promos con foto).
+### **FASE 2 — Web pública** ✅ *(núcleo completado 31/08/2026 — ver `MASTER.md` para el detalle de diseño)*
+- [x] `MASTER.md` (sistema visual "Vitrina Ácida", iteró 4 veces con el usuario) + `src/styles/tienda.css`.
+- [x] `TiendaLayout` (header + footer + wordmark), `Hero` (con `Bottle3D` decorativo).
+- [x] `ProductGrid` + `ProductCard` + filtros por género + `FeaturedRows` ("Los que no fallan").
+- [x] `ProductModal` con pirámide olfativa, spec, tamaños, stepper.
+- [x] `CartContext` (localStorage) + `CartSheet` (carrito → checkout, un solo sheet, sin anidar).
+- [x] Checkout → `crear_pedido_web()` → abre WhatsApp con el resumen — **probado end-to-end contra la DB real**.
+- [x] Ruta `/` pública (sin login) + `/panel/*` gateado — reestructuración de `App.jsx`.
+- [x] `ProductosTabla.jsx` — vista de tabla para carga rápida mensual (precio + disponibilidad en línea).
+- [ ] `PromosScreen` en el panel (editar hero/promos con foto) — pendiente; el Hero ya tiene copy por defecto sin esto.
+- [ ] Code-splitting más fino (three.js ~530kb en su propio chunk, ya separado del panel).
 
-**Resultado:** la web ya recibe pedidos y quedan en tu panel.
+**Resultado:** la web ya recibe pedidos reales y quedan en tu panel. Falta el
+aviso automático (Fase 3) y opcionalmente que puedas editar el hero desde el panel.
 
 ### **FASE 3 — Aviso de pedido nuevo**
 - [ ] Edge Function `notificar-pedido` (Telegram como default, push PWA opcional).
@@ -647,13 +651,24 @@ lados:
 | Plan maestro | ✅ redactado y revisado — 29/08/2026 |
 | Fase 0 | ✅ completada — 30/08/2026 (DB nueva verificada, skills, renombrado) |
 | Fase 1 | ✅ completada — 30/08/2026 (panel admin: pedidos, catálogo, clientes, ajustes) |
-| Fase 2 | ⬜ próxima — web pública neofuturista |
-| Fase 3 | ⬜ |
+| Fase 2 | ✅ núcleo completado — 31/08/2026 (tienda pública, ver `MASTER.md`) |
+| Fase 3 | ⬜ próxima — aviso automático de pedido nuevo |
 | Fase 4 | ⬜ |
 
-**Próximo paso:** Fase 2 — la tienda pública en `/`: sistema visual neofuturista
-(`docs/neofuturismo.md` + `styles/tienda.css`), hero, catálogo desde `products`,
-modal con pirámide olfativa, carrito y checkout → `crear_pedido_web()` → `wa.me`.
+**Próximo paso:** Fase 3 — Edge Function `notificar-pedido` (Telegram) + Database
+Webhook en `orders`, para enterarte de un pedido nuevo sin depender de que el
+cliente mande el WhatsApp. O, si preferís, primero `PromosScreen` para poder
+editar el hero de la tienda desde el panel.
+
+### Cómo probar la Fase 2 (tienda pública)
+1. `npm run dev` → abrí `http://localhost:5173/` (sin login, es la tienda).
+2. Vas a ver el hero con el frasco 3D (arrastralo para girarlo), "Los que no
+   fallan" y el catálogo completo con los 6 perfumes de ejemplo de la Fase 0.
+3. Tocá el `+` de una card → se suma directo al carrito (ícono arriba a la derecha).
+4. Tocá el nombre de un perfume → se abre el detalle con pirámide olfativa y tamaños.
+5. Abrí el carrito → "Hacer pedido" → cargá nombre y WhatsApp → "Confirmar
+   pedido" → se guarda en la base (lo vas a ver en `/panel`) y se abre WhatsApp
+   con el resumen.
 
 ### Cómo probar la Fase 1
 1. `npm run dev` → abre `http://localhost:5173` (redirige a `/panel`).

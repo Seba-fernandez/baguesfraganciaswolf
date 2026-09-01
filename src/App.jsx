@@ -1,24 +1,70 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect, useState, Suspense, lazy } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import AuthGate from './components/auth/AuthGate';
 import Layout from './components/layout/Layout';
-import PedidosScreen from './components/panel/PedidosScreen';
-import ProductosScreen from './components/panel/ProductosScreen';
-import ClientesScreen from './components/panel/ClientesScreen';
-import AjustesScreen from './components/panel/AjustesScreen';
+import { useAuth } from './contexts/AuthContext';
 
-// AuthGate envuelve TODO: mientras resuelve la sesión muestra un loader, así
-// ninguna ruta redirige antes de que Supabase procese el retorno de Google
-// (el ?code=... del OAuth). La tienda pública (/) llega en la Fase 2.
+// Cada mitad de la app carga su propio peso: el panel no necesita three/gsap
+// (tienda) y la tienda no necesita cargar todas las pantallas del panel.
+const PedidosScreen = lazy(() => import('./components/panel/PedidosScreen'));
+const ProductosScreen = lazy(() => import('./components/panel/ProductosScreen'));
+const ClientesScreen = lazy(() => import('./components/panel/ClientesScreen'));
+const AjustesScreen = lazy(() => import('./components/panel/AjustesScreen'));
+const HomeScreen = lazy(() => import('./components/tienda/HomeScreen'));
+
+const Loader = () => (
+  <div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh', color: 'var(--text-tertiary, #888)' }}>
+    Cargando…
+  </div>
+);
+
+// El login con Google vuelve siempre a "/" (única URL en la allowlist de
+// Supabase). Si esa vuelta trae un ?code= de OAuth, en cuanto la sesión
+// resuelve mandamos al admin directo a /panel en vez de dejarlo en la tienda.
+function useVolverAlPanelSiEsAdmin() {
+  const [teniaCode] = useState(() => /[?&]code=/.test(window.location.search));
+  const { user, loading, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (teniaCode && !loading && user && isAdmin && location.pathname === '/') {
+      navigate('/panel', { replace: true });
+    }
+  }, [teniaCode, loading, user, isAdmin, location.pathname, navigate]);
+}
+
+function Home() {
+  useVolverAlPanelSiEsAdmin();
+  return <HomeScreen />;
+}
+
+// "/" es la tienda pública (sin login). "/panel/*" es el admin, protegido por
+// un único AuthGate que envuelve todo ese subárbol — así ninguna ruta redirige
+// antes de que Supabase procese el retorno de Google (?code=... del OAuth).
 export default function App() {
   return (
-    <AuthGate>
+    <Suspense fallback={<Loader />}>
       <Routes>
-        <Route path="/panel" element={<Layout title="Pedidos"><PedidosScreen /></Layout>} />
-        <Route path="/panel/productos" element={<Layout title="Catálogo"><ProductosScreen /></Layout>} />
-        <Route path="/panel/clientes" element={<Layout title="Clientes"><ClientesScreen /></Layout>} />
-        <Route path="/panel/ajustes" element={<Layout title="Ajustes"><AjustesScreen /></Layout>} />
-        <Route path="*" element={<Navigate to="/panel" replace />} />
+        <Route path="/" element={<Home />} />
+
+        <Route
+          path="/panel/*"
+          element={
+            <AuthGate>
+              <Routes>
+                <Route index element={<Layout title="Pedidos"><PedidosScreen /></Layout>} />
+                <Route path="productos" element={<Layout title="Catálogo"><ProductosScreen /></Layout>} />
+                <Route path="clientes" element={<Layout title="Clientes"><ClientesScreen /></Layout>} />
+                <Route path="ajustes" element={<Layout title="Ajustes"><AjustesScreen /></Layout>} />
+                <Route path="*" element={<Navigate to="/panel" replace />} />
+              </Routes>
+            </AuthGate>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </AuthGate>
+    </Suspense>
   );
 }

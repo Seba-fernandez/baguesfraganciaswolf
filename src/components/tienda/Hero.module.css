@@ -3,7 +3,7 @@
 @media (min-width: 900px) { .grid { grid-template-columns: minmax(320px, 460px) 1fr; align-items: center; } }
 
 .eyebrowless { font-size: 0.85rem; display: flex; align-items: center; gap: 8px; color: var(--ink); margin-bottom: 18px; }
-.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--acid); box-shadow: 0 0 0 3px color-mix(in srgb, var(--acid) 22%, transparent); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cream); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cream) 22%, transparent); }
 
 .title { font-size: clamp(2.4rem, 5.2vw, 4rem); text-wrap: balance; }
 .lede { margin-top: 18px; max-width: 46ch; color: var(--ink-dim); font-size: 1rem; }
@@ -16,18 +16,32 @@
 }
 @media (min-width: 900px) { .stage { aspect-ratio: 1 / 1; max-height: 520px; } }
 
-.bw {
+/* Fondo orgánico multicapa — vino/pino/crema, en vez del flat-color de la v4.
+   Evoca tinta/líquido marmolado (ver referencias del usuario). Deriva idle
+   muy lenta; se congela con prefers-reduced-motion. */
+.backdrop {
   position: absolute; inset: 0;
-  background: radial-gradient(120% 90% at 30% 10%, #34352d 0%, #1e1f1a 60%, #17180f 100%);
-  filter: grayscale(1) contrast(1.05);
+  background:
+    radial-gradient(58% 55% at 20% 18%, var(--wine) 0%, transparent 64%),
+    radial-gradient(52% 58% at 88% 28%, var(--pine) 0%, transparent 62%),
+    radial-gradient(46% 42% at 46% 96%, color-mix(in srgb, var(--cream) 55%, transparent) 0%, transparent 60%),
+    linear-gradient(165deg, var(--bg-2) 0%, var(--bg) 70%);
+  background-size: 140% 140%, 140% 140%, 140% 140%, 100% 100%;
+  background-position: 0% 0%, 100% 0%, 50% 100%, 0 0;
+  animation: deriva 26s ease-in-out infinite alternate;
 }
-.block { position: absolute; left: 8%; width: 44%; top: 22%; bottom: 0; background: var(--acid); z-index: 1; }
+.block { position: absolute; left: 8%; width: 44%; top: 22%; bottom: 0; background: color-mix(in srgb, var(--bg) 55%, transparent); backdrop-filter: blur(2px); z-index: 1; }
 .bottle { position: absolute; inset: 0; z-index: 2; }
 .ring {
   position: absolute; left: 50%; top: 56%; z-index: 3;
   width: 74%; aspect-ratio: 1; transform: translate(-50%, -50%) rotateX(76deg);
-  border: 1.5px solid var(--acid); border-radius: 50%; opacity: 0.5; pointer-events: none;
+  border: 1.5px solid var(--cream); border-radius: 50%; opacity: 0.45; pointer-events: none;
 }
+
+@keyframes deriva {
+  to { background-position: 12% 6%, 88% 10%, 54% 92%, 0 0; }
+}
+@media (prefers-reduced-motion: reduce) { .backdrop { animation: none; } }
 .hint {
   position: absolute; left: 50%; bottom: 14px; z-index: 4; transform: translateX(-50%);
   font-family: var(--f-mono); font-size: 0.68rem; letter-spacing: 0.06em;

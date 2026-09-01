@@ -11,7 +11,7 @@
   transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
 .chip:hover { color: var(--ink); border-color: var(--line-bright); }
-.chipOn { background: var(--acid); border-color: var(--acid); color: var(--bg); }
+.chipOn { background: var(--cream); border-color: var(--cream); color: var(--bg); }
 .chipOn:hover { color: var(--bg); }
 
 .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }

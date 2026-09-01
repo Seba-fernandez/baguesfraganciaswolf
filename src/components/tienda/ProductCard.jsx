@@ -5,7 +5,7 @@ import { GENEROS, MOMENTOS } from '../../data/constants';
 import ProductThumb from './ProductThumb';
 import s from './ProductCard.module.css';
 
-export default function ProductCard({ producto, onOpen, accent = 'acid' }) {
+export default function ProductCard({ producto, onOpen, accent = 'cream' }) {
   const { addItem } = useCart();
   const rango = rangoPrecio(producto);
 
@@ -16,7 +16,7 @@ export default function ProductCard({ producto, onOpen, accent = 'acid' }) {
   }
 
   return (
-    <article className={`${s.card} ${accent === 'rose' ? s.rose : ''}`}>
+    <article className={`${s.card} ${s[accent] || ''}`}>
       <button type="button" className={s.thumbBtn} onClick={() => onOpen(producto)} aria-label={`Ver ${producto.nombre}`}>
         <ProductThumb src={producto.imagen_url} alt={producto.nombre} accent={accent} />
       </button>

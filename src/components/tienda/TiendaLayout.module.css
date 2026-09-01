@@ -8,7 +8,7 @@
 }
 
 .logo {
-  width: 34px; height: 34px; border-radius: 10px; background: var(--acid);
+  width: 34px; height: 34px; border-radius: 10px; background: var(--cream);
   display: grid; place-items: center; color: var(--bg);
   font-family: var(--f-ui); font-weight: 700; font-size: 15px; flex-shrink: 0;
 }
@@ -26,7 +26,7 @@
 .cartBtn:hover { border-color: var(--line-bright); }
 .badge {
   position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; padding: 0 4px;
-  border-radius: 999px; background: var(--rose); color: #fff;
+  border-radius: 999px; background: var(--wine); color: var(--ink);
   font-family: var(--f-mono); font-size: 10px; display: grid; place-items: center;
 }
 
@@ -42,7 +42,7 @@
   font-family: var(--f-display); font-style: italic; font-weight: 440;
   font-size: clamp(4.2rem, 20vw, 15rem); letter-spacing: -0.01em;
   margin-bottom: -0.1em; user-select: none;
-  color: transparent; -webkit-text-stroke: 1.4px var(--acid);
+  color: transparent; -webkit-text-stroke: 1.4px var(--cream);
 }
 .wordmark sup { font-size: 0.12em; vertical-align: super; }
 

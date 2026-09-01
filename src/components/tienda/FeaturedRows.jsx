@@ -19,16 +19,18 @@ export default function FeaturedRows({ products, onOpen }) {
       <div className={s.rows}>
         {destacados.map((p, i) => {
           const rango = rangoPrecio(p);
-          const acid = i === 1 % destacados.length;
+          const destacadaEspecial = i === 1 % destacados.length;
           return (
             <button
               key={p.id}
               type="button"
-              className={`${s.row} treveal ${acid ? s.acid : ''}`}
+              className={`${s.row} treveal ${destacadaEspecial ? s.wine : ''}`}
               onClick={() => onOpen(p)}
             >
               <h3>{p.nombre}</h3>
-              <div className={s.shot}><ProductThumb src={p.imagen_url} alt={p.nombre} accent={acid ? 'rose' : 'acid'} /></div>
+              <div className={s.shot}>
+                <ProductThumb src={p.imagen_url} alt={p.nombre} accent={destacadaEspecial ? 'cream' : (i % 2 ? 'pine' : 'wine')} />
+              </div>
               <p className={s.desc}>
                 {p.descripcion_corta}
                 <span className={`${s.meta} tmono`}>

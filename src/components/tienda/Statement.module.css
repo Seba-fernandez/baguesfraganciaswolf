@@ -5,5 +5,5 @@
   font-size: clamp(2.4rem, 8vw, 5.6rem); line-height: 1.06;
   letter-spacing: -0.01em; text-wrap: balance; max-width: 16ch; margin-inline: auto;
 }
-.hand { position: relative; white-space: nowrap; color: var(--rose); font-style: normal; }
+.hand { position: relative; white-space: nowrap; color: var(--wine-bright); font-style: normal; }
 .hand svg { position: absolute; left: -4%; top: -18%; width: 108%; height: 138%; pointer-events: none; overflow: visible; }

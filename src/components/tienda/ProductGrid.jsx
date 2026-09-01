@@ -9,6 +9,13 @@ const FILTROS = [
   ...Object.values(GENEROS).map((g) => ({ id: g.id, label: g.label })),
 ];
 
+// Variedad controlada: cream domina, wine y pine aparecen de vez en cuando.
+function acentoDe(i) {
+  if (i % 7 === 3) return 'pine';
+  if (i % 5 === 1) return 'wine';
+  return 'cream';
+}
+
 export default function ProductGrid({ products, onOpen }) {
   const [filtro, setFiltro] = useState('todos');
   const ref = useReveal();
@@ -45,7 +52,7 @@ export default function ProductGrid({ products, onOpen }) {
         <div className={s.grid}>
           {visibles.map((p, i) => (
             <div key={p.id} className="treveal" style={{ transitionDelay: `${Math.min(i, 8) * 40}ms` }}>
-              <ProductCard producto={p} onOpen={onOpen} accent={i % 5 === 1 ? 'rose' : 'acid'} />
+              <ProductCard producto={p} onOpen={onOpen} accent={acentoDe(i)} />
             </div>
           ))}
         </div>

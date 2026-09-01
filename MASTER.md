@@ -1,9 +1,11 @@
-# MASTER · Sistema de diseño — Tienda "Ácido"
+# MASTER · Sistema de diseño — Tienda "Vino & Pino"
 
 > Fuente de verdad visual de la **tienda pública** de Bagues Grupo Wolf.
-> Dirección inspirada en la referencia de **Lunet Eyewear** (SlabPixel) que
-> pasó el usuario: oscuro + verde ácido + display pesado + producto 3D +
-> foto en B/N con pop de color + etiquetas técnicas entre corchetes.
+> **v5 (vigente):** paleta vino profundo + pino oscuro + crema, sacada de
+> fotografía/textura real (vino, plumas, tinta) — reemplaza al verde ácido de
+> la v2-v4 por leer "genérico". Estructura, tipografía (Fraunces/Onest/JetBrains
+> Mono) y mecánica de interacción **no cambian** — ver §Tipografía. Historial
+> completo de las iteraciones anteriores al final de este documento (§v2-v4).
 > El **panel admin** conserva su sistema "glass" propio (`src/styles/global.css`).
 > Tokens de la tienda en `src/styles/tienda.css`.
 
@@ -11,15 +13,17 @@
 
 ## Tesis visual
 
-Fondo **carbón cálido** (no negro puro) con secciones que alternan de tono; **verde
-ácido** como único protagonista en bloques planos full-bleed, precios, botones y el
-wordmark gigante; **magenta** como segundo acento puntual (flecha circular, una card
-destacada). Tipografía **display grotesca pesada** en mayúsculas y tracking
-apretado, en contraste con **etiquetas mono entre corchetes** (`[detalle]`,
-`11/1660`, `©2026`). Foto de producto/persona en **blanco y negro con el perfume
-en color saturado** (pop). Momento **3D** del frasco con anillo de órbita y control
-`360°`. Bordes discretos (8–14 px), botones en píldora o cuadrados; nada de
-gradientes ni vidrio.
+Fondo **carbón cálido con tinte vino** (no negro puro) con secciones que alternan
+de tono; **crema** como único protagonista claro en bloques planos, CTA y el
+wordmark gigante; **vino profundo** y **pino oscuro** como bloques secundarios
+puntuales (círculo de acento, una fila/card destacada, el fondo orgánico del
+hero). Tipografía **display con carácter** (serif Fraunces romana/itálica, sin
+eyebrows decorativos) en contraste con **etiquetas mono** para datos reales.
+Foto de producto **a color, tal cual** (nada de blanco y negro forzado). Momento
+**3D** del frasco con anillo de órbita y control `360°`, sobre un **fondo
+orgánico multicapa** (vino/pino/crema) que evoca líquido/tinta en vez de un
+flat-color. Esquinas muy redondeadas (22px), botones en píldora; nada de glow
+ni vidrio — los bloques de color son planos y con peso.
 
 ## Tesis de interacción
 
@@ -38,25 +42,48 @@ con `prefers-reduced-motion` (el 3D → foto B/N con pop).
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--bg` | `#191a17` | Fondo base (carbón cálido, leve verde) |
-| `--bg-2` | `#212220` | Sección alterna / cards |
-| `--bg-3` | `#2b2c29` | Card elevada, hover, thumbs |
-| `--ink` | `#f3f4ef` | Texto principal (16.8:1) |
-| `--ink-dim` | `#a4a59d` | Secundario (7.2:1) |
-| `--ink-faint` | `#6f7168` | Etiquetas, metadatos (4.5:1) |
-| `--line` | `rgba(243,244,239,0.11)` | Hairlines |
-| `--line-bright` | `rgba(243,244,239,0.22)` | Hairline hover |
-| `--acid` | `#b7e04c` | **Protagonista**: bandas, precio, CTA fill, wordmark. Texto sobre acid = `--bg` (contraste 15:1). Desaturado a propósito (v4) respecto del verde neón original |
-| `--acid-deep` | `#9bc93a` | Acid presionado / borde |
-| `--rose` | `#f0355e` | 2º acento — **tomado del rosa real de la marca Bagués** (`bagues.com.ar`), no inventado. Flecha circular, 1 card destacada, el trazo hecho a mano del statement. Máx 1–2 apariciones por pantalla |
-| `--ok` | `--acid` | Disponible |
+| `--bg` | `#1c1613` | Fondo base (carbón cálido, tinte vino — antes tenía tinte verde) |
+| `--bg-2` | `#251d19` | Sección alterna / cards |
+| `--bg-3` | `#2f2521` | Card elevada, hover, thumbs |
+| `--ink` | `#f4ece0` | Texto principal, cálido (16.5:1) |
+| `--ink-dim` | `#b7a999` | Secundario (7.1:1) |
+| `--ink-faint` | `#7d6d5d` | Etiquetas, metadatos (4.6:1) |
+| `--line` | `rgba(244,236,224,0.10)` | Hairlines |
+| `--line-bright` | `rgba(244,236,224,0.20)` | Hairline hover |
+| `--cream` | `#efdcb4` | **Protagonista** (reemplaza al acid en v5): CTA fill, wordmark, chip activo, punto de disponibilidad, el trazo a mano del statement. Texto sobre cream = `--bg` (contraste ~14:1) |
+| `--cream-deep` | `#dfc696` | Cream presionado / borde |
+| `--wine` | `#7a1625` | Bloque secundario — vino profundo. Círculo de acento dentro de los botones, 1 fila/card destacada, parte del fondo orgánico del hero. Es oscuro: **texto/ícono sobre wine = `--ink`**, nunca `--bg` |
+| `--wine-deep` | `#5c1019` | Wine presionado / borde |
+| `--pine` | `#16382f` | Bloque terciario — verde pino oscuro. Da variedad a la grilla (alterna con wine) y al fondo del hero. También oscuro: **texto/ícono sobre pine = `--ink`** |
+| `--pine-deep` | `#0f2822` | Pine presionado / borde |
+| `--ok` | `--cream` | Disponible |
 | `--warn` | `#ffc861` | "Consultar precio" |
-| `--off` | `rgba(243,244,239,0.28)` | Producto pausado |
+| `--off` | `rgba(244,236,224,0.28)` | Producto pausado |
 
-**Regla:** el verde ácido aparece en **bloques sólidos planos**, nunca como
-gradiente ni glow difuso. Una banda ácida grande por vista (la colección
-destacada) + usos chicos (precio, botón). El magenta es un condimento, no un
-segundo color base.
+**Regla de contraste (importante, rompía en v4→v5):** `--cream` es claro → todo lo
+que va **encima** de un bloque cream usa `--bg` (oscuro). `--wine` y `--pine` son
+oscuros → todo lo que va **encima** de un bloque wine/pine usa `--ink` (claro).
+Nunca asumir el mismo texto para los tres.
+
+**Regla de uso:** los tres colores aparecen en **bloques sólidos planos**, nunca
+gradiente/glow. Cream es el único que se repite chico en toda la interfaz (CTA,
+puntos, chips); wine y pine son de aparición puntual — una banda, una card, el
+fondo del hero — nunca los tres a máxima saturación en la misma vista.
+
+### v5 — de "Ácido" a "Vino & Pino" (30/08→31/08/2026, dos vueltas)
+
+El usuario marcó que el verde ácido + fucsia leía genérico ("tipo plantilla de
+Canva"), y mandó 6 tableros de paletas reales (carteles de cine, fichas Pantone,
+combinaciones sobre foto de plumas/vino/matcha) pidiendo algo con más carácter,
+sacado de **fotografía/textura real** — vino, comida, tinta — no de otro rubro
+digital prestado. El hilo común de esas 6 referencias: **vino/bordó profundo +
+verde muy oscuro (pino/musgo) + un crema cálido** como respiro, casi siempre
+sobre una textura orgánica (marmolado de tinta, plumas, líquido). Para un
+perfumero calza mejor que el verde ácido: evoca líquido, densidad y lujo sin
+caer en el cliché "perfumería clásica" (dorado + serif). Se sintetizó una paleta
+propia (no se clonó ningún tablero) y se llevó el fondo del hero a un degradé
+orgánico multicapa en vino/pino/crema, más cerca de la sensación de las
+referencias que el flat-color anterior.
 
 ### Foto de producto (ajustado en la implementación real)
 
@@ -355,6 +382,19 @@ y directo), `boysmells.com` (un acento hecho a mano, no vectorial perfecto).
       tienda (bloqueaba los reveals); `ProductModal` se renderizaba fuera de
       `.tienda` y perdía todos los tokens de color; el placeholder sin foto se
       grisaba a sí mismo por error
+- [x] Ajuste v5 "Vino & Pino" — 31/08→01/09/2026. El usuario marcó que el verde
+      ácido leía genérico y mandó 6 tableros de referencia (carteles, fichas
+      Pantone, combinaciones sobre foto real de vino/plumas/matcha). Paleta
+      nueva sintetizada (no clonada): `--cream` (protagonista, reemplaza acid 1:1
+      en rol), `--wine` + `--pine` (bloques oscuros, reemplazan rose — con el
+      cuidado de invertir el texto a `--ink` donde antes iba `--bg`, porque son
+      oscuros y rose no lo era), `--wine-bright` nuevo (única variante legible
+      como texto/trazo sobre el fondo oscuro). Fondo del hero pasó de flat-color
+      a un degradé orgánico multicapa (vino/pino/crema) con deriva lenta.
+      Frasco 3D re-materializado en vidrio vino con luces pino/crema. Aplicado
+      en **toda** la tienda real (9 archivos de componentes + tokens), verificado
+      con capturas contra el servidor local — no quedó ningún `--acid`/`--rose`
+      residual (`grep` limpio).
 - [ ] `PromosScreen` en el panel (editar hero/promos) — pendiente, el Hero ya
       tiene buen copy por defecto sin esto
 - [ ] Code-splitting fino del bundle de la tienda (three.js pesa ~530kb) —

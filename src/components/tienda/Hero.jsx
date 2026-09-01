@@ -26,7 +26,7 @@ export default function Hero({ promo }) {
         </div>
 
         <div className={s.stage}>
-          <div className={s.bw} />
+          <div className={s.backdrop} />
           <div className={s.block} />
           <div className={s.bottle}>
             <Bottle3D />

@@ -6,7 +6,7 @@ import * as THREE from 'three';
  * reales usan foto). Es el "momento 3D" de marca: hero de la tienda.
  * Rotación idle + arrastre + un poco de scroll. Se apaga con reduced-motion.
  */
-export default function Bottle3D({ color = 0xb7e04c, className }) {
+export default function Bottle3D({ color = 0x9c2540, className }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function Bottle3D({ color = 0xb7e04c, className }) {
     const pts = prof.map(([x, y]) => new THREE.Vector2(x * 1.2, y * 1.2));
     const mesh = new THREE.Mesh(
       new THREE.LatheGeometry(pts, 96),
-      new THREE.MeshStandardMaterial({ color, metalness: 0.3, roughness: 0.2 })
+      new THREE.MeshStandardMaterial({ color, metalness: 0.18, roughness: 0.16 })
     );
     group.add(mesh);
 
@@ -41,11 +41,11 @@ export default function Bottle3D({ color = 0xb7e04c, className }) {
     cap.position.y = 1.78;
     group.add(cap);
 
-    scene.add(new THREE.AmbientLight(0x3a3a34, 0.8));
-    const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(-3, 4, 5); scene.add(key);
-    const rim = new THREE.PointLight(0xf0355e, 45, 30); rim.position.set(4, -1, 2); scene.add(rim);
-    const fill = new THREE.PointLight(color, 22, 30); fill.position.set(-4, -2, 3); scene.add(fill);
-    const top = new THREE.PointLight(0xffffff, 18, 20); top.position.set(0, 5, 3); scene.add(top);
+    scene.add(new THREE.AmbientLight(0x3a2e28, 0.85));
+    const key = new THREE.DirectionalLight(0xf4ece0, 2.4); key.position.set(-3, 4, 5); scene.add(key);
+    const rim = new THREE.PointLight(0x2a6a58, 42, 30); rim.position.set(4, -1, 2); scene.add(rim); // pino: contraste frío
+    const fill = new THREE.PointLight(0xefdcb4, 20, 30); fill.position.set(-4, -2, 3); scene.add(fill); // crema: brillo cálido
+    const top = new THREE.PointLight(0xf4ece0, 16, 20); top.position.set(0, 5, 3); scene.add(top);
 
     function resize() {
       const r = canvas.getBoundingClientRect();

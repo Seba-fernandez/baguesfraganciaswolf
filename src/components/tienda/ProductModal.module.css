@@ -33,7 +33,7 @@
 .row { display: grid; grid-template-columns: 90px 1fr; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
 .row:last-child { border-bottom: 0; }
 .stage { font-family: var(--f-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-faint); display: flex; align-items: center; gap: 8px; }
-.stage::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--acid); box-shadow: 0 0 10px 1px color-mix(in srgb, var(--acid) 55%, transparent); }
+.stage::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--cream); box-shadow: 0 0 10px 1px color-mix(in srgb, var(--cream) 55%, transparent); }
 .note { font-size: 0.92rem; }
 
 .field { display: flex; flex-direction: column; gap: 10px; }
@@ -47,9 +47,9 @@
   transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
 .size:hover { border-color: var(--line-bright); color: var(--ink); }
-.sizeOn { background: var(--acid); color: var(--bg); border-color: transparent; }
+.sizeOn { background: var(--cream); color: var(--bg); border-color: transparent; }
 .sizeOn:hover { color: var(--bg); }
-.size:focus-visible { outline: 2px solid var(--acid); outline-offset: 2px; }
+.size:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
 
 .row2 { display: flex; align-items: center; gap: 16px; margin-top: 6px; flex-wrap: wrap; }
 .stepper { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-3); border-radius: var(--r-pill); padding: 5px; }
@@ -58,7 +58,7 @@
 .stepper span { font-family: var(--f-mono); min-width: 28px; text-align: center; }
 
 .notice { font-family: var(--f-mono); font-size: 0.72rem; color: var(--ink-faint); line-height: 1.7; }
-.notice b { color: var(--acid); font-weight: 500; }
+.notice b { color: var(--cream); font-weight: 500; }
 
 @keyframes up { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }

@@ -13,15 +13,19 @@
 }
 @media (min-width: 760px) { .row { grid-template-columns: 1.1fr 130px 1.6fr auto auto; } }
 .row:hover { background: var(--bg-2); }
-.row:focus-visible { outline: 2px solid var(--acid); outline-offset: -2px; }
+.row:focus-visible { outline: 2px solid var(--cream); outline-offset: -2px; }
 .row h3 { font-size: 1.4rem; font-weight: 700; }
 .shot { width: 130px; height: 96px; border-radius: var(--r-card); overflow: hidden; }
 .desc { color: var(--ink-dim); font-size: 0.88rem; max-width: 42ch; }
 .desc .meta { display: block; margin-top: 6px; }
 .price { font-family: var(--f-mono); font-size: 0.95rem; }
 .arr { font-family: var(--f-mono); color: var(--ink-faint); transition: transform var(--dur) var(--ease), color var(--dur) var(--ease); }
-.row:hover .arr { transform: translate(3px, -3px); color: var(--acid); }
+.row:hover .arr { transform: translate(3px, -3px); color: var(--cream); }
 
-.row.acid { background: var(--acid); color: var(--bg); margin-inline: calc(50% - 50vw); padding-inline: calc(50vw - 50% + 4px); }
-.row.acid .desc { color: color-mix(in srgb, var(--bg) 75%, transparent); }
-.row.acid .arr { color: var(--bg); }
+/* fila destacada: bloque vino full-bleed, texto claro (wine es oscuro) */
+.row.wine { background: var(--wine); color: var(--ink); margin-inline: calc(50% - 50vw); padding-inline: calc(50vw - 50% + 4px); }
+.row.wine h3 { color: var(--ink); }
+.row.wine .desc { color: color-mix(in srgb, var(--ink) 78%, transparent); }
+.row.wine .price { color: var(--ink); }
+.row.wine .arr { color: var(--ink); }
+.row.wine:hover { background: var(--wine-deep); }

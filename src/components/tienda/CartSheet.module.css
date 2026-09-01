@@ -23,11 +23,11 @@
 .meta { font-family: var(--f-mono); font-size: 0.7rem; color: var(--ink-faint); margin-top: 2px; }
 .stepper { display: inline-flex; align-items: center; gap: 2px; background: var(--bg-3); border-radius: var(--r-pill); padding: 3px; margin-top: 6px; }
 .stepper button { width: 38px; height: 38px; border-radius: 50%; border: 0; background: none; color: var(--ink-dim); cursor: pointer; font-size: 1.05rem; }
-.stepper button:focus-visible { outline: 2px solid var(--acid); outline-offset: 1px; }
+.stepper button:focus-visible { outline: 2px solid var(--cream); outline-offset: 1px; }
 .stepper span { font-family: var(--f-mono); min-width: 20px; text-align: center; font-size: 0.85rem; }
 .price { font-family: var(--f-mono); font-size: 0.85rem; text-align: right; white-space: nowrap; }
 .remove { font-family: var(--f-mono); font-size: 0.68rem; color: var(--ink-faint); background: none; border: 0; cursor: pointer; margin-top: 6px; padding: 8px 0 8px 8px; margin-right: -8px; }
-.remove:hover { color: var(--rose); }
+.remove:hover { color: var(--wine-bright); }
 
 .totalRow { display: flex; justify-content: space-between; align-items: baseline; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
 .totalRow b { font-family: var(--f-mono); font-size: 1.1rem; }
@@ -38,10 +38,10 @@
   width: 100%; padding: 13px 16px; border-radius: 14px; min-height: 48px;
   background: var(--bg-3); border: 1px solid var(--line); color: var(--ink); font-size: 0.95rem;
 }
-.input:focus { border-color: var(--acid); outline: none; }
+.input:focus { border-color: var(--cream); outline: none; }
 .input::placeholder { color: var(--ink-faint); }
 
-.err { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--rose) 16%, transparent); border: 1px solid color-mix(in srgb, var(--rose) 40%, transparent); color: var(--rose); font-size: 0.82rem; }
+.err { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--wine) 30%, transparent); border: 1px solid color-mix(in srgb, var(--wine-bright) 40%, transparent); color: var(--wine-bright); font-size: 0.82rem; }
 
 .confirm { text-align: center; padding: 20px 0; }
 .confirm .big { font-size: 2.4rem; margin-bottom: 12px; }

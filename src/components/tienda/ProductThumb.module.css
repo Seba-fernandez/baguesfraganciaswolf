@@ -2,9 +2,12 @@
 .img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--dur-slow) var(--ease); }
 
 .placeholder {
-  background: radial-gradient(120% 90% at 30% 10%, #34352d 0%, #1e1f1a 60%, #17180f 100%);
+  background: radial-gradient(120% 90% at 30% 10%, #34281f 0%, #221a15 60%, #17110d 100%);
   display: grid; place-items: center;
 }
-.block { position: absolute; left: 22%; right: 22%; top: 14%; bottom: 8%; background: var(--acid); opacity: 0.9; }
-.block.rose { background: var(--rose); }
+.block { position: absolute; left: 22%; right: 22%; top: 14%; bottom: 8%; background: var(--cream); }
+.block.wine { background: var(--wine); }
+.block.pine { background: var(--pine); }
+
 .glyph { position: relative; color: var(--bg); z-index: 1; }
+.glyphClaro { color: var(--ink); }

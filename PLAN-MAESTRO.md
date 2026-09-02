@@ -529,15 +529,36 @@ el catálogo con el toggle on/off. Falta la web pública (Fase 2) y el aviso aut
 **Resultado:** la web ya recibe pedidos reales y quedan en tu panel. Falta el
 aviso automático (Fase 3) y opcionalmente que puedas editar el hero desde el panel.
 
-### **FASE 3 — Aviso de pedido nuevo**
-- [ ] Edge Function `notificar-pedido` (Telegram como default, push PWA opcional).
-- [ ] Database Webhook `orders` INSERT → función.
-- [ ] `docs/whatsapp-business.md` (cómo configurar bienvenida/ausencia/etiquetas).
-- [ ] Supabase Realtime en `PedidosScreen` (badge de pedido nuevo en vivo).
-- [ ] Probar de punta a punta: pedido web → aparece en panel → llega el aviso.
+### **FASE 3 — Aviso de pedido nuevo** ✅ *(infra completada 01/09/2026 — falta la activación de Sebastián)*
+- [x] Edge Function `notificar-pedido` — desplegada y activa. Envía por
+      **WhatsApp** (no Telegram: el usuario pidió que sea WhatsApp sí o sí) vía
+      la API gratuita de **CallMeBot** (no requiere chip ni número de negocio,
+      manda el mensaje a tu WhatsApp personal).
+- [x] Trigger de Postgres (`pg_net`) en `orders` INSERT `canal='web'` → llama a
+      la función. El secreto compartido vive en **Supabase Vault**, no en el
+      repo (es público) — probado de punta a punta con un pedido de prueba
+      (401 esperado: confirma que trigger + llamada HTTP + lectura de Vault
+      funcionan; falta el secret del lado de la función, ver abajo).
+- [ ] **Pendiente, lo tenés que hacer vos (una vez, 5 min):**
+      1. Agendá `+34 684 72 39 62` en tu celular.
+      2. Mandale por WhatsApp: `I allow callmebot to send me messages`.
+      3. Te responde con tu `APIKEY`.
+      4. Conseguí el valor del secreto compartido: en el SQL Editor de Supabase
+         corré `select decrypted_secret from vault.decrypted_secrets where name='webhook_pedido_secret';`
+         (no lo pongo acá en texto plano porque este repo es público).
+      5. En el [dashboard de Supabase](https://supabase.com/dashboard/project/wynownataftnompltsok/functions/notificar-pedido/secrets)
+         cargá 3 secrets: `CALLMEBOT_PHONE` (tu WhatsApp con código de país,
+         sin "+"), `CALLMEBOT_APIKEY` (el que te mandó el bot), `WEBHOOK_SECRET`
+         (el valor del paso 4, tiene que ser exactamente ese).
+      6. Avisame y hago un pedido de prueba para confirmar que te llega.
+- [x] Instagram real conectado (`@bagueswolf`) y link al catálogo completo
+      (tu Linktree → Drive, así no hay que tocar nada acá cuando corregís el PDF).
+- [ ] Supabase Realtime en `PedidosScreen` (badge de pedido nuevo en vivo) — el
+      panel ya refresca al abrir/cerrar; el badge en vivo queda para más adelante.
+- [ ] `docs/whatsapp-business.md` (bienvenida/ausencia/etiquetas) — sigue en pie.
 
-**Resultado:** te enterás del pedido al toque, sin depender de que el cliente
-mande el WhatsApp.
+**Resultado:** en cuanto actives CallMeBot, te vas a enterar de cada pedido de
+la web por WhatsApp, sin depender de que el cliente mande el suyo.
 
 ### **FASE 4 — PWA + deploy + pulido**
 - [ ] `vite-plugin-pwa`: manifest, iconos, service worker (cachea el shell visual).
@@ -652,13 +673,12 @@ lados:
 | Fase 0 | ✅ completada — 30/08/2026 (DB nueva verificada, skills, renombrado) |
 | Fase 1 | ✅ completada — 30/08/2026 (panel admin: pedidos, catálogo, clientes, ajustes) |
 | Fase 2 | ✅ núcleo completado — 31/08/2026 (tienda pública, ver `MASTER.md`) |
-| Fase 3 | ⬜ próxima — aviso automático de pedido nuevo |
+| Fase 3 | 🟡 infra lista — 01/09/2026 (falta que actives CallMeBot, ver arriba) |
 | Fase 4 | ⬜ |
 
-**Próximo paso:** Fase 3 — Edge Function `notificar-pedido` (Telegram) + Database
-Webhook en `orders`, para enterarte de un pedido nuevo sin depender de que el
-cliente mande el WhatsApp. O, si preferís, primero `PromosScreen` para poder
-editar el hero de la tienda desde el panel.
+**Próximo paso:** activá CallMeBot (5 min, pasos arriba en Fase 3) y avisame
+para probar que te llegue el WhatsApp de un pedido real. Mientras tanto puedo
+seguir con `PromosScreen` (editar el hero desde el panel) o la Fase 4 (PWA).
 
 ### Cómo probar la Fase 2 (tienda pública)
 1. `npm run dev` → abrí `http://localhost:5173/` (sin login, es la tienda).

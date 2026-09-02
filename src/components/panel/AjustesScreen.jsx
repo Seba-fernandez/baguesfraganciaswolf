@@ -62,6 +62,18 @@ export default function AjustesScreen() {
       </div>
 
       <div className={s.field}>
+        <label className={s.label}>Link al catálogo completo (PDF / Linktree)</label>
+        <input
+          className={s.input}
+          value={form.link_catalogo || ''}
+          onChange={(e) => set('link_catalogo', e.target.value)}
+          onBlur={() => guardar('link_catalogo')}
+          placeholder="https://linktr.ee/CosmeticosBagues"
+        />
+        <span className={s.cardMeta}>Aparece en el pie de la tienda. Como es un link a Drive/Linktree, si corregís el PDF en Drive no hace falta tocar nada acá.</span>
+      </div>
+
+      <div className={s.field}>
         <label className={s.label}>Aclaración del pedido (se muestra en la web)</label>
         <textarea
           className={s.textarea}

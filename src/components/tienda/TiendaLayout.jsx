@@ -40,6 +40,9 @@ export default function TiendaLayout({ children, settings }) {
             <h4 className="tmono up">Tienda</h4>
             <a href="#catalogo">Catálogo</a>
             <a href="#contacto">Cómo funciona</a>
+            {settings?.link_catalogo && (
+              <a href={settings.link_catalogo} target="_blank" rel="noopener">Catálogo completo (PDF)</a>
+            )}
           </div>
           <div>
             <h4 className="tmono up">Contacto</h4>

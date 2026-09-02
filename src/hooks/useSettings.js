@@ -6,6 +6,7 @@ const DEFAULTS = {
   instagram_user: '',
   mensaje_checkout: '',
   aclaracion_pedido: '',
+  link_catalogo: '',
 };
 
 export default function useSettings() {

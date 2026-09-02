@@ -4,6 +4,7 @@ import { ESTADOS_PEDIDO, PAGO } from '../../data/constants';
 import { pesos, desdeAhora } from '../../lib/format';
 import { linkWhatsApp } from '../../lib/whatsapp';
 import Avatar from '../ui/Avatar';
+import { IconPerson, IconChat } from '../ui/Icon';
 import s from './panel.module.css';
 
 export default function ClientesScreen() {
@@ -34,11 +35,11 @@ export default function ClientesScreen() {
 
       {visibles.length === 0 ? (
         <div className={s.empty}>
-          <span className={s.emptyIcon}>👤</span>
+          <span className={s.emptyIcon}><IconPerson size={24} /></span>
           {customers.length === 0 ? 'Los clientes se crean solos al cargar un pedido.' : 'Sin resultados.'}
         </div>
       ) : (
-        <div className={s.list}>
+        <div className={`${s.list} ${s.listGrid}`}>
           {visibles.map((c) => (
             <button key={c.id} className={s.card} onClick={() => setAbrir(c)}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -83,7 +84,7 @@ function ClienteSheet({ cliente, onClose, onUpdate }) {
           style={{ marginTop: 12 }}
           onClick={() => window.open(linkWhatsApp(cliente.telefono), '_blank', 'noopener')}
         >
-          💬 Abrir chat de WhatsApp
+          <IconChat size={16} /> Abrir chat de WhatsApp
         </button>
 
         <div className={s.field}>

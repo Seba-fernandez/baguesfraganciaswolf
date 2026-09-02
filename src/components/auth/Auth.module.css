@@ -16,7 +16,7 @@
 }
 
 .title {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 26px;
   font-weight: 700;
   text-align: center;
@@ -79,7 +79,7 @@
   width: 100%;
   padding: 14px;
   border-radius: 50px;
-  font-family: 'Sora', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 15px;
   font-weight: 600;
   display: flex;

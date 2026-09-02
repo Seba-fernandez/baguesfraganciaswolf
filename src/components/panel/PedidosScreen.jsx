@@ -4,6 +4,7 @@ import useProducts from '../../hooks/useProducts';
 import { ESTADOS_PEDIDO, ESTADOS_PEDIDO_LISTA, ESTADOS_ABIERTOS, PAGO } from '../../data/constants';
 import { pesos, fechaCorta } from '../../lib/format';
 import FAB from '../ui/FAB';
+import { IconClipboard } from '../ui/Icon';
 import PedidoSheet from './PedidoSheet';
 import NuevoPedidoForm from './NuevoPedidoForm';
 import s from './panel.module.css';
@@ -42,7 +43,7 @@ export default function PedidosScreen() {
 
       {orders.length === 0 ? (
         <div className={s.empty}>
-          <span className={s.emptyIcon}>📋</span>
+          <span className={s.emptyIcon}><IconClipboard size={24} /></span>
           Todavía no cargaste pedidos. Tocá + para anotar el primero.
         </div>
       ) : (
@@ -67,7 +68,7 @@ export default function PedidosScreen() {
                       <div className={s.cardRow}>
                         <span className={s.cardMeta}>
                           {(o.items?.length || 0)} {o.items?.length === 1 ? 'ítem' : 'ítems'}
-                          {o.canal === 'web' ? ' · 🌐 web' : ''}
+                          {o.canal === 'web' ? ' · web' : ''}
                         </span>
                         <span className={s.cardMeta} style={{ color: PAGO[o.pago]?.color }}>
                           {PAGO[o.pago]?.label}

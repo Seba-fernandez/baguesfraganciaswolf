@@ -58,3 +58,8 @@
   background: rgba(255, 255, 255, 0.7);
   box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
 }
+
+/* A partir de acá el Sidebar reemplaza la navegación. */
+@media (min-width: 960px) {
+  .nav { display: none; }
+}

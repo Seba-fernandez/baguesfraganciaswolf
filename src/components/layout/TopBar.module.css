@@ -8,8 +8,12 @@
   flex-shrink: 0;
 }
 
+@media (min-width: 960px) {
+  .bar { margin: 24px 40px 0; max-width: 1240px; margin-inline: auto; }
+}
+
 .title {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);

@@ -1,72 +1,91 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* === TOKENS — DARK (default) === */
+/* === TOKENS — NOCHE (oscuro, default) ===
+   Misma familia "Vino & Pino" que la tienda (ver src/styles/tienda.css):
+   base carbón cálido, pino como acento funcional, vino como 2° acento/danger,
+   dorado (cream) como detalle puntual. Antes era un tema índigo/frío sin
+   relación con la tienda — se unificó la marca entre panel y web pública. */
 
 :root,
 :root[data-theme='dark'] {
-  --bg-base: #050510;
-  --bg-scene: #0a0a1a;
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-bg-hover: rgba(255, 255, 255, 0.12);
-  --glass-bg-strong: rgba(255, 255, 255, 0.11);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-border-strong: rgba(255, 255, 255, 0.22);
-  --glass-border-focus: rgba(99, 102, 241, 0.55);
-  --glass-sheen-start: rgba(255, 255, 255, 0.12);
-  --glass-sheen-mid: rgba(255, 255, 255, 0.03);
-  --glass-inset-top: rgba(255, 255, 255, 0.25);
-  --glass-inset-bottom: rgba(0, 0, 0, 0.15);
-  --text-primary: rgba(255, 255, 255, 0.95);
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-tertiary: rgba(255, 255, 255, 0.5);
-  --text-quaternary: rgba(255, 255, 255, 0.35);
-  --accent: #818cf8;
-  --accent-bg: rgba(99, 102, 241, 0.3);
-  --accent-rim: rgba(99, 102, 241, 0.5);
-  --accent-glow: rgba(99, 102, 241, 0.4);
-  --danger: #fda4af;
-  --danger-bg: rgba(244, 63, 94, 0.15);
-  --danger-rim: rgba(244, 63, 94, 0.4);
+  --bg-base: #14100d;
+  --bg-scene: #1a1512;
+  --glass-bg: rgba(244, 236, 224, 0.055);
+  --glass-bg-hover: rgba(244, 236, 224, 0.09);
+  --glass-bg-strong: rgba(244, 236, 224, 0.08);
+  --glass-border: rgba(244, 236, 224, 0.13);
+  --glass-border-strong: rgba(244, 236, 224, 0.19);
+  --glass-border-focus: rgba(90, 168, 141, 0.55);
+  --glass-sheen-start: rgba(244, 236, 224, 0.10);
+  --glass-sheen-mid: rgba(244, 236, 224, 0.025);
+  --glass-inset-top: rgba(244, 236, 224, 0.22);
+  --glass-inset-bottom: rgba(0, 0, 0, 0.18);
+  --text-primary: rgba(244, 236, 224, 0.96);
+  --text-secondary: rgba(244, 236, 224, 0.72);
+  --text-tertiary: rgba(244, 236, 224, 0.52);
+  --text-quaternary: rgba(244, 236, 224, 0.34);
+  --accent: #5aa88d;
+  --accent-bg: rgba(90, 168, 141, 0.26);
+  --accent-rim: rgba(90, 168, 141, 0.5);
+  --accent-glow: rgba(90, 168, 141, 0.4);
+  --danger: #e2919c;
+  --danger-bg: rgba(209, 73, 95, 0.16);
+  --danger-rim: rgba(209, 73, 95, 0.42);
+  --gold: #d8c48f;
+  --gold-bg: rgba(216, 196, 143, 0.18);
+  --gold-rim: rgba(216, 196, 143, 0.4);
   --text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   --text-shadow-strong: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --card-shadow: rgba(0, 0, 0, 0.12);
-  --card-shadow-hover: rgba(0, 0, 0, 0.18);
-  --glass-tint: rgba(0, 0, 0, 0.08);
-  --glass-tint-strong: rgba(0, 0, 0, 0.1);
+  --card-shadow: rgba(0, 0, 0, 0.18);
+  --card-shadow-hover: rgba(0, 0, 0, 0.26);
+  --glass-tint: rgba(0, 0, 0, 0.1);
+  --glass-tint-strong: rgba(0, 0, 0, 0.12);
 }
 
-/* === TOKENS — LIGHT (coral) === */
+/* === TOKENS — DÍA (claro, marfil) ===
+   Antes era un coral naranja sin relación con la marca. Ahora es el "día" de
+   la misma paleta: fondo marfil cálido, vino como acento (funciona mejor que
+   pino sobre fondo claro), mismo dorado de detalle. */
 
 :root[data-theme='light'] {
-  --bg-base: #ff7a59;
-  --bg-scene: #ff8a6a;
-  --glass-bg: rgba(255, 255, 255, 0.35);
-  --glass-bg-hover: rgba(255, 255, 255, 0.45);
-  --glass-bg-strong: rgba(255, 255, 255, 0.42);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-border-strong: rgba(255, 255, 255, 0.6);
-  --glass-border-focus: rgba(255, 255, 255, 0.85);
-  --glass-sheen-start: rgba(255, 255, 255, 0.35);
-  --glass-sheen-mid: rgba(255, 255, 255, 0.08);
-  --glass-inset-top: rgba(255, 255, 255, 0.5);
-  --glass-inset-bottom: rgba(255, 100, 60, 0.12);
-  --text-primary: #3d1200;
-  --text-secondary: #5c2a14;
-  --text-tertiary: #7a3d20;
-  --text-quaternary: rgba(90, 40, 15, 0.55);
-  --accent: #c0340a;
-  --accent-bg: rgba(192, 52, 10, 0.18);
-  --accent-rim: rgba(192, 52, 10, 0.35);
-  --accent-glow: rgba(192, 52, 10, 0.25);
-  --danger: #991b1b;
-  --danger-bg: rgba(220, 38, 60, 0.18);
-  --danger-rim: rgba(220, 38, 60, 0.4);
+  --bg-base: #f1e7d4;
+  --bg-scene: #ece0c9;
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-bg-hover: rgba(255, 255, 255, 0.62);
+  --glass-bg-strong: rgba(255, 255, 255, 0.58);
+  --glass-border: rgba(90, 40, 20, 0.12);
+  --glass-border-strong: rgba(90, 40, 20, 0.18);
+  --glass-border-focus: rgba(122, 22, 37, 0.5);
+  --glass-sheen-start: rgba(255, 255, 255, 0.55);
+  --glass-sheen-mid: rgba(255, 255, 255, 0.12);
+  --glass-inset-top: rgba(255, 255, 255, 0.6);
+  --glass-inset-bottom: rgba(122, 22, 37, 0.06);
+  --text-primary: #2a1810;
+  --text-secondary: #5c4230;
+  --text-tertiary: #7d6552;
+  --text-quaternary: rgba(90, 66, 48, 0.55);
+  --accent: #7a1625;
+  --accent-bg: rgba(122, 22, 37, 0.14);
+  --accent-rim: rgba(122, 22, 37, 0.32);
+  --accent-glow: rgba(122, 22, 37, 0.22);
+  --danger: #a4283a;
+  --danger-bg: rgba(164, 40, 58, 0.14);
+  --danger-rim: rgba(164, 40, 58, 0.35);
+  --gold: #8a6a2a;
+  --gold-bg: rgba(138, 106, 42, 0.14);
+  --gold-rim: rgba(138, 106, 42, 0.32);
   --text-shadow: none;
   --text-shadow-strong: none;
-  --card-shadow: rgba(180, 50, 30, 0.1);
-  --card-shadow-hover: rgba(180, 50, 30, 0.15);
-  --glass-tint: rgba(255, 100, 60, 0.03);
-  --glass-tint-strong: rgba(255, 100, 60, 0.03);
+  --card-shadow: rgba(90, 50, 20, 0.1);
+  --card-shadow-hover: rgba(90, 50, 20, 0.16);
+  --glass-tint: rgba(122, 22, 37, 0.02);
+  --glass-tint-strong: rgba(122, 22, 37, 0.03);
+}
+
+:root {
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Onest', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 /* === RESET === */
@@ -75,7 +94,7 @@
 html, body, #root { min-height: 100vh; height: 100%; }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg-base);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
@@ -165,24 +184,37 @@ input, textarea { font-family: inherit; outline: none; }
 }
 
 .bg-scene--dark { background: var(--bg-scene); }
-.bg-scene--light { background: linear-gradient(135deg, #ff8c69 0%, #ff6b6b 50%, #ff5e8a 100%); }
+.bg-scene--light { background: linear-gradient(135deg, #f3e9d7 0%, #ece0c9 55%, #e8dcc2 100%); }
 
 .coral-grain {
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 0%, transparent 1%),
-    radial-gradient(circle at 60% 70%, rgba(255,255,255,0.06) 0%, transparent 1%),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 1%);
+    radial-gradient(circle at 20% 30%, rgba(122,22,37,0.05) 0%, transparent 1%),
+    radial-gradient(circle at 60% 70%, rgba(122,22,37,0.04) 0%, transparent 1%),
+    radial-gradient(circle at 80% 20%, rgba(122,22,37,0.035) 0%, transparent 1%);
   background-size: 3px 3px, 5px 5px, 4px 4px;
-  opacity: 0.4;
-  mix-blend-mode: overlay;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
-/* === LAYOUT SHELL === */
+/* === LAYOUT SHELL ===
+   <960px: shell mobile de siempre — una columna centrada, BottomNav flotante.
+   ≥960px: el Sidebar se vuelve visible y el shell pasa a fila; el contenido
+   deja de estar limitado a 900px y usa el ancho real de la pantalla (con un
+   tope generoso para que no se estire infinito en monitores ultra anchos). */
 
-.app-shell { position: relative; width: 100%; height: 100vh; overflow: hidden; }
+.app-shell {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+@media (min-width: 960px) {
+  .app-shell { display: flex; align-items: stretch; }
+}
 
 .app-content {
   position: relative;
@@ -196,7 +228,10 @@ input, textarea { font-family: inherit; outline: none; }
 }
 
 @media (min-width: 768px) { .app-content { max-width: 720px; } }
-@media (min-width: 1100px) { .app-content { max-width: 900px; } }
+
+@media (min-width: 960px) {
+  .app-content { max-width: none; margin: 0; flex: 1; min-width: 0; }
+}
 
 .app-main {
   flex: 1;
@@ -205,6 +240,16 @@ input, textarea { font-family: inherit; outline: none; }
   padding: 16px 16px 130px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+}
+
+@media (min-width: 960px) {
+  .app-main {
+    padding: 28px 40px 40px;
+  }
+  /* El contenido real adentro de cada pantalla sí lleva un tope de lectura,
+     centrado dentro del área que dejó el sidebar. Screens angostas (login,
+     formularios) pueden ignorarlo si hace falta. */
+  .app-main > * { max-width: 1240px; margin-inline: auto; }
 }
 
 /* === ANIMATIONS === */

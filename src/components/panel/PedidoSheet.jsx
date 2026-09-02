@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ESTADOS_PEDIDO_LISTA, PAGO } from '../../data/constants';
 import { pesos } from '../../lib/format';
 import { linkWhatsApp, mensajeParaCliente } from '../../lib/whatsapp';
+import { IconChat } from '../ui/Icon';
 import s from './panel.module.css';
 
 export default function PedidoSheet({ pedido, onClose, onUpdate, onDelete }) {
@@ -29,7 +30,7 @@ export default function PedidoSheet({ pedido, onClose, onUpdate, onDelete }) {
         </p>
 
         <button className={`${s.btn} ${s.btnGhost}`} style={{ marginTop: 12 }} onClick={escribirCliente}>
-          💬 Escribir al cliente por WhatsApp
+          <IconChat size={16} /> Escribir al cliente por WhatsApp
         </button>
 
         {/* ---- ítems ---- */}

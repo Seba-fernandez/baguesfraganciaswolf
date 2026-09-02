@@ -20,7 +20,7 @@ export default function AjustesScreen() {
   if (loading) return <div className={s.loading}>Cargando ajustes…</div>;
 
   return (
-    <div className={s.screen}>
+    <div className={`${s.screen} ${s.narrow}`}>
       <h2 className={s.title}>Ajustes</h2>
 
       <div className={s.card}>

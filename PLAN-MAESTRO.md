@@ -667,10 +667,36 @@ lados:
 | Fase 1 | ✅ completada — 30/08/2026 (panel admin: pedidos, catálogo, clientes, ajustes) |
 | Fase 2 | ✅ núcleo completado — 31/08/2026 (tienda pública, ver `MASTER.md`) |
 | Fase 3 | ✅ completada y confirmada — 02/09/2026 (WhatsApp por CallMeBot funcionando) |
+| Limpieza de diseño (panel) | ✅ completada — 02/09/2026 (ver detalle abajo) |
 | Fase 4 | ⬜ próxima |
 
 **Próximo paso:** a elección — `PromosScreen` (editar el hero de la tienda
 desde el panel) o Fase 4 (PWA instalable + deploy).
+
+### Limpieza de diseño del panel — 02/09/2026
+
+El panel admin usaba una paleta índigo/violeta ("glass") que no tenía nada
+que ver con la identidad Vino & Pino de la tienda, y no tenía layout de
+escritorio real (todo quedaba angosto y en una sola columna aunque la
+pantalla fuera grande). Se hizo una limpieza pixel a pixel sin tocar la
+tienda pública:
+
+- **Tokens globales** (`src/styles/global.css`): tipografías Bricolage
+  Grotesque + Onest + JetBrains Mono (antes Inter/Sora); temas Noche/Día
+  recoloreados a la familia vino/pino/oro, coherentes con `MASTER.md`.
+- **Sidebar de escritorio** (`Sidebar.jsx`, nuevo, visible desde 960px) +
+  shell responsivo (`.app-shell`/`.app-content`/`.app-main`) con tope de
+  ancho de lectura en vez de estirarse infinito en monitores grandes.
+- **Grids reales en desktop**: Catálogo (1 a 4 columnas según ancho),
+  Clientes (hasta 3 columnas), Pedidos con kanban lado a lado.
+- **Sin emoji**: se armó `src/components/ui/Icon.jsx` (íconos de línea
+  compartidos) y se reemplazó cada emoji del panel — es la misma política
+  anti-emoji que ya se venía aplicando en la tienda.
+- Ajustes: el formulario ya no se estira a los 1240px del área de
+  contenido, tiene un ancho de lectura acotado.
+- Verificado con `npm run build` limpio y auditoría visual (desktop +
+  mobile) de las 4 pantallas, sheets y login, más una revisión completa de
+  la tienda pública para confirmar que no se rompió nada.
 
 ### Cómo probar la Fase 2 (tienda pública)
 1. `npm run dev` → abrí `http://localhost:5173/` (sin login, es la tienda).

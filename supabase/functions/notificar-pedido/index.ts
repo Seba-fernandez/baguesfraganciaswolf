@@ -1,7 +1,7 @@
 // ============================================================================
 // notificar-pedido — avisa por WhatsApp (CallMeBot) cuando entra un pedido
 // nuevo desde la web. Se invoca desde un trigger de Postgres (pg_net) en
-// INSERT de public.orders, ver supabase/migrations/20260901_0007_webhook_pedido.sql
+// INSERT de public.orders, ver supabase/migrations/20260901_0008_webhook_pedido.sql
 //
 // Seguridad: la función es pública (verify_jwt=false) porque la llama un
 // trigger de la base, no un usuario logueado. Se autentica con un secreto
@@ -48,9 +48,10 @@ Deno.serve(async (req) => {
 
     const cliente = Array.isArray(order.customer) ? order.customer[0] : order.customer;
     const items = order.items || [];
+    // nombre_snapshot ya incluye el ml (lo arma crear_pedido_web / el panel) — no se repite acá.
     const detalle = items
-      .map((it: { nombre_snapshot: string; ml: number | null; cantidad: number }) =>
-        `• ${it.nombre_snapshot}${it.ml ? ` ${it.ml}ml` : ''} x${it.cantidad}`)
+      .map((it: { nombre_snapshot: string; cantidad: number }) =>
+        `• ${it.nombre_snapshot} x${it.cantidad}`)
       .join('\n');
 
     const texto = [
@@ -73,9 +74,16 @@ Deno.serve(async (req) => {
     const res = await fetch(url);
     const body = await res.text();
 
-    if (!res.ok) {
-      console.error('CallMeBot respondió con error', res.status, body);
-      return new Response('error enviando whatsapp', { status: 502 });
+    // CallMeBot devuelve 200 OK incluso cuando falla (APIKey inválida, número
+    // sin activar, etc.) — el error viene en el texto del body, hay que
+    // detectarlo a mano para no reportar éxito cuando en realidad no llegó.
+    const fallo = !res.ok || /invalid|error/i.test(body);
+    if (fallo) {
+      console.error('CallMeBot no pudo enviar el WhatsApp', res.status, body);
+      return new Response(JSON.stringify({ ok: false, callmebot: body }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     return new Response(JSON.stringify({ ok: true, callmebot: body }), {

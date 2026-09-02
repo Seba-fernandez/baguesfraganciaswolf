@@ -31,6 +31,84 @@
       "skillPath": "skills/taste-skill-v1/SKILL.md",
       "computedHash": "0a226c13d69639553cf8a7c40aa5527b026820f8ddaf7a6b263988e32ab44a27"
     },
+    "elite-accessibility": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-accessibility/SKILL.md",
+      "computedHash": "dcd00491c07f17f42d5aab42a314f96c12129d95708c359697320a8857d47be3"
+    },
+    "elite-audit": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-audit/SKILL.md",
+      "computedHash": "fb70574e987643792b0248e2301fdbc3fd8da35917e19db210360c62f90f23a8"
+    },
+    "elite-brand-design": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-brand-design/SKILL.md",
+      "computedHash": "6db4a943df2d9cd8ceae71e3958e26e91751f55dc345dc6a5c1b4d911523ef10"
+    },
+    "elite-copywriting": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-copywriting/SKILL.md",
+      "computedHash": "20cdba999b4336e94122440a57671a0b4870dca7390a7df42f3354e3c038b8c2"
+    },
+    "elite-css-animations": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-css-animations/SKILL.md",
+      "computedHash": "15f3b5bfb4335d153708dbabafc1854587e3b3a24e5e9bea77b05233393fdba4"
+    },
+    "elite-design-core": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-design-core/SKILL.md",
+      "computedHash": "18420d8dafc20e46485357a86af4127c9c7d42867c9d2d2c4e16cc08330d0b32"
+    },
+    "elite-gsap": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-gsap/SKILL.md",
+      "computedHash": "08fbdecc67f299a951745188d947d10728d83d3d61bfaa3e49d0c6bfddfba8bd"
+    },
+    "elite-inspiration": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-inspiration/SKILL.md",
+      "computedHash": "f7025a83fc6e301eed063cadfe8d4e84e1ad21c059f4a92e71e1f8bc1bd9ed41"
+    },
+    "elite-layouts": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-layouts/SKILL.md",
+      "computedHash": "549f67947c6f203e5a768c8095610bd33752cad17356392ce888ebe4c801b3d1"
+    },
+    "elite-performance": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-performance/SKILL.md",
+      "computedHash": "ade27bc853a1a967be6c20af4abe9df6f79733de36f235e70dbd9fccbe8c1b38"
+    },
+    "elite-product-demos": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-product-demos/SKILL.md",
+      "computedHash": "7738b42e0a25b8cafce17936308edcaf46a20219bf5fa7c75246cd8fd0e397ed"
+    },
+    "elite-ux-strategy": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-ux-strategy/SKILL.md",
+      "computedHash": "75f54a441913ebc897247aa26b31794e5e7239492a28d0a530ca350edab407a1"
+    },
+    "elite-web-design": {
+      "source": "rshvr/elite-web-design",
+      "sourceType": "github",
+      "skillPath": "skills/elite-web-design/SKILL.md",
+      "computedHash": "6eeb07c3e3b3733c56ea36fdd88543fd39d89b07a73256a0823a892e24a95b3e"
+    },
     "gsap": {
       "source": "athevon/genjutsu",
       "sourceType": "github",

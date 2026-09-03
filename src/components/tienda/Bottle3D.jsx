@@ -21,24 +21,33 @@ export default function Bottle3D({ color = 0x9c2540, className }) {
     camera.position.set(0, 0.1, 6.2);
 
     const group = new THREE.Group();
-    group.scale.setScalar(0.92);
-    group.position.y = -0.05;
+    group.scale.setScalar(1);
+    group.position.y = -0.02;
     group.rotation.x = -0.05;
     scene.add(group);
 
-    const prof = [[0, -1.5], [0.6, -1.5], [0.64, -1.42], [0.64, 0.5], [0.5, 0.66], [0.24, 0.78], [0.22, 0.82], [0.22, 1.02], [0.3, 1.05], [0.3, 1.42], [0, 1.42]];
+    // Perfil más esbelto y con hombro angulado (menos "pastilla redonda",
+    // más flacón de eau de parfum) — cuerpo recto y alto, quiebre de hombro
+    // marcado en vez de curva blanda, cuello fino.
+    const prof = [
+      [0, -1.55], [0.5, -1.55], [0.54, -1.48],
+      [0.54, 0.7], [0.5, 0.78],
+      [0.2, 0.92], [0.19, 0.98],
+      [0.19, 1.2], [0.27, 1.24], [0.27, 1.3],
+      [0, 1.34],
+    ];
     const pts = prof.map(([x, y]) => new THREE.Vector2(x * 1.2, y * 1.2));
     const mesh = new THREE.Mesh(
       new THREE.LatheGeometry(pts, 96),
-      new THREE.MeshStandardMaterial({ color, metalness: 0.18, roughness: 0.16 })
+      new THREE.MeshStandardMaterial({ color, metalness: 0.04, roughness: 0.07 })
     );
     group.add(mesh);
 
     const cap = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.42, 0.42, 0.5, 44),
-      new THREE.MeshStandardMaterial({ color: 0x161613, metalness: 0.6, roughness: 0.3 })
+      new THREE.CylinderGeometry(0.37, 0.37, 0.5, 44),
+      new THREE.MeshStandardMaterial({ color: 0x161613, metalness: 0.55, roughness: 0.22 })
     );
-    cap.position.y = 1.78;
+    cap.position.y = 1.86;
     group.add(cap);
 
     scene.add(new THREE.AmbientLight(0x3a2e28, 0.85));

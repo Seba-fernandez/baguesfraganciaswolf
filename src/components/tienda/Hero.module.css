@@ -1,13 +1,33 @@
-.hero { padding-block: clamp(28px, 5vw, 56px) clamp(84px, 11vw, 148px); position: relative; }
-.grid { display: grid; gap: 36px; grid-template-columns: 1fr; }
-@media (min-width: 900px) { .grid { grid-template-columns: minmax(320px, 460px) 1fr; align-items: center; } }
+.hero { position: relative; overflow: hidden; }
 
-/* Etiqueta de lomo editorial: un detalle que casi nadie pone y que rompe la
-   sensación de "hero de template" — firma la pieza como si fuera de catálogo
-   impreso. Se esconde en mobile, no hay lugar digno para rotarla ahí. */
-.spine {
-  display: none;
+/* Fondo marmolado a sangre completa — vino/pino/crema, cubre TODO el ancho
+   de pantalla (no está encerrado en la cajita de producto que tenía antes).
+   Deriva idle muy lenta; se congela con prefers-reduced-motion. */
+.backdrop {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(52% 60% at 14% 20%, var(--wine) 0%, transparent 62%),
+    radial-gradient(48% 56% at 92% 12%, var(--pine) 0%, transparent 60%),
+    radial-gradient(40% 46% at 60% 92%, color-mix(in srgb, var(--cream) 42%, transparent) 0%, transparent 62%),
+    linear-gradient(165deg, var(--bg-2) 0%, var(--bg) 72%);
+  background-size: 140% 140%, 140% 140%, 140% 140%, 100% 100%;
+  background-position: 0% 0%, 100% 0%, 50% 100%, 0 0;
+  animation: deriva 30s ease-in-out infinite alternate;
 }
+/* Grano — textura sutil sobre el marmolado, se siente más impreso/premium
+   que un gradiente flat. SVG feTurbulence inline, sin request externo. */
+.backdrop::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05; mix-blend-mode: overlay; pointer-events: none;
+}
+@keyframes deriva { to { background-position: 10% 6%, 90% 8%, 56% 88%, 0 0; } }
+@media (prefers-reduced-motion: reduce) { .backdrop { animation: none; } }
+
+.inner { position: relative; z-index: 1; padding-block: clamp(28px, 5vw, 56px) clamp(84px, 11vw, 148px); }
+
+/* Etiqueta de lomo editorial. */
+.spine { display: none; }
 @media (min-width: 1180px) {
   .spine {
     display: block; position: absolute; left: calc(-1 * clamp(1rem, 5vw, 6rem) + 6px); top: 50%;
@@ -17,13 +37,20 @@
   }
 }
 
+.grid { display: grid; gap: 36px; grid-template-columns: 1fr; }
+@media (min-width: 900px) { .grid { grid-template-columns: minmax(320px, 46%) 1fr; align-items: center; gap: 8px; } }
+
+.copy { position: relative; z-index: 2; }
+
 .eyebrowless { font-size: 0.85rem; display: flex; align-items: center; gap: 8px; color: var(--ink); margin-bottom: 18px; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cream); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cream) 22%, transparent); animation: pulse 2.4s ease-in-out infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
 
-.title { font-size: clamp(2.4rem, 5.2vw, 4rem); text-wrap: balance; }
+/* Titular grande — bleedea sobre el borde del stage en desktop ancho para
+   que las dos columnas no se sientan como dos cajas prolijas separadas. */
+.title { font-size: clamp(2.6rem, 6.6vw, 6.4rem); text-wrap: balance; }
+@media (min-width: 1180px) { .title { margin-right: -6%; } }
 
-/* Máscara de palabras — ver TituloMask en Hero.jsx. */
 .word { display: inline-block; overflow: hidden; vertical-align: top; }
 .wordInner {
   display: inline-block; transform: translateY(112%);
@@ -32,16 +59,48 @@
 }
 @keyframes wordUp { to { transform: translateY(0); } }
 
-.lede { margin-top: 18px; max-width: 46ch; color: var(--ink-dim); font-size: 1rem; }
-.actions { margin-top: 30px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.lede { margin-top: 20px; max-width: 42ch; color: var(--ink-dim); font-size: 1rem; }
+.actions { margin-top: 32px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 
-.scrollCue {
-  display: none;
+/* Stage: el frasco flota directo sobre el fondo marmolado, sin tarjeta que
+   lo encierre — mucho más grande, mucho menos "mockup de producto". */
+.stage {
+  position: relative; aspect-ratio: 4 / 5; width: 100%; max-height: 76vh;
 }
+@media (min-width: 900px) { .stage { aspect-ratio: 1 / 1; max-height: 640px; } }
+
+.bottle { position: absolute; inset: -6% -4%; z-index: 2; }
+.ring {
+  position: absolute; left: 50%; top: 58%; z-index: 1;
+  width: 82%; aspect-ratio: 1; transform: translate(-50%, -50%) rotateX(76deg);
+  border: 1.5px solid var(--cream); border-radius: 50%; opacity: 0.35; pointer-events: none;
+}
+
+/* Sello circular giratorio — reemplaza el hint de "arrastrá para girar" por
+   una pieza de marca con carácter propio. */
+.sello {
+  position: absolute; right: -2%; bottom: 2%; z-index: 3;
+  width: clamp(96px, 13vw, 148px); aspect-ratio: 1;
+  animation: girar 16s linear infinite;
+}
+.sello svg { width: 100%; height: 100%; }
+.sello text {
+  font-family: var(--f-mono); font-size: 8.6px; letter-spacing: 0.05em;
+  fill: var(--ink); text-transform: uppercase;
+}
+.selloCentro {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-size: 1.1rem; color: var(--cream); animation: girar 16s linear infinite reverse;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .sello, .selloCentro { animation: none; } }
+@media (max-width: 640px) { .sello { width: 84px; right: 0; bottom: -4px; } }
+
+.scrollCue { display: none; }
 @media (min-width: 900px) {
   .scrollCue {
-    position: absolute; left: 0; bottom: -8px; display: flex; align-items: center; gap: 10px;
-    color: var(--ink-faint); transition: color var(--dur) var(--ease);
+    position: relative; z-index: 2; margin-top: -8px; display: flex; align-items: center; gap: 10px;
+    color: var(--ink-faint); transition: color var(--dur) var(--ease); width: fit-content;
   }
   .scrollCue:hover { color: var(--ink); }
   .scrollLine { width: 40px; height: 1px; background: currentColor; position: relative; overflow: hidden; }
@@ -50,44 +109,4 @@
     animation: scrollLine 2.2s ease-in-out infinite;
   }
   @keyframes scrollLine { 0% { transform: translateX(-100%); } 50% { transform: translateX(0); } 100% { transform: translateX(100%); } }
-}
-
-.stage {
-  position: relative; border-radius: var(--r-card); overflow: hidden;
-  background: var(--bg-2);
-  aspect-ratio: 5 / 4; max-height: 62vh; width: 100%;
-}
-@media (min-width: 900px) { .stage { aspect-ratio: 1 / 1; max-height: 520px; } }
-
-/* Fondo orgánico multicapa — vino/pino/crema, en vez del flat-color de la v4.
-   Evoca tinta/líquido marmolado (ver referencias del usuario). Deriva idle
-   muy lenta; se congela con prefers-reduced-motion. */
-.backdrop {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(58% 55% at 20% 18%, var(--wine) 0%, transparent 64%),
-    radial-gradient(52% 58% at 88% 28%, var(--pine) 0%, transparent 62%),
-    radial-gradient(46% 42% at 46% 96%, color-mix(in srgb, var(--cream) 55%, transparent) 0%, transparent 60%),
-    linear-gradient(165deg, var(--bg-2) 0%, var(--bg) 70%);
-  background-size: 140% 140%, 140% 140%, 140% 140%, 100% 100%;
-  background-position: 0% 0%, 100% 0%, 50% 100%, 0 0;
-  animation: deriva 26s ease-in-out infinite alternate;
-}
-.block { position: absolute; left: 8%; width: 44%; top: 22%; bottom: 0; background: color-mix(in srgb, var(--bg) 55%, transparent); backdrop-filter: blur(2px); z-index: 1; }
-.bottle { position: absolute; inset: 0; z-index: 2; }
-.ring {
-  position: absolute; left: 50%; top: 56%; z-index: 3;
-  width: 74%; aspect-ratio: 1; transform: translate(-50%, -50%) rotateX(76deg);
-  border: 1.5px solid var(--cream); border-radius: 50%; opacity: 0.45; pointer-events: none;
-}
-
-@keyframes deriva {
-  to { background-position: 12% 6%, 88% 10%, 54% 92%, 0 0; }
-}
-@media (prefers-reduced-motion: reduce) { .backdrop { animation: none; } }
-.hint {
-  position: absolute; left: 50%; bottom: 14px; z-index: 4; transform: translateX(-50%);
-  font-family: var(--f-mono); font-size: 0.68rem; letter-spacing: 0.06em;
-  color: var(--ink-dim); background: color-mix(in srgb, var(--bg) 70%, transparent);
-  padding: 6px 13px; border-radius: var(--r-pill); border: 1px solid var(--line-bright);
 }

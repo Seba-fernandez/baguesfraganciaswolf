@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { BOTTLE_PROFILE, BOTTLE_MATERIAL, CAP_MATERIAL, CAP_RADIUS, CAP_HEIGHT, CAP_Y, addBrandLights } from '../../lib/bottleGeometry';
 
 /**
  * Frasco decorativo genérico (no representa un producto real — los productos
@@ -26,35 +27,21 @@ export default function Bottle3D({ color = 0x9c2540, className }) {
     group.rotation.x = -0.05;
     scene.add(group);
 
-    // Perfil más esbelto y con hombro angulado (menos "pastilla redonda",
-    // más flacón de eau de parfum) — cuerpo recto y alto, quiebre de hombro
-    // marcado en vez de curva blanda, cuello fino.
-    const prof = [
-      [0, -1.55], [0.5, -1.55], [0.54, -1.48],
-      [0.54, 0.7], [0.5, 0.78],
-      [0.2, 0.92], [0.19, 0.98],
-      [0.19, 1.2], [0.27, 1.24], [0.27, 1.3],
-      [0, 1.34],
-    ];
-    const pts = prof.map(([x, y]) => new THREE.Vector2(x * 1.2, y * 1.2));
+    const pts = BOTTLE_PROFILE.map(([x, y]) => new THREE.Vector2(x * 1.2, y * 1.2));
     const mesh = new THREE.Mesh(
       new THREE.LatheGeometry(pts, 96),
-      new THREE.MeshStandardMaterial({ color, metalness: 0.04, roughness: 0.07 })
+      new THREE.MeshStandardMaterial({ color, ...BOTTLE_MATERIAL })
     );
     group.add(mesh);
 
     const cap = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.37, 0.37, 0.5, 44),
-      new THREE.MeshStandardMaterial({ color: 0x161613, metalness: 0.55, roughness: 0.22 })
+      new THREE.CylinderGeometry(CAP_RADIUS, CAP_RADIUS, CAP_HEIGHT, 44),
+      new THREE.MeshStandardMaterial({ ...CAP_MATERIAL })
     );
-    cap.position.y = 1.86;
+    cap.position.y = CAP_Y;
     group.add(cap);
 
-    scene.add(new THREE.AmbientLight(0x3a2e28, 0.85));
-    const key = new THREE.DirectionalLight(0xf4ece0, 2.4); key.position.set(-3, 4, 5); scene.add(key);
-    const rim = new THREE.PointLight(0x2a6a58, 42, 30); rim.position.set(4, -1, 2); scene.add(rim); // pino: contraste frío
-    const fill = new THREE.PointLight(0xefdcb4, 20, 30); fill.position.set(-4, -2, 3); scene.add(fill); // crema: brillo cálido
-    const top = new THREE.PointLight(0xf4ece0, 16, 20); top.position.set(0, 5, 3); scene.add(top);
+    addBrandLights(scene, THREE);
 
     function resize() {
       const r = canvas.getBoundingClientRect();

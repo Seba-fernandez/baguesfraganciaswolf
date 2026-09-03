@@ -1,12 +1,12 @@
 import { GENEROS, MOMENTOS } from '../../data/constants';
-import { rangoPrecio } from '../../lib/producto';
+import { rangoPrecio, esPublicable } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import ProductThumb from './ProductThumb';
 import useReveal from '../../hooks/useReveal';
 import s from './FeaturedRows.module.css';
 
 export default function FeaturedRows({ products, onOpen }) {
-  const destacados = products.filter((p) => p.activo && p.destacado);
+  const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p));
   const ref = useReveal();
   if (!destacados.length) return null;
 

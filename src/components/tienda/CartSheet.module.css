@@ -26,8 +26,18 @@
 .stepper button:focus-visible { outline: 2px solid var(--cream); outline-offset: 1px; }
 .stepper span { font-family: var(--f-mono); min-width: 20px; text-align: center; font-size: 0.85rem; }
 .price { font-family: var(--f-mono); font-size: 0.85rem; text-align: right; white-space: nowrap; }
-.remove { font-family: var(--f-mono); font-size: 0.68rem; color: var(--ink-faint); background: none; border: 0; cursor: pointer; margin-top: 6px; padding: 8px 0 8px 8px; margin-right: -8px; }
-.remove:hover { color: var(--wine-bright); }
+/* Es un control, no una etiqueta — antes compartía el token de texto más
+   apagado del sistema (falla de contraste real, ver P1-1) y encima tenía un
+   área de toque angosta para ser un botón destructivo. Ahora usa el color
+   de acción (wine-bright) por default, no solo al hover, y el padding le da
+   ~44px de alto real de toque. */
+.remove {
+  font-family: var(--f-mono); font-size: 0.76rem; color: var(--wine-bright);
+  background: none; border: 0; cursor: pointer; margin-top: 4px;
+  padding: 12px 4px 12px 8px; margin-right: -4px; min-height: 44px;
+}
+.remove:hover { text-decoration: underline; }
+.remove:focus-visible { outline: 2px solid var(--wine-bright); outline-offset: 2px; border-radius: 4px; }
 
 .totalRow { display: flex; justify-content: space-between; align-items: baseline; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
 .totalRow b { font-family: var(--f-mono); font-size: 1.1rem; }

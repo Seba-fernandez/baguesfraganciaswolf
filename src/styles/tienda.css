@@ -11,7 +11,12 @@
   --bg-3: #2f2521;
   --ink: #f4ece0;
   --ink-dim: #b7a999;
-  --ink-faint: #7d6d5d;
+  /* Antes #7d6d5d — medía 3.3-3.6:1 sobre --bg-2, bajo el mínimo AA (4.5:1)
+     para texto chico. Auditoría en vivo lo detectó en metadata, tags,
+     "Quitar" del carrito, precio "desde $". Este valor mide ~5.2:1 sobre
+     --bg-2, dentro de la misma familia crema (no rompe la paleta
+     aprobada), y sigue leyendo visiblemente más apagado que --ink-dim. */
+  --ink-faint: #9e8e7c;
   --line: rgba(244, 236, 224, 0.10);
   --line-bright: rgba(244, 236, 224, 0.20);
   /* protagonista (claro) — texto encima siempre --bg */

@@ -2,12 +2,19 @@
 .img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--dur-slow) var(--ease); }
 
 .placeholder {
+  display: grid; place-items: center; position: relative;
   background: radial-gradient(120% 90% at 30% 10%, #34281f 0%, #221a15 60%, #17110d 100%);
-  display: grid; place-items: center;
 }
-.block { position: absolute; left: 22%; right: 22%; top: 14%; bottom: 8%; background: var(--cream); }
-.block.wine { background: var(--wine); }
-.block.pine { background: var(--pine); }
+/* Fondo con tinte de familia detrás del frasco — el mismo lenguaje del
+   backdrop marmolado del hero, en miniatura. */
+.placeholder.cream { background: radial-gradient(120% 95% at 35% 8%, color-mix(in srgb, var(--cream) 34%, #221a15) 0%, #17110d 75%); }
+.placeholder.wine { background: radial-gradient(120% 95% at 35% 8%, color-mix(in srgb, var(--wine) 62%, #221a15) 0%, #17110d 75%); }
+.placeholder.pine { background: radial-gradient(120% 95% at 35% 8%, color-mix(in srgb, var(--pine) 62%, #221a15) 0%, #17110d 75%); }
 
-.glyph { position: relative; color: var(--bg); z-index: 1; }
-.glyphClaro { color: var(--ink); }
+/* Silueta SVG con degradado — el protagonista visual del placeholder.
+   filter: drop-shadow en vez de box-shadow porque sigue la forma real del
+   frasco, no su bounding box rectangular. */
+.silueta {
+  width: 56%; height: 82%;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.5));
+}

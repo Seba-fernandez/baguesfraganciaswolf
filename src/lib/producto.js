@@ -21,6 +21,20 @@ export function tieneNotas(producto) {
   return !!(producto?.nota_salida || producto?.nota_corazon || producto?.nota_fondo);
 }
 
+/**
+ * Guardia de publicación: un producto con nombre puramente numérico ("456")
+ * casi siempre es data de prueba que se coló en la tabla — no se muestra en
+ * la tienda pública aunque exista y esté activo. No reemplaza la limpieza
+ * real en Supabase, es una red de seguridad para que un dato de prueba
+ * nunca vuelva a llegar a producción por accidente.
+ */
+export function esPublicable(producto) {
+  const nombre = (producto?.nombre || '').trim();
+  if (!nombre) return false;
+  if (/^\d+$/.test(nombre)) return false;
+  return true;
+}
+
 const ACENTOS = ['cream', 'wine', 'pine'];
 
 /**

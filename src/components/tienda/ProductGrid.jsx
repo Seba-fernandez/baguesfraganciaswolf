@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { GENEROS } from '../../data/constants';
-import { acentoPorFamilia } from '../../lib/producto';
+import { acentoPorFamilia, esPublicable } from '../../lib/producto';
 import ProductCard from './ProductCard';
 import useReveal from '../../hooks/useReveal';
 import s from './ProductGrid.module.css';
@@ -15,7 +15,7 @@ export default function ProductGrid({ products, onOpen, abiertoId }) {
   const ref = useReveal();
 
   const visibles = useMemo(() => {
-    const activos = products.filter((p) => p.activo);
+    const activos = products.filter((p) => p.activo && esPublicable(p));
     if (filtro === 'todos') return activos;
     return activos.filter((p) => p.genero === filtro);
   }, [products, filtro]);

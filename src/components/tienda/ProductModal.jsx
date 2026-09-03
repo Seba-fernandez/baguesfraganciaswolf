@@ -36,7 +36,7 @@ export default function ProductModal({ producto, onClose }) {
       <div className={s.sheet} role="dialog" aria-modal="true" aria-label={producto.nombre}>
         <button className={s.close} onClick={onClose} aria-label="Cerrar">✕</button>
 
-        <div className={s.media}>
+        <div className={s.media} style={{ viewTransitionName: `producto-media-${producto.id}` }}>
           <ProductThumb src={producto.imagen_url} alt={producto.nombre} />
         </div>
 

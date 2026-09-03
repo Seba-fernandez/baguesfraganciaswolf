@@ -119,3 +119,19 @@
 /* ---------- scrollbar chico en chips/filtros ---------- */
 .tienda .tscroll-x { scrollbar-width: none; }
 .tienda .tscroll-x::-webkit-scrollbar { display: none; }
+
+/* ---------- View Transitions (morph card → modal) ----------
+   Los pseudo-elementos ::view-transition-* los pinta el navegador sobre TODO
+   el documento, fuera del árbol de .tienda — por eso van con valores fijos
+   acá, no var(--ease) (esa custom property no llega hasta ahí). */
+::view-transition-group(*) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

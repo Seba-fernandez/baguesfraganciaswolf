@@ -7,3 +7,21 @@
 }
 .hand { position: relative; white-space: nowrap; color: var(--wine-bright); font-style: normal; }
 .hand svg { position: absolute; left: -4%; top: -18%; width: 108%; height: 138%; pointer-events: none; overflow: visible; }
+
+/* Barrido adicional atado al scroll (no reemplaza el fade por
+   IntersectionObserver de .treveal/.trevealed — se suma encima en los
+   navegadores que soportan animation-timeline: view(); en el resto, el
+   fade normal alcanza y nadie se queda con el texto invisible). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .section h2 {
+      animation: wipeIn linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 55%;
+    }
+  }
+}
+@keyframes wipeIn {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}

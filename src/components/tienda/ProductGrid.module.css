@@ -14,8 +14,16 @@
 .chipOn { background: var(--cream); border-color: var(--cream); color: var(--bg); }
 .chipOn:hover { color: var(--bg); }
 
-.grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-@media (min-width: 640px) { .grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); } }
-@media (min-width: 1160px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+/* Columnas explícitas (no auto-fill) porque .featured necesita span
+   predecible para el efecto bento — con auto-fill el número de columnas
+   depende del ancho disponible y el span deja de tener sentido. */
+.grid { display: grid; gap: 18px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 640px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+@media (min-width: 1160px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 22px; } }
+
+/* El primer producto destacado ocupa doble columna — un card "hero" entre
+   los demás, como en un bento. En el grid de 2 columnas de mobile eso es el
+   ancho completo (una franja destacada), lo cual también se ve bien. */
+.featured { grid-column: span 2; }
 
 .empty { padding: 60px 0; text-align: center; color: var(--ink-faint); font-size: 0.95rem; }

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { GENEROS } from '../../data/constants';
+import { acentoPorFamilia } from '../../lib/producto';
 import ProductCard from './ProductCard';
 import useReveal from '../../hooks/useReveal';
 import s from './ProductGrid.module.css';
@@ -9,14 +10,7 @@ const FILTROS = [
   ...Object.values(GENEROS).map((g) => ({ id: g.id, label: g.label })),
 ];
 
-// Variedad controlada: cream domina, wine y pine aparecen de vez en cuando.
-function acentoDe(i) {
-  if (i % 7 === 3) return 'pine';
-  if (i % 5 === 1) return 'wine';
-  return 'cream';
-}
-
-export default function ProductGrid({ products, onOpen }) {
+export default function ProductGrid({ products, onOpen, abiertoId }) {
   const [filtro, setFiltro] = useState('todos');
   const ref = useReveal();
 
@@ -50,11 +44,28 @@ export default function ProductGrid({ products, onOpen }) {
         <p className={s.empty}>No hay perfumes en esta categoría por ahora.</p>
       ) : (
         <div className={s.grid}>
-          {visibles.map((p, i) => (
-            <div key={p.id} className="treveal" style={{ transitionDelay: `${Math.min(i, 8) * 40}ms` }}>
-              <ProductCard producto={p} onOpen={onOpen} accent={acentoDe(i)} />
-            </div>
-          ))}
+          {visibles.map((p, i) => {
+            // Un solo card "bento" por vista: el primer destacado que aparece
+            // en el orden natural se agranda, el resto queda parejo. Un solo
+            // hero por grilla lee como intención editorial; medio catálogo
+            // agrandado leería como una grilla rota.
+            const esBento = p.destacado && !visibles.slice(0, i).some((o) => o.destacado);
+            return (
+              <div
+                key={p.id}
+                className={`treveal ${esBento ? s.featured : ''}`}
+                style={{ transitionDelay: `${Math.min(i, 8) * 40}ms` }}
+              >
+                <ProductCard
+                  producto={p}
+                  onOpen={onOpen}
+                  accent={acentoPorFamilia(p)}
+                  featured={esBento}
+                  vtName={p.id === abiertoId ? 'none' : `producto-media-${p.id}`}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
     </section>

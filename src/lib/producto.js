@@ -20,3 +20,18 @@ export function rangoPrecio(producto) {
 export function tieneNotas(producto) {
   return !!(producto?.nota_salida || producto?.nota_corazon || producto?.nota_fondo);
 }
+
+const ACENTOS = ['cream', 'wine', 'pine'];
+
+/**
+ * Acento visual derivado de la familia olfativa (o género si no hay), no de
+ * la posición en la grilla — así el color del card es información real
+ * ("estos tres huelen parecido"), no solo una alternancia decorativa.
+ * Hash simple y estable: mismo texto → siempre el mismo acento.
+ */
+export function acentoPorFamilia(producto) {
+  const texto = (producto?.familia_olfativa || producto?.genero || producto?.nombre || '').toLowerCase();
+  let hash = 0;
+  for (let i = 0; i < texto.length; i++) hash = (hash * 31 + texto.charCodeAt(i)) >>> 0;
+  return ACENTOS[hash % ACENTOS.length];
+}

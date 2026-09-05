@@ -4,31 +4,32 @@ import '../../styles/tienda.css';
 import s from './TiendaLayout.module.css';
 
 const CartIcon = () => (
-  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
   </svg>
 );
 
-export default function TiendaLayout({ children, settings }) {
+export default function TiendaLayout({ children, settings, onVerPromo }) {
   const { count, setOpen } = useCart();
 
   return (
     <div className="tienda">
       <header className={s.bar}>
-        <a href="#inicio" className={s.logo}>W</a>
+        <a href="#inicio" className={s.marca}>
+          Bagues <span className={s.marcaWolf}>Grupo Wolf</span>
+        </a>
         <nav className={s.nav}>
           <a href="#catalogo">Catálogo</a>
-          <a href="#contacto">Contacto</a>
+          <a href="#como">Cómo funciona</a>
         </nav>
-        <span className={s.spacer} />
         <button
-          className={s.cartBtn}
+          className={s.carrito}
           onClick={() => setOpen(true)}
-          aria-label={`Ver carrito (${count} ${count === 1 ? 'ítem' : 'ítems'})`}
+          aria-label={`Ver pedido (${count} ${count === 1 ? 'ítem' : 'ítems'})`}
         >
           <CartIcon />
-          {count > 0 && <span className={s.badge}>{count}</span>}
+          {count > 0 && <span className={`${s.badge} tnum`}>{count}</span>}
         </button>
       </header>
 
@@ -36,16 +37,16 @@ export default function TiendaLayout({ children, settings }) {
 
       <footer className={s.footer}>
         <div className={`tw ${s.fcols}`}>
-          <div>
-            <h4 className="tmono up">Tienda</h4>
+          <div className={s.fcol}>
+            <h4 className="tlabel">Tienda</h4>
             <a href="#catalogo">Catálogo</a>
-            <a href="#contacto">Cómo funciona</a>
+            <a href="#como">Cómo funciona</a>
             {settings?.link_catalogo && (
-              <a href={settings.link_catalogo} target="_blank" rel="noopener">Catálogo completo (PDF)</a>
+              <a href={settings.link_catalogo} target="_blank" rel="noopener">Catálogo en PDF</a>
             )}
           </div>
-          <div>
-            <h4 className="tmono up">Contacto</h4>
+          <div className={s.fcol}>
+            <h4 className="tlabel">Contacto</h4>
             {settings?.whatsapp_owner && (
               <a href={`https://wa.me/${settings.whatsapp_owner}`} target="_blank" rel="noopener">WhatsApp</a>
             )}
@@ -53,21 +54,18 @@ export default function TiendaLayout({ children, settings }) {
               <a href={`https://instagram.com/${settings.instagram_user}`} target="_blank" rel="noopener">Instagram</a>
             )}
           </div>
-          <div>
-            <h4 className="tmono up">Gestión</h4>
+          <div className={s.fcol}>
+            <h4 className="tlabel">Gestión</h4>
             <a href="/panel">Panel</a>
           </div>
-          <div className={`tmono ${s.copy}`}>
+          <p className={s.copy}>
             © {new Date().getFullYear()} Bagues Grupo Wolf<br />
-            {settings?.aclaracion_pedido || 'Venta particular · catálogo Bagués'}
-          </div>
-        </div>
-        <div className="tw">
-          <div className={s.wordmark}>grupo wolf<sup>®</sup></div>
+            {settings?.aclaracion_pedido || 'Venta particular en Córdoba'}
+          </p>
         </div>
       </footer>
 
-      <CartSheet settings={settings} />
+      <CartSheet settings={settings} onVerPromo={onVerPromo} />
     </div>
   );
 }

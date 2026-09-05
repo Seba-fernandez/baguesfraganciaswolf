@@ -1,37 +1,40 @@
 .section { padding-block: clamp(64px, 9vw, 120px); }
-.head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 28px; flex-wrap: wrap; }
-.head h2 { font-size: clamp(1.7rem, 4.5vw, 3rem); }
 
-.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 32px; }
+.head { max-width: 46ch; margin-bottom: 30px; }
+.titulo { font-size: clamp(2rem, 4.6vw, 3.2rem); }
+.bajada { margin-top: 12px; color: var(--ink-dim); font-size: 1rem; }
+
+.controles { display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px; }
+
+.buscador { position: relative; max-width: 460px; width: 100%; }
+.input {
+  width: 100%; min-height: 48px; padding: 13px 18px;
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r-pill); color: var(--ink); font-family: inherit; font-size: 0.94rem;
+}
+.input::placeholder { color: var(--ink-faint); }
+.input:focus { outline: none; border-color: var(--amber); }
+
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
 .chip {
-  flex-shrink: 0; padding: 10px 16px; border-radius: var(--r-pill);
-  font-family: var(--f-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
-  border: 1px solid var(--line); color: var(--ink-faint); background: none; cursor: pointer;
-  min-height: 40px;
-  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease), background var(--dur) var(--ease);
+  flex-shrink: 0; min-height: 40px; padding: 9px 16px; border-radius: var(--r-pill);
+  font-size: 0.8rem; font-weight: 500; letter-spacing: 0.02em;
+  background: none; border: 1px solid var(--line); color: var(--ink-dim); cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
 .chip:hover { color: var(--ink); border-color: var(--line-bright); }
-.chipOn { background: var(--cream); border-color: var(--cream); color: var(--bg); }
-.chipOn:hover { color: var(--bg); }
+.chipOn { background: var(--amber); border-color: var(--amber); color: #17130a; }
+.chipPromo { border-color: var(--amber-deep); color: var(--amber); }
+.chipPromo.chipOn { color: #17130a; }
 
-/* Columnas explícitas (no auto-fill) porque .featured necesita span
-   predecible para el efecto bento — con auto-fill el número de columnas
-   depende del ancho disponible y el span deja de tener sentido.
-   grid-auto-flow: dense evita el hueco muerto que deja un card de doble
-   columna cuando no cierra parejo con el total de columnas (p. ej. 6
-   productos en una grilla de 4: sin dense, la 2ª fila queda con un espacio
-   vacío a la derecha; con dense, el motor rellena ese hueco con el próximo
-   card que entre en 1 columna). Trade-off consciente: dense reordena la
-   pintura visual, no el DOM — el orden de tabulación/lectura sigue siendo
-   el de la lista real, así que un lector de pantalla nunca ve nada fuera
-   de orden, aunque visualmente un card pueda "adelantarse" una posición. */
-.grid { display: grid; gap: 18px; grid-template-columns: repeat(2, 1fr); grid-auto-flow: row dense; }
-@media (min-width: 640px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
-@media (min-width: 1160px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 22px; } }
+.conteo { font-size: 0.78rem; color: var(--ink-faint); margin-bottom: 20px; }
 
-/* El primer producto destacado ocupa doble columna — un card "hero" entre
-   los demás, como en un bento. En el grid de 2 columnas de mobile eso es el
-   ancho completo (una franja destacada), lo cual también se ve bien. */
-.featured { grid-column: span 2; }
+.grid {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+}
+@media (min-width: 1100px) { .grid { gap: 20px; } }
 
-.empty { padding: 60px 0; text-align: center; color: var(--ink-faint); font-size: 0.95rem; }
+.vacio { padding: 56px 0 72px; max-width: 44ch; }
+.vacioTitulo { font-family: var(--f-display); font-size: 1.5rem; color: var(--ink); }
+.vacioTexto { margin: 12px 0 22px; color: var(--ink-dim); font-size: 0.95rem; }

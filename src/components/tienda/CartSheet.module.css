@@ -1,63 +1,114 @@
-.overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: 100; animation: fade 0.2s ease; }
+.overlay { position: fixed; inset: 0; background: rgba(6, 10, 8, 0.7); z-index: 100; animation: fade 0.2s ease; }
 .sheet {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
   max-width: 480px; margin: 0 auto;
-  max-height: 90vh; max-height: 90dvh;
-  overflow-y: auto; overscroll-behavior: contain;
-  border-radius: 26px 26px 0 0; background: var(--bg-2);
-  padding: 20px 22px calc(28px + env(safe-area-inset-bottom));
+  max-height: 90dvh; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--bg-2); border-top: 1px solid var(--line-bright);
+  border-radius: var(--r-surface) var(--r-surface) 0 0;
+  padding: 22px 22px calc(28px + env(safe-area-inset-bottom));
   animation: up 0.28s var(--ease);
 }
-@media (min-width: 768px) { .sheet { left: auto; right: 24px; bottom: 24px; border-radius: 26px; max-width: 420px; } }
+@media (min-width: 768px) {
+  .sheet {
+    left: auto; right: 24px; bottom: 24px; max-width: 420px;
+    border: 1px solid var(--line-bright); border-radius: var(--r-surface);
+  }
+}
 
 .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
 .head h2 { font-size: 1.4rem; }
-.close { width: 38px; height: 38px; border-radius: 50%; background: var(--bg-3); border: 0; color: var(--ink); cursor: pointer; }
-
-.empty { padding: 40px 0; text-align: center; color: var(--ink-faint); }
-
-.list { display: flex; flex-direction: column; gap: 14px; }
-.item { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; }
-.thumb { width: 56px; height: 56px; border-radius: 12px; overflow: hidden; }
-.name { font-weight: 700; font-size: 0.92rem; }
-.meta { font-family: var(--f-mono); font-size: 0.7rem; color: var(--ink-faint); margin-top: 2px; }
-.stepper { display: inline-flex; align-items: center; gap: 2px; background: var(--bg-3); border-radius: var(--r-pill); padding: 3px; margin-top: 6px; }
-.stepper button { width: 38px; height: 38px; border-radius: 50%; border: 0; background: none; color: var(--ink-dim); cursor: pointer; font-size: 1.05rem; }
-.stepper button:focus-visible { outline: 2px solid var(--cream); outline-offset: 1px; }
-.stepper span { font-family: var(--f-mono); min-width: 20px; text-align: center; font-size: 0.85rem; }
-.price { font-family: var(--f-mono); font-size: 0.85rem; text-align: right; white-space: nowrap; }
-/* Es un control, no una etiqueta — antes compartía el token de texto más
-   apagado del sistema (falla de contraste real, ver P1-1) y encima tenía un
-   área de toque angosta para ser un botón destructivo. Ahora usa el color
-   de acción (wine-bright) por default, no solo al hover, y el padding le da
-   ~44px de alto real de toque. */
-.remove {
-  font-family: var(--f-mono); font-size: 0.76rem; color: var(--wine-bright);
-  background: none; border: 0; cursor: pointer; margin-top: 4px;
-  padding: 12px 4px 12px 8px; margin-right: -4px; min-height: 44px;
+.cerrar {
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  background: var(--bg-3); border: 0; color: var(--ink); cursor: pointer;
 }
-.remove:hover { text-decoration: underline; }
-.remove:focus-visible { outline: 2px solid var(--wine-bright); outline-offset: 2px; border-radius: 4px; }
+.cerrar:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
-.totalRow { display: flex; justify-content: space-between; align-items: baseline; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
-.totalRow b { font-family: var(--f-mono); font-size: 1.1rem; }
+.vacio { padding: 24px 0 12px; }
+.vacioTitulo { font-family: var(--f-display); font-size: 1.2rem; color: var(--ink); }
+.vacioTexto { margin: 8px 0 20px; color: var(--ink-dim); font-size: 0.9rem; }
 
-.field { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; }
-.label { font-family: var(--f-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); }
+.lista { display: flex; flex-direction: column; }
+.item {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+  padding: 14px 0; border-bottom: 1px solid var(--line);
+}
+.itemInfo { flex: 1; min-width: 0; }
+.itemNombre { font-weight: 500; font-size: 0.94rem; color: var(--ink); }
+.itemMeta {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin-top: 3px; font-size: 0.78rem; color: var(--ink-faint);
+}
+.itemSello {
+  padding: 2px 7px; border-radius: var(--r-pill);
+  background: var(--amber-soft); color: var(--amber);
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.06em;
+}
+
+.stepper {
+  display: inline-flex; align-items: center; gap: 2px; margin-top: 10px;
+  background: var(--bg-3); border-radius: var(--r-pill); padding: 3px;
+}
+.stepper button {
+  width: 38px; height: 38px; border-radius: 50%; border: 0;
+  background: none; color: var(--ink-dim); cursor: pointer; font-size: 1.05rem;
+}
+.stepper button:hover { color: var(--ink); background: var(--bg); }
+.stepper button:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; }
+.stepper span { min-width: 22px; text-align: center; font-size: 0.85rem; }
+
+.itemDer { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.itemPrecio { font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+.quitar {
+  min-height: 44px; padding: 10px 4px 10px 10px; margin-right: -4px;
+  background: none; border: 0; cursor: pointer;
+  color: var(--danger); font-family: inherit; font-size: 0.78rem;
+}
+.quitar:hover { text-decoration: underline; }
+.quitar:focus-visible { outline: 2px solid var(--danger); outline-offset: 2px; border-radius: 4px; }
+
+/* Contador de promo: el unico lugar donde el sitio pide algo, y pide algo
+   que al cliente no le cuesta plata. */
+.faltaUno {
+  display: flex; flex-direction: column; gap: 3px; width: 100%; text-align: left;
+  margin-top: 16px; padding: 14px 16px; cursor: pointer;
+  background: var(--amber-soft); border: 1px solid var(--amber-deep);
+  border-radius: var(--r-surface); color: var(--ink);
+  transition: background var(--dur) var(--ease);
+}
+.faltaUno:hover { background: rgba(209, 155, 69, 0.2); }
+.faltaUno:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.faltaTitulo { font-family: var(--f-display); font-size: 1.02rem; color: var(--amber); }
+.faltaTexto { font-size: 0.84rem; color: var(--ink-dim); }
+
+.totales { margin: 20px 0 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.filaTotal { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.totalLabel { font-size: 0.84rem; color: var(--ink-dim); }
+.tachado { color: var(--ink-faint); text-decoration: line-through; font-size: 0.86rem; }
+.totalValor { font-size: 1.24rem; font-weight: 600; color: var(--ink); }
+.ahorro { margin-top: 8px; font-size: 0.82rem; color: var(--amber); }
+
+.campo { display: flex; flex-direction: column; gap: 7px; margin-top: 16px; }
 .input {
-  width: 100%; padding: 13px 16px; border-radius: 14px; min-height: 48px;
-  background: var(--bg-3); border: 1px solid var(--line); color: var(--ink); font-size: 0.95rem;
+  width: 100%; min-height: 48px; padding: 13px 16px;
+  background: var(--bg-3); border: 1px solid var(--line);
+  border-radius: var(--r-pill); color: var(--ink); font-family: inherit; font-size: 0.95rem;
 }
-.input:focus { border-color: var(--cream); outline: none; }
-.input::placeholder { color: var(--ink-faint); }
+.input:focus { outline: none; border-color: var(--amber); }
 
-.err { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--wine) 30%, transparent); border: 1px solid color-mix(in srgb, var(--wine-bright) 40%, transparent); color: var(--wine-bright); font-size: 0.82rem; }
+.ayuda { font-size: 0.86rem; color: var(--ink-dim); line-height: 1.6; margin-bottom: 4px; }
+.err {
+  margin-top: 14px; padding: 11px 14px; border-radius: var(--r-surface);
+  background: rgba(217, 138, 114, 0.12); border: 1px solid rgba(217, 138, 114, 0.4);
+  color: var(--danger); font-size: 0.85rem;
+}
+.volver {
+  background: none; border: 0; cursor: pointer; padding: 4px 0; margin-bottom: 6px;
+  color: var(--ink-faint); font-family: inherit; font-size: 0.82rem;
+}
+.volver:hover { color: var(--ink); }
 
-.confirm { text-align: center; padding: 20px 0; }
-.confirm .big { font-size: 2.4rem; margin-bottom: 12px; }
-
-.back { font-family: var(--f-mono); font-size: 0.72rem; color: var(--ink-faint); background: none; border: 0; cursor: pointer; margin-bottom: 4px; }
-.back:hover { color: var(--ink); }
+.listo { padding: 12px 0; }
+.listo h2 { font-size: 1.5rem; margin-bottom: 12px; }
 
 @keyframes up { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }

@@ -7,6 +7,9 @@ const DEFAULTS = {
   mensaje_checkout: '',
   aclaracion_pedido: '',
   link_catalogo: '',
+  promos_ciclo: [],
+  ciclo_nombre: '',
+  ciclo_hasta: null,
 };
 
 export default function useSettings() {

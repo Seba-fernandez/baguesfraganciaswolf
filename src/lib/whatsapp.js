@@ -15,6 +15,8 @@ export function linkWhatsApp(telefono, mensaje = '') {
   return `https://wa.me/${tel}${q}`;
 }
 
+const SALTO = String.fromCharCode(10);
+
 const money = (n) =>
   new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n || 0);
 
@@ -22,22 +24,31 @@ const money = (n) =>
  * Texto que se pre-carga en el WhatsApp del cliente al tocar "Hacer pedido".
  * items: [{ nombre, ml, cantidad, precio }]
  */
-export function mensajePedidoCliente({ nombre, items, numero }) {
-  const lineas = items.map(
-    (it) => `• ${it.nombre}${it.ml ? ` ${it.ml}ml` : ''} x${it.cantidad}`
-  );
-  const total = items.reduce((acc, it) => acc + (it.precio || 0) * it.cantidad, 0);
+export function mensajePedidoCliente({ nombre, items, numero, total }) {
+  // Cada renglon lleva el CODIGO de la presentacion: es lo que Sebastian
+  // carga en el sistema de su proveedora. Un pedido sin codigo no se puede
+  // cargar, asi que va primero en la linea, no al final.
+  const lineas = items.map((it) => {
+    const cod = it.codigo ? `[${it.codigo}] ` : '';
+    const ml = it.ml ? ` ${it.ml}ml` : '';
+    const prov = it.nombre_proveedor ? ` (${it.nombre_proveedor})` : '';
+    return `${cod}${it.nombre}${ml}${prov} x${it.cantidad}`;
+  });
+  const suma = typeof total === 'number'
+    ? total
+    : items.reduce((acc, it) => acc + (it.precio || 0) * it.cantidad, 0);
   return [
     `Hola! Soy ${nombre}. Quiero hacer este pedido${numero ? ` (#${numero})` : ''}:`,
     '',
     ...lineas,
     '',
-    total ? `Total estimado: ${money(total)}` : '',
+    suma ? `Total estimado: ${money(suma)}` : '',
     'Quedo a la espera de la confirmación. Gracias!',
   ]
     .filter((l) => l !== '')
-    .join('\n');
+    .join(SALTO);
 }
+
 
 /** Texto para que VOS le escribas al cliente desde el panel. */
 export function mensajeParaCliente(estado, { nombreCliente = '' } = {}) {

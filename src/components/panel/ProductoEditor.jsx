@@ -43,7 +43,11 @@ export default function ProductoEditor({ producto, onClose, onCreate, onUpdate, 
       ...form,
       presentaciones: form.presentaciones
         .filter((p) => p.ml !== '' && p.ml != null)
-        .map((p) => ({ ml: Number(p.ml), precio: Number(p.precio) || 0, activo: p.activo !== false })),
+        // Spread primero: conserva codigo, linea, nombre_proveedor, grupo_promo y
+        // precio_anterior, que no se editan aca pero SON el pedido. Sin esto,
+        // guardar un precio borraba el codigo de proveedora y el pedido de ese
+        // aroma quedaba imposible de cargar en el sistema de Bagues.
+        .map((p) => ({ ...p, ml: Number(p.ml), precio: Number(p.precio) || 0, activo: p.activo !== false })),
     };
 
     const res = esNuevo ? await onCreate(payload) : await onUpdate(producto.id, payload);
@@ -134,6 +138,11 @@ export default function ProductoEditor({ producto, onClose, onCreate, onUpdate, 
                 placeholder="precio $"
               />
               <Toggle checked={p.activo !== false} onChange={(v) => setPres(i, 'activo', v)} label="Disponible" />
+              {p.codigo && (
+                <span className={s.cardMeta} title="Codigo de la proveedora, no se edita">
+                  {p.codigo}{p.nombre_proveedor ? ` · ${p.nombre_proveedor}` : ''}
+                </span>
+              )}
               <button type="button" className={s.btnGhost} style={{ padding: '8px 10px', borderRadius: 10 }} onClick={() => delPres(i)}>✕</button>
             </div>
           ))}

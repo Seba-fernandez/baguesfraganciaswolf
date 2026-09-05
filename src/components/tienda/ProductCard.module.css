@@ -1,67 +1,53 @@
 .card {
-  background: var(--bg-2); border-radius: var(--r-card); overflow: hidden;
-  box-shadow: var(--sh-card); position: relative;
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  display: flex; flex-direction: column;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-surface);
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  /* 104 tarjetas: no renderizar lo que no se ve. CSS puro, cero JS. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
 }
-.card:hover {
-  /* perspective() tiene que ir dentro del propio transform (no como
-     propiedad `perspective` aparte) para que el tilt se vea en 3D relativo
-     a la cámara del viewport, no a los hijos del card. */
-  transform: perspective(800px) translateY(-4px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
-  box-shadow: var(--sh-lift);
+.card:hover { border-color: var(--line-bright); transform: translateY(-2px); }
+
+.media { display: block; width: 100%; border: 0; padding: 0; background: none; cursor: pointer; }
+
+.body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+
+.titulo {
+  font-family: var(--f-display); font-size: 1.12rem; line-height: 1.2;
+  color: var(--ink); background: none; border: 0; padding: 0; text-align: left;
+  cursor: pointer; letter-spacing: 0.02em;
+}
+.titulo:hover { color: var(--amber); }
+
+.inspirado { font-size: 0.82rem; color: var(--ink-dim); margin-bottom: 12px; }
+
+.opciones { display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
+
+.opcion {
+  position: relative; display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; width: 100%; min-height: 44px; padding: 9px 12px;
+  background: none; border: 1px solid var(--line); border-radius: var(--r-pill);
+  color: var(--ink-dim); cursor: pointer; font-size: 0.84rem;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.opcion:hover { border-color: var(--line-bright); color: var(--ink); }
+.opcionOn { border-color: var(--amber); color: var(--ink); background: var(--amber-soft); }
+.opcion:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+.ml { font-weight: 500; }
+.precios { display: inline-flex; align-items: baseline; gap: 8px; margin-left: auto; }
+.antes { color: var(--ink-faint); text-decoration: line-through; font-size: 0.76rem; }
+.precio { font-weight: 600; color: var(--ink); }
+
+/* El sello va en la opcion, no solo en el carrito: hay aromas donde el
+   frasco grande sale mas barato que el chico y sin el sello eso lee absurdo. */
+.sello {
+  flex-shrink: 0; padding: 3px 8px; border-radius: var(--r-pill);
+  background: var(--amber); color: #17130a;
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em;
 }
 
-/* Brillo que sigue al cursor (solo mouse real — useTilt no setea las
-   variables --glow-* en touch, así que esto queda inerte ahí). */
-.card::after {
-  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  background: radial-gradient(360px circle at var(--glow-x, 50%) var(--glow-y, 50%), color-mix(in srgb, var(--cream) 14%, transparent), transparent 60%);
-  opacity: 0; transition: opacity var(--dur) var(--ease);
-}
-.card:hover::after { opacity: 1; }
-
-/* Card bento: doble columna, thumb más panorámico en vez de cuadrado. */
-.featured { grid-column: span 2; }
-.featured .thumbBtn { aspect-ratio: 16 / 9; }
-.featured .name { font-size: 1.35rem; }
-@media (min-width: 640px) {
-  .featured { display: grid; grid-template-columns: 1.15fr 1fr; align-items: stretch; }
-  .featured .thumbBtn { aspect-ratio: auto; height: 100%; }
-  .featured .body { flex-direction: column; align-items: flex-start; justify-content: center; gap: 14px; padding: 22px 24px; }
-  .featured .add { align-self: flex-start; }
-}
-
-.badge {
-  position: absolute; left: 12px; top: 12px; z-index: 2;
-  padding: 5px 10px; border-radius: var(--r-pill); font-size: 0.62rem;
-  background: color-mix(in srgb, var(--bg) 55%, transparent); color: var(--cream);
-  border: 1px solid var(--line-bright); backdrop-filter: blur(6px);
-}
-
-.thumbBtn { display: block; width: 100%; aspect-ratio: 1; border: 0; padding: 0; cursor: pointer; background: none; }
-.thumbBtn:hover img { transform: scale(1.05); }
-.thumb { width: 100%; height: 100%; }
-
-.arr {
-  position: absolute; right: 12px; top: 12px; z-index: 2; font-family: var(--f-mono); color: var(--ink);
-  opacity: 0; transition: opacity var(--dur) var(--ease); pointer-events: none;
-}
-.card:hover .arr { opacity: 1; }
-
-.body { padding: 14px 14px 16px; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
-.name { font-size: 1.05rem; font-weight: 700; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; color: var(--ink); }
-.name:hover { color: var(--cream); }
-.meta { font-family: var(--f-mono); font-size: 0.68rem; color: var(--ink-faint); margin-top: 4px; }
-.price { font-family: var(--f-mono); font-size: 0.85rem; margin-top: 8px; }
-
-.add {
-  width: 46px; height: 46px; border-radius: var(--r-sq);
-  background: var(--cream); color: var(--bg); border: 0;
-  display: grid; place-items: center; font-size: 1.3rem; cursor: pointer; flex-shrink: 0;
-  transition: transform var(--dur-fast) var(--ease);
-}
-.add:active { transform: scale(0.92); }
-.add:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-/* wine/pine son oscuros: el ícono "+" pasa a claro */
-.card.wine .add { background: var(--wine); color: var(--ink); }
-.card.pine .add { background: var(--pine); color: var(--ink); }
+.add { margin-top: 12px; width: 100%; padding: 12px 20px; min-height: 46px; font-size: 0.88rem; }

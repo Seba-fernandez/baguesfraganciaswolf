@@ -1,44 +1,46 @@
-import { GENEROS, MOMENTOS } from '../../data/constants';
-import { rangoPrecio, esPublicable } from '../../lib/producto';
+import { esPublicable, presentacionPorDefecto } from '../../lib/producto';
 import { pesos } from '../../lib/format';
-import ProductThumb from './ProductThumb';
 import useReveal from '../../hooks/useReveal';
+import ProductThumb from './ProductThumb';
 import s from './FeaturedRows.module.css';
 
+/**
+ * Seleccion curada. No repite el tratamiento del catalogo: acá cada aroma se
+ * presenta por el perfume que todos conocen (inspirado_en como titulo), que
+ * es lo que la clienta busca. El catálogo completo, abajo, ordena por nombre
+ * de la casa. Dos secciones, dos trabajos distintos.
+ */
 export default function FeaturedRows({ products, onOpen }) {
-  const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p));
   const ref = useReveal();
+  const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p)).slice(0, 6);
   if (!destacados.length) return null;
 
   return (
     <section className={`tw ${s.section}`} ref={ref}>
-      <div className={s.head}>
-        <h2>Los que no fallan</h2>
-        <span className="tmono">{destacados.length} destacados</span>
-      </div>
-      <div className={s.rows}>
+      <header className={s.head}>
+        <h2 className={s.titulo}>Los que siempre salen</h2>
+        <p className={s.bajada}>Los que más pide la gente, ciclo tras ciclo.</p>
+      </header>
+
+      <div className={s.fila}>
         {destacados.map((p, i) => {
-          const rango = rangoPrecio(p);
-          const destacadaEspecial = i === 1 % destacados.length;
+          const pres = presentacionPorDefecto(p);
           return (
             <button
               key={p.id}
               type="button"
-              className={`${s.row} treveal ${destacadaEspecial ? s.wine : ''}`}
+              className={`${s.item} treveal`}
+              style={{ transitionDelay: `${Math.min(i, 5) * 60}ms` }}
               onClick={() => onOpen(p)}
             >
-              <h3>{p.nombre}</h3>
-              <div className={s.shot}>
-                <ProductThumb src={p.imagen_url} alt={p.nombre} accent={destacadaEspecial ? 'cream' : (i % 2 ? 'pine' : 'wine')} />
-              </div>
-              <p className={s.desc}>
-                {p.descripcion_corta}
-                <span className={`${s.meta} tmono`}>
-                  {(GENEROS[p.genero]?.label || '').toUpperCase()} · {(MOMENTOS[p.momento]?.label || '').toUpperCase()}
-                </span>
-              </p>
-              <span className={s.price}>{rango ? pesos(rango.min) : 'Consultar'}</span>
-              <span className={s.arr} aria-hidden="true">↗</span>
+              <span className={s.media}>
+                <ProductThumb producto={p} ratio="4 / 5" />
+              </span>
+              <span className={s.info}>
+                <span className={s.nombre}>{p.inspirado_en || p.nombre}</span>
+                <span className={s.casa}>{p.nombre}</span>
+                {pres && <span className={`${s.precio} tnum`}>desde {pesos(pres.precio)}</span>}
+              </span>
             </button>
           );
         })}

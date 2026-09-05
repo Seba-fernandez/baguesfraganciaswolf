@@ -1,58 +1,51 @@
 /* ============================================================================
-   TIENDA.CSS — sistema visual "Vitrina Ácida" (MASTER.md v4)
-   Solo se importa en la zona pública (/). El panel admin usa global.css.
+   TIENDA.CSS — sistema visual FOREST (brief permanente, CLAUDE.md)
+   Solo se importa en la zona publica (/). El panel admin usa global.css.
+
+   Tres fuentes, no cuatro: Marcellus display, Figtree cuerpo, EB Garamond
+   italica EXCLUSIVAMENTE para citas de perfumista. Los datos (precios,
+   codigos, ml) van en Figtree con tabular-nums en vez de sumar una mono.
    ============================================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,340;9..144,440;9..144,600&family=Fraunces:ital,opsz,wght@1,9..144,440&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Onest:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600&family=EB+Garamond:ital@1&display=swap');
 
 .tienda {
-  --bg: #1c1613;
-  --bg-2: #251d19;
-  --bg-3: #2f2521;
-  --ink: #f4ece0;
-  --ink-dim: #b7a999;
-  /* Antes #7d6d5d — medía 3.3-3.6:1 sobre --bg-2, bajo el mínimo AA (4.5:1)
-     para texto chico. Auditoría en vivo lo detectó en metadata, tags,
-     "Quitar" del carrito, precio "desde $". Este valor mide ~5.2:1 sobre
-     --bg-2, dentro de la misma familia crema (no rompe la paleta
-     aprobada), y sigue leyendo visiblemente más apagado que --ink-dim. */
-  --ink-faint: #9e8e7c;
-  --line: rgba(244, 236, 224, 0.10);
-  --line-bright: rgba(244, 236, 224, 0.20);
-  /* protagonista (claro) — texto encima siempre --bg */
-  --cream: #efdcb4;
-  --cream-deep: #dfc696;
-  /* bloques secundarios (oscuros) — texto encima siempre --ink, nunca --bg */
-  --wine: #7a1625;
-  --wine-deep: #5c1019;
-  --wine-bright: #d1495f; /* variante legible como TEXTO sobre --bg (wine puro no alcanza contraste) */
-  --pine: #16382f;
-  --pine-deep: #0f2822;
-  --warn: #ffc861;
+  /* --- Paleta Forest. Un solo acento en todo el sitio: ambar. --- */
+  --bg: #0f1512;          /* verde botanico profundo */
+  --bg-2: #151c18;        /* superficie elevada */
+  --bg-3: #1b2420;        /* superficie sobre superficie */
+  --ink: #ebe8dd;         /* hueso. 15.1:1 sobre --bg */
+  --ink-dim: #a8a396;     /* secundario. 7.3:1 */
+  --ink-faint: #8a877c;   /* terciario. 5.1:1 — nunca por debajo de AA */
+  --amber: #d19b45;       /* acento unico. 7.5:1 sobre --bg */
+  --amber-deep: #a97a2f;
+  --amber-soft: rgba(209, 155, 69, 0.14);
+  --line: rgba(235, 232, 221, 0.10);
+  --line-bright: rgba(235, 232, 221, 0.22);
+  --danger: #d98a72;
 
-  --r-card: 22px;
+  /* --- Radios: cero en imagenes y multimedia, pill en botones y chips. --- */
+  --r-media: 0;
   --r-pill: 999px;
-  --r-sq: 16px;
-  --sh-card: 0 20px 50px -24px rgba(0, 0, 0, 0.65);
-  --sh-lift: 0 32px 70px -28px rgba(0, 0, 0, 0.8);
+  --r-surface: 2px;
+
+  --sh-card: 0 18px 44px -22px rgba(0, 0, 0, 0.72);
+  --sh-lift: 0 30px 66px -26px rgba(0, 0, 0, 0.85);
 
   --dur-fast: 160ms;
   --dur: 300ms;
   --dur-slow: 560ms;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --wrap: min(1240px, 92vw);
+  --wrap: min(1280px, 92vw);
 
-  --f-display: 'Fraunces', 'Iowan Old Style', ui-serif, Georgia, serif;
-  --f-ui: 'Bricolage Grotesque', system-ui, sans-serif;
-  --f-body: 'Onest', system-ui, sans-serif;
-  --f-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --f-display: 'Marcellus', 'Iowan Old Style', ui-serif, Georgia, serif;
+  --f-body: 'Figtree', system-ui, -apple-system, sans-serif;
+  --f-quote: 'EB Garamond', Georgia, serif;
 
   position: relative;
   min-height: 100vh;
-  background:
-    radial-gradient(120% 60% at 50% -10%, #26271f 0%, transparent 60%),
-    var(--bg);
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--f-body);
   line-height: 1.55;
@@ -64,56 +57,62 @@
 
 .tw { width: var(--wrap); margin-inline: auto; }
 
-.tmono {
-  font-family: var(--f-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  color: var(--ink-faint);
+/* Datos: precios, ml, codigos. Cifras de ancho fijo para que no bailen. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
 }
-.tmono.up { text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* Etiqueta chica. Maximo un eyebrow cada tres secciones (regla dura). */
+.tlabel {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 500;
+}
 
 .tienda h1, .tienda h2, .tienda h3 {
-  font-family: var(--f-display); font-weight: 600; font-optical-sizing: auto;
-  letter-spacing: -0.01em; line-height: 1.02; color: var(--ink);
+  font-family: var(--f-display);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.06;
+  color: var(--ink);
 }
 
 .tienda a { color: inherit; text-decoration: none; }
 .tienda button { font-family: inherit; }
 
-/* ---------- botones ---------- */
+/* Cita de perfumista: unico lugar donde entra la Garamond italica. */
+.tquote {
+  font-family: var(--f-quote);
+  font-style: italic;
+  color: var(--ink-dim);
+}
+
+/* ---------- botones: radio pill, un solo acento ---------- */
 .tbtn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
-  padding: 13px 13px 13px 22px; border-radius: var(--r-pill);
-  background: var(--cream); color: var(--bg); border: 0;
-  font-family: var(--f-mono); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em;
-  cursor: pointer;
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
-  min-height: 48px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 14px 26px; border-radius: var(--r-pill);
+  background: var(--amber); color: #17130a; border: 0;
+  font-family: var(--f-body); font-size: 0.92rem; font-weight: 600;
+  letter-spacing: 0.01em; cursor: pointer; min-height: 48px;
+  transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
 }
-.tbtn .circ {
-  width: 30px; height: 30px; border-radius: 50%; background: var(--wine);
-  display: grid; place-items: center; color: var(--ink); flex-shrink: 0;
-  transition: transform var(--dur) var(--ease);
-}
-.tbtn:hover { transform: scale(1.015); }
-.tbtn:hover .circ { transform: rotate(-45deg); }
-.tbtn:active { transform: scale(0.98); background: var(--cream-deep); }
+.tbtn:hover { background: #e0aa54; }
+.tbtn:active { transform: scale(0.985); }
 .tbtn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-.tbtn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.tbtn:disabled { opacity: 0.42; cursor: not-allowed; }
 
-.tbtn.ghost { background: none; color: var(--ink-dim); border: 1px solid var(--line); padding: 12px 22px; }
-.tbtn.ghost:hover { color: var(--ink); border-color: var(--line-bright); }
-
-.tbtn.dark { background: var(--bg-2); color: var(--ink); }
-.tbtn.dark .circ { background: var(--cream); color: var(--bg); }
+.tbtn.ghost {
+  background: none; color: var(--ink); border: 1px solid var(--line-bright);
+}
+.tbtn.ghost:hover { background: rgba(235, 232, 221, 0.06); border-color: var(--ink-faint); }
 
 .tbtn.wide { width: 100%; }
 
-/* ---------- cards / superficies ---------- */
-.tcard { background: var(--bg-2); border-radius: var(--r-card); box-shadow: var(--sh-card); }
-
-/* ---------- reveal (IntersectionObserver) ---------- */
-.treveal { opacity: 0; transform: translateY(24px); }
+/* ---------- reveal (IntersectionObserver, ver useReveal.js) ---------- */
+.treveal { opacity: 0; transform: translateY(20px); }
 .trevealed { opacity: 1; transform: none; transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease); }
 
 @media (prefers-reduced-motion: reduce) {
@@ -121,22 +120,14 @@
   .tienda * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
 }
 
-/* ---------- scrollbar chico en chips/filtros ---------- */
 .tienda .tscroll-x { scrollbar-width: none; }
 .tienda .tscroll-x::-webkit-scrollbar { display: none; }
 
-/* ---------- View Transitions (morph card → modal) ----------
-   Los pseudo-elementos ::view-transition-* los pinta el navegador sobre TODO
-   el documento, fuera del árbol de .tienda — por eso van con valores fijos
-   acá, no var(--ease) (esa custom property no llega hasta ahí). */
+/* ---------- View Transitions (morph tarjeta -> ficha) ---------- */
 ::view-transition-group(*) {
-  animation-duration: 420ms;
+  animation-duration: 380ms;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
-  }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }

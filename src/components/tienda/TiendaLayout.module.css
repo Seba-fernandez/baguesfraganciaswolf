@@ -2,51 +2,44 @@
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; gap: 28px;
   padding: 14px max(4vw, calc((100vw - var(--wrap)) / 2));
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(8px);
+  background: rgba(15, 21, 18, 0.86);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
 
-.logo {
-  width: 34px; height: 34px; border-radius: 10px; background: var(--cream);
-  display: grid; place-items: center; color: var(--bg);
-  font-family: var(--f-ui); font-weight: 700; font-size: 15px; flex-shrink: 0;
+.marca {
+  font-family: var(--f-display); font-size: 1.02rem; letter-spacing: 0.04em;
+  color: var(--ink); white-space: nowrap;
 }
+.marcaWolf { color: var(--amber); }
 
-.nav { display: flex; gap: 22px; font-size: 0.85rem; color: var(--ink-dim); }
+.nav { display: none; gap: 24px; font-size: 0.88rem; color: var(--ink-dim); margin-left: 8px; }
 .nav a:hover { color: var(--ink); }
-.spacer { flex: 1; }
+@media (min-width: 620px) { .nav { display: flex; } }
 
-.cartBtn {
-  position: relative; width: 46px; height: 46px; border-radius: 50%;
+.carrito {
+  position: relative; margin-left: auto; flex-shrink: 0;
+  width: 46px; height: 46px; border-radius: 50%;
   background: var(--bg-2); border: 1px solid var(--line); color: var(--ink);
   display: grid; place-items: center; cursor: pointer;
   transition: border-color var(--dur) var(--ease);
 }
-.cartBtn:hover { border-color: var(--line-bright); }
+.carrito:hover { border-color: var(--amber); }
+.carrito:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 .badge {
-  position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; padding: 0 4px;
-  border-radius: 999px; background: var(--wine); color: var(--ink);
-  font-family: var(--f-mono); font-size: 10px; display: grid; place-items: center;
+  position: absolute; top: -2px; right: -2px; min-width: 19px; height: 19px; padding: 0 5px;
+  border-radius: var(--r-pill); background: var(--amber); color: #17130a;
+  font-size: 10.5px; font-weight: 600; display: grid; place-items: center;
 }
 
-.footer { border-top: 1px solid var(--line); padding-top: 56px; overflow: hidden; }
-.fcols { display: flex; gap: 48px; flex-wrap: wrap; padding-bottom: 40px; }
-.fcols h4 { font-size: 0.72rem; margin-bottom: 10px; }
-.fcols a { display: block; font-size: 0.85rem; color: var(--ink-dim); padding: 3px 0; }
-.fcols a:hover { color: var(--ink); }
-.copy { margin-left: auto; text-align: right; }
+.footer { border-top: 1px solid var(--line); padding-block: 52px 60px; margin-top: 40px; }
+.fcols { display: grid; gap: 32px; grid-template-columns: 1fr; }
+@media (min-width: 720px) { .fcols { grid-template-columns: repeat(3, auto) 1fr; gap: 48px; } }
 
-.wordmark {
-  position: relative; line-height: 0.86;
-  font-family: var(--f-display); font-style: italic; font-weight: 440;
-  font-size: clamp(4.2rem, 20vw, 15rem); letter-spacing: -0.01em;
-  margin-bottom: -0.1em; user-select: none;
-  color: transparent; -webkit-text-stroke: 1.4px var(--cream);
-}
-.wordmark sup { font-size: 0.12em; vertical-align: super; }
+.fcol { display: flex; flex-direction: column; gap: 8px; }
+.fcol h4 { margin-bottom: 4px; }
+.fcol a { font-size: 0.9rem; color: var(--ink-dim); }
+.fcol a:hover { color: var(--amber); }
 
-@media (max-width: 560px) {
-  .fcols { flex-direction: column; gap: 24px; }
-  .copy { margin-left: 0; text-align: left; }
-}
+.copy { font-size: 0.8rem; line-height: 1.7; color: var(--ink-faint); }
+@media (min-width: 720px) { .copy { text-align: right; } }

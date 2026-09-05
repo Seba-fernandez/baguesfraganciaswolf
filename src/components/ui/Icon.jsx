@@ -60,6 +60,16 @@ export function IconChat({ size = 22, ...p }) {
   );
 }
 
+export function IconStore({ size = 22, ...p }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base} {...p}>
+      <path d="M3 9l1.5-5h15L21 9" />
+      <path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9" />
+      <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" />
+    </svg>
+  );
+}
+
 export const NAV_ICONS = {
   pedidos: IconClipboard,
   productos: IconBottle,

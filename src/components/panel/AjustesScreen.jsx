@@ -93,6 +93,10 @@ export default function AjustesScreen() {
         />
       </div>
 
+      <a className={`${s.btn} ${s.btnGhost} ${s.btnWide}`} href="/" style={{ textDecoration: 'none' }}>
+        Ver la tienda pública
+      </a>
+
       <button className={`${s.btn} ${s.btnDanger} ${s.btnWide}`} onClick={signOut}>
         Cerrar sesión
       </button>

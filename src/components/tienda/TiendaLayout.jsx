@@ -53,6 +53,10 @@ export default function TiendaLayout({ children, settings }) {
               <a href={`https://instagram.com/${settings.instagram_user}`} target="_blank" rel="noopener">Instagram</a>
             )}
           </div>
+          <div>
+            <h4 className="tmono up">Gestión</h4>
+            <a href="/panel">Panel</a>
+          </div>
           <div className={`tmono ${s.copy}`}>
             © {new Date().getFullYear()} Bagues Grupo Wolf<br />
             {settings?.aclaracion_pedido || 'Venta particular · catálogo Bagués'}

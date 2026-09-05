@@ -61,3 +61,13 @@
   transition: background 0.18s, color 0.18s;
 }
 .logout:hover { background: var(--danger-bg); color: var(--danger); }
+
+/* Salida a la tienda publica: el panel nunca es un callejon sin salida. */
+.verTienda {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 12px 10px; padding: 10px 12px; border-radius: 12px;
+  font-size: 13.5px; color: var(--text-tertiary); text-decoration: none;
+  border: 1px solid var(--glass-border);
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+}
+.verTienda:hover { color: var(--text-primary); background: var(--glass-bg); border-color: var(--glass-border-focus); }

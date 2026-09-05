@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { NAV_PANEL } from '../../data/constants';
-import { NAV_ICONS, IconLogout } from '../ui/Icon';
+import { NAV_ICONS, IconLogout, IconStore } from '../ui/Icon';
 import { useAuth } from '../../contexts/AuthContext';
 import s from './Sidebar.module.css';
 
@@ -33,6 +33,11 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      <a className={s.verTienda} href="/" title="Ir a la tienda pública">
+        <IconStore size={17} />
+        Ver tienda
+      </a>
 
       <div className={s.foot}>
         <span className={s.email} title={user?.email}>{user?.email}</span>

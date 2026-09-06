@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useOrders from '../../hooks/useOrders';
 import useProducts from '../../hooks/useProducts';
 import { ESTADOS_PEDIDO, ESTADOS_PEDIDO_LISTA, ESTADOS_ABIERTOS, PAGO } from '../../data/constants';
@@ -26,6 +26,19 @@ export default function PedidosScreen() {
   }, [orders, verCerrados]);
 
   const abiertos = orders.filter((o) => ESTADOS_ABIERTOS.includes(o.estado)).length;
+  const sinAbrir = orders.filter((o) => o.estado === 'nuevo').length;
+
+  // Reemplaza al bot que avisaba por WhatsApp: ese mensaje era duplicado (el
+  // pedido ya llega en la conversacion de la clienta) y encima disparaba antes
+  // de que se escribieran los items. Aca useOrders ya escucha la tabla por
+  // Realtime, asi que alcanza con reflejarlo en el titulo de la pestana: si el
+  // panel esta abierto de fondo, el pedido nuevo se ve sin repetir nada.
+  useEffect(() => {
+    document.title = sinAbrir > 0
+      ? `(${sinAbrir}) Pedidos nuevos · Bagues Grupo Wolf`
+      : 'Bagues Grupo Wolf · Perfumes';
+    return () => { document.title = 'Bagues Grupo Wolf · Perfumes'; };
+  }, [sinAbrir]);
 
   if (loading) return <div className={s.loading}>Cargando pedidos…</div>;
 

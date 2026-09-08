@@ -39,7 +39,7 @@ export function fotoDe(producto, linea) {
   return null;
 }
 
-export default function ProductThumb({ producto, src, alt, ratio = '3 / 4', linea }) {
+export default function ProductThumb({ producto, src, alt, ratio = '1 / 1', linea }) {
   const imagen = src ?? (producto?.imagen_url || fotoDe(producto, linea));
 
   if (imagen) {

@@ -4,7 +4,13 @@
   border-radius: var(--r-media);
   background: var(--bg-2);
 }
-.img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Las fotos de frasco vienen sobre blanco: el contenedor acompana para que no
+   se vea un recuadro claro flotando sobre el verde. */
+.wrap:has(> .img) { background: #fff; }
+/* Las fotos vienen cuadradas y el contenedor tambien, asi que cover no
+   recorta nada. contain como respaldo por si alguna viene con otra forma:
+   antes que cortar un frasco al medio, preferimos verlo entero. */
+.img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
 /* Placeholder tipografico. Tres tonos derivados del mismo verde, para que
    104 tarjetas sin foto no se lean como una pared plana. */

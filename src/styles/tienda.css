@@ -19,8 +19,12 @@
      fondo plano: el halo ambar y los rayos aclaran algunas zonas, y ahi es
      donde el texto mas tenue se cae. Con el fondo plano daban de sobra;
      compuestas las capas, el terciario quedaba en 3.9:1 y hubo que subirlo. */
-  --ink-dim: #c8c6bd;     /* secundario. 8.2:1 en el peor fondo */
-  --ink-faint: #9c9c94;   /* terciario. 5.1:1 en el peor fondo, nunca bajo AA */
+  /* Medido sobre los pixeles reales de la textura, no estimado: su punto mas
+     claro es rgb(78,93,64). Con el terciario anterior, cualquier fondo
+     visible lo dejaba abajo del minimo; por eso el fondo se veia apagado. Se
+     aclararon los dos niveles para poder subir la textura al doble. */
+  --ink-dim: #d4d2c9;     /* secundario */
+  --ink-faint: #bfbeb4;   /* terciario. 4.9:1 en el pixel mas claro del fondo */
   --amber: #d19b45;       /* acento unico. 7.5:1 sobre --bg */
   --amber-deep: #a97a2f;
   --amber-soft: rgba(209, 155, 69, 0.14);
@@ -111,8 +115,10 @@
    3.95:1 y el ambar de la marca en 1.96:1, o sea que el acento desaparecia.
    La composicion se rehizo en verde y ambar.
 
-   La opacidad no es a ojo: sobre la zona mas clara de la textura, el texto
-   terciario aguanta AA hasta 0.4. Va en 0.32 para tener margen.
+   La opacidad sale de medir los pixeles: el punto mas claro de la textura es
+   rgb(78,93,64). Con el texto terciario aclarado, 0.62 deja 4.9:1 en ese
+   punto y 5.7:1 en el percentil 99. Mas arriba de eso no hay color de texto
+   chico que aguante, ni siquiera casi blanco.
 
    Estatico a proposito. Es un div con position:fixed y no
    background-attachment:fixed, que en telefonos obliga a repintar en cada
@@ -126,7 +132,7 @@
   background-image: url('/fondo.jpg');
   background-size: cover;
   background-position: center;
-  opacity: 0.32;
+  opacity: 0.62;
 }
 /* Aureola ambar tenue, para que el acento de la marca este tambien en el aire. */
 .tfondo::after {

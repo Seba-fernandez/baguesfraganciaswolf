@@ -105,49 +105,35 @@
   color: var(--ink-dim);
 }
 
-/* ---------- fondo vivo ----------
-   Rayos de luz hechos con gradientes, no con una foto: una imagen de fondo
-   pesaria cientos de kB y traeria zonas claras impredecibles que rompen la
-   lectura. Aca el brillo maximo es 5%, medido para no tocar el contraste del
-   texto. Se anima solo con transform, que corre en la placa de video, y se
-   detiene con prefers-reduced-motion. */
+/* ---------- fondo ----------
+   Textura propia en la paleta Forest (public/fondo.jpg, 84 kB). Se genero a
+   partir de una referencia que era roja: medida, esa foto dejaba el texto en
+   3.95:1 y el ambar de la marca en 1.96:1, o sea que el acento desaparecia.
+   La composicion se rehizo en verde y ambar.
+
+   La opacidad no es a ojo: sobre la zona mas clara de la textura, el texto
+   terciario aguanta AA hasta 0.4. Va en 0.32 para tener margen.
+
+   Estatico a proposito. Es un div con position:fixed y no
+   background-attachment:fixed, que en telefonos obliga a repintar en cada
+   cuadro del scroll. */
 .tfondo {
   position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  background: var(--bg);
+}
+.tfondo::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url('/fondo.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.32;
+}
+/* Aureola ambar tenue, para que el acento de la marca este tambien en el aire. */
+.tfondo::after {
+  content: ''; position: absolute; inset: 0;
   background:
-    radial-gradient(58% 42% at 14% 4%, rgba(209, 155, 69, 0.10) 0%, transparent 62%),
-    radial-gradient(48% 40% at 88% 12%, rgba(209, 155, 69, 0.05) 0%, transparent 66%),
-    var(--bg);
-}
-.tfondo::before,
-.tfondo::after {
-  content: ''; position: absolute; inset: -40%;
-  background: repeating-linear-gradient(
-    74deg,
-    transparent 0 46px,
-    rgba(235, 232, 221, 0.05) 46px 48px,
-    transparent 48px 150px
-  );
-  filter: blur(5px);
-  will-change: transform;
-  animation: rayos 34s linear infinite;
-}
-.tfondo::after {
-  background: repeating-linear-gradient(
-    66deg,
-    transparent 0 90px,
-    rgba(209, 155, 69, 0.045) 90px 93px,
-    transparent 93px 260px
-  );
-  filter: blur(9px);
-  animation-duration: 58s;
-  animation-direction: reverse;
-}
-@keyframes rayos {
-  from { transform: translate3d(-6%, 4%, 0); }
-  to   { transform: translate3d(10%, -12%, 0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tfondo::before, .tfondo::after { animation: none; }
+    radial-gradient(52% 38% at 12% 2%, rgba(209, 155, 69, 0.10) 0%, transparent 62%),
+    radial-gradient(44% 36% at 90% 96%, rgba(209, 155, 69, 0.06) 0%, transparent 64%);
 }
 
 /* El contenido va por encima del fondo fijo. */

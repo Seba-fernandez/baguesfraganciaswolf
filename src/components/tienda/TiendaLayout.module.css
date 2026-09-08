@@ -1,6 +1,6 @@
 .bar {
   position: sticky; top: 0; z-index: 30;
-  display: flex; align-items: center; gap: 28px;
+  display: flex; align-items: center; gap: 10px;
   padding: 14px max(4vw, calc((100vw - var(--wrap)) / 2));
   background: rgba(15, 21, 18, 0.86);
   backdrop-filter: blur(10px);
@@ -9,15 +9,26 @@
 
 .marca {
   font-family: var(--f-display); font-size: 1.02rem; letter-spacing: 0.04em;
-  color: var(--ink); white-space: nowrap;
+  color: var(--ink); white-space: nowrap; flex-shrink: 0;
 }
 .marcaWolf { color: var(--amber); }
+@media (max-width: 619px) {
+  .marca { font-size: 0.94rem; }
+  .marcaWolf { display: none; }
+}
 
-.nav { display: none; gap: 8px; font-size: 0.88rem; color: var(--ink-dim); margin-left: 4px; }
+/* El header no puede quedarse sin navegacion en el celular, que es donde
+   compran: una vez que bajas al catalogo, sin esto no hay como volver a
+   "Como funciona" salvo scrolleando a mano. Medido: los dos links entran sin
+   overflow desde 360px, asi que se muestran siempre y no hace falta esconder
+   ninguno. */
+.nav { display: flex; gap: 2px; font-size: 0.84rem; color: var(--ink-dim); margin-left: 2px; }
 /* Area de toque real: 22px de alto de texto no alcanza para un dedo. */
-.nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; }
+.nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; white-space: nowrap; }
 .nav a:hover { color: var(--ink); }
-@media (min-width: 620px) { .nav { display: flex; } }
+@media (min-width: 620px) {
+  .nav { gap: 8px; font-size: 0.88rem; margin-left: 4px; }
+}
 
 .carrito {
   position: relative; margin-left: auto; flex-shrink: 0;

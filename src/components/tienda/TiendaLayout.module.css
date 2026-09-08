@@ -54,3 +54,14 @@
 
 .copy { font-size: 0.8rem; line-height: 1.7; color: var(--ink-faint); }
 @media (min-width: 720px) { .copy { text-align: right; } }
+
+/* Aviso legal completo. Va abajo de todo, con el cuerpo mas chico del sitio,
+   pero legible: 5.1:1 de contraste. Es el respaldo del aviso corto que
+   acompana al catalogo. */
+.legal {
+  margin-top: 40px; padding-top: 26px;
+  border-top: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 10px;
+  max-width: 78ch;
+}
+.legal p { font-size: 0.76rem; line-height: 1.72; color: var(--ink-faint); }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
-import { presentacionesActivas, presentacionPorDefecto } from '../../lib/producto';
+import { presentacionesActivas, presentacionPorDefecto, tituloDe, nombrePropioDe, lineaLabel } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import ProductThumb from './ProductThumb';
 import s from './ProductCard.module.css';
@@ -19,6 +19,10 @@ export default function ProductCard({ producto, onOpen, promos = {}, vtName = 'n
   const opciones = presentacionesActivas(producto);
   const [ml, setMl] = useState(() => presentacionPorDefecto(producto)?.ml ?? null);
   const elegida = opciones.find((p) => p.ml === ml) || opciones[0] || null;
+  const titulo = tituloDe(producto);
+  // La aclaracion solo cuando aporta: si el catalogo no censuro el nombre,
+  // titulo y nombre de catalogo son el mismo y repetirlo es ruido.
+  const aclarar = titulo.toLowerCase() !== (producto.nombre || '').toLowerCase();
 
   return (
     <article className={`${s.card} tglass-lite`}>
@@ -34,11 +38,11 @@ export default function ProductCard({ producto, onOpen, promos = {}, vtName = 'n
 
       <div className={s.body}>
         <button type="button" className={s.titulo} onClick={() => onOpen(producto)}>
-          {producto.nombre}
+          {titulo}
         </button>
-        {producto.inspirado_en && (
-          <p className={s.inspirado}>inspirado en {producto.inspirado_en}</p>
-        )}
+        <p className={s.inspirado}>
+          {aclarar ? `versión inspirada · ${producto.nombre}` : 'versión inspirada'}
+        </p>
 
         <div className={s.opciones} role="group" aria-label="Elegir presentación">
           {opciones.map((p) => {
@@ -52,7 +56,12 @@ export default function ProductCard({ producto, onOpen, promos = {}, vtName = 'n
                 aria-pressed={activa}
                 onClick={() => setMl(p.ml)}
               >
-                <span className={`${s.ml} tnum`}>{p.ml} ml</span>
+                <span className={s.opIzq}>
+                  <span className={`${s.ml} tnum`}>{p.ml} ml</span>
+                  <span className={s.linea}>
+                    {lineaLabel(p)}{nombrePropioDe(p, titulo) ? ` · ${nombrePropioDe(p, titulo)}` : ''}
+                  </span>
+                </span>
                 <span className={s.precios}>
                   {p.precio_anterior ? (
                     <span className={`${s.antes} tnum`}>{pesos(p.precio_anterior)}</span>

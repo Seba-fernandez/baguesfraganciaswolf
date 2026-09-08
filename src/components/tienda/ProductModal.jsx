@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import { GENEROS, MOMENTOS } from '../../data/constants';
-import { presentacionesActivas, presentacionPorDefecto, tieneNotas } from '../../lib/producto';
+import { presentacionesActivas, presentacionPorDefecto, tieneNotas, tituloDe, nombrePropioDe, lineaLabel } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import ProductThumb from './ProductThumb';
 import s from './ProductModal.module.css';
@@ -30,6 +30,8 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
   }, [onClose]);
 
   const elegida = opciones.find((p) => p.ml === ml) || null;
+  const titulo = tituloDe(producto);
+  const aclarar = titulo.toLowerCase() !== (producto.nombre || '').toLowerCase();
   const promo = elegida?.grupo_promo ? promos[elegida.grupo_promo] : null;
 
   function sumar() {
@@ -55,10 +57,12 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
             {producto.familia_olfativa ? ` · ${producto.familia_olfativa.toUpperCase()}` : ''}
           </p>
 
-          <h2 className={s.nombre}>{producto.nombre}</h2>
-          {producto.inspirado_en && (
-            <p className={s.inspirado}>inspirado en {producto.inspirado_en}</p>
-          )}
+          <h2 className={s.nombre}>{titulo}</h2>
+          <p className={s.inspirado}>
+            {aclarar
+              ? `Versión inspirada. En el catálogo figura como ${producto.nombre}.`
+              : 'Versión inspirada de la casa Bagués.'}
+          </p>
 
           {producto.descripcion_larga && <p className={s.desc}>{producto.descripcion_larga}</p>}
 
@@ -93,11 +97,10 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
                       >
                         <span className={`${s.opMl} tnum`}>{p.ml} ml</span>
                         <span className={`${s.opPrecio} tnum`}>{pesos(p.precio)}</span>
-                        {p.nombre_proveedor && (
-                          <span className={s.opProv}>
-                            {p.linea === 'unlock' ? 'Unlock' : 'Bagues'} · {p.nombre_proveedor}
-                          </span>
-                        )}
+                        <span className={s.opProv}>
+                          {lineaLabel(p)}
+                          {nombrePropioDe(p, titulo) ? ` · frasco "${nombrePropioDe(p, titulo)}"` : ''}
+                        </span>
                         {p.grupo_promo && promos[p.grupo_promo] && <span className={s.opSello}>2x1</span>}
                       </button>
                     );

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { calcularCarrito } from '../lib/promos';
+import { tituloDe } from '../lib/producto';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'bgw-carrito-v2'; // v2: el item ahora lleva codigo y grupo_promo
@@ -37,8 +38,8 @@ export function CartProvider({ children, promosCiclo = [] }) {
       return [...prev, {
         key,
         productId: producto.id,
-        nombre: producto.nombre,
-        inspirado_en: producto.inspirado_en || '',
+        nombre: tituloDe(producto),
+        nombre_catalogo: producto.nombre || '',
         ml: presentacion.ml ?? null,
         codigo: presentacion.codigo || '',
         linea: presentacion.linea || '',

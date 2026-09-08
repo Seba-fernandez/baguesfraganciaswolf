@@ -60,3 +60,33 @@ export function esPublicable(producto) {
   if (/^\d+$/.test(nombre)) return false;
   return presentacionesActivas(producto).length > 0;
 }
+
+/**
+ * Titulo que se muestra. El catalogo de la proveedora censura los nombres
+ * ("S*UV*GE HOM"), pero guarda aparte el perfume real en `inspirado_en`. En la
+ * web mostramos el nombre completo, que es lo que la clienta busca y escribe.
+ */
+export function tituloDe(producto) {
+  return producto?.inspirado_en || producto?.nombre || '';
+}
+
+/**
+ * Nombre propio que le pone la proveedora a esa presentacion, cuando aporta
+ * algo. Los frascos de 50 ml de Bagues llevan nombre propio (Arizona, Granada)
+ * y ese dato sirve: es como figura en el envase. Los de Unlock repiten el
+ * nombre censurado del aroma, que ya esta en el titulo, asi que no se muestra.
+ */
+export function nombrePropioDe(presentacion, titulo = '') {
+  const n = (presentacion?.nombre_proveedor || '').trim();
+  if (!n) return null;
+  if (n.includes('*')) return null; // es la version censurada, no un nombre propio
+  // Si repite el titulo del aroma no aporta nada y solo hace ruido: pasa
+  // cuando el nombre del catalogo no es una marca y no vino censurado.
+  if (n.toLowerCase() === String(titulo).trim().toLowerCase()) return null;
+  return n;
+}
+
+/** Etiqueta de la linea: "Bagues" | "Unlock". */
+export function lineaLabel(presentacion) {
+  return presentacion?.linea === 'unlock' ? 'Unlock' : 'Bagues';
+}

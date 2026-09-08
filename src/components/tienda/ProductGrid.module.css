@@ -1,33 +1,75 @@
-.section { padding-block: clamp(64px, 9vw, 120px); }
+.section { padding-block: clamp(56px, 8vw, 104px); }
 
-.head { max-width: 46ch; margin-bottom: 30px; }
+.head { max-width: 46ch; margin-bottom: 22px; scroll-margin-top: 96px; }
 .titulo { font-size: clamp(2rem, 4.6vw, 3.2rem); }
 .bajada { margin-top: 12px; color: var(--ink-dim); font-size: 1rem; }
+/* Aviso legal a la vista, no escondido en el pie: acompaña al catalogo sin
+   competirle. El texto completo esta en el pie de la pagina. */
+.aviso {
+  margin-top: 14px; padding-left: 12px;
+  border-left: 2px solid var(--amber-deep);
+  font-size: 0.78rem; line-height: 1.6; color: var(--ink-faint); max-width: 62ch;
+}
 
-.controles { display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px; }
+/* La barra queda pegada abajo del encabezado del sitio: se puede cambiar de
+   filtro estando a mitad del catalogo, sin volver arriba. */
+.barra {
+  position: sticky; top: 68px; z-index: 20;
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 14px; margin-bottom: 26px;
+  border-radius: var(--r-surface);
+}
+@media (min-width: 900px) {
+  .barra { flex-direction: row; align-items: center; flex-wrap: wrap; gap: 14px; padding: 14px 18px; }
+}
 
-.buscador { position: relative; max-width: 460px; width: 100%; }
 .input {
-  width: 100%; min-height: 48px; padding: 13px 18px;
-  background: var(--bg-2); border: 1px solid var(--line);
+  width: 100%; min-height: 46px; padding: 12px 18px;
+  background: rgba(15, 21, 18, 0.55); border: 1px solid var(--line);
   border-radius: var(--r-pill); color: var(--ink); font-family: inherit; font-size: 0.94rem;
 }
 .input::placeholder { color: var(--ink-faint); }
 .input:focus { outline: none; border-color: var(--amber); }
+@media (min-width: 900px) { .input { width: 280px; flex-shrink: 0; } }
 
-.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.chips {
+  display: flex; align-items: center; gap: 7px;
+  overflow-x: auto; padding-bottom: 2px; flex: 1; min-width: 0;
+}
+
 .chip {
-  flex-shrink: 0; min-height: 40px; padding: 9px 16px; border-radius: var(--r-pill);
-  font-size: 0.8rem; font-weight: 500; letter-spacing: 0.02em;
+  flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px;
+  min-height: 40px; padding: 8px 15px; border-radius: var(--r-pill);
+  font-size: 0.82rem; font-weight: 500; white-space: nowrap;
   background: none; border: 1px solid var(--line); color: var(--ink-dim); cursor: pointer;
   transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
 .chip:hover { color: var(--ink); border-color: var(--line-bright); }
-.chipOn { background: var(--amber); border-color: var(--amber); color: #17130a; }
+.chip:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+/* Prendida: se ve prendida de lejos, no solo por un cambio de tono. */
+.chipOn { background: var(--amber); border-color: var(--amber); color: #17130a; font-weight: 600; }
+.chipOn:hover { color: #17130a; }
+.tilde { font-size: 0.74rem; line-height: 1; }
+
 .chipPromo { border-color: var(--amber-deep); color: var(--amber); }
 .chipPromo.chipOn { color: #17130a; }
 
-.conteo { font-size: 0.78rem; color: var(--ink-faint); margin-bottom: 20px; }
+/* Separadores entre familias de filtros: se leen como grupos sin titulos. */
+.corte {
+  flex-shrink: 0; width: 1px; height: 22px;
+  background: var(--line-bright); margin-inline: 3px;
+}
+
+.resumen { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.conteo { font-size: 0.78rem; color: var(--ink-faint); white-space: nowrap; }
+.limpiar {
+  min-height: 40px; padding: 8px 14px; border-radius: var(--r-pill);
+  background: none; border: 1px solid var(--line-bright); color: var(--ink);
+  font-family: inherit; font-size: 0.78rem; cursor: pointer; white-space: nowrap;
+}
+.limpiar:hover { border-color: var(--amber); color: var(--amber); }
+.limpiar:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
 .grid {
   display: grid; gap: 16px;
@@ -35,6 +77,28 @@
 }
 @media (min-width: 1100px) { .grid { gap: 20px; } }
 
-.vacio { padding: 56px 0 72px; max-width: 44ch; }
+/* Paginado: doce aromas por pantalla en vez de ciento cuatro de corrido.
+   Cambia el contenido sin recargar la pagina. */
+.paginador {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 34px; flex-wrap: wrap;
+}
+.flecha, .numero {
+  min-width: 44px; min-height: 44px; padding: 0 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--r-pill); background: none;
+  border: 1px solid var(--line); color: var(--ink-dim);
+  font-family: inherit; font-size: 0.88rem; cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.flecha:hover:not(:disabled), .numero:hover { color: var(--ink); border-color: var(--line-bright); }
+.flecha:disabled { opacity: 0.32; cursor: not-allowed; }
+.flecha:focus-visible, .numero:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.numeroOn { background: var(--amber); border-color: var(--amber); color: #17130a; font-weight: 600; }
+.numeroOn:hover { color: #17130a; }
+.numeros { display: flex; align-items: center; gap: 6px; }
+.puntos { color: var(--ink-faint); padding: 0 2px; }
+
+.vacio { padding: 48px 0 64px; max-width: 44ch; }
 .vacioTitulo { font-family: var(--f-display); font-size: 1.5rem; color: var(--ink); }
 .vacioTexto { margin: 12px 0 22px; color: var(--ink-dim); font-size: 0.95rem; }

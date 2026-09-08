@@ -65,6 +65,28 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
             {settings?.aclaracion_pedido || 'Venta particular en Córdoba'}
           </p>
         </div>
+
+        <div className={`tw ${s.legal}`}>
+          <h4 className="tlabel">Aviso</h4>
+          <p>
+            Este sitio es de exhibición. No procesa pagos ni concreta ventas: el pedido se
+            deriva a una conversación de WhatsApp con un asesor, donde se confirman
+            disponibilidad, precio final y entrega.
+          </p>
+          <p>
+            Todos los productos ofrecidos son fragancias de la casa Bagués, elaboradas y
+            rotuladas por esa firma, y se comercializan como versiones inspiradas. Las marcas
+            de perfumería que se mencionan pertenecen a sus respectivos titulares y se citan
+            únicamente como referencia olfativa descriptiva, para que la persona compradora
+            pueda identificar el perfil aromático. No existe vínculo, licencia, patrocinio ni
+            autorización de esas marcas, ni se ofrecen los productos originales. Cada envase
+            lleva la identificación de su fabricante.
+          </p>
+          <p>
+            Bagues Grupo Wolf es un revendedor particular independiente y no representa a
+            ninguna de las marcas citadas.
+          </p>
+        </div>
       </footer>
 
       <CartSheet settings={settings} onVerPromo={onVerPromo} />

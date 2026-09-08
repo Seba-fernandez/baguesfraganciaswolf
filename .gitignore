@@ -5,4 +5,4 @@ dist
 
 # Skills de la comunidad: se reinstalan con `npx skills install` (skills-lock.json sí se versiona)
 .claude/skills/
-.agents/
+.agents/.tmp/

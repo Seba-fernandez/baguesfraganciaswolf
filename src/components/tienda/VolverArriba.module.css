@@ -1,0 +1,38 @@
+/* Vidrio gris, apenas presente. Se agranda el area de toque a 46px pero se
+   dibuja mas chico, para que sea comodo sin ser un boton grande encima del
+   contenido. */
+.boton {
+  position: fixed;
+  right: 16px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: 46px; height: 46px;
+  display: grid; place-items: center;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(235, 232, 221, 0.16);
+  background: rgba(28, 34, 31, 0.42);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  color: var(--ink-dim);
+  cursor: pointer;
+
+  /* Escondido: no ocupa lugar ni recibe toques hasta que aparece. */
+  opacity: 0; transform: translateY(10px); pointer-events: none;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease),
+              color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.visible { opacity: 1; transform: none; pointer-events: auto; }
+
+.boton:hover { color: var(--ink); border-color: rgba(235, 232, 221, 0.3); }
+.boton:active { transform: scale(0.94); }
+.boton:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+/* En pantalla ancha se corre un poco mas adentro y queda mas discreto. */
+@media (min-width: 900px) {
+  .boton { right: 26px; bottom: 26px; width: 44px; height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boton { transition: opacity 1ms; transform: none; }
+  .visible { transform: none; }
+}

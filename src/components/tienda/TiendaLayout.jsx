@@ -1,5 +1,6 @@
 import { useCart } from '../../contexts/CartContext';
 import CartSheet from './CartSheet';
+import VolverArriba from './VolverArriba';
 import '../../styles/tienda.css';
 import s from './TiendaLayout.module.css';
 
@@ -11,7 +12,7 @@ const CartIcon = () => (
 );
 
 export default function TiendaLayout({ children, settings, onVerPromo }) {
-  const { count, setOpen } = useCart();
+  const { count, open, setOpen } = useCart();
 
   return (
     <div className="tienda">
@@ -88,6 +89,8 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
           </p>
         </div>
       </footer>
+
+      <VolverArriba oculto={open} />
 
       <CartSheet settings={settings} onVerPromo={onVerPromo} />
     </div>

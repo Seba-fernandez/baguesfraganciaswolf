@@ -47,7 +47,7 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
         <button ref={cerrarRef} className={s.cerrar} onClick={onClose} aria-label="Cerrar">✕</button>
 
         <div className={s.media} style={{ viewTransitionName: `aroma-${producto.id}` }}>
-          <ProductThumb producto={producto} ratio="1 / 1" />
+          <ProductThumb producto={producto} ratio="1 / 1" linea={elegida?.linea} />
         </div>
 
         <div className={s.info}>

@@ -20,7 +20,8 @@
   border-radius: var(--r-surface);
 }
 @media (min-width: 900px) {
-  .barra { flex-direction: row; align-items: center; flex-wrap: wrap; gap: 14px; padding: 14px 18px; }
+  .barra { flex-direction: row; align-items: flex-start; flex-wrap: wrap; gap: 14px; padding: 16px 18px; }
+  .barra .input { align-self: center; }
 }
 
 .input {
@@ -32,9 +33,12 @@
 .input:focus { outline: none; border-color: var(--amber); }
 @media (min-width: 900px) { .input { width: 280px; flex-shrink: 0; } }
 
+/* Las pastillas bajan de linea en vez de esconderse en una tira que se
+   corta. Un filtro que hay que descubrir arrastrando es un filtro que no se
+   usa: en la pantalla ancha se cortaba justo donde empezaban las promos. */
 .chips {
-  display: flex; align-items: center; gap: 7px;
-  overflow-x: auto; padding-bottom: 2px; flex: 1; min-width: 0;
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: 7px; flex: 1; min-width: 0;
 }
 
 .chip {
@@ -56,10 +60,14 @@
 .chipPromo.chipOn { color: #17130a; }
 
 /* Separadores entre familias de filtros: se leen como grupos sin titulos. */
+/* En una sola linea el separador es una barra vertical; cuando las pastillas
+   bajan de linea, una barra suelta al principio de un renglon queda huerfana,
+   asi que ahi desaparece. */
 .corte {
   flex-shrink: 0; width: 1px; height: 22px;
   background: var(--line-bright); margin-inline: 3px;
 }
+@media (max-width: 1099px) { .corte { display: none; } }
 
 .resumen { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .conteo { font-size: 0.78rem; color: var(--ink-faint); white-space: nowrap; }

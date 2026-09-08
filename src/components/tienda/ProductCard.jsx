@@ -33,7 +33,7 @@ export default function ProductCard({ producto, onOpen, promos = {}, vtName = 'n
         aria-label={`Ver ${producto.inspirado_en || producto.nombre}`}
         style={{ viewTransitionName: vtName }}
       >
-        <ProductThumb producto={producto} />
+        <ProductThumb producto={producto} linea={elegida?.linea} />
       </button>
 
       <div className={s.body}>

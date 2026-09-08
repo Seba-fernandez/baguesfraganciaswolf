@@ -3,7 +3,6 @@
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
   max-width: 480px; margin: 0 auto;
   max-height: 90dvh; overflow-y: auto; overscroll-behavior: contain;
-  background: var(--bg-2); border-top: 1px solid var(--line-bright);
   border-radius: var(--r-surface) var(--r-surface) 0 0;
   padding: 22px 22px calc(28px + env(safe-area-inset-bottom));
   animation: up 0.28s var(--ease);
@@ -11,7 +10,7 @@
 @media (min-width: 768px) {
   .sheet {
     left: auto; right: 24px; bottom: 24px; max-width: 420px;
-    border: 1px solid var(--line-bright); border-radius: var(--r-surface);
+    border-radius: var(--r-surface);
   }
 }
 

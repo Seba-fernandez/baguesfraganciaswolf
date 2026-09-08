@@ -1,7 +1,6 @@
 .card {
   display: flex; flex-direction: column;
-  background: var(--bg-2);
-  border: 1px solid var(--line);
+  /* el fondo y el canto los pone .tglass-lite */
   border-radius: var(--r-surface);
   overflow: hidden;
   transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
@@ -9,7 +8,8 @@
   content-visibility: auto;
   contain-intrinsic-size: auto 420px;
 }
-.card:hover { border-color: var(--line-bright); transform: translateY(-2px); }
+.card:hover { transform: translateY(-2px); }
+.card:hover::before { opacity: 1; filter: brightness(1.6); }
 
 .media { display: block; width: 100%; border: 0; padding: 0; background: none; cursor: pointer; }
 

@@ -40,7 +40,7 @@ export default function Hero({ settings, promos = {}, onVerPromo, totalAromas })
               <button
                 key={p.grupo}
                 type="button"
-                className={s.promo}
+                className={`${s.promo} tglass`}
                 onClick={() => onVerPromo?.(p.grupo)}
               >
                 <span className={s.promoSello}>2x1</span>

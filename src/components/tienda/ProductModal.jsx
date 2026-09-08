@@ -41,7 +41,7 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
   return (
     <>
       <div className={s.overlay} onClick={onClose} />
-      <div className={s.sheet} role="dialog" aria-modal="true" aria-label={producto.inspirado_en || producto.nombre}>
+      <div className={`${s.sheet} tglass`} role="dialog" aria-modal="true" aria-label={producto.inspirado_en || producto.nombre}>
         <button ref={cerrarRef} className={s.cerrar} onClick={onClose} aria-label="Cerrar">✕</button>
 
         <div className={s.media} style={{ viewTransitionName: `aroma-${producto.id}` }}>

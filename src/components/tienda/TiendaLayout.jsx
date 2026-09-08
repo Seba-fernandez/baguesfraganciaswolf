@@ -15,7 +15,9 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
 
   return (
     <div className="tienda">
-      <header className={s.bar}>
+      <div className="tfondo" aria-hidden="true" />
+
+      <header className={`${s.bar} tglass`}>
         <a href="#inicio" className={s.marca}>
           Bagues <span className={s.marcaWolf}>Grupo Wolf</span>
         </a>

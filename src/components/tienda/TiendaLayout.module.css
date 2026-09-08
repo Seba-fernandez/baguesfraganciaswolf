@@ -2,9 +2,7 @@
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; gap: 10px;
   padding: 14px max(4vw, calc((100vw - var(--wrap)) / 2));
-  background: rgba(15, 21, 18, 0.86);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 0;
 }
 
 .marca {

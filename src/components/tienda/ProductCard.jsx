@@ -21,7 +21,7 @@ export default function ProductCard({ producto, onOpen, promos = {}, vtName = 'n
   const elegida = opciones.find((p) => p.ml === ml) || opciones[0] || null;
 
   return (
-    <article className={s.card}>
+    <article className={`${s.card} tglass-lite`}>
       <button
         type="button"
         className={s.media}

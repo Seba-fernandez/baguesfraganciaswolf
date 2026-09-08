@@ -44,7 +44,7 @@ export default function CartSheet({ settings, onVerPromo }) {
   return (
     <>
       <div className={s.overlay} onClick={cerrar} />
-      <div className={s.sheet} role="dialog" aria-modal="true" aria-label="Tu pedido">
+      <div className={`${s.sheet} tglass`} role="dialog" aria-modal="true" aria-label="Tu pedido">
         {paso === 'carrito' && (
           <>
             <div className={s.head}>

@@ -36,11 +36,10 @@
 .promo {
   display: flex; align-items: center; gap: 16px; width: 100%;
   padding: 16px 18px; text-align: left; cursor: pointer;
-  background: var(--bg-2); border: 1px solid var(--line);
   border-radius: var(--r-surface); color: var(--ink);
   transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
-.promo:hover { border-color: var(--amber); background: var(--bg-3); }
+.promo:hover::before { filter: brightness(1.7); }
 .promo:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
 .promoSello {

@@ -15,13 +15,28 @@
   --bg-2: #151c18;        /* superficie elevada */
   --bg-3: #1b2420;        /* superficie sobre superficie */
   --ink: #ebe8dd;         /* hueso. 15.1:1 sobre --bg */
-  --ink-dim: #a8a396;     /* secundario. 7.3:1 */
-  --ink-faint: #8a877c;   /* terciario. 5.1:1 — nunca por debajo de AA */
+  /* Los ratios estan medidos contra el PEOR fondo posible, no contra el
+     fondo plano: el halo ambar y los rayos aclaran algunas zonas, y ahi es
+     donde el texto mas tenue se cae. Con el fondo plano daban de sobra;
+     compuestas las capas, el terciario quedaba en 3.9:1 y hubo que subirlo. */
+  --ink-dim: #c8c6bd;     /* secundario. 8.2:1 en el peor fondo */
+  --ink-faint: #9c9c94;   /* terciario. 5.1:1 en el peor fondo, nunca bajo AA */
   --amber: #d19b45;       /* acento unico. 7.5:1 sobre --bg */
   --amber-deep: #a97a2f;
   --amber-soft: rgba(209, 155, 69, 0.14);
   --line: rgba(235, 232, 221, 0.10);
   --line-bright: rgba(235, 232, 221, 0.22);
+
+  /* --- Vidrio. El desenfoque solo va en superficies flotantes (encabezado,
+     pedido, ficha): backdrop-filter es de lo mas caro que pinta un navegador
+     y ponerlo en las 104 tarjetas funde un celular de gama media. Las
+     tarjetas usan .tglass-lite, que se ve translucido igual porque el fondo
+     se ve a traves, pero no desenfoca nada. --- */
+  --glass-bg: rgba(21, 28, 24, 0.52);
+  --glass-bg-lite: rgba(21, 28, 24, 0.42);
+  --glass-blur: blur(14px) saturate(140%);
+  --glass-canto: rgba(235, 232, 221, 0.34);
+  --glass-sombra: 0 18px 44px -22px rgba(0, 0, 0, 0.72), inset 0 -4px 15px rgba(0, 0, 0, 0.10);
   --danger: #d98a72;
 
   /* --- Radios: cero en imagenes y multimedia, pill en botones y chips. --- */
@@ -88,6 +103,110 @@
   font-family: var(--f-quote);
   font-style: italic;
   color: var(--ink-dim);
+}
+
+/* ---------- fondo vivo ----------
+   Rayos de luz hechos con gradientes, no con una foto: una imagen de fondo
+   pesaria cientos de kB y traeria zonas claras impredecibles que rompen la
+   lectura. Aca el brillo maximo es 5%, medido para no tocar el contraste del
+   texto. Se anima solo con transform, que corre en la placa de video, y se
+   detiene con prefers-reduced-motion. */
+.tfondo {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  background:
+    radial-gradient(58% 42% at 14% 4%, rgba(209, 155, 69, 0.10) 0%, transparent 62%),
+    radial-gradient(48% 40% at 88% 12%, rgba(209, 155, 69, 0.05) 0%, transparent 66%),
+    var(--bg);
+}
+.tfondo::before,
+.tfondo::after {
+  content: ''; position: absolute; inset: -40%;
+  background: repeating-linear-gradient(
+    74deg,
+    transparent 0 46px,
+    rgba(235, 232, 221, 0.05) 46px 48px,
+    transparent 48px 150px
+  );
+  filter: blur(5px);
+  will-change: transform;
+  animation: rayos 34s linear infinite;
+}
+.tfondo::after {
+  background: repeating-linear-gradient(
+    66deg,
+    transparent 0 90px,
+    rgba(209, 155, 69, 0.045) 90px 93px,
+    transparent 93px 260px
+  );
+  filter: blur(9px);
+  animation-duration: 58s;
+  animation-direction: reverse;
+}
+@keyframes rayos {
+  from { transform: translate3d(-6%, 4%, 0); }
+  to   { transform: translate3d(10%, -12%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tfondo::before, .tfondo::after { animation: none; }
+}
+
+/* El contenido va por encima del fondo fijo. */
+.tienda > header, .tienda > main, .tienda > footer { position: relative; z-index: 1; }
+
+/* ---------- vidrio ----------
+   Tres capas, como el vidrio real: el fondo desenfocado, un canto que suma
+   luz (screen) y otro que la refracta (overlay). Los cantos son
+   pseudo-elementos y no marcado extra. */
+.tglass {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-sombra);
+}
+.tglass-lite {
+  position: relative;
+  background: var(--glass-bg-lite);
+}
+/* El canto no es un borde parejo: en el vidrio real la luz pega arriba y se
+   apaga abajo. Se dibuja con un degradado recortado al contorno (mascara
+   padding-box contra border-box), que es lo unico que da ese canto vivo sin
+   sumar marcado. Sobre un fondo casi negro, un mix-blend-mode overlay no
+   rinde: por eso el brillo va explicito. */
+.tglass::before,
+.tglass-lite::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    155deg,
+    rgba(235, 232, 221, 0.44) 0%,
+    rgba(235, 232, 221, 0.10) 32%,
+    rgba(235, 232, 221, 0.03) 62%,
+    rgba(209, 155, 69, 0.20) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  transition: opacity var(--dur) var(--ease);
+}
+/* Reflejo interno: la franja de luz que deja el vidrio contra su cara de
+   arriba. Va en la superficie, no en el canto. */
+.tglass::after,
+.tglass-lite::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(235, 232, 221, 0.07) 0%, transparent 38%);
+  opacity: 0.9;
+  transition: opacity var(--dur) var(--ease);
+}
+
+/* Sin soporte de backdrop-filter (Firefox viejo, modos de ahorro), el vidrio
+   cae a una superficie solida y opaca: se pierde el efecto, nunca la lectura. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tglass { background: var(--bg-2); }
+  .tglass-lite { background: var(--bg-2); }
 }
 
 /* ---------- botones: radio pill, un solo acento ----------

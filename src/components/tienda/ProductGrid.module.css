@@ -11,10 +11,11 @@
   font-size: 0.78rem; line-height: 1.6; color: var(--ink-faint); max-width: 62ch;
 }
 
-/* La barra queda pegada abajo del encabezado del sitio: se puede cambiar de
-   filtro estando a mitad del catalogo, sin volver arriba. */
+/* La barra se queda en su lugar. Estuvo pegada al encabezado y molestaba:
+   ocupa bastante alto y acompanar todo el scroll le come pantalla al
+   catalogo, que es lo que la clienta vino a mirar. */
 .barra {
-  position: sticky; top: 68px; z-index: 20;
+  position: relative; z-index: 1;
   display: flex; flex-direction: column; gap: 12px;
   padding: 14px; margin-bottom: 26px;
   border-radius: var(--r-surface);

@@ -1,14 +1,11 @@
-// Generado por los scripts de .tmp/. No editar a mano.
-// Fotos guardadas en public/perfumes/. Las de Unlock salen de su catalogo
-// publico; las de Bagues son el frasco propio de 50 ml, que es distinto y se
-// muestra cuando se elige esa presentacion.
+// Generado por .tmp/rehacer-fotos.mjs. No editar a mano.
+// Fotos en public/perfumes/. Las de Unlock salen de su catálogo público;
+// las de Bagués son el frasco de 50 ml con su caja, que es otro envase.
+// El emparejamiento es estricto: compara las letras visibles del nombre
+// censurado posición a posición contra el nombre real, para no confundir
+// perfumes de la misma familia.
 export const FOTO_UNLOCK = new Set([
-  "bagues-acqua-di-gioia",
-  "bagues-baccarat-rouge",
   "bagues-bottled",
-  "bagues-jadore-lor",
-  "bagues-lvb-rose",
-  "bagues-million-gold",
   "unlock-212-heroes-fem",
   "unlock-212-heroes-hom",
   "unlock-212-vip-party",
@@ -37,7 +34,6 @@ export const FOTO_UNLOCK = new Set([
   "unlock-lady-million",
   "unlock-le-beau",
   "unlock-le-male",
-  "unlock-leau-dissey-hom",
   "unlock-moschino-toy-2",
   "unlock-nina-ricci-nina",
   "unlock-olympea",

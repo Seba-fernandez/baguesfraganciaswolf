@@ -25,6 +25,18 @@
     <meta name="twitter:title" content="Bagues Grupo Wolf · Perfumes" />
     <meta name="twitter:description" content="Fragancias inspiradas en los grandes perfumes de diseñador. Armá tu pedido y te lo confirmo por WhatsApp." />
     <meta name="twitter:image" content="https://crm-de-alquileres-de-vajilla.vercel.app/og.jpg" />
+    <style>
+      /* La barra de la ventana la pinta el documento: si se declara solo
+         dentro de la tienda, el navegador ya resolvio la del scroll principal. */
+      html { scrollbar-width: thin; scrollbar-color: rgba(235,232,221,0.22) transparent; }
+      html::-webkit-scrollbar { width: 11px; }
+      html::-webkit-scrollbar-track { background: #0f1512; }
+      html::-webkit-scrollbar-thumb {
+        background: rgba(235,232,221,0.18); border-radius: 999px;
+        border: 3px solid #0f1512; background-clip: content-box;
+      }
+      html::-webkit-scrollbar-thumb:hover { background: rgba(235,232,221,0.34); background-clip: content-box; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

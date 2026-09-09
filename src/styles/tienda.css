@@ -238,6 +238,23 @@
   .tienda * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
 }
 
+/* Barra de desplazamiento discreta, del color del sistema y no la gris de
+   fabrica. Se declara en los dos dialectos: scrollbar-color lo entienden
+   Firefox y los Chrome nuevos, ::-webkit-scrollbar el resto. */
+.tienda {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(235, 232, 221, 0.22) transparent;
+}
+.tienda ::-webkit-scrollbar { width: 10px; height: 10px; }
+.tienda ::-webkit-scrollbar-track { background: transparent; }
+.tienda ::-webkit-scrollbar-thumb {
+  background: rgba(235, 232, 221, 0.18);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.tienda ::-webkit-scrollbar-thumb:hover { background: rgba(235, 232, 221, 0.32); background-clip: content-box; }
+
 .tienda .tscroll-x { scrollbar-width: none; }
 .tienda .tscroll-x::-webkit-scrollbar { display: none; }
 

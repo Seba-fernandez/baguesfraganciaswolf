@@ -11,7 +11,7 @@
 
 .tienda {
   /* --- Paleta Forest. Un solo acento en todo el sitio: ambar. --- */
-  --bg: #0f1512;          /* verde botanico profundo */
+  --bg: #0e1310;          /* verde botanico profundo */
   --bg-2: #151c18;        /* superficie elevada */
   --bg-3: #1b2420;        /* superficie sobre superficie */
   --ink: #ebe8dd;         /* hueso. 15.1:1 sobre --bg */
@@ -110,19 +110,19 @@
 }
 
 /* ---------- fondo ----------
-   Textura propia en la paleta Forest (public/fondo.jpg, 84 kB). Se genero a
-   partir de una referencia que era roja: medida, esa foto dejaba el texto en
-   3.95:1 y el ambar de la marca en 1.96:1, o sea que el acento desaparecia.
-   La composicion se rehizo en verde y ambar.
+   Textura propia (public/fondo.jpg, 37 kB). La version anterior llevaba un
+   patron de lineas repetidas que a esta escala se leia como trama de tela:
+   se fue. Lo que da sensacion de fondo caro no es un dibujo, son
+   transiciones largas que no se notan, una vineta que cierra los bordes y
+   grano de pelicula fino, que evita el bandeado de los degradados planos.
 
-   La opacidad sale de medir los pixeles: el punto mas claro de la textura es
-   rgb(78,93,64). Con el texto terciario aclarado, 0.62 deja 4.9:1 en ese
-   punto y 5.7:1 en el percentil 99. Mas arriba de eso no hay color de texto
-   chico que aguante, ni siquiera casi blanco.
+   Va al 100%: medida sobre sus pixeles, su punto mas claro es rgb(35,59,46),
+   casi tres veces mas oscuro que el de la textura anterior, asi que el texto
+   mas tenue conserva 5,5:1 sin necesidad de bajarle opacidad.
 
    Estatico a proposito. Es un div con position:fixed y no
-   background-attachment:fixed, que en telefonos obliga a repintar en cada
-   cuadro del scroll. */
+   background-attachment:fixed, que en telefonos obliga a repintar el fondo en
+   cada cuadro del scroll. */
 .tfondo {
   position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
   background: var(--bg);
@@ -132,7 +132,6 @@
   background-image: url('/fondo.jpg');
   background-size: cover;
   background-position: center;
-  opacity: 0.62;
 }
 /* Aureola ambar tenue, para que el acento de la marca este tambien en el aire. */
 .tfondo::after {

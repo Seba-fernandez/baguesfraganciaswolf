@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { GENEROS } from '../../data/constants';
 import { esPublicable, gruposPromoDe, tituloDe } from '../../lib/producto';
+import { CATALOGO, LEGAL, conDatos } from '../../config/contenido';
+import { POR_PAGINA } from '../../config/ajustes';
 import ProductCard from './ProductCard';
 import s from './ProductGrid.module.css';
-
-const POR_PAGINA = 12;
 
 function normalizar(t) {
   return String(t || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
@@ -70,14 +70,9 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
   return (
     <section className={`tw ${s.section}`} id="catalogo">
       <header className={s.head} ref={tope}>
-        <h2 className={s.titulo}>El catálogo</h2>
-        <p className={s.bajada}>
-          {publicables.length} aromas del ciclo. Buscá por el perfume en el que se inspira.
-        </p>
-        <p className={s.aviso}>
-          Los nombres de diseñador se citan solo como referencia olfativa. Todos los
-          productos son versiones inspiradas de la casa Bagués, así rotuladas en cada envase.
-        </p>
+        <h2 className={s.titulo}>{CATALOGO.titulo}</h2>
+        <p className={s.bajada}>{conDatos(CATALOGO.bajada, { aromas: publicables.length })}</p>
+        <p className={s.aviso}>{LEGAL.corto}</p>
       </header>
 
       {/* Barra de filtros: se pega abajo del encabezado al scrollear, así se
@@ -88,8 +83,8 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar: Sauvage, Le Male, amaderado..."
-          aria-label="Buscar aroma"
+          placeholder={CATALOGO.placeholderBusqueda}
+          aria-label={CATALOGO.buscarEtiqueta}
         />
 
         <div className={`${s.chips} tscroll-x`} role="group" aria-label="Filtrar el catálogo">
@@ -108,21 +103,21 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
               activa={promoActiva === p.grupo}
               onClick={() => setPromoActiva(promoActiva === p.grupo ? null : p.grupo)}
             >
-              2x1 {p.grupo === 'arabe' ? 'árabes' : 'diseñador'}
+              {p.grupo === 'arabe' ? CATALOGO.filtros.promoArabe : CATALOGO.filtros.promoDisenador}
             </Pastilla>
           ))}
 
           <Pastilla tono={s.chipPromo} activa={rebaja} onClick={() => setRebaja(!rebaja)}>
-            Rebajados
+            {CATALOGO.filtros.rebajados}
           </Pastilla>
 
           <span className={s.corte} aria-hidden="true" />
 
           <Pastilla activa={momento === 'verano'} onClick={() => setMomento(momento === 'verano' ? null : 'verano')}>
-            Verano
+            {CATALOGO.filtros.verano}
           </Pastilla>
           <Pastilla activa={momento === 'invierno'} onClick={() => setMomento(momento === 'invierno' ? null : 'invierno')}>
-            Invierno
+            {CATALOGO.filtros.invierno}
           </Pastilla>
         </div>
 
@@ -133,7 +128,7 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
           </span>
           {activos > 0 && (
             <button type="button" className={s.limpiar} onClick={limpiar}>
-              Quitar filtros ({activos})
+              {CATALOGO.quitarFiltros} ({activos})
             </button>
           )}
         </div>
@@ -141,12 +136,9 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
 
       {visibles.length === 0 ? (
         <div className={s.vacio}>
-          <p className={s.vacioTitulo}>No encontré ese aroma en este ciclo.</p>
-          <p className={s.vacioTexto}>
-            El catálogo cambia todos los meses. Si lo buscabas puntualmente, escribime y te digo
-            si entra en el próximo.
-          </p>
-          <button type="button" className="tbtn ghost" onClick={limpiar}>Ver todo el catálogo</button>
+          <p className={s.vacioTitulo}>{CATALOGO.vacioTitulo}</p>
+          <p className={s.vacioTexto}>{CATALOGO.vacioTexto}</p>
+          <button type="button" className="tbtn ghost" onClick={limpiar}>{CATALOGO.vacioBoton}</button>
         </div>
       ) : (
         <>

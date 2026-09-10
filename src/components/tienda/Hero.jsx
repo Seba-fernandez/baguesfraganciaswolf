@@ -1,4 +1,6 @@
 import { textoCiclo } from '../../lib/promos';
+import { INICIO, conDatos } from '../../config/contenido';
+import { AROMAS_APROX } from '../../config/ajustes';
 import { pesos } from '../../lib/format';
 import s from './Hero.module.css';
 
@@ -19,19 +21,21 @@ export default function Hero({ settings, promos = {}, onVerPromo, totalAromas })
         {ciclo && <p className={s.ciclo}>{ciclo}</p>}
 
         <h1 className={s.titulo}>
-          El perfume que ya<br />
-          conoce, al precio<br />
-          que todavía no.
+          {INICIO.titulo.map((linea, i) => (
+            <span key={linea}>
+              {linea}
+              {i < INICIO.titulo.length - 1 && <br />}
+            </span>
+          ))}
         </h1>
 
         <p className={s.bajada}>
-          {totalAromas || 104} fragancias inspiradas en los grandes de diseñador. Elegís, armás el
-          pedido y te lo confirmo por WhatsApp. Retiro los viernes en Córdoba.
+          {conDatos(INICIO.bajada, { aromas: totalAromas || AROMAS_APROX })}
         </p>
 
         <div className={s.acciones}>
-          <a href="#catalogo" className="tbtn">Ver el catálogo</a>
-          <a href="#como" className="tbtn ghost">Cómo funciona</a>
+          <a href="#catalogo" className="tbtn">{INICIO.verCatalogo}</a>
+          <a href="#como" className="tbtn ghost">{INICIO.verComo}</a>
         </div>
 
         {lista.length > 0 && (
@@ -43,11 +47,11 @@ export default function Hero({ settings, promos = {}, onVerPromo, totalAromas })
                 className={`${s.promo} tglass`}
                 onClick={() => onVerPromo?.(p.grupo)}
               >
-                <span className={s.promoSello}>2x1</span>
+                <span className={s.promoSello}>{INICIO.selloPromo}</span>
                 <span className={s.promoTexto}>
                   <span className={s.promoTitulo}>{p.titulo}</span>
                   <span className={`${s.promoDetalle} tnum`}>
-                    {p.detalle} · {pesos(p.precio_par)} el par
+                    {p.detalle} · {pesos(p.precio_par)} {INICIO.porPar}
                   </span>
                 </span>
                 <span className={s.promoFlecha} aria-hidden="true">→</span>

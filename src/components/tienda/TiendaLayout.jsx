@@ -1,6 +1,7 @@
 import { useCart } from '../../contexts/CartContext';
 import CartSheet from './CartSheet';
 import VolverArriba from './VolverArriba';
+import { MARCA, CABECERA, LEGAL, PIE } from '../../config/contenido';
 import '../../styles/tienda.css';
 import s from './TiendaLayout.module.css';
 
@@ -20,16 +21,16 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
 
       <header className={`${s.bar} tglass`}>
         <a href="#inicio" className={s.marca}>
-          Bagues <span className={s.marcaWolf}>Grupo Wolf</span>
+          {MARCA.nombre} <span className={s.marcaWolf}>{MARCA.complemento}</span>
         </a>
         <nav className={s.nav}>
-          <a href="#catalogo">Catálogo</a>
-          <a href="#como">Cómo funciona</a>
+          <a href="#catalogo">{CABECERA.catalogo}</a>
+          <a href="#como">{CABECERA.como}</a>
         </nav>
         <button
           className={s.carrito}
           onClick={() => setOpen(true)}
-          aria-label={`Ver pedido (${count} ${count === 1 ? 'ítem' : 'ítems'})`}
+          aria-label={`${CABECERA.verPedido} (${count} ${count === 1 ? 'ítem' : 'ítems'})`}
         >
           <CartIcon />
           {count > 0 && <span className={`${s.badge} tnum`}>{count}</span>}
@@ -41,15 +42,15 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
       <footer className={s.footer}>
         <div className={`tw ${s.fcols}`}>
           <div className={s.fcol}>
-            <h4 className="tlabel">Tienda</h4>
-            <a href="#catalogo">Catálogo</a>
-            <a href="#como">Cómo funciona</a>
+            <h4 className="tlabel">{PIE.tienda}</h4>
+            <a href="#catalogo">{CABECERA.catalogo}</a>
+            <a href="#como">{CABECERA.como}</a>
             {settings?.link_catalogo && (
-              <a href={settings.link_catalogo} target="_blank" rel="noopener">Catálogo en PDF</a>
+              <a href={settings.link_catalogo} target="_blank" rel="noopener">{PIE.catalogoPdf}</a>
             )}
           </div>
           <div className={s.fcol}>
-            <h4 className="tlabel">Contacto</h4>
+            <h4 className="tlabel">{PIE.contacto}</h4>
             {settings?.whatsapp_owner && (
               <a href={`https://wa.me/${settings.whatsapp_owner}`} target="_blank" rel="noopener">WhatsApp</a>
             )}
@@ -58,35 +59,20 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
             )}
           </div>
           <div className={s.fcol}>
-            <h4 className="tlabel">Gestión</h4>
-            <a href="/panel">Panel</a>
+            <h4 className="tlabel">{PIE.gestion}</h4>
+            <a href="/panel">{PIE.panel}</a>
           </div>
           <p className={s.copy}>
-            © {new Date().getFullYear()} Bagues Grupo Wolf<br />
-            {settings?.aclaracion_pedido || 'Venta particular en Córdoba'}
+            © {new Date().getFullYear()} {MARCA.nombre} {MARCA.complemento}<br />
+            {settings?.aclaracion_pedido || PIE.aclaracionPorDefecto}
           </p>
         </div>
 
         <div className={`tw ${s.legal}`}>
-          <h4 className="tlabel">Aviso</h4>
-          <p>
-            Este sitio es de exhibición. No procesa pagos ni concreta ventas: el pedido se
-            deriva a una conversación de WhatsApp con un asesor, donde se confirman
-            disponibilidad, precio final y entrega.
-          </p>
-          <p>
-            Todos los productos ofrecidos son fragancias de la casa Bagués, elaboradas y
-            rotuladas por esa firma, y se comercializan como versiones inspiradas. Las marcas
-            de perfumería que se mencionan pertenecen a sus respectivos titulares y se citan
-            únicamente como referencia olfativa descriptiva, para que la persona compradora
-            pueda identificar el perfil aromático. No existe vínculo, licencia, patrocinio ni
-            autorización de esas marcas, ni se ofrecen los productos originales. Cada envase
-            lleva la identificación de su fabricante.
-          </p>
-          <p>
-            Bagues Grupo Wolf es un revendedor particular independiente y no representa a
-            ninguna de las marcas citadas.
-          </p>
+          <h4 className="tlabel">{LEGAL.titulo}</h4>
+          {LEGAL.parrafos.map((parrafo) => (
+            <p key={parrafo.slice(0, 24)}>{parrafo}</p>
+          ))}
         </div>
       </footer>
 

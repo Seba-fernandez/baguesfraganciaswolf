@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { VOLVER_ARRIBA } from '../../config/contenido';
+import { VOLVER_ARRIBA_DESDE } from '../../config/ajustes';
 import s from './VolverArriba.module.css';
 
 /**
@@ -14,7 +16,7 @@ export default function VolverArriba({ oculto = false }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const mirar = () => setVisible(window.scrollY > 900);
+    const mirar = () => setVisible(window.scrollY > VOLVER_ARRIBA_DESDE);
     mirar();
     window.addEventListener('scroll', mirar, { passive: true });
     return () => window.removeEventListener('scroll', mirar);
@@ -30,7 +32,7 @@ export default function VolverArriba({ oculto = false }) {
       type="button"
       className={`${s.boton} ${visible && !oculto ? s.visible : ''}`}
       onClick={subir}
-      aria-label="Volver al principio"
+      aria-label={VOLVER_ARRIBA}
       tabIndex={visible && !oculto ? 0 : -1}
       aria-hidden={!visible || oculto}
     >

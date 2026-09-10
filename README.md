@@ -162,6 +162,28 @@ ficha, el pedido y las promociones del inicio. Las tarjetas usan una versión
 sin desenfoque que igual se ve translúcida, porque el fondo se ve a través.
 Medido sobre la página publicada: cuatro elementos con desenfoque, no cien.
 
+### Los textos salen de un archivo, no de las pantallas
+
+Cada frase de la tienda estaba escrita adentro del componente donde se veía. Con
+eso, cambiar el aviso legal era abrir dos archivos distintos y acordarse de los
+dos, y cambiar el título de la portada era editar programación para corregir una
+coma.
+
+Ahora todo el texto visible está en un solo archivo, `src/config/contenido.js`,
+agrupado por dónde aparece. Los componentes no tienen texto propio: leen de ahí.
+Los números que uno alguna vez quiere mover, como cuántos aromas entran por
+página, están en `src/config/ajustes.js`, con un comentario que dice qué pasa si
+se cambian.
+
+Es la misma idea que las promociones: lo que se configura no se programa. La
+diferencia es que las promociones cambian todos los meses y viven en la base,
+mientras que los textos cambian cada tanto y con esto quedan a un archivo de
+distancia, sin necesidad de entender React para tocarlos.
+
+Escribí aparte una guía de qué tocar para cambiar qué, en
+[`docs/EDITAR.md`](docs/EDITAR.md), ordenada por lo que uno quiere hacer y no
+por cómo está armado el proyecto adentro.
+
 ### El fondo animado no es una foto
 
 Las líneas de luz que cruzan el fondo son gradientes animados, no una imagen
@@ -277,10 +299,14 @@ Andando en producción:
 - Panel privado con pedidos, catálogo y ajustes.
 - Vista previa con imagen propia cuando se pega el enlace en WhatsApp.
 
+- Fotos de los envases reales en setenta y nueve de los ciento cinco aromas,
+  bajadas y emparejadas por un script propio.
+
 Pendiente:
 
-- Las fotos de los frascos. Hoy cada aroma muestra su inicial. Es lo que más
-  falta.
+- Los veintiséis aromas que quedan sin foto. No están publicados en ninguna de
+  las dos webs de las proveedoras, así que para esos hacen falta los PDF del
+  catálogo. Mientras no estén, se muestra la inicial del aroma.
 - Bajar el peso de la página de inicio.
 - Generar el HTML de la tienda al momento de publicar, para que se lea sin
   esperar a que cargue el programa.
@@ -303,6 +329,19 @@ VITE_SUPABASE_ANON_KEY=
 
 La dirección raíz es la tienda. El panel está en `/panel` y pide cuenta de
 Google; solo entra el correo autorizado en la base.
+
+Para rehacer las fotos de los envases cuando entra un ciclo nuevo:
+
+```bash
+npm run fotos
+```
+
+Son tres pasos y conviene correrlos de a uno, porque el segundo imprime qué foto
+le tocó a cada aroma y ahí se revisa antes de bajar nada. Está explicado en
+[`scripts/fotos/README.md`](scripts/fotos/README.md).
+
+Para cambiar textos, fotos sueltas, colores o el orden de los bloques, la guía
+está en [`docs/EDITAR.md`](docs/EDITAR.md).
 
 ---
 

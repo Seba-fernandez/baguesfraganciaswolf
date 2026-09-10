@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import { presentacionesActivas, presentacionPorDefecto, tituloDe, nombrePropioDe, lineaLabel } from '../../lib/producto';
 import { pesos } from '../../lib/format';
+import { TARJETA } from '../../config/contenido';
 import ProductThumb from './ProductThumb';
 import s from './ProductCard.module.css';
 
@@ -41,7 +42,7 @@ export default function ProductCard({ producto, onOpen, promos = {}, vtName = 'n
           {titulo}
         </button>
         <p className={s.inspirado}>
-          {aclarar ? `versión inspirada · ${producto.nombre}` : 'versión inspirada'}
+          {aclarar ? `${TARJETA.inspirado} · ${producto.nombre}` : TARJETA.inspirado}
         </p>
 
         <div className={s.opciones} role="group" aria-label="Elegir presentación">

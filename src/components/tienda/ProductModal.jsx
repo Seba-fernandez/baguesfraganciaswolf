@@ -3,6 +3,8 @@ import { useCart } from '../../contexts/CartContext';
 import { GENEROS, MOMENTOS } from '../../data/constants';
 import { presentacionesActivas, presentacionPorDefecto, tieneNotas, tituloDe, nombrePropioDe, lineaLabel } from '../../lib/producto';
 import { pesos } from '../../lib/format';
+import { FICHA } from '../../config/contenido';
+import { CANTIDAD_MAXIMA } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
 import s from './ProductModal.module.css';
 
@@ -118,21 +120,18 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
                 <div className={s.stepper} role="group" aria-label="Cantidad">
                   <button type="button" onClick={() => setCant((c) => Math.max(1, c - 1))} aria-label="Restar">-</button>
                   <span className="tnum">{cant}</span>
-                  <button type="button" onClick={() => setCant((c) => Math.min(9, c + 1))} aria-label="Sumar">+</button>
+                  <button type="button" onClick={() => setCant((c) => Math.min(CANTIDAD_MAXIMA, c + 1))} aria-label="Sumar">+</button>
                 </div>
                 <button type="button" className="tbtn" style={{ flex: 1 }} onClick={sumar} disabled={!elegida}>
-                  Agregar al pedido
+                  {FICHA.agregar}
                 </button>
               </div>
             </>
           ) : (
-            <p className={s.desc}>Este aroma no está disponible en este ciclo.</p>
+            <p className={s.desc}>{FICHA.sinCiclo}</p>
           )}
 
-          <p className={s.aviso}>
-            Trabajo por encargo: el pedido me llega por WhatsApp y te confirmo stock y tiempos.
-            Retiro los viernes en Córdoba.
-          </p>
+          <p className={s.aviso}>{FICHA.aviso}</p>
         </div>
       </div>
     </>

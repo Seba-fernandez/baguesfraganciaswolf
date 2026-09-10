@@ -1,9 +1,9 @@
-// Generado por .tmp/rehacer-fotos.mjs. No editar a mano.
-// Fotos en public/perfumes/. Las de Unlock salen de su catálogo público;
-// las de Bagués son el frasco de 50 ml con su caja, que es otro envase.
-// El emparejamiento es estricto: compara las letras visibles del nombre
-// censurado posición a posición contra el nombre real, para no confundir
-// perfumes de la misma familia.
+// Generado por scripts/fotos/traer-fotos.mjs. No editar a mano.
+// Que aroma tiene foto de cada linea. La web lo consulta para no pedir
+// imagenes que no existen y mostrar la inicial en su lugar.
+//
+// Para cambiar una foto suelta no hace falta correr nada: se sube a mano
+// desde el panel, en la ficha del producto, y esa gana sobre estas.
 export const FOTO_UNLOCK = new Set([
   "bagues-bottled",
   "unlock-212-heroes-fem",

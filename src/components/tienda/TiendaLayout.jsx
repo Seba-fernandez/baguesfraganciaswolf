@@ -17,6 +17,19 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
 
   return (
     <div className="tienda">
+      {/* Filtro de refraccion del vidrio. Un ruido suave desplaza los pixeles
+          del fondo que se ven a traves de la placa: los haces se quiebran al
+          cruzar el canto, como un vidrio grueso con agua, no un simple
+          desenfoque. Vive una sola vez en el DOM y lo usan las superficies de
+          vidrio via backdrop-filter: url(#tvidrio). */}
+      <svg className="tsvg" aria-hidden="true" focusable="false" width="0" height="0">
+        <filter id="tvidrio" x="-12%" y="-12%" width="124%" height="124%" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.009 0.016" numOctaves="2" seed="14" result="ruido" />
+          <feGaussianBlur in="ruido" stdDeviation="1.4" result="suave" />
+          <feDisplacementMap in="SourceGraphic" in2="suave" scale="11" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
+
       <div className="tfondo" aria-hidden="true" />
 
       <header className={`${s.bar} tglass`}>

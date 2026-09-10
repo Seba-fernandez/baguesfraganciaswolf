@@ -7,7 +7,7 @@
    codigos, ml) van en Figtree con tabular-nums en vez de sumar una mono.
    ============================================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600&family=EB+Garamond:ital@1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Figtree:wght@400;500;600&display=swap');
 
 .tienda {
   /* --- Paleta Forest. Un solo acento en todo el sitio: ambar. --- */
@@ -43,7 +43,13 @@
      lo que hay atras. Con el fondo de haces finos, la diferencia se nota. */
   --glass-blur: blur(16px) saturate(185%) brightness(1.1);
   --glass-canto: rgba(235, 232, 221, 0.34);
-  --glass-sombra: 0 18px 44px -22px rgba(0, 0, 0, 0.72), inset 0 -4px 15px rgba(0, 0, 0, 0.10);
+  /* La sombra del vidrio lleva tres cosas: la caida que lo despega del fondo,
+     una linea de luz nitida en el canto de arriba (el filo del vidrio real) y
+     una sombra interna abajo que le da grosor. */
+  --glass-sombra:
+    0 22px 50px -24px rgba(0, 0, 0, 0.78),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -5px 16px rgba(0, 0, 0, 0.12);
   --danger: #d98a72;
 
   /* --- Radios: cero en imagenes y multimedia, pill en botones y chips. --- */
@@ -69,9 +75,14 @@
      fotografica se ve la imagen. Arriba de 0.5 empieza a comerse los haces. */
   --grano: 0.34;
 
-  --f-display: 'Marcellus', 'Iowan Old Style', ui-serif, Georgia, serif;
+  /* Fraunces: una serif de contraste alto con caracter, opsz variable (afina
+     el trazo segun el tamano) e italica propia. Distinta de la Marcellus
+     anterior y de las sans genericas: le da la voz editorial que una casa de
+     perfume necesita. La italica reemplaza a EB Garamond, asi caen dos fuentes
+     en una. */
+  --f-display: 'Fraunces', 'Iowan Old Style', ui-serif, Georgia, serif;
   --f-body: 'Figtree', system-ui, -apple-system, sans-serif;
-  --f-quote: 'EB Garamond', Georgia, serif;
+  --f-quote: 'Fraunces', Georgia, serif;
 
   position: relative;
   min-height: 100vh;
@@ -105,15 +116,16 @@
 .tienda h1, .tienda h2, .tienda h3 {
   font-family: var(--f-display);
   font-weight: 400;
-  letter-spacing: -0.005em;
-  line-height: 1.06;
+  font-optical-sizing: auto; /* Fraunces afina el trazo a tamano grande sola. */
+  letter-spacing: -0.01em;
+  line-height: 1.04;
   color: var(--ink);
 }
 
 .tienda a { color: inherit; text-decoration: none; }
 .tienda button { font-family: inherit; }
 
-/* Cita de perfumista: unico lugar donde entra la Garamond italica. */
+/* Cita de perfumista: la italica de Fraunces, con su contraste alto. */
 .tquote {
   font-family: var(--f-quote);
   font-style: italic;
@@ -194,12 +206,25 @@
    Tres capas, como el vidrio real: el fondo desenfocado, un canto que suma
    luz (screen) y otro que la refracta (overlay). Los cantos son
    pseudo-elementos y no marcado extra. */
+.tsvg { position: absolute; width: 0; height: 0; overflow: hidden; }
+
 .tglass {
   position: relative;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   box-shadow: var(--glass-sombra);
+}
+/* Refraccion de verdad, donde el navegador la banca (Chromium y derivados):
+   el filtro SVG desplaza el fondo antes del desenfoque, asi los haces se
+   quiebran al cruzar el vidrio. Donde no hay soporte, queda el desenfoque de
+   arriba, que ya se ve bien: esto suma, no sostiene. Es la diferencia entre
+   vidrio grueso y frost plano. */
+@supports (backdrop-filter: url("#tvidrio")) {
+  .tglass {
+    backdrop-filter: url("#tvidrio") var(--glass-blur);
+    -webkit-backdrop-filter: url("#tvidrio") var(--glass-blur);
+  }
 }
 .tglass-lite {
   position: relative;

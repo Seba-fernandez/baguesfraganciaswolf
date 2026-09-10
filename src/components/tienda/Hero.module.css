@@ -56,6 +56,12 @@
   letter-spacing: -0.015em;
   max-width: 15ch;
 }
+/* Cada linea del titulo vive en su propio renglon con recorte: asi la
+   animacion de entrada la revela como si subiera desde atras del renglon de
+   arriba, no como un texto que aparece flotando. El padding evita que las
+   colas de las letras (g, y, j) se corten en reposo. */
+.lineaWrap { display: block; overflow: hidden; padding-bottom: 0.08em; }
+.linea { display: block; }
 
 .bajada {
   margin-top: 26px; max-width: 52ch;

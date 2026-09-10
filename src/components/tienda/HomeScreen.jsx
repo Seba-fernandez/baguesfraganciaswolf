@@ -7,9 +7,9 @@ import { indexarPromos } from '../../lib/promos';
 import { esPublicable } from '../../lib/producto';
 import TiendaLayout from './TiendaLayout';
 import Hero from './Hero';
-import FeaturedRows from './FeaturedRows';
+import Destacados from './Destacados';
 import ProductGrid from './ProductGrid';
-import Statement from './Statement';
+import ComoFunciona from './ComoFunciona';
 import ProductModal from './ProductModal';
 
 // View Transitions nativas: la miniatura se convierte en la ficha en vez de
@@ -48,7 +48,7 @@ export default function HomeScreen() {
         <Hero settings={settings} promos={promos} onVerPromo={verPromo} totalAromas={totalAromas} />
         {!loading && (
           <>
-            <FeaturedRows products={products} onOpen={abrir} />
+            <Destacados products={products} onOpen={abrir} />
             <ProductGrid
               products={products}
               onOpen={abrir}
@@ -59,7 +59,7 @@ export default function HomeScreen() {
             />
           </>
         )}
-        <Statement settings={settings} />
+        <ComoFunciona settings={settings} />
         {abierto && <ProductModal producto={abierto} onClose={cerrar} promos={promos} />}
       </TiendaLayout>
     </CartProvider>

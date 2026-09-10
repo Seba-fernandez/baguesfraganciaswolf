@@ -1,6 +1,6 @@
 import useReveal from '../../hooks/useReveal';
 import { COMO_FUNCIONA } from '../../config/contenido';
-import s from './Statement.module.css';
+import s from './ComoFunciona.module.css';
 
 /**
  * Cómo funciona. Reemplaza al statement decorativo anterior: si alguien
@@ -8,7 +8,7 @@ import s from './Statement.module.css';
  * frase linda, es saber que pasa despues de tocar el boton.
  */
 
-export default function Statement({ settings }) {
+export default function ComoFunciona({ settings }) {
   const ref = useReveal();
   return (
     <section className={`tw ${s.section}`} id="como" ref={ref}>

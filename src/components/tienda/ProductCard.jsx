@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
-import { presentacionesActivas, presentacionPorDefecto, tituloDe, nombrePropioDe, lineaLabel } from '../../lib/producto';
+import { presentacionesActivas, presentacionPorDefecto, tituloDe, nombrePropioDe, lineaLabel, hayQueAclararNombre } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import { TARJETA } from '../../config/contenido';
 import ProductThumb from './ProductThumb';
@@ -21,9 +21,7 @@ export default function ProductCard({ producto, onOpen, promos = {}, vtName = 'n
   const [ml, setMl] = useState(() => presentacionPorDefecto(producto)?.ml ?? null);
   const elegida = opciones.find((p) => p.ml === ml) || opciones[0] || null;
   const titulo = tituloDe(producto);
-  // La aclaracion solo cuando aporta: si el catalogo no censuro el nombre,
-  // titulo y nombre de catalogo son el mismo y repetirlo es ruido.
-  const aclarar = titulo.toLowerCase() !== (producto.nombre || '').toLowerCase();
+  const aclarar = hayQueAclararNombre(producto);
 
   return (
     <article className={`${s.card} tglass-lite`}>

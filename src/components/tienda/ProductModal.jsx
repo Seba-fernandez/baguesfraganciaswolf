@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import { GENEROS, MOMENTOS } from '../../data/constants';
-import { presentacionesActivas, presentacionPorDefecto, tieneNotas, tituloDe, nombrePropioDe, lineaLabel } from '../../lib/producto';
+import { presentacionesActivas, presentacionPorDefecto, tieneNotas, tituloDe, nombrePropioDe, lineaLabel, hayQueAclararNombre } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import { FICHA } from '../../config/contenido';
 import { CANTIDAD_MAXIMA } from '../../config/ajustes';
@@ -33,7 +33,7 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
 
   const elegida = opciones.find((p) => p.ml === ml) || null;
   const titulo = tituloDe(producto);
-  const aclarar = titulo.toLowerCase() !== (producto.nombre || '').toLowerCase();
+  const aclarar = hayQueAclararNombre(producto);
   const promo = elegida?.grupo_promo ? promos[elegida.grupo_promo] : null;
 
   function sumar() {

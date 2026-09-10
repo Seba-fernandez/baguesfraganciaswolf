@@ -4,7 +4,7 @@ import useReveal from '../../hooks/useReveal';
 import { DESTACADOS } from '../../config/contenido';
 import { DESTACADOS_MAXIMO, PROPORCION } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
-import s from './FeaturedRows.module.css';
+import s from './Destacados.module.css';
 
 /**
  * Seleccion curada. No repite el tratamiento del catalogo: acá cada aroma se
@@ -12,7 +12,7 @@ import s from './FeaturedRows.module.css';
  * es lo que la clienta busca. El catálogo completo, abajo, ordena por nombre
  * de la casa. Dos secciones, dos trabajos distintos.
  */
-export default function FeaturedRows({ products, onOpen }) {
+export default function Destacados({ products, onOpen }) {
   const ref = useReveal();
   const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p)).slice(0, DESTACADOS_MAXIMO);
   if (!destacados.length) return null;

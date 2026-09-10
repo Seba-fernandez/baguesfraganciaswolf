@@ -58,6 +58,10 @@
 
   --wrap: min(1280px, 92vw);
 
+  /* Cuanto se ve la foto del fondo. 1 = como esta; 0 = verde liso, sin textura.
+     Atras siempre queda --bg, asi que bajarla oscurece, no transparenta. */
+  --fondo-opacidad: 1;
+
   --f-display: 'Marcellus', 'Iowan Old Style', ui-serif, Georgia, serif;
   --f-body: 'Figtree', system-ui, -apple-system, sans-serif;
   --f-quote: 'EB Garamond', Georgia, serif;
@@ -132,6 +136,7 @@
   background-image: url('/fondo.jpg');
   background-size: cover;
   background-position: center;
+  opacity: var(--fondo-opacidad);
 }
 /* Aureola ambar tenue, para que el acento de la marca este tambien en el aire. */
 .tfondo::after {

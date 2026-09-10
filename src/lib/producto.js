@@ -76,6 +76,17 @@ export function tituloDe(producto) {
  * y ese dato sirve: es como figura en el envase. Los de Unlock repiten el
  * nombre censurado del aroma, que ya esta en el titulo, asi que no se muestra.
  */
+/**
+ * Si vale la pena aclarar con que nombre figura el aroma en el catalogo.
+ * Cuando el catalogo no censuro el nombre, el titulo y el nombre de catalogo
+ * son el mismo y repetirlo es ruido. La tarjeta y la ficha preguntaban esto
+ * con la misma linea escrita dos veces.
+ */
+export function hayQueAclararNombre(producto) {
+  const titulo = tituloDe(producto).toLowerCase();
+  return titulo !== (producto?.nombre || '').toLowerCase();
+}
+
 export function nombrePropioDe(presentacion, titulo = '') {
   const n = (presentacion?.nombre_proveedor || '').trim();
   if (!n) return null;

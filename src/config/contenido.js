@@ -24,10 +24,23 @@ export const CABECERA = {
 };
 
 export const INICIO = {
+  // La corona de marca, arriba del titulo. Wolf es el grupo, la firma; Bagués
+  // es la casa que respalda el aroma. Presencia sin explicar.
+  corona: 'Grupo Wolf',
+  aval: 'Casa Bagués · Córdoba',
+
   titulo: ['El perfume que ya', 'conoce, al precio', 'que todavía no.'],
-  bajada:
-    '{aromas} fragancias inspiradas en los grandes de diseñador. Elegís, armás el ' +
-    'pedido y te lo confirmo por WhatsApp. Retiro los viernes en Córdoba.',
+  // Una sola linea. Los datos duros (cuantos, desde cuanto, hasta cuando) van
+  // en la fila de abajo, que se lee de un vistazo.
+  bajada: 'Los aromas que ya conocés, de la casa Bagués.',
+
+  // Fila de datos. {n} y {desde} se completan con lo real en el momento.
+  metaAromas: '{n} aromas',
+  metaDesde: 'desde {desde}',
+
+  // Rotulo de la cinta de nombres que se mueve abajo del hero.
+  cintaEtiqueta: 'En este ciclo',
+
   verCatalogo: 'Ver el catálogo',
   verComo: 'Cómo funciona',
   selloPromo: '2x1',

@@ -4,7 +4,7 @@ import useProducts from '../../hooks/useProducts';
 import useSettings from '../../hooks/useSettings';
 import { CartProvider } from '../../contexts/CartContext';
 import { indexarPromos } from '../../lib/promos';
-import { esPublicable } from '../../lib/producto';
+import { esPublicable, presentacionPorDefecto, tituloDe } from '../../lib/producto';
 import TiendaLayout from './TiendaLayout';
 import Hero from './Hero';
 import Destacados from './Destacados';
@@ -29,10 +29,24 @@ export default function HomeScreen() {
   const [promoActiva, setPromoActiva] = useState(null);
 
   const promos = useMemo(() => indexarPromos(settings?.promos_ciclo), [settings]);
-  const totalAromas = useMemo(
-    () => products.filter((p) => p.activo && esPublicable(p)).length,
-    [products]
-  );
+
+  // Todo lo que el hero muestra del catalogo se calcula una vez, aca: cuantos
+  // aromas hay, desde que precio arrancan y los nombres que la gente reconoce
+  // para la cinta. Nada hardcodeado: cambia con el ciclo, sin tocar codigo.
+  const { totalAromas, desde, nombresAromas } = useMemo(() => {
+    const publicables = products.filter((p) => p.activo && esPublicable(p));
+    const precios = publicables
+      .map((p) => Number(presentacionPorDefecto(p)?.precio) || 0)
+      .filter(Boolean);
+    // Los destacados primero: son los nombres mas fuertes para la cinta.
+    const ordenados = [...publicables].sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0));
+    const nombres = [...new Set(ordenados.map(tituloDe).filter((n) => n && n.length <= 22))];
+    return {
+      totalAromas: publicables.length,
+      desde: precios.length ? Math.min(...precios) : null,
+      nombresAromas: nombres.slice(0, 16),
+    };
+  }, [products]);
 
   const abrir = (producto) => conTransicion(() => setAbierto(producto));
   const cerrar = () => conTransicion(() => setAbierto(null));
@@ -45,7 +59,14 @@ export default function HomeScreen() {
   return (
     <CartProvider promosCiclo={settings?.promos_ciclo}>
       <TiendaLayout settings={settings} onVerPromo={verPromo}>
-        <Hero settings={settings} promos={promos} onVerPromo={verPromo} totalAromas={totalAromas} />
+        <Hero
+          settings={settings}
+          promos={promos}
+          onVerPromo={verPromo}
+          totalAromas={totalAromas}
+          desde={desde}
+          nombresAromas={nombresAromas}
+        />
         {!loading && (
           <>
             <Destacados products={products} onOpen={abrir} />

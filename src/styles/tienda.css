@@ -1,13 +1,14 @@
 /* ============================================================================
-   TIENDA.CSS — sistema visual FOREST (brief permanente, CLAUDE.md)
+   TIENDA.CSS — sistema visual de la tienda (brief permanente, CLAUDE.md)
    Solo se importa en la zona publica (/). El panel admin usa global.css.
 
-   Tres fuentes, no cuatro: Marcellus display, Figtree cuerpo, EB Garamond
-   italica EXCLUSIVAMENTE para citas de perfumista. Los datos (precios,
-   codigos, ml) van en Figtree con tabular-nums en vez de sumar una mono.
+   Dos fuentes: Cormorant (display, con su italica para citas) y Figtree
+   (cuerpo). Los datos (precios, codigos, ml) van en Figtree con tabular-nums.
+   Acento: un rosa-vino sensual (variables --amber*, nombre heredado). Fondo de
+   gradiente malla, no foto. Vidrio con refraccion real (solo escritorio).
    ============================================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Figtree:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Figtree:wght@400;500;600&display=swap');
 
 .tienda {
   /* --- Paleta Forest. Un solo acento en todo el sitio: ambar. --- */
@@ -25,9 +26,14 @@
      aclararon los dos niveles para poder subir la textura al doble. */
   --ink-dim: #d4d2c9;     /* secundario */
   --ink-faint: #bfbeb4;   /* terciario. 4.9:1 en el pixel mas claro del fondo */
-  --amber: #d19b45;       /* acento unico. 7.5:1 sobre --bg */
-  --amber-deep: #a97a2f;
-  --amber-soft: rgba(209, 155, 69, 0.14);
+  /* Acento sensual: un rosa-vino en vez del ambar "naranja Claude". Es el
+     complementario del verde forest, asi que no compite con el fondo, lo hace
+     estallar. Los nombres siguen siendo --amber* para no reescribir medio
+     archivo; el valor es lo que cambia. Medido: 5.2:1 sobre --bg (pasa AA). */
+  --amber: #d8607a;       /* acento unico, rosa-vino */
+  --amber-deep: #b0455c;
+  --amber-soft: rgba(216, 96, 122, 0.15);
+  --on-amber: #1e0f14;    /* texto oscuro sobre el acento (casi negro vino) */
   --line: rgba(235, 232, 221, 0.10);
   --line-bright: rgba(235, 232, 221, 0.22);
 
@@ -75,14 +81,13 @@
      fotografica se ve la imagen. Arriba de 0.5 empieza a comerse los haces. */
   --grano: 0.34;
 
-  /* Fraunces: una serif de contraste alto con caracter, opsz variable (afina
-     el trazo segun el tamano) e italica propia. Distinta de la Marcellus
-     anterior y de las sans genericas: le da la voz editorial que una casa de
-     perfume necesita. La italica reemplaza a EB Garamond, asi caen dos fuentes
-     en una. */
-  --f-display: 'Fraunces', 'Iowan Old Style', ui-serif, Georgia, serif;
+  /* Cormorant: una didone de contraste altisimo, romantica y sensual, con la
+     cara de un aviso de perfume. Distinta de la Fraunces anterior y a anos luz
+     de las sans genericas. Va en peso medio-alto en los titulos, si no el trazo
+     fino se afina de mas. Su italica cubre las citas. */
+  --f-display: 'Cormorant', 'Iowan Old Style', ui-serif, Georgia, serif;
   --f-body: 'Figtree', system-ui, -apple-system, sans-serif;
-  --f-quote: 'Fraunces', Georgia, serif;
+  --f-quote: 'Cormorant', Georgia, serif;
 
   position: relative;
   min-height: 100vh;
@@ -115,10 +120,9 @@
 
 .tienda h1, .tienda h2, .tienda h3 {
   font-family: var(--f-display);
-  font-weight: 400;
-  font-optical-sizing: auto; /* Fraunces afina el trazo a tamano grande sola. */
-  letter-spacing: -0.01em;
-  line-height: 1.04;
+  font-weight: 600; /* Cormorant es de trazo fino: en titulo pide peso medio-alto. */
+  letter-spacing: 0;
+  line-height: 1.05;
   color: var(--ink);
 }
 
@@ -157,13 +161,18 @@
    para el grano, que necesita mezclarse distinto. */
 .tfondo::before {
   content: ''; position: absolute; inset: 0;
-  background-image:
-    radial-gradient(52% 38% at 12% 2%, rgba(209, 155, 69, 0.10) 0%, transparent 62%),
-    radial-gradient(44% 36% at 90% 96%, rgba(209, 155, 69, 0.06) 0%, transparent 64%),
-    url('/fondo.jpg');
-  background-size: auto, auto, cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  /* Gradiente malla, no una foto. Es nitido (cero artefactos de JPEG, que era
+     lo que se veia "baja calidad"), pesa nada y combina a proposito con el
+     acento: campos suaves de verde esmeralda y un resplandor rosa. Eso es lo
+     que hace estallar el vidrio: al desenfocar y refractar campos de color,
+     el cristal se ve luminoso, no gris. */
+  background:
+    radial-gradient(54% 50% at 80% 16%, rgba(46, 150, 110, 0.68) 0%, transparent 62%),
+    radial-gradient(52% 56% at 16% 22%, rgba(210, 82, 116, 0.5) 0%, transparent 64%),
+    radial-gradient(46% 44% at 62% 60%, rgba(150, 60, 118, 0.3) 0%, transparent 66%),
+    radial-gradient(66% 58% at 52% 100%, rgba(22, 92, 74, 0.68) 0%, transparent 74%),
+    radial-gradient(40% 42% at 99% 76%, rgba(84, 168, 132, 0.3) 0%, transparent 60%),
+    linear-gradient(165deg, #101915 0%, #0a0f0d 60%, #080c0a 100%);
   opacity: var(--fondo-opacidad);
   /* El desvanecido al oscuro. Empieza pasada la portada y termina antes del
      final del telon, para que el corte no se note. */
@@ -196,7 +205,7 @@
   content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
     radial-gradient(58% 48% at 84% 12%, rgba(74, 180, 128, 0.07) 0%, transparent 60%),
-    radial-gradient(52% 50% at 8% 92%, rgba(209, 155, 69, 0.05) 0%, transparent 62%);
+    radial-gradient(52% 50% at 8% 92%, rgba(216, 96, 122, 0.05) 0%, transparent 62%);
 }
 
 /* El contenido va por encima del fondo y del halo. */
@@ -221,10 +230,16 @@
    la placa del hero (.tglass-wet), que es una, esta arriba de todo y se va con
    el scroll. En la cabecera fija o en las 100 tarjetas fundiria el celular.
    Donde no hay soporte, queda el desenfoque comun, que ya se ve bien. */
-@supports (backdrop-filter: url("#tvidrio")) {
-  .tglass-wet {
-    backdrop-filter: url("#tvidrio") var(--glass-blur);
-    -webkit-backdrop-filter: url("#tvidrio") var(--glass-blur);
+/* SOLO en escritorio. En el celular, desplazar el backdrop mientras el hero
+   esta en pantalla es lo que lo dejaba trabado (el catalogo, sin este filtro,
+   corria bien). Ahi el hero queda con desenfoque comun, que va fluido; la
+   refraccion mojada se ve en la compu, que la banca. */
+@media (min-width: 768px) {
+  @supports (backdrop-filter: url("#tvidrio")) {
+    .tglass-wet {
+      backdrop-filter: url("#tvidrio") var(--glass-blur);
+      -webkit-backdrop-filter: url("#tvidrio") var(--glass-blur);
+    }
   }
 }
 .tglass-lite {
@@ -254,7 +269,7 @@
     rgba(235, 232, 221, 0.44) 0%,
     rgba(235, 232, 221, 0.10) 32%,
     rgba(235, 232, 221, 0.03) 62%,
-    rgba(209, 155, 69, 0.20) 100%
+    rgba(216, 96, 122, 0.20) 100%
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -289,18 +304,18 @@
    asi que un boton que es <a> heredaba color hueso sobre fondo ambar y
    quedaba en 2:1, ilegible. Por eso las reglas de color van calificadas con
    .tienda, que empata en especificidad y gana por orden. */
-.tienda .tbtn { color: #17130a; }
+.tienda .tbtn { color: var(--on-amber); }
 .tienda .tbtn.ghost { color: var(--ink); }
 
 .tbtn {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   padding: 14px 26px; border-radius: var(--r-pill);
-  background: var(--amber); color: #17130a; border: 0;
+  background: var(--amber); color: var(--on-amber); border: 0;
   font-family: var(--f-body); font-size: 0.92rem; font-weight: 600;
   letter-spacing: 0.01em; cursor: pointer; min-height: 48px;
   transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
 }
-.tbtn:hover { background: #e0aa54; }
+.tbtn:hover { background: #e37e94; }
 .tbtn:active { transform: scale(0.985); }
 .tbtn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .tbtn:disabled { opacity: 0.42; cursor: not-allowed; }
@@ -332,7 +347,7 @@
     rgba(255, 255, 255, 0.5) 0%,
     rgba(255, 255, 255, 0.12) 34%,
     rgba(255, 255, 255, 0.04) 64%,
-    rgba(209, 155, 69, 0.28) 100%
+    rgba(216, 96, 122, 0.28) 100%
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;

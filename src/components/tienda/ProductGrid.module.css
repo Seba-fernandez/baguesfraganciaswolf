@@ -53,12 +53,12 @@
 .chip:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
 /* Prendida: se ve prendida de lejos, no solo por un cambio de tono. */
-.chipOn { background: var(--amber); border-color: var(--amber); color: #17130a; font-weight: 600; }
-.chipOn:hover { color: #17130a; }
+.chipOn { background: var(--amber); border-color: var(--amber); color: var(--on-amber); font-weight: 600; }
+.chipOn:hover { color: var(--on-amber); }
 .tilde { font-size: 0.74rem; line-height: 1; }
 
 .chipPromo { border-color: var(--amber-deep); color: var(--amber); }
-.chipPromo.chipOn { color: #17130a; }
+.chipPromo.chipOn { color: var(--on-amber); }
 
 /* Separadores entre familias de filtros: se leen como grupos sin titulos. */
 /* En una sola linea el separador es una barra vertical; cuando las pastillas
@@ -108,8 +108,8 @@
 .flecha:hover:not(:disabled), .numero:hover { color: var(--ink); border-color: var(--line-bright); }
 .flecha:disabled { opacity: 0.32; cursor: not-allowed; }
 .flecha:focus-visible, .numero:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
-.numeroOn { background: var(--amber); border-color: var(--amber); color: #17130a; font-weight: 600; }
-.numeroOn:hover { color: #17130a; }
+.numeroOn { background: var(--amber); border-color: var(--amber); color: var(--on-amber); font-weight: 600; }
+.numeroOn:hover { color: var(--on-amber); }
 .numeros { display: flex; align-items: center; gap: 6px; }
 .puntos { color: var(--ink-faint); padding: 0 2px; }
 

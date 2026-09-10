@@ -1,19 +1,41 @@
-.section { padding-block: clamp(64px, 9vw, 120px); }
-.titulo { font-size: clamp(1.9rem, 4.2vw, 3rem); margin-bottom: 40px; }
+/* Seccion centrada: titulo, tres pasos con icono, cita y boton, todo al medio. */
+.section {
+  padding-block: clamp(64px, 9vw, 120px);
+  text-align: center;
+}
+.titulo { font-size: clamp(1.9rem, 4.2vw, 3rem); margin-bottom: clamp(36px, 5vw, 56px); }
 
 .pasos {
-  display: grid; gap: 28px; list-style: none; padding: 0; margin: 0 0 44px;
+  display: grid; gap: 40px; list-style: none; padding: 0; margin: 0 auto clamp(40px, 5vw, 56px);
+  max-width: 880px;
 }
-@media (min-width: 820px) { .pasos { grid-template-columns: repeat(3, 1fr); gap: 36px; } }
+@media (min-width: 780px) { .pasos { grid-template-columns: repeat(3, 1fr); gap: 32px; } }
 
-.paso { border-top: 1px solid var(--line); padding-top: 18px; }
-.numero { font-size: 0.78rem; letter-spacing: 0.14em; color: var(--amber); }
-.pasoTitulo { font-size: 1.24rem; margin: 10px 0 8px; }
-.pasoTexto { color: var(--ink-dim); font-size: 0.94rem; line-height: 1.6; max-width: 34ch; }
+/* Cada paso centrado. Sin la linea de arriba de antes: ahora lo que ancla el
+   ojo es el icono. */
+.paso {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 0 8px;
+}
 
-/* Unico lugar del sitio con la Garamond italica. */
+/* El icono en un circulo de vidrio con el acento: el foco visual del paso. */
+.iconoWrap {
+  display: grid; place-items: center;
+  width: 60px; height: 60px; margin-bottom: 12px;
+  border-radius: 50%;
+  color: var(--amber);
+  background: var(--amber-soft);
+  border: 1px solid var(--amber-deep);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.numero { font-size: 0.72rem; letter-spacing: 0.18em; color: var(--amber); }
+.pasoTitulo { font-size: 1.2rem; margin: 2px 0 4px; }
+.pasoTexto { color: var(--ink-dim); font-size: 0.92rem; line-height: 1.55; max-width: 26ch; }
+
+/* Cita en italica de Cormorant, centrada. */
 .cita {
   font-family: var(--f-quote); font-style: italic;
-  font-size: clamp(1.3rem, 2.6vw, 1.9rem); line-height: 1.4;
-  color: var(--ink-dim); max-width: 26ch; margin-bottom: 32px;
+  font-size: clamp(1.4rem, 2.8vw, 2rem); line-height: 1.35;
+  color: var(--ink-dim); max-width: 24ch; margin: 0 auto clamp(28px, 4vw, 36px);
 }

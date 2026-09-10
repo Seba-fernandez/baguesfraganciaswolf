@@ -89,21 +89,9 @@ export const FICHA = {
 export const COMO_FUNCIONA = {
   titulo: 'Cómo funciona',
   pasos: [
-    {
-      n: '01',
-      titulo: 'Armás el pedido',
-      texto: 'Elegís los aromas y la presentación. No se paga nada en la web.',
-    },
-    {
-      n: '02',
-      titulo: 'Te escribo',
-      texto: 'El pedido me llega por WhatsApp y te confirmo stock, total y tiempos.',
-    },
-    {
-      n: '03',
-      titulo: 'Lo retirás',
-      texto: 'La mercadería llega los viernes. Coordinamos entrega en Córdoba.',
-    },
+    { n: '01', icono: 'bolsa', titulo: 'Armás el pedido', texto: 'Elegís aromas y tamaño. No se paga nada acá.' },
+    { n: '02', icono: 'chat', titulo: 'Te escribo', texto: 'Te confirmo stock, total y tiempos por WhatsApp.' },
+    { n: '03', icono: 'caja', titulo: 'Lo retirás', texto: 'Llega los viernes. Coordinamos en Córdoba.' },
   ],
   cita: 'Trabajo por encargo, con catálogo propio y precio de reventa directa.',
   boton: 'Escribime por WhatsApp',

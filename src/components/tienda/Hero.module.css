@@ -2,8 +2,8 @@
 .hero::before {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(58% 48% at 12% 0%, rgba(209, 155, 69, 0.13) 0%, transparent 62%),
-    radial-gradient(46% 42% at 92% 8%, rgba(209, 155, 69, 0.06) 0%, transparent 66%);
+    radial-gradient(58% 48% at 12% 0%, rgba(216, 96, 122, 0.13) 0%, transparent 62%),
+    radial-gradient(46% 42% at 92% 8%, rgba(216, 96, 122, 0.06) 0%, transparent 66%);
 }
 .hero::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -25,6 +25,18 @@
      fondo es el verde a full, y hay que asegurar el contraste del eyebrow ambar
      y de la bajada. Sigue dejando pasar el verde, difuminado. */
   background: rgba(12, 17, 14, 0.64);
+}
+
+/* En el celular, el panel del hero es grande y esta arriba de todo: recalcular
+   su desenfoque en cada cuadro del scroll era parte del lag. Ahi va sin
+   backdrop-filter y con respaldo mas opaco: pierde el "ver a traves", gana
+   fluidez garantizada. El vidrio mojado completo queda para la compu. */
+@media (max-width: 767px) {
+  .panel {
+    background: rgba(11, 16, 13, 0.86);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
 }
 
 /* La corona de marca. Wolf grande, con espaciado ancho de sello; el aval de
@@ -96,7 +108,7 @@
 
 .promoSello {
   flex-shrink: 0; padding: 7px 12px; border-radius: var(--r-pill);
-  background: var(--amber); color: #17130a; font-weight: 600; font-size: 0.82rem;
+  background: var(--amber); color: var(--on-amber); font-weight: 600; font-size: 0.82rem;
 }
 .promoTexto { display: flex; flex-direction: column; gap: 3px; }
 .promoTitulo { font-size: 0.96rem; font-weight: 500; }

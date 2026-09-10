@@ -16,7 +16,7 @@
 .promoTag {
   position: absolute; top: 8px; left: 8px;
   padding: 3px 8px; border-radius: var(--r-pill);
-  background: var(--amber); color: #17130a;
+  background: var(--amber); color: var(--on-amber);
   font-size: 0.64rem; font-weight: 700; letter-spacing: 0.06em;
 }
 
@@ -64,11 +64,11 @@
 .add {
   flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--amber); color: #17130a; border: 0; cursor: pointer;
+  background: var(--amber); color: var(--on-amber); border: 0; cursor: pointer;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
 }
-.add:hover { background: #e0aa54; }
+.add:hover { background: #e37e94; }
 .add:active { transform: scale(0.92); }
 .add:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .add:disabled { opacity: 0.4; cursor: not-allowed; }

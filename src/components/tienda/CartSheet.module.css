@@ -96,7 +96,7 @@
   border-radius: var(--r-surface); color: var(--ink);
   transition: background var(--dur) var(--ease);
 }
-.faltaUno:hover { background: rgba(209, 155, 69, 0.2); }
+.faltaUno:hover { background: rgba(216, 96, 122, 0.2); }
 .faltaUno:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 .faltaTitulo { font-family: var(--f-display); font-size: 1.02rem; color: var(--amber); }
 .faltaTexto { font-size: 0.84rem; color: var(--ink-dim); }

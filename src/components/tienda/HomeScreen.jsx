@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { flushSync } from 'react-dom';
 import useProducts from '../../hooks/useProducts';
 import useSettings from '../../hooks/useSettings';
 import { CartProvider } from '../../contexts/CartContext';
@@ -12,14 +11,13 @@ import ProductGrid from './ProductGrid';
 import ComoFunciona from './ComoFunciona';
 import ProductModal from './ProductModal';
 
-// View Transitions nativas: la miniatura se convierte en la ficha en vez de
-// aparecer un modal sin relacion con lo que se toco. Con soporte ausente o
-// reduced-motion, cae al fade de siempre.
+// La ficha abre con una animacion propia de CSS (ver ProductModal), no con la
+// View Transitions API. El morph tarjeta -> ficha se veia "cortado y se
+// acomodaba despues" en el celular: la API saca una foto del antes y el
+// despues y los cruza, y con el vidrio pesado de la ficha eso trababa. Un
+// fade con leve escala es instantaneo y no falla nunca.
 function conTransicion(actualizar) {
-  const soportado = typeof document !== 'undefined' && 'startViewTransition' in document;
-  const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!soportado || reduce) { actualizar(); return; }
-  document.startViewTransition(() => flushSync(actualizar));
+  actualizar();
 }
 
 export default function HomeScreen() {

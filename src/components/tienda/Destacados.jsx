@@ -7,10 +7,10 @@ import ProductThumb from './ProductThumb';
 import s from './Destacados.module.css';
 
 /**
- * Seleccion curada. No repite el tratamiento del catalogo: acá cada aroma se
- * presenta por el perfume que todos conocen (inspirado_en como titulo), que
- * es lo que la clienta busca. El catálogo completo, abajo, ordena por nombre
- * de la casa. Dos secciones, dos trabajos distintos.
+ * Seleccion curada. Va CONTENIDA en un marco propio, con su eyebrow y un fondo
+ * apenas distinto, para que se lea como una vidriera aparte y no se confunda
+ * con el catalogo abierto de abajo. Ademas es un carrusel horizontal, otra
+ * forma de mirar: la vidriera se recorre, el catalogo se explora.
  */
 export default function Destacados({ products, onOpen }) {
   const ref = useReveal();
@@ -19,33 +19,36 @@ export default function Destacados({ products, onOpen }) {
 
   return (
     <section className={`tw ${s.section}`} ref={ref}>
-      <header className={s.head}>
-        <h2 className={s.titulo}>{DESTACADOS.titulo}</h2>
-        <p className={s.bajada}>{DESTACADOS.bajada}</p>
-      </header>
+      <div className={s.marco}>
+        <header className={s.head}>
+          <p className={s.eyebrow}>{DESTACADOS.eyebrow}</p>
+          <h2 className={s.titulo}>{DESTACADOS.titulo}</h2>
+          <p className={s.bajada}>{DESTACADOS.bajada}</p>
+        </header>
 
-      <div className={s.fila}>
-        {destacados.map((p, i) => {
-          const pres = presentacionPorDefecto(p);
-          return (
-            <button
-              key={p.id}
-              type="button"
-              className={`${s.item} treveal`}
-              style={{ transitionDelay: `${Math.min(i, DESTACADOS_MAXIMO - 1) * 60}ms` }}
-              onClick={() => onOpen(p)}
-            >
-              <span className={s.media}>
-                <ProductThumb producto={p} ratio={PROPORCION.destacado} />
-              </span>
-              <span className={s.info}>
-                <span className={s.nombre}>{p.inspirado_en || p.nombre}</span>
-                <span className={s.casa}>{p.nombre}</span>
-                {pres && <span className={`${s.precio} tnum`}>{DESTACADOS.desde} {pesos(pres.precio)}</span>}
-              </span>
-            </button>
-          );
-        })}
+        <div className={s.fila}>
+          {destacados.map((p, i) => {
+            const pres = presentacionPorDefecto(p);
+            return (
+              <button
+                key={p.id}
+                type="button"
+                className={`${s.item} treveal`}
+                style={{ transitionDelay: `${Math.min(i, DESTACADOS_MAXIMO - 1) * 60}ms` }}
+                onClick={() => onOpen(p)}
+              >
+                <span className={s.media}>
+                  <ProductThumb producto={p} ratio={PROPORCION.destacado} />
+                </span>
+                <span className={s.info}>
+                  <span className={s.nombre}>{p.inspirado_en || p.nombre}</span>
+                  <span className={s.casa}>{p.nombre}</span>
+                  {pres && <span className={`${s.precio} tnum`}>{DESTACADOS.desde} {pesos(pres.precio)}</span>}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

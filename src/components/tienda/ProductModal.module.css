@@ -1,17 +1,29 @@
 .overlay { position: fixed; inset: 0; background: rgba(6, 10, 8, 0.72); z-index: 100; animation: fade 0.2s ease; }
+/* Fondo solido, sin vidrio: la ficha tapa casi toda la pantalla, no hace falta
+   ver a traves, y un backdrop-filter aca solo costaba GPU al abrir. */
 .sheet {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
   max-width: 960px; margin: 0 auto;
   max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain;
-  border-radius: var(--r-surface) var(--r-surface) 0 0;
+  border-radius: 14px 14px 0 0;
   display: grid; grid-template-columns: 1fr;
-  animation: up 0.3s var(--ease);
+  background: var(--bg-2);
+  box-shadow: 0 -24px 60px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform-origin: bottom center;
+  animation: sheet-sube 0.32s var(--ease) both;
+}
+@keyframes sheet-sube {
+  from { opacity: 0; transform: translateY(24px) scale(0.985); }
+  to { opacity: 1; transform: none; }
 }
 @media (min-width: 820px) {
   .sheet {
     grid-template-columns: 5fr 6fr; bottom: 4vh; max-height: 92vh;
-    border-radius: var(--r-surface);
+    border-radius: 16px;
   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet { animation: fade 0.2s ease both; }
 }
 
 .cerrar {

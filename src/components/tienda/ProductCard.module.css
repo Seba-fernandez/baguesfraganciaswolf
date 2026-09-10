@@ -1,56 +1,81 @@
 .card {
   display: flex; flex-direction: column;
   /* el fondo y el canto los pone .tglass-lite */
-  border-radius: var(--r-surface);
+  border-radius: 12px;
   overflow: hidden;
   transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
-  /* 104 tarjetas: no renderizar lo que no se ve. CSS puro, cero JS. */
+  /* Muchas tarjetas: no renderizar lo que no se ve. CSS puro, cero JS. */
   content-visibility: auto;
-  contain-intrinsic-size: auto 420px;
+  contain-intrinsic-size: auto 320px;
 }
 .card:hover { transform: translateY(-2px); }
-.card:hover::before { opacity: 1; filter: brightness(1.6); }
 
-.media { display: block; width: 100%; border: 0; padding: 0; background: none; cursor: pointer; }
+.media { position: relative; display: block; width: 100%; border: 0; padding: 0; background: none; cursor: pointer; }
 
-.body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+/* El sello 2x1 va sobre la foto, en la esquina: libera espacio abajo. */
+.promoTag {
+  position: absolute; top: 8px; left: 8px;
+  padding: 3px 8px; border-radius: var(--r-pill);
+  background: var(--amber); color: #17130a;
+  font-size: 0.64rem; font-weight: 700; letter-spacing: 0.06em;
+}
+
+.body { padding: 12px 12px 14px; display: flex; flex-direction: column; gap: 5px; flex: 1; }
 
 .titulo {
-  font-family: var(--f-display); font-size: 1.12rem; line-height: 1.2;
+  font-family: var(--f-display); font-size: 1rem; line-height: 1.15;
   color: var(--ink); background: none; border: 0; padding: 0; text-align: left;
-  cursor: pointer; letter-spacing: 0.02em;
+  cursor: pointer; letter-spacing: 0.01em;
 }
 .titulo:hover { color: var(--amber); }
 
-.inspirado { font-size: 0.74rem; color: var(--ink-faint); margin-bottom: 12px; }
+.inspirado { font-size: 0.7rem; color: var(--ink-faint); }
 
-.opciones { display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
-
-.opcion {
-  position: relative; display: flex; align-items: center; justify-content: space-between;
-  gap: 10px; width: 100%; min-height: 44px; padding: 9px 12px;
-  background: none; border: 1px solid var(--line); border-radius: var(--r-pill);
-  color: var(--ink-dim); cursor: pointer; font-size: 0.84rem;
+/* Tallas: pastillas chicas, se prenden. La linea y el nombre del frasco ya no
+   van aca, van en la ficha. */
+.tallas { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.talla {
+  min-height: 30px; padding: 5px 9px; border-radius: var(--r-pill);
+  background: none; border: 1px solid var(--line); color: var(--ink-dim);
+  cursor: pointer; font-size: 0.72rem; white-space: nowrap;
   transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.opcion:hover { border-color: var(--line-bright); color: var(--ink); }
-.opcionOn { border-color: var(--amber); color: var(--ink); background: var(--amber-soft); }
-.opcion:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.talla:hover { border-color: var(--line-bright); color: var(--ink); }
+.tallaOn { border-color: var(--amber); color: var(--ink); background: var(--amber-soft); }
+.talla:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
-.opIzq { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.ml { font-weight: 500; }
-.linea { font-size: 0.68rem; color: var(--ink-faint); letter-spacing: 0.04em; }
-.opcionOn .linea { color: var(--ink-dim); }
-.precios { display: inline-flex; align-items: baseline; gap: 8px; margin-left: auto; }
-.antes { color: var(--ink-faint); text-decoration: line-through; font-size: 0.76rem; }
-.precio { font-weight: 600; color: var(--ink); }
-
-/* El sello va en la opcion, no solo en el carrito: hay aromas donde el
-   frasco grande sale mas barato que el chico y sin el sello eso lee absurdo. */
-.sello {
-  flex-shrink: 0; padding: 3px 8px; border-radius: var(--r-pill);
-  background: var(--amber); color: #17130a;
-  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em;
+/* Pie: precio a la izquierda, boton "+" a la derecha. El boton no ocupa toda
+   la fila, asi la tarjeta respira. */
+.pie {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; margin-top: auto; padding-top: 12px;
+}
+/* En la tarjeta angosta, el precio de antes va ARRIBA del actual, no al lado:
+   asi el tachado no empuja el precio real contra el boton. En pantalla ancha
+   vuelven a la misma linea, que se lee mejor cuando hay lugar. */
+.precioWrap { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 0; min-width: 0; line-height: 1.1; }
+.antes { color: var(--ink-faint); text-decoration: line-through; font-size: 0.68rem; }
+.precio { font-weight: 600; color: var(--ink); font-size: 0.96rem; }
+@media (min-width: 560px) {
+  .precioWrap { flex-direction: row; align-items: baseline; gap: 7px; }
+  .precio { font-size: 0.98rem; }
 }
 
-.add { margin-top: 12px; width: 100%; padding: 12px 20px; min-height: 46px; font-size: 0.88rem; }
+.add {
+  flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--amber); color: #17130a; border: 0; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.add:hover { background: #e0aa54; }
+.add:active { transform: scale(0.92); }
+.add:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.add:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* En pantallas mas anchas la tarjeta tiene aire de sobra: agranda un toque. */
+@media (min-width: 560px) {
+  .body { padding: 16px 16px 18px; }
+  .titulo { font-size: 1.12rem; }
+  .inspirado { font-size: 0.74rem; }
+}

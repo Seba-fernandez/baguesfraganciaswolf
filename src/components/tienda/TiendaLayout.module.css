@@ -1,7 +1,12 @@
+/* La cabecera NO usa vidrio: es fija y se repinta en cada cuadro del scroll,
+   asi que un backdrop-filter ahi es de lo que mas traba en el celular. En su
+   lugar, un velo oscuro degradado que asegura la lectura de la marca y el nav
+   sobre el verde, a costo cero. */
 .bar {
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; gap: 10px;
   padding: 14px max(4vw, calc((100vw - var(--wrap)) / 2));
+  background: linear-gradient(to bottom, rgba(9, 13, 11, 0.86) 0%, rgba(9, 13, 11, 0.6) 55%, rgba(9, 13, 11, 0) 100%);
   border-bottom: 0;
 }
 

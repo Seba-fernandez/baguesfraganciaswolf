@@ -215,13 +215,14 @@
   -webkit-backdrop-filter: var(--glass-blur);
   box-shadow: var(--glass-sombra);
 }
-/* Refraccion de verdad, donde el navegador la banca (Chromium y derivados):
-   el filtro SVG desplaza el fondo antes del desenfoque, asi los haces se
-   quiebran al cruzar el vidrio. Donde no hay soporte, queda el desenfoque de
-   arriba, que ya se ve bien: esto suma, no sostiene. Es la diferencia entre
-   vidrio grueso y frost plano. */
+/* Refraccion de verdad: el filtro SVG desplaza el fondo antes del desenfoque,
+   asi los haces se quiebran y ondulan al cruzar el vidrio, como agua sobre el
+   canto. Es CARO: displazar un backdrop cuesta GPU en serio. Por eso va SOLO en
+   la placa del hero (.tglass-wet), que es una, esta arriba de todo y se va con
+   el scroll. En la cabecera fija o en las 100 tarjetas fundiria el celular.
+   Donde no hay soporte, queda el desenfoque comun, que ya se ve bien. */
 @supports (backdrop-filter: url("#tvidrio")) {
-  .tglass {
+  .tglass-wet {
     backdrop-filter: url("#tvidrio") var(--glass-blur);
     -webkit-backdrop-filter: url("#tvidrio") var(--glass-blur);
   }

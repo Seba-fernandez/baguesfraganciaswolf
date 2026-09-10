@@ -47,26 +47,29 @@ export default function Hero({ settings, promos = {}, onVerPromo, totalAromas, d
         .from('[data-hero="meta"] > *', { autoAlpha: 0, y: 10, duration: 0.5, stagger: 0.07 }, '-=0.36')
         .from('[data-hero="cinta"]', { autoAlpha: 0, duration: 0.8 }, '-=0.3');
 
-      // Parallax del fondo: se corre mas lento que el contenido, da profundidad.
-      // Solo transform, y el desvanecido de abajo tapa cualquier borde.
-      const fondo = document.querySelector('.tfondo');
-      const st = fondo
-        ? gsap.to(fondo, {
-            yPercent: -7,
-            ease: 'none',
-            scrollTrigger: { trigger: scope.current, start: 'top top', end: 'bottom top', scrub: true },
-          })
-        : null;
-
-      return () => st?.scrollTrigger?.kill();
     });
+
+    // Parallax del fondo: SOLO en escritorio. En el celular, mover el fondo
+    // mientras el vidrio de arriba lo relee cada cuadro es justo lo que traba.
+    // Ahi el fondo queda quieto, que ademas es lo que se pidio.
+    mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
+      const fondo = document.querySelector('.tfondo');
+      if (!fondo) return;
+      const st = gsap.to(fondo, {
+        yPercent: -7,
+        ease: 'none',
+        scrollTrigger: { trigger: scope.current, start: 'top top', end: 'bottom top', scrub: true },
+      });
+      return () => st.scrollTrigger?.kill();
+    });
+
     return () => mm.revert();
   }, []);
 
   return (
     <section className={s.hero} ref={scope}>
       <div className={`tw ${s.inner}`}>
-        <div className={`${s.panel} tglass`} data-hero="panel">
+        <div className={`${s.panel} tglass tglass-wet`} data-hero="panel">
           <p className={s.corona} data-hero="corona">
             <span className={s.coronaMarca}>{INICIO.corona}</span>
             <span className={s.coronaAval}>{INICIO.aval}</span>

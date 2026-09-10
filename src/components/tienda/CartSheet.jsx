@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import useCheckoutWeb from '../../hooks/useCheckoutWeb';
 import { pesos } from '../../lib/format';
@@ -14,11 +14,32 @@ export default function CartSheet({ settings, onVerPromo }) {
   const [formErr, setFormErr] = useState(null);
   const [numeroPedido, setNumeroPedido] = useState(null);
 
-  if (!open) return null;
+  // El cajon se queda montado mientras se anima la salida, si no se cortaria de
+  // golpe al cerrar. `cerrando` dispara la animacion de salida; al terminar se
+  // desmonta y se resetea el paso.
+  const [montado, setMontado] = useState(open);
+  const [cerrando, setCerrando] = useState(false);
+  useEffect(() => {
+    if (open) {
+      setMontado(true);
+      setCerrando(false);
+      return;
+    }
+    if (!montado) return;
+    setCerrando(true);
+    const t = setTimeout(() => {
+      setMontado(false);
+      setCerrando(false);
+      setPaso('carrito');
+      setFormErr(null);
+    }, 240);
+    return () => clearTimeout(t);
+  }, [open, montado]);
+
+  if (!montado) return null;
 
   function cerrar() {
     setOpen(false);
-    setTimeout(() => { setPaso('carrito'); setFormErr(null); }, 300);
   }
 
   async function confirmar() {
@@ -43,8 +64,13 @@ export default function CartSheet({ settings, onVerPromo }) {
 
   return (
     <>
-      <div className={s.overlay} onClick={cerrar} />
-      <div className={`${s.sheet} tglass`} role="dialog" aria-modal="true" aria-label="Tu pedido">
+      <div className={`${s.overlay} ${cerrando ? s.overlaySale : ''}`} onClick={cerrar} />
+      <div
+        className={`${s.sheet} ${cerrando ? s.sale : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Tu pedido"
+      >
         {paso === 'carrito' && (
           <>
             <div className={s.head}>

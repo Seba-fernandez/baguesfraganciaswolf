@@ -1,17 +1,39 @@
-.overlay { position: fixed; inset: 0; background: rgba(6, 10, 8, 0.7); z-index: 100; animation: fade 0.2s ease; }
-.sheet {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
-  max-width: 480px; margin: 0 auto;
-  max-height: 90dvh; overflow-y: auto; overscroll-behavior: contain;
-  border-radius: var(--r-surface) var(--r-surface) 0 0;
-  padding: 22px 22px calc(28px + env(safe-area-inset-bottom));
-  animation: up 0.28s var(--ease);
+.overlay {
+  position: fixed; inset: 0; background: rgba(6, 10, 8, 0.55);
+  z-index: 100; animation: fade 0.22s ease both;
 }
+.overlaySale { animation: fadeOut 0.22s ease both; }
+
+/* Cajon lateral, no sheet de pantalla completa. Entra desde la derecha como un
+   menu: angosto, comodo, sin tapar todo. Fondo solido (nada de backdrop-filter,
+   que era parte del lag) con un canto de luz a la izquierda. */
+.sheet {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 101;
+  width: min(86vw, 360px);
+  display: flex; flex-direction: column;
+  overflow-y: auto; overscroll-behavior: contain;
+  border-radius: 18px 0 0 18px;
+  padding: 20px 20px calc(24px + env(safe-area-inset-bottom));
+  background: var(--bg-2);
+  box-shadow: -26px 0 60px -24px rgba(0, 0, 0, 0.8), inset 1px 0 0 rgba(255, 255, 255, 0.08);
+  animation: drawer-in 0.28s var(--ease) both;
+}
+.sale { animation: drawer-out 0.24s var(--ease) both; }
+
 @media (min-width: 768px) {
   .sheet {
-    left: auto; right: 24px; bottom: 24px; max-width: 420px;
-    border-radius: var(--r-surface);
+    top: 16px; bottom: 16px; right: 16px;
+    border-radius: 18px;
+    width: 380px;
   }
+}
+
+@keyframes drawer-in { from { opacity: 0.4; transform: translateX(100%); } to { opacity: 1; transform: none; } }
+@keyframes drawer-out { from { opacity: 1; transform: none; } to { opacity: 0.2; transform: translateX(100%); } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .sale { animation: fade 0.18s ease both; }
 }
 
 .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }

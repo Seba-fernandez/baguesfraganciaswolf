@@ -149,7 +149,6 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
                 producto={p}
                 onOpen={onOpen}
                 promos={promos}
-                vtName={p.id === abiertoId ? 'none' : `aroma-${p.id}`}
               />
             ))}
           </div>

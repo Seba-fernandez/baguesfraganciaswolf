@@ -23,16 +23,21 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
           desenfoque. Vive una sola vez en el DOM y lo usan las superficies de
           vidrio via backdrop-filter: url(#tvidrio). */}
       <svg className="tsvg" aria-hidden="true" focusable="false" width="0" height="0">
-        <filter id="tvidrio" x="-12%" y="-12%" width="124%" height="124%" colorInterpolationFilters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="0.009 0.016" numOctaves="2" seed="14" result="ruido" />
-          <feGaussianBlur in="ruido" stdDeviation="1.4" result="suave" />
-          <feDisplacementMap in="SourceGraphic" in2="suave" scale="11" xChannelSelector="R" yChannelSelector="G" />
+        <filter id="tvidrio" x="-15%" y="-15%" width="130%" height="130%" colorInterpolationFilters="sRGB">
+          {/* Dos escalas de ruido: una onda larga que ondula todo el fondo como
+              agua, y una fina que agita el detalle. Suavizadas, para que el
+              vidrio se vea mojado y no granulado. */}
+          <feTurbulence type="fractalNoise" baseFrequency="0.006 0.011" numOctaves="2" seed="14" result="ondaLarga" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.02 0.03" numOctaves="1" seed="7" result="ondaFina" />
+          <feBlend in="ondaLarga" in2="ondaFina" mode="multiply" result="ruido" />
+          <feGaussianBlur in="ruido" stdDeviation="1.1" result="suave" />
+          <feDisplacementMap in="SourceGraphic" in2="suave" scale="17" xChannelSelector="R" yChannelSelector="G" />
         </filter>
       </svg>
 
       <div className="tfondo" aria-hidden="true" />
 
-      <header className={`${s.bar} tglass`}>
+      <header className={s.bar}>
         <a href="#inicio" className={s.marca}>
           {MARCA.nombre} <span className={s.marcaWolf}>{MARCA.complemento}</span>
         </a>

@@ -48,6 +48,7 @@ export const INICIO = {
 };
 
 export const DESTACADOS = {
+  eyebrow: 'Selección del ciclo',
   titulo: 'Los que siempre salen',
   bajada: 'Los que más pide la gente, ciclo tras ciclo.',
   desde: 'desde',

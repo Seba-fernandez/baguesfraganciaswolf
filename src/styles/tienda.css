@@ -36,9 +36,12 @@
      y ponerlo en las 104 tarjetas funde un celular de gama media. Las
      tarjetas usan .tglass-lite, que se ve translucido igual porque el fondo
      se ve a traves, pero no desenfoca nada. --- */
-  --glass-bg: rgba(21, 28, 24, 0.52);
-  --glass-bg-lite: rgba(21, 28, 24, 0.42);
-  --glass-blur: blur(14px) saturate(140%);
+  --glass-bg: rgba(21, 28, 24, 0.42);
+  --glass-bg-lite: rgba(21, 28, 24, 0.40);
+  /* saturate y brightness son lo que separa el vidrio del plastico esmerilado:
+     el vidrio mojado no solo desenfoca, tambien concentra y aviva el color de
+     lo que hay atras. Con el fondo de haces finos, la diferencia se nota. */
+  --glass-blur: blur(16px) saturate(185%) brightness(1.1);
   --glass-canto: rgba(235, 232, 221, 0.34);
   --glass-sombra: 0 18px 44px -22px rgba(0, 0, 0, 0.72), inset 0 -4px 15px rgba(0, 0, 0, 0.10);
   --danger: #d98a72;
@@ -61,6 +64,10 @@
   /* Cuanto se ve la foto del fondo. 1 = como esta; 0 = verde liso, sin textura.
      Atras siempre queda --bg, asi que bajarla oscurece, no transparenta. */
   --fondo-opacidad: 1;
+
+  /* Grano de pelicula sobre el fondo. Cuanto mas alto, mas sucia y mas
+     fotografica se ve la imagen. Arriba de 0.5 empieza a comerse los haces. */
+  --grano: 0.34;
 
   --f-display: 'Marcellus', 'Iowan Old Style', ui-serif, Georgia, serif;
   --f-body: 'Figtree', system-ui, -apple-system, sans-serif;
@@ -114,39 +121,73 @@
 }
 
 /* ---------- fondo ----------
-   Textura propia (public/fondo.jpg, 37 kB). La version anterior llevaba un
-   patron de lineas repetidas que a esta escala se leia como trama de tela:
-   se fue. Lo que da sensacion de fondo caro no es un dibujo, son
-   transiciones largas que no se notan, una vineta que cierra los bordes y
-   grano de pelicula fino, que evita el bandeado de los degradados planos.
+   Textura propia (public/fondo.jpg). Haces verdes en diagonal, una sola
+   direccion, con grano encima: la imagen que pidio el, tipo spray de aroma.
+   La genera scripts/fondo/generar.mjs, que se corre con `npm run fondo`.
 
-   Va al 100%: medida sobre sus pixeles, su punto mas claro es rgb(35,59,46),
-   casi tres veces mas oscuro que el de la textura anterior, asi que el texto
-   mas tenue conserva 5,5:1 sin necesidad de bajarle opacidad.
-
-   Estatico a proposito. Es un div con position:fixed y no
-   background-attachment:fixed, que en telefonos obliga a repintar el fondo en
-   cada cuadro del scroll. */
+   El verde es brillante a proposito, y por eso NINGUN texto se apoya sobre el
+   crudo: el hero va sobre una placa de vidrio (ver Hero.module.css) y el resto
+   del contenido queda mas abajo, donde el telon ya se desvanecio al --bg. Los
+   haces son el escenario, no el papel donde se escribe. */
+/* El fondo verde no cubre toda la pagina: es el telon del arranque. Ocupa el
+   alto de la portada y un poco mas, y se desvanece en el --bg de abajo. Asi el
+   verde vivo es lo primero que se ve, con toda su fuerza, y el catalogo de mas
+   abajo queda sobre oscuro parejo, donde el texto y las cards de vidrio se leen
+   sin pelear con los haces.
+   Va con position:absolute, no fixed: se va con el scroll, que es barato. El
+   fixed obligaba a repintar en cada cuadro. */
 .tfondo {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-  background: var(--bg);
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 168vh; z-index: 0; pointer-events: none; overflow: hidden;
 }
+/* La textura y la aureola ambar van en la misma capa: los degradados primero,
+   que quedan arriba, y la foto al final. Asi la capa de encima queda libre
+   para el grano, que necesita mezclarse distinto. */
 .tfondo::before {
   content: ''; position: absolute; inset: 0;
-  background-image: url('/fondo.jpg');
-  background-size: cover;
-  background-position: center;
-  opacity: var(--fondo-opacidad);
-}
-/* Aureola ambar tenue, para que el acento de la marca este tambien en el aire. */
-.tfondo::after {
-  content: ''; position: absolute; inset: 0;
-  background:
+  background-image:
     radial-gradient(52% 38% at 12% 2%, rgba(209, 155, 69, 0.10) 0%, transparent 62%),
-    radial-gradient(44% 36% at 90% 96%, rgba(209, 155, 69, 0.06) 0%, transparent 64%);
+    radial-gradient(44% 36% at 90% 96%, rgba(209, 155, 69, 0.06) 0%, transparent 64%),
+    url('/fondo.jpg');
+  background-size: auto, auto, cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: var(--fondo-opacidad);
+  /* El desvanecido al oscuro. Empieza pasada la portada y termina antes del
+     final del telon, para que el corte no se note. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 88%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 88%);
 }
 
-/* El contenido va por encima del fondo fijo. */
+/* Grano de pelicula. No va adentro del JPEG: el ruido le rompe la compresion y
+   multiplica el peso por cinco. Va acá, generado por el navegador.
+
+   Se mezcla en multiply, o sea que solo oscurece. Eso importa por dos motivos:
+   el contraste del texto solo puede mejorar, nunca empeorar, y el grano
+   aparece donde hay luz y desaparece en el negro, que es como se comporta el
+   grano de verdad. */
+.tfondo::after {
+  content: ''; position: absolute; inset: 0;
+  opacity: var(--grano);
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 88%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 88%);
+}
+
+/* Halo ambiente. Un verde y un ambar muy tenues, fijos, detras de todo el
+   contenido. No se ven como manchas: lo que hacen es darle algo que reflejar al
+   vidrio de las cards cuando ya paso el telon verde y el fondo es oscuro. Tan
+   suave que no toca el contraste del texto, que va sobre las cards. */
+.tienda::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(58% 48% at 84% 12%, rgba(74, 180, 128, 0.07) 0%, transparent 60%),
+    radial-gradient(52% 50% at 8% 92%, rgba(209, 155, 69, 0.05) 0%, transparent 62%);
+}
+
+/* El contenido va por encima del fondo y del halo. */
 .tienda > header, .tienda > main, .tienda > footer { position: relative; z-index: 1; }
 
 /* ---------- vidrio ----------
@@ -163,6 +204,14 @@
 .tglass-lite {
   position: relative;
   background: var(--glass-bg-lite);
+  /* Sin desenfoque (son muchas cards, seria carisimo), pero con los dos rasgos
+     que hacen leer el vidrio: la linea de luz del canto de arriba y una sombra
+     tenue que la despega del fondo. Es lo que la skill de gusto llama el filo
+     refractado. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 14px 32px -22px rgba(0, 0, 0, 0.85);
 }
 /* El canto no es un borde parejo: en el vidrio real la luz pega arriba y se
    apaga abajo. Se dibuja con un degradado recortado al contorno (mascara
@@ -187,14 +236,18 @@
   mask-composite: exclude;
   transition: opacity var(--dur) var(--ease);
 }
-/* Reflejo interno: la franja de luz que deja el vidrio contra su cara de
-   arriba. Va en la superficie, no en el canto. */
+/* Reflejo especular: la mancha de luz que deja el vidrio en su cara de arriba,
+   mas la franja fina del borde superior. Son dos cosas distintas y por eso son
+   dos degradados: la mancha da volumen, la franja da filo. Es lo que separa
+   "mojado" de "esmerilado". */
 .tglass::after,
 .tglass-lite::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgba(235, 232, 221, 0.07) 0%, transparent 38%);
-  opacity: 0.9;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.02) 22%, transparent 44%),
+    radial-gradient(130% 78% at 16% -14%, rgba(255, 255, 255, 0.13) 0%, transparent 58%);
+  opacity: 0.92;
   transition: opacity var(--dur) var(--ease);
 }
 
@@ -226,10 +279,60 @@
 .tbtn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .tbtn:disabled { opacity: 0.42; cursor: not-allowed; }
 
+/* El boton secundario es una pastilla de vidrio, no un contorno vacio. Lleva
+   el mismo tratamiento que las superficies: desenfoque, canto de luz y reflejo.
+   Son pocos en la pagina, asi que el costo del desenfoque no pesa. */
 .tbtn.ghost {
-  background: none; color: var(--ink); border: 1px solid var(--line-bright);
+  position: relative;
+  background: rgba(235, 232, 221, 0.07);
+  color: var(--ink);
+  border: 0;
+  backdrop-filter: blur(12px) saturate(180%) brightness(1.12);
+  -webkit-backdrop-filter: blur(12px) saturate(180%) brightness(1.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -6px 12px -8px rgba(0, 0, 0, 0.55),
+    0 10px 26px -16px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
 }
-.tbtn.ghost:hover { background: rgba(235, 232, 221, 0.06); border-color: var(--ink-faint); }
+/* El canto: mismo recorte de mascara que el vidrio grande. */
+.tbtn.ghost::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.12) 34%,
+    rgba(255, 255, 255, 0.04) 64%,
+    rgba(209, 155, 69, 0.28) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+/* La gota de luz de la cara de arriba. */
+.tbtn.ghost::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 52%);
+}
+.tbtn.ghost:hover { background: rgba(235, 232, 221, 0.12); }
+
+/* El boton principal es ambar macizo, no vidrio: es el unico acento del sitio
+   y tiene que leerse de lejos. Lo unico que se le suma es el brillo de arriba,
+   para que pertenezca al mismo material que el resto. */
+.tbtn:not(.ghost) {
+  position: relative; overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34), 0 12px 28px -18px rgba(0, 0, 0, 0.9);
+}
+.tbtn:not(.ghost)::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, transparent 46%);
+}
 
 .tbtn.wide { width: 100%; }
 

@@ -18,24 +18,26 @@ export default function Hero({ settings, promos = {}, onVerPromo, totalAromas })
   return (
     <section className={s.hero}>
       <div className={`tw ${s.inner}`}>
-        {ciclo && <p className={s.ciclo}>{ciclo}</p>}
+        <div className={`${s.panel} tglass`}>
+          {ciclo && <p className={s.ciclo}>{ciclo}</p>}
 
-        <h1 className={s.titulo}>
-          {INICIO.titulo.map((linea, i) => (
-            <span key={linea}>
-              {linea}
-              {i < INICIO.titulo.length - 1 && <br />}
-            </span>
-          ))}
-        </h1>
+          <h1 className={s.titulo}>
+            {INICIO.titulo.map((linea, i) => (
+              <span key={linea}>
+                {linea}
+                {i < INICIO.titulo.length - 1 && <br />}
+              </span>
+            ))}
+          </h1>
 
-        <p className={s.bajada}>
-          {conDatos(INICIO.bajada, { aromas: totalAromas || AROMAS_APROX })}
-        </p>
+          <p className={s.bajada}>
+            {conDatos(INICIO.bajada, { aromas: totalAromas || AROMAS_APROX })}
+          </p>
 
-        <div className={s.acciones}>
-          <a href="#catalogo" className="tbtn">{INICIO.verCatalogo}</a>
-          <a href="#como" className="tbtn ghost">{INICIO.verComo}</a>
+          <div className={s.acciones}>
+            <a href="#catalogo" className="tbtn">{INICIO.verCatalogo}</a>
+            <a href="#como" className="tbtn ghost">{INICIO.verComo}</a>
+          </div>
         </div>
 
         {lista.length > 0 && (

@@ -32,7 +32,7 @@ for (const [nombre, base] of Object.entries(PROVEEDORAS)) {
 // El nuestro sale de la base con la clave publica: es el mismo catalogo que ya
 // se ve en la web, asi que no hace falta ninguna credencial de administrador.
 const { url, key } = claves();
-const campos = 'id,slug,nombre,inspirado_en,presentaciones,activo';
+const campos = 'id,slug,nombre,inspirado_en,presentaciones,activo,genero';
 const r = await fetch(`${url}/rest/v1/products?select=${campos}&order=nombre`, {
   headers: { apikey: key, Authorization: `Bearer ${key}` },
 });

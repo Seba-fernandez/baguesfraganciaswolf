@@ -10,9 +10,12 @@ import { DATOS, DESTINOS, INDICE, leerJson } from './comun.mjs';
  *   npm run fotos:traer              baja y deja las de pases anteriores
  *   npm run fotos:traer -- --limpiar baja y borra las que ya no se emparejan
  *
- * Las fotos van enteras, con su caja, como vienen de la casa: recortarlas para
- * dejar el frasco solo cortaba mal en varias. Lo unico que se toca es el tamano
- * y el peso, porque Shopify sirve PNG de mas de un mega y no los convierte.
+ * A cada foto se le saca el fondo blanco de estudio: se rellena desde los
+ * bordes (magic wand), asi el frasco y la caja quedan flotando sobre el oscuro
+ * de la web, sin el rectangulo blanco que se veia fuera de lugar. El relleno va
+ * desde el borde a proposito: el blanco interno del frasco NO se toca, solo el
+ * del fondo. Las fotos con fondo de color propio (varias de Unlock) se dejan
+ * como estan. Despues se recorta el sobrante transparente y se pasa a webp.
  *
  * Sobre --limpiar: una foto que quedo de un pase anterior puede ser un
  * emparejamiento viejo equivocado, o una foto buena de un producto que la
@@ -21,7 +24,9 @@ import { DATOS, DESTINOS, INDICE, leerJson } from './comun.mjs';
  * decision sea de una persona.
  */
 const filas = leerJson(`${DATOS}/emparejamiento.json`);
-const LADO = 800;
+const LADO = 900;
+const UMBRAL = 224; // que tan claro para contar un pixel como fondo blanco
+const SAT = 26;     // diferencia max entre canales para contar como gris/blanco
 const limpiar = process.argv.includes('--limpiar');
 
 const antes = {};
@@ -32,17 +37,68 @@ for (const [linea, dir] of Object.entries(DESTINOS)) {
   );
 }
 
-/** Shopify redimensiona del lado del servidor con ?width=, pero no pasa a webp. */
+/**
+ * Saca el fondo blanco de estudio, si lo hay. Devuelve un webp; con fondo
+ * transparente cuando se pudo recortar, o la foto tal cual cuando el fondo es
+ * de color (no se toca).
+ */
+async function procesar(buf) {
+  const { data, info } = await sharp(buf)
+    .resize(LADO, LADO, { fit: 'inside', withoutEnlargement: true })
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const { width, height, channels } = info;
+
+  const esFondo = (i) => {
+    const r = data[i], g = data[i + 1], b = data[i + 2];
+    return r > UMBRAL && g > UMBRAL && b > UMBRAL && Math.max(r, g, b) - Math.min(r, g, b) < SAT;
+  };
+
+  // Si las cuatro esquinas no son blancas, el fondo es de color: se deja igual.
+  const esquinas = [
+    0,
+    (width - 1) * channels,
+    (height - 1) * width * channels,
+    ((height - 1) * width + width - 1) * channels,
+  ];
+  if (!esquinas.every(esFondo)) {
+    return sharp(buf).resize(LADO, LADO, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
+  }
+
+  // Relleno desde los bordes: solo el blanco conectado al borde se vuelve
+  // transparente. El blanco de adentro del frasco queda intacto.
+  const vis = new Uint8Array(width * height);
+  const pila = [];
+  const meter = (x, y) => {
+    if (x < 0 || y < 0 || x >= width || y >= height) return;
+    const p = y * width + x;
+    if (!vis[p]) { vis[p] = 1; pila.push(p); }
+  };
+  for (let x = 0; x < width; x++) { meter(x, 0); meter(x, height - 1); }
+  for (let y = 0; y < height; y++) { meter(0, y); meter(width - 1, y); }
+  while (pila.length) {
+    const p = pila.pop();
+    if (!esFondo(p * channels)) continue;
+    data[p * channels + 3] = 0;
+    const x = p % width, y = (p / width) | 0;
+    meter(x + 1, y); meter(x - 1, y); meter(x, y + 1); meter(x, y - 1);
+  }
+
+  return sharp(Buffer.from(data), { raw: { width, height, channels } })
+    .trim({ threshold: 8 })
+    .webp({ quality: 82, alphaQuality: 92 })
+    .toBuffer();
+}
+
 async function traer(url, destino) {
-  const r = await fetch(url.split('?')[0] + '?width=1000');
+  const r = await fetch(url.split('?')[0] + '?width=1100');
   if (!r.ok) throw new Error('HTTP ' + r.status);
   const buf = Buffer.from(await r.arrayBuffer());
   if (buf.length < 2000) throw new Error('archivo vacio');
-  await sharp(buf)
-    .resize(LADO, LADO, { fit: 'inside', withoutEnlargement: true })
-    .webp({ quality: 80 })
-    .toFile(destino);
-  return fs.statSync(destino).size;
+  const out = await procesar(buf);
+  fs.writeFileSync(destino, out);
+  return out.length;
 }
 
 const cuenta = { unlock: 0, bagues: 0 };

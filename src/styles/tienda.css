@@ -8,7 +8,16 @@
    gradiente malla, no foto. Vidrio con refraccion real (solo escritorio).
    ============================================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Figtree:wght@400;500;600&display=swap');
+/* Fuentes alojadas en el proyecto (public/fonts), no traidas de Google. Se ven
+   sin depender de la red, la web no filtra la visita a un tercero y arranca sin
+   una request que bloquea el render. Subset latino, pesan ~125 kB en total. */
+@font-face { font-family: 'Cormorant'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/cormorant-400.woff2') format('woff2'); }
+@font-face { font-family: 'Cormorant'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/cormorant-500.woff2') format('woff2'); }
+@font-face { font-family: 'Cormorant'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/cormorant-600.woff2') format('woff2'); }
+@font-face { font-family: 'Cormorant'; font-style: italic; font-weight: 500; font-display: swap; src: url('/fonts/cormorant-italic-500.woff2') format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/figtree-400.woff2') format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/figtree-500.woff2') format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/figtree-600.woff2') format('woff2'); }
 
 .tienda {
   /* --- Paleta Forest. Un solo acento en todo el sitio: ambar. --- */
@@ -161,16 +170,17 @@
    para el grano, que necesita mezclarse distinto. */
 .tfondo::before {
   content: ''; position: absolute; inset: 0;
-  /* Gradiente malla, no una foto. Es nitido (cero artefactos de JPEG, que era
-     lo que se veia "baja calidad"), pesa nada y combina a proposito con el
-     acento: campos suaves de verde esmeralda y un resplandor rosa. Eso es lo
-     que hace estallar el vidrio: al desenfocar y refractar campos de color,
-     el cristal se ve luminoso, no gris. */
+  /* No es un difuminado mas: son campos de color (esmeralda + rosa) con RAYOS
+     de luz finos que emanan de los focos, como los del fondo de Luma. Los rayos
+     le dan estructura y direccion; los campos, el color que hace estallar el
+     vidrio al refractarlo. Todo nitido, dibujado por CSS, cero foto. */
   background:
-    radial-gradient(54% 50% at 80% 16%, rgba(46, 150, 110, 0.68) 0%, transparent 62%),
+    repeating-conic-gradient(from 196deg at 82% 4%, transparent 0deg 2.1deg, rgba(150, 220, 190, 0.05) 2.1deg 2.5deg, transparent 2.5deg 4.6deg),
+    repeating-conic-gradient(from 150deg at 12% 30%, transparent 0deg 2.6deg, rgba(228, 150, 175, 0.04) 2.6deg 3deg, transparent 3deg 5.6deg),
+    radial-gradient(54% 50% at 80% 16%, rgba(46, 150, 110, 0.66) 0%, transparent 62%),
     radial-gradient(52% 56% at 16% 22%, rgba(210, 82, 116, 0.5) 0%, transparent 64%),
     radial-gradient(46% 44% at 62% 60%, rgba(150, 60, 118, 0.3) 0%, transparent 66%),
-    radial-gradient(66% 58% at 52% 100%, rgba(22, 92, 74, 0.68) 0%, transparent 74%),
+    radial-gradient(66% 58% at 52% 100%, rgba(22, 92, 74, 0.66) 0%, transparent 74%),
     radial-gradient(40% 42% at 99% 76%, rgba(84, 168, 132, 0.3) 0%, transparent 60%),
     linear-gradient(165deg, #101915 0%, #0a0f0d 60%, #080c0a 100%);
   opacity: var(--fondo-opacidad);
@@ -204,8 +214,9 @@
 .tienda::before {
   content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(58% 48% at 84% 12%, rgba(74, 180, 128, 0.07) 0%, transparent 60%),
-    radial-gradient(52% 50% at 8% 92%, rgba(216, 96, 122, 0.05) 0%, transparent 62%);
+    radial-gradient(60% 50% at 86% 14%, rgba(70, 176, 128, 0.12) 0%, transparent 60%),
+    radial-gradient(55% 52% at 6% 62%, rgba(216, 96, 122, 0.1) 0%, transparent 62%),
+    radial-gradient(50% 46% at 96% 90%, rgba(70, 176, 128, 0.08) 0%, transparent 60%);
 }
 
 /* El contenido va por encima del fondo y del halo. */
@@ -253,6 +264,15 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     inset 0 0 0 1px rgba(255, 255, 255, 0.02),
     0 14px 32px -22px rgba(0, 0, 0, 0.85);
+}
+/* En escritorio las cards SI desenfocan el fondo: son pocas por pantalla y la
+   compu lo banca. Asi el vidrio de la card distorsiona lo que tiene detras, no
+   es solo un panel translucido. En el celular no, para no reintroducir lag. */
+@media (min-width: 768px) {
+  .tglass-lite {
+    backdrop-filter: blur(8px) saturate(135%);
+    -webkit-backdrop-filter: blur(8px) saturate(135%);
+  }
 }
 /* El canto no es un borde parejo: en el vidrio real la luz pega arriba y se
    apaga abajo. Se dibuja con un degradado recortado al contorno (mascara

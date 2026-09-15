@@ -24,9 +24,15 @@ import { DATOS, DESTINOS, INDICE, leerJson } from './comun.mjs';
  * decision sea de una persona.
  */
 const filas = leerJson(`${DATOS}/emparejamiento.json`);
-const LADO = 900;
-const UMBRAL = 224; // que tan claro para contar un pixel como fondo blanco
-const SAT = 26;     // diferencia max entre canales para contar como gris/blanco
+const LADO = 1000;
+// Blanco de estudio: que tan claro y que tan neutro para contarlo como fondo.
+const UMBRAL = 226;
+const SAT = 22;
+// Porcelana calida: el mismo tono que el azulejo de la tarjeta en el CSS
+// (--tile). El fondo blanco de estudio se normaliza a este color, asi el frasco
+// queda apoyado sobre la porcelana sin el recuadro blanco crudo, y sin recortes
+// transparentes que dejaban bordes dentados (el problema anterior).
+const CREMA = [237, 226, 210];
 const limpiar = process.argv.includes('--limpiar');
 
 const antes = {};
@@ -38,9 +44,12 @@ for (const [linea, dir] of Object.entries(DESTINOS)) {
 }
 
 /**
- * Saca el fondo blanco de estudio, si lo hay. Devuelve un webp; con fondo
- * transparente cuando se pudo recortar, o la foto tal cual cuando el fondo es
- * de color (no se toca).
+ * Normaliza el fondo. Si la foto es un frasco sobre blanco de estudio, ese
+ * blanco se rellena desde los bordes con la porcelana de la tarjeta: el frasco
+ * queda apoyado en una superficie calida pareja, no en un rectangulo blanco. Si
+ * la foto ya trae su propio fondo de color (las cajas Bagues, los marmoles de
+ * Unlock), no se toca: se ve como la marca la fotografio. Nunca se recorta a
+ * transparente: eso dejaba bordes dentados en las cajas (Kenzo, etc.).
  */
 async function procesar(buf) {
   const { data, info } = await sharp(buf)
@@ -63,11 +72,11 @@ async function procesar(buf) {
     ((height - 1) * width + width - 1) * channels,
   ];
   if (!esquinas.every(esFondo)) {
-    return sharp(buf).resize(LADO, LADO, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
+    return sharp(buf).resize(LADO, LADO, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 84 }).toBuffer();
   }
 
   // Relleno desde los bordes: solo el blanco conectado al borde se vuelve
-  // transparente. El blanco de adentro del frasco queda intacto.
+  // porcelana. El blanco de adentro del frasco (etiqueta, reflejos) no se toca.
   const vis = new Uint8Array(width * height);
   const pila = [];
   const meter = (x, y) => {
@@ -79,15 +88,15 @@ async function procesar(buf) {
   for (let y = 0; y < height; y++) { meter(0, y); meter(width - 1, y); }
   while (pila.length) {
     const p = pila.pop();
-    if (!esFondo(p * channels)) continue;
-    data[p * channels + 3] = 0;
+    const i = p * channels;
+    if (!esFondo(i)) continue;
+    data[i] = CREMA[0]; data[i + 1] = CREMA[1]; data[i + 2] = CREMA[2]; data[i + 3] = 255;
     const x = p % width, y = (p / width) | 0;
     meter(x + 1, y); meter(x - 1, y); meter(x, y + 1); meter(x, y - 1);
   }
 
   return sharp(Buffer.from(data), { raw: { width, height, channels } })
-    .trim({ threshold: 8 })
-    .webp({ quality: 82, alphaQuality: 92 })
+    .webp({ quality: 84 })
     .toBuffer();
 }
 

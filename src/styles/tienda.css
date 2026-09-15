@@ -20,44 +20,48 @@
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/figtree-600.woff2') format('woff2'); }
 
 .tienda {
-  /* --- Paleta Forest. Un solo acento en todo el sitio: ambar. --- */
-  --bg: #0e1310;          /* verde botanico profundo */
-  --bg-2: #151c18;        /* superficie elevada */
-  --bg-3: #1b2420;        /* superficie sobre superficie */
-  --ink: #ebe8dd;         /* hueso. 15.1:1 sobre --bg */
-  /* Los ratios estan medidos contra el PEOR fondo posible, no contra el
-     fondo plano: el halo ambar y los rayos aclaran algunas zonas, y ahi es
-     donde el texto mas tenue se cae. Con el fondo plano daban de sobra;
-     compuestas las capas, el terciario quedaba en 3.9:1 y hubo que subirlo. */
-  /* Medido sobre los pixeles reales de la textura, no estimado: su punto mas
-     claro es rgb(78,93,64). Con el terciario anterior, cualquier fondo
-     visible lo dejaba abajo del minimo; por eso el fondo se veia apagado. Se
-     aclararon los dos niveles para poder subir la textura al doble. */
-  --ink-dim: #d4d2c9;     /* secundario */
-  --ink-faint: #bfbeb4;   /* terciario. 4.9:1 en el pixel mas claro del fondo */
-  /* Acento sensual: un rosa-vino en vez del ambar "naranja Claude". Es el
-     complementario del verde forest, asi que no compite con el fondo, lo hace
-     estallar. Los nombres siguen siendo --amber* para no reescribir medio
-     archivo; el valor es lo que cambia. Medido: 5.2:1 sobre --bg (pasa AA). */
-  --amber: #d8607a;       /* acento unico, rosa-vino */
-  --amber-deep: #b0455c;
-  --amber-soft: rgba(216, 96, 122, 0.15);
-  --on-amber: #1e0f14;    /* texto oscuro sobre el acento (casi negro vino) */
-  --line: rgba(235, 232, 221, 0.10);
-  --line-bright: rgba(235, 232, 221, 0.22);
+  /* --- Paleta Ámbar Noir. Base cálida (espresso), acento rosa-vino, y un
+     dorado de arena para los brillos: el archetipo "luxury fragrance"
+     (tinta + oro cálido), no el verde botánico de antes. --- */
+  --bg: #17110d;          /* espresso profundo, cálido */
+  --bg-2: #211812;        /* superficie elevada */
+  --bg-3: #2b2018;        /* superficie sobre superficie */
+  --ink: #f3ece1;         /* hueso cálido. ~16:1 sobre --bg */
+  --ink-dim: #ddd0be;     /* secundario */
+  --ink-faint: #bcad98;   /* terciario. Se mide contra el punto más claro del
+                             fondo cálido, no contra el plano. */
+  /* Acento sensual: rosa-vino. Sobre el espresso cálido sigue estallando y
+     conversa con la terracota del fondo. Los nombres siguen siendo --amber*
+     para no reescribir medio archivo; el valor es lo que cambia. */
+  --amber: #e0708a;       /* acento único, rosa-vino (un punto más cálido) */
+  --amber-deep: #bd5670;
+  --amber-soft: rgba(224, 112, 138, 0.16);
+  --on-amber: #22110f;    /* texto oscuro sobre el acento */
+  /* Oro de arena. NO es un segundo acento de UI: vive en los brillos del fondo,
+     en algún filete y en el hero. La regla de un solo acento la manda --amber. */
+  --gold: #d6a862;
+  --line: rgba(243, 236, 225, 0.11);
+  --line-bright: rgba(243, 236, 225, 0.24);
+
+  /* Porcelana cálida de las fotos. El azulejo sobre el que se apoya cada frasco
+     y el color al que se normaliza el blanco de estudio (ver scripts/fotos):
+     tienen que ser el MISMO tono para que la foto no muestre recuadro. */
+  --tile: #ede2d2;
+  --tile-2: #e2d3bd;
+  --tile-3: #d7c4a8;
 
   /* --- Vidrio. El desenfoque solo va en superficies flotantes (encabezado,
      pedido, ficha): backdrop-filter es de lo mas caro que pinta un navegador
      y ponerlo en las 104 tarjetas funde un celular de gama media. Las
      tarjetas usan .tglass-lite, que se ve translucido igual porque el fondo
      se ve a traves, pero no desenfoca nada. --- */
-  --glass-bg: rgba(21, 28, 24, 0.42);
-  --glass-bg-lite: rgba(21, 28, 24, 0.40);
+  --glass-bg: rgba(38, 27, 20, 0.42);
+  --glass-bg-lite: rgba(38, 27, 20, 0.40);
   /* saturate y brightness son lo que separa el vidrio del plastico esmerilado:
      el vidrio mojado no solo desenfoca, tambien concentra y aviva el color de
      lo que hay atras. Con el fondo de haces finos, la diferencia se nota. */
-  --glass-blur: blur(16px) saturate(185%) brightness(1.1);
-  --glass-canto: rgba(235, 232, 221, 0.34);
+  --glass-blur: blur(16px) saturate(185%) brightness(1.08);
+  --glass-canto: rgba(243, 236, 225, 0.34);
   /* La sombra del vidrio lleva tres cosas: la caida que lo despega del fondo,
      una linea de luz nitida en el canto de arriba (el filo del vidrio real) y
      una sombra interna abajo que le da grosor. */
@@ -170,19 +174,19 @@
    para el grano, que necesita mezclarse distinto. */
 .tfondo::before {
   content: ''; position: absolute; inset: 0;
-  /* No es un difuminado mas: son campos de color (esmeralda + rosa) con RAYOS
-     de luz finos que emanan de los focos, como los del fondo de Luma. Los rayos
-     le dan estructura y direccion; los campos, el color que hace estallar el
-     vidrio al refractarlo. Todo nitido, dibujado por CSS, cero foto. */
+  /* Campos de luz cálidos que se cruzan como en la duna de arena de la
+     referencia: oro de arena arriba a la derecha, terracota al centro, el
+     rosa-vino abajo a la izquierda. Sin rayas ni conos: sólo degradados suaves
+     que se funden, con grano encima. Es lo que le da al vidrio algo cálido para
+     refractar. Todo dibujado por CSS, cero foto, alta definición sin peso. */
   background:
-    repeating-conic-gradient(from 196deg at 82% 4%, transparent 0deg 2.1deg, rgba(150, 220, 190, 0.05) 2.1deg 2.5deg, transparent 2.5deg 4.6deg),
-    repeating-conic-gradient(from 150deg at 12% 30%, transparent 0deg 2.6deg, rgba(228, 150, 175, 0.04) 2.6deg 3deg, transparent 3deg 5.6deg),
-    radial-gradient(54% 50% at 80% 16%, rgba(46, 150, 110, 0.66) 0%, transparent 62%),
-    radial-gradient(52% 56% at 16% 22%, rgba(210, 82, 116, 0.5) 0%, transparent 64%),
-    radial-gradient(46% 44% at 62% 60%, rgba(150, 60, 118, 0.3) 0%, transparent 66%),
-    radial-gradient(66% 58% at 52% 100%, rgba(22, 92, 74, 0.66) 0%, transparent 74%),
-    radial-gradient(40% 42% at 99% 76%, rgba(84, 168, 132, 0.3) 0%, transparent 60%),
-    linear-gradient(165deg, #101915 0%, #0a0f0d 60%, #080c0a 100%);
+    radial-gradient(72% 58% at 82% 4%, rgba(224, 168, 96, 0.62) 0%, transparent 60%),
+    radial-gradient(58% 52% at 24% 16%, rgba(206, 120, 86, 0.44) 0%, transparent 62%),
+    radial-gradient(50% 48% at 64% 40%, rgba(210, 132, 96, 0.30) 0%, transparent 66%),
+    radial-gradient(56% 54% at 14% 68%, rgba(224, 112, 138, 0.38) 0%, transparent 66%),
+    radial-gradient(70% 60% at 58% 104%, rgba(150, 74, 58, 0.55) 0%, transparent 72%),
+    radial-gradient(42% 46% at 100% 82%, rgba(214, 168, 98, 0.28) 0%, transparent 60%),
+    linear-gradient(168deg, #241811 0%, #180f0b 56%, #120b08 100%);
   opacity: var(--fondo-opacidad);
   /* El desvanecido al oscuro. Empieza pasada la portada y termina antes del
      final del telon, para que el corte no se note. */
@@ -214,9 +218,9 @@
 .tienda::before {
   content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(60% 50% at 86% 14%, rgba(70, 176, 128, 0.12) 0%, transparent 60%),
-    radial-gradient(55% 52% at 6% 62%, rgba(216, 96, 122, 0.1) 0%, transparent 62%),
-    radial-gradient(50% 46% at 96% 90%, rgba(70, 176, 128, 0.08) 0%, transparent 60%);
+    radial-gradient(60% 50% at 86% 14%, rgba(214, 168, 98, 0.12) 0%, transparent 60%),
+    radial-gradient(55% 52% at 6% 62%, rgba(224, 112, 138, 0.10) 0%, transparent 62%),
+    radial-gradient(50% 46% at 96% 90%, rgba(206, 120, 86, 0.09) 0%, transparent 60%);
 }
 
 /* El contenido va por encima del fondo y del halo. */
@@ -286,10 +290,10 @@
   padding: 1px;
   background: linear-gradient(
     155deg,
-    rgba(235, 232, 221, 0.44) 0%,
-    rgba(235, 232, 221, 0.10) 32%,
-    rgba(235, 232, 221, 0.03) 62%,
-    rgba(216, 96, 122, 0.20) 100%
+    rgba(243, 236, 225, 0.44) 0%,
+    rgba(243, 236, 225, 0.10) 32%,
+    rgba(243, 236, 225, 0.03) 62%,
+    rgba(224, 112, 138, 0.20) 100%
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -367,7 +371,7 @@
     rgba(255, 255, 255, 0.5) 0%,
     rgba(255, 255, 255, 0.12) 34%,
     rgba(255, 255, 255, 0.04) 64%,
-    rgba(216, 96, 122, 0.28) 100%
+    rgba(224, 112, 138, 0.28) 100%
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -396,6 +400,54 @@
 }
 
 .tbtn.wide { width: 100%; }
+
+/* ---------- vidrio "Clear" (estilo iOS) ----------
+   El más transparente de todos: se ve el fondo casi entero a través, con un
+   canto de luz blanco y nítido y un brillo arriba. Es el que pidió para el CTA
+   grande del catálogo. Va en pocos lugares (hero, chips de promo), así que el
+   desenfoque fuerte no pesa. */
+.tienda .tbtn.clear { color: var(--ink); }
+.tbtn.clear {
+  position: relative; overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px) saturate(150%) brightness(1.18);
+  -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(1.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -10px 22px -12px rgba(0, 0, 0, 0.5),
+    0 18px 44px -18px rgba(0, 0, 0, 0.78);
+  transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease);
+}
+/* Canto de luz blanco, recortado al contorno (no un borde parejo). */
+.tbtn.clear::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  border-radius: inherit; padding: 1px;
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(255, 255, 255, 0.18) 36%,
+    rgba(255, 255, 255, 0.06) 66%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+/* El brillo de la cara de arriba: lo que lo hace leer "mojado", no plano. */
+.tbtn.clear::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.04) 40%, transparent 60%);
+}
+.tbtn.clear > * { position: relative; z-index: 1; }
+.tbtn.clear:hover { background: rgba(255, 255, 255, 0.14); }
+.tbtn.clear:active { transform: scale(0.985); }
+.tbtn.clear:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+/* Sin backdrop-filter, cae a un vidrio sólido tenue: nunca se pierde la lectura. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tbtn.clear { background: rgba(60, 44, 34, 0.6); }
+}
 
 /* ---------- reveal (IntersectionObserver, ver useReveal.js) ---------- */
 .treveal { opacity: 0; transform: translateY(20px); }

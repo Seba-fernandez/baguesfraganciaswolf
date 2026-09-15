@@ -29,7 +29,7 @@
 }
 .titulo:hover { color: var(--amber); }
 
-.inspirado { font-size: 0.7rem; color: var(--ink-faint); }
+.inspirado { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
 
 /* Tallas: pastillas chicas, se prenden. La linea y el nombre del frasco ya no
    van aca, van en la ficha. */
@@ -49,17 +49,17 @@
 .pie {
   display: flex; align-items: center; justify-content: space-between;
   gap: 8px; margin-top: auto; padding-top: 12px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--line-bright);
 }
 /* En la tarjeta angosta, el precio de antes va ARRIBA del actual, no al lado:
    asi el tachado no empuja el precio real contra el boton. En pantalla ancha
    vuelven a la misma linea, que se lee mejor cuando hay lugar. */
 .precioWrap { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 0; min-width: 0; line-height: 1.1; }
 .antes { color: var(--ink-faint); text-decoration: line-through; font-size: 0.68rem; }
-.precio { font-weight: 600; color: var(--ink); font-size: 0.96rem; }
+.precio { font-weight: 700; color: var(--ink); font-size: 1.08rem; line-height: 1; }
 @media (min-width: 560px) {
   .precioWrap { flex-direction: row; align-items: baseline; gap: 7px; }
-  .precio { font-size: 0.98rem; }
+  .precio { font-size: 1.14rem; }
 }
 
 .add {

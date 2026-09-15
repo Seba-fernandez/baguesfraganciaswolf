@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 import CartSheet from './CartSheet';
 import VolverArriba from './VolverArriba';
@@ -38,12 +39,12 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
       <div className="tfondo" aria-hidden="true" />
 
       <header className={s.bar}>
-        <a href="#inicio" className={s.marca}>
+        <Link to="/" className={s.marca}>
           {MARCA.nombre} <span className={s.marcaWolf}>{MARCA.complemento}</span>
-        </a>
+        </Link>
         <nav className={s.nav}>
-          <a href="#catalogo">{CABECERA.catalogo}</a>
-          <a href="#como">{CABECERA.como}</a>
+          <Link to="/catalogo">{CABECERA.catalogo}</Link>
+          <a href="/#como">{CABECERA.como}</a>
         </nav>
         <button
           className={s.carrito}
@@ -61,8 +62,8 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
         <div className={`tw ${s.fcols}`}>
           <div className={s.fcol}>
             <h4 className="tlabel">{PIE.tienda}</h4>
-            <a href="#catalogo">{CABECERA.catalogo}</a>
-            <a href="#como">{CABECERA.como}</a>
+            <Link to="/catalogo">{CABECERA.catalogo}</Link>
+            <a href="/#como">{CABECERA.como}</a>
             {settings?.link_catalogo && (
               <a href={settings.link_catalogo} target="_blank" rel="noopener">{PIE.catalogoPdf}</a>
             )}

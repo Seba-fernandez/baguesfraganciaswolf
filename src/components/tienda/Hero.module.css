@@ -1,9 +1,13 @@
 .hero { position: relative; overflow: hidden; }
+
+/* Un velo cálido muy suave para asentar el título, sin dibujar un recuadro: es
+   un degradado radial, no un borde. La izquierda del fondo ya es la zona más
+   oscura, esto sólo asegura el contraste en cualquier pantalla. */
 .hero::before {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(58% 48% at 12% 0%, rgba(216, 96, 122, 0.13) 0%, transparent 62%),
-    radial-gradient(46% 42% at 92% 8%, rgba(216, 96, 122, 0.06) 0%, transparent 66%);
+    radial-gradient(70% 80% at 20% 60%, rgba(18, 11, 8, 0.55) 0%, transparent 66%),
+    radial-gradient(46% 42% at 88% 6%, rgba(214, 168, 98, 0.10) 0%, transparent 66%);
 }
 .hero::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -11,40 +15,23 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.inner { position: relative; z-index: 1; padding-block: clamp(64px, 12vw, 148px) clamp(48px, 8vw, 96px); }
-
-/* La placa de vidrio del hero. Le da cuerpo a lo que antes era texto suelto y,
-   de paso, resuelve la lectura: el verde brillante de atras pasa por el
-   desenfoque y por este respaldo oscuro, asi el titulo y la bajada se apoyan
-   sobre algo, no sobre los haces. Asimetrica a proposito, no centrada. */
-.panel {
-  max-width: 720px;
-  padding: clamp(30px, 4vw, 54px);
-  border-radius: var(--r-surface);
-  /* Respaldo mas cerrado que el vidrio comun: el hero es el unico bloque cuyo
-     fondo es el verde a full, y hay que asegurar el contraste del eyebrow ambar
-     y de la bajada. Sigue dejando pasar el verde, difuminado. */
-  background: rgba(12, 17, 14, 0.64);
+.inner {
+  position: relative; z-index: 1;
+  padding-block: clamp(52px, 9vw, 120px) clamp(28px, 5vw, 56px);
+  display: grid; gap: clamp(32px, 5vw, 64px);
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .inner { grid-template-columns: 1.08fr 0.92fr; }
 }
 
-/* En el celular, el panel del hero es grande y esta arriba de todo: recalcular
-   su desenfoque en cada cuadro del scroll era parte del lag. Ahi va sin
-   backdrop-filter y con respaldo mas opaco: pierde el "ver a traves", gana
-   fluidez garantizada. El vidrio mojado completo queda para la compu. */
-@media (max-width: 767px) {
-  .panel {
-    background: rgba(11, 16, 13, 0.86);
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-}
+.texto { max-width: 620px; }
 
-/* La corona de marca. Wolf grande, con espaciado ancho de sello; el aval de
-   Bagués abajo, chico y tenue, separado por una hairline ambar que le da aire
-   de escudo sin dibujar uno. */
+/* La corona de marca. Wolf grande con espaciado de sello; el aval de Bagués
+   abajo, chico, en oro de arena, separado por una hairline. */
 .corona {
   display: inline-flex; flex-direction: column; gap: 7px;
-  margin-bottom: 22px; padding-bottom: 16px;
+  margin-bottom: 22px; padding-bottom: 15px;
   border-bottom: 1px solid var(--line-bright);
 }
 .coronaMarca {
@@ -55,38 +42,46 @@
 }
 .coronaAval {
   font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--amber);
-}
-
-.ciclo {
-  font-size: 0.74rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--amber); margin-bottom: 26px;
+  color: var(--gold);
 }
 
 .titulo {
-  font-size: clamp(2.2rem, 4.6vw, 4rem);
-  letter-spacing: -0.015em;
+  font-size: clamp(2.4rem, 5.4vw, 4.4rem);
+  letter-spacing: -0.015em; line-height: 1.03;
   max-width: 15ch;
 }
-/* Cada linea del titulo vive en su propio renglon con recorte: asi la
-   animacion de entrada la revela como si subiera desde atras del renglon de
-   arriba, no como un texto que aparece flotando. El padding evita que las
-   colas de las letras (g, y, j) se corten en reposo. */
+/* Cada línea vive en su renglón con recorte: la animación la revela como si
+   subiera desde atrás del renglón de arriba. El padding evita que las colas de
+   g, y, j se corten en reposo. */
 .lineaWrap { display: block; overflow: hidden; padding-bottom: 0.08em; }
 .linea { display: block; }
 
 .bajada {
-  margin-top: 26px; max-width: 52ch;
-  color: var(--ink-dim); font-size: clamp(1rem, 1.6vw, 1.12rem); line-height: 1.6;
+  margin-top: 22px; max-width: 46ch;
+  color: var(--ink-dim); font-size: clamp(1rem, 1.6vw, 1.15rem); line-height: 1.6;
 }
 
-.acciones { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+.acciones { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+/* El CTA principal: vidrio Clear, pero con presencia. Más grande, más frío el
+   frost, y un resplandor cálido detrás que lo despega del fondo oscuro para que
+   sea lo primero que la vista busca. */
+.acciones :global(.tbtn.clear) {
+  padding: 16px 30px; font-size: 0.98rem;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -10px 22px -12px rgba(0, 0, 0, 0.45),
+    0 18px 44px -18px rgba(0, 0, 0, 0.78),
+    0 12px 46px -14px rgba(224, 168, 96, 0.4);
+}
+.acciones :global(.tbtn.clear):hover { background: rgba(255, 255, 255, 0.18); }
+.ctaFlecha { color: var(--gold); transition: transform var(--dur) var(--ease); }
+.acciones :global(.tbtn.clear):hover .ctaFlecha { transform: translateX(4px); }
 
-/* Fila de datos duros. Reemplaza al parrafo largo: tres numeros que se leen de
-   un vistazo y anclan el valor (cuantos aromas, desde cuanto, hasta cuando). */
+/* Fila de datos duros: dos números que anclan el valor de un vistazo. */
 .meta {
   margin-top: 26px; display: flex; flex-wrap: wrap; align-items: center;
-  gap: 10px 18px; color: var(--ink-faint); font-size: 0.82rem;
+  gap: 10px 18px; color: var(--ink-faint); font-size: 0.86rem;
 }
 .metaDato { position: relative; white-space: nowrap; }
 .metaDato + .metaDato { padding-left: 18px; }
@@ -95,40 +90,65 @@
   width: 1px; height: 12px; background: var(--line-bright);
 }
 
-/* La promo del ciclo, arriba de todo, con su monto real leido de settings. */
-.promos { margin-top: 52px; display: grid; gap: 10px; max-width: 620px; }
-.promo {
-  display: flex; align-items: center; gap: 16px; width: 100%;
-  padding: 16px 18px; text-align: left; cursor: pointer;
-  border-radius: var(--r-surface); color: var(--ink);
-  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+/* ---------- showcase: el frasco protagonista ---------- */
+.showcase { position: relative; justify-self: center; width: 100%; max-width: 380px; }
+/* Un resplandor cálido detrás del azulejo, para que no flote en el vacío. */
+.showcase::before {
+  content: ''; position: absolute; inset: -12% -8% -16%;
+  background: radial-gradient(60% 60% at 50% 46%, rgba(224, 168, 96, 0.28) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
 }
-.promo:hover::before { filter: brightness(1.7); }
-.promo:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.showcaseTile {
+  position: relative; z-index: 1; display: block; width: 100%;
+  padding: 0; border: 0; background: none; cursor: pointer;
+  border-radius: 6px; overflow: hidden;
+  box-shadow:
+    0 40px 80px -32px rgba(0, 0, 0, 0.72),
+    0 8px 24px -12px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.showcaseTile:hover { transform: translateY(-4px); box-shadow: 0 52px 96px -32px rgba(0, 0, 0, 0.78), 0 8px 24px -12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.2); }
+.showcaseTile:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.showcaseCap {
+  position: relative; z-index: 1;
+  margin-top: 16px; display: flex; flex-direction: column; gap: 3px; text-align: center;
+}
+.showcaseEtiqueta {
+  font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold);
+}
+.showcaseNombre { font-family: var(--f-display); font-size: 1.3rem; color: var(--ink); }
 
+/* ---------- promo del ciclo: barras de vidrio Clear ---------- */
+.promos {
+  position: relative; z-index: 1;
+  margin-top: clamp(28px, 4vw, 44px);
+  display: flex; flex-wrap: wrap; gap: 12px;
+}
+.promos .promo {
+  flex: 1 1 320px; min-width: 0;
+  justify-content: flex-start; gap: 14px;
+  padding: 15px 18px; border-radius: 14px; text-align: left;
+  min-height: 64px;
+}
 .promoSello {
   flex-shrink: 0; padding: 7px 12px; border-radius: var(--r-pill);
-  background: var(--amber); color: var(--on-amber); font-weight: 600; font-size: 0.82rem;
+  background: var(--amber); color: var(--on-amber); font-weight: 700; font-size: 0.82rem;
 }
-.promoTexto { display: flex; flex-direction: column; gap: 3px; }
-.promoTitulo { font-size: 0.96rem; font-weight: 500; }
+.promoTexto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.promoTitulo { font-size: 0.96rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .promoDetalle { font-size: 0.82rem; color: var(--ink-dim); }
-.promoFlecha { margin-left: auto; color: var(--ink-faint); font-size: 1.1rem; }
-.promo:hover .promoFlecha { color: var(--amber); }
+.promoFlecha { margin-left: auto; color: var(--ink-faint); font-size: 1.1rem; transition: transform var(--dur) var(--ease), color var(--dur) var(--ease); }
+.promos .promo:hover .promoFlecha { color: var(--ink); transform: translateX(3px); }
 
-/* ---------- cinta de nombres ----------
-   Los perfumes que la gente reconoce, moviendose en una linea de borde a
-   borde. Es el gancho visual del celular: no es mas texto, es movimiento y
-   prueba. Los nombres van en la display, en tono tenue, para que acompanen sin
-   gritarle al titulo. */
+/* ---------- cinta de nombres ---------- */
 .cinta {
   position: relative; z-index: 1;
-  margin-top: clamp(38px, 6vw, 68px);
+  margin-top: clamp(34px, 5vw, 60px);
   padding-block: 16px;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   overflow: hidden;
-  /* Los bordes se desvanecen: la cinta entra y sale, no se corta de golpe. */
   -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
@@ -144,17 +164,19 @@
   font-size: clamp(1.1rem, 2.4vw, 1.7rem);
   letter-spacing: 0.01em; color: var(--ink-dim);
 }
-.cintaPunto { color: var(--amber); margin-inline: clamp(20px, 3vw, 40px); }
+.cintaPunto { color: var(--gold); margin-inline: clamp(20px, 3vw, 40px); }
 
 @keyframes cinta-correr {
   from { transform: translateX(0); }
-  /* La pista lleva la lista dos veces; correr la mitad y reiniciar es un bucle
-     sin costura. */
   to { transform: translateX(-50%); }
 }
-
-/* Si la persona pidio menos movimiento, la cinta queda quieta pero se sigue
-   viendo: no se pierde el contenido, solo la animacion. */
 @media (prefers-reduced-motion: reduce) {
   .cintaPista { animation: none; }
+}
+
+/* En el celular el frasco va primero, chico, para que el hero entre con imagen y
+   no sea sólo texto. */
+@media (max-width: 899px) {
+  .inner { grid-template-columns: 1fr; }
+  .showcase { order: -1; max-width: 260px; }
 }

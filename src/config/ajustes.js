@@ -21,8 +21,8 @@ export const VOLVER_ARRIBA_DESDE = 900;
  * recorta el frasco.
  */
 export const PROPORCION = {
-  tarjeta: '1 / 1',
-  destacado: '4 / 5',
+  tarjeta: '3 / 4',
+  destacado: '3 / 4',
 };
 
 /**

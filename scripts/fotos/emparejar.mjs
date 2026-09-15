@@ -37,7 +37,28 @@ for (const m of mios) {
   let b = null;
   if (pres) {
     const objetivo = sinSufijo(pres.nombre_proveedor);
-    b = bagues.find((x) => sinSufijo(x.title) === objetivo && x.images?.[0]?.src);
+    const conFoto = (x) => x.images?.[0]?.src;
+    // 1) Igualdad exacta (Manhattan Black = "Manhattan Black").
+    b = bagues.find((x) => sinSufijo(x.title) === objetivo && conFoto(x));
+
+    // 2) La casa a veces le agrega el genero al titulo ("Miami Masculino").
+    //    Se prueba objetivo + genero real del aroma. Solo eso, nada de prefijos
+    //    sueltos: "New York" NO puede caer en "New York Sexy".
+    if (!b && m.genero) {
+      const g = m.genero === 'masculino' ? 'MASCULINO' : m.genero === 'femenino' ? 'FEMENINO' : null;
+      if (g) b = bagues.find((x) => sinSufijo(x.title) === `${objetivo} ${g}` && conFoto(x));
+    }
+
+    // 3) Un unico candidato cuyo titulo empieza EXACTO con el frasco como
+    //    palabra entera. Si hay dos (Hawai Masculino / Femenino) es ambiguo y
+    //    se descarta: mejor sin foto que la equivocada.
+    if (!b) {
+      const cand = bagues.filter((x) => {
+        const t = sinSufijo(x.title);
+        return conFoto(x) && (t === objetivo || t.startsWith(objetivo + ' '));
+      });
+      if (cand.length === 1) b = cand[0];
+    }
   }
 
   filas.push({

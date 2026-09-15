@@ -1,9 +1,11 @@
 # Bagues Grupo Wolf
 
-Tienda y panel de gestión para una reventa de perfumería en Córdoba, Argentina.
-Reemplaza un circuito que antes vivía repartido entre Instagram, Drive y Linktree.
+Tienda y panel de gestión para una venta de perfumería en Córdoba, Argentina.
+Reemplaza un circuito que antes vivía repartido entre Instagram, Drive y Linktree, catálogo
+en PDF y campañas cambiantes.
 
-**En producción:** https://crm-de-alquileres-de-vajilla.vercel.app
+
+**En producción:** https://baguesfraganciaswolf.vercel.app
 
 > Este archivo es la memoria del proyecto. Lo que está escrito acá no se borra
 > cuando algo cambia: se agrega abajo. La idea es poder leerlo de arriba hacia
@@ -14,7 +16,7 @@ Reemplaza un circuito que antes vivía repartido entre Instagram, Drive y Linktr
 ## Qué resuelve
 
 Vendo perfumes por WhatsApp. El catálogo de mi proveedora cambia todos los
-meses: dos listas nuevas, más de cien aromas, precios que se mueven y
+meses: dos listas nuevas, más de cien aromas, los precios que cambian y las
 promociones que duran un ciclo. Antes eso era mandar un PDF por chat, que la
 clienta me preguntara precio por precio, y anotar los pedidos a mano.
 
@@ -48,7 +50,7 @@ Esto es la base fija del proyecto.
 | Seguridad de datos | Políticas de fila (Row Level Security) en todas las tablas |
 | Archivos | Supabase Storage |
 | Tres dimensiones | Three.js |
-| Movimiento | CSS nativo. GSAP disponible, casi sin usar |
+| Movimiento | CSS nativo. GSAP disponible |
 | Publicación | Vercel, automática desde la rama principal |
 | Versionado | Git y GitHub |
 

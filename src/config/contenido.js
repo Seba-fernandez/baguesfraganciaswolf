@@ -30,12 +30,15 @@ export const INICIO = {
   aval: 'Casa Bagués · Córdoba',
 
   titulo: ['El perfume que ya', 'conoce, al precio', 'que todavía no.'],
-  // Una sola linea. Los datos duros (cuantos, desde cuanto, hasta cuando) van
-  // en la fila de abajo, que se lee de un vistazo.
-  bajada: 'Los aromas que ya conocés, de la casa Bagués.',
+  // Una sola linea. Los datos duros (cuantos, desde cuanto) van en la fila de
+  // abajo, que se lee de un vistazo.
+  bajada: 'El mismo aroma que ya te gusta, hecho por la casa Bagués, a precio de reventa directa. Acá en Córdoba, por WhatsApp.',
+
+  // Etiqueta del frasco protagonista del hero.
+  showcaseEtiqueta: 'El más pedido',
 
   // Fila de datos. {n} y {desde} se completan con lo real en el momento.
-  metaAromas: '{n} aromas',
+  metaAromas: '{n} aromas en el ciclo',
   metaDesde: 'desde {desde}',
 
   // Rotulo de la cinta de nombres que se mueve abajo del hero.
@@ -50,8 +53,24 @@ export const INICIO = {
 export const DESTACADOS = {
   eyebrow: 'Selección del ciclo',
   titulo: 'Los que siempre salen',
-  bajada: 'Los que más pide la gente, ciclo tras ciclo.',
+  bajada: 'Los que vuelan cada mes. Si dudás, empezá por acá.',
   desde: 'desde',
+};
+
+/**
+ * Quiénes somos. La sección "nosotros" que pidió Sebastián: cercana,
+ * rioplatense, con el gancho del precio. Grupo Wolf es el emprendimiento
+ * familiar (lo arrancó el papá); Bagués es la casa que fabrica los frascos.
+ */
+export const NOSOTROS = {
+  eyebrow: 'Quiénes somos',
+  titulo: 'El mismo perfume, sin la vidriera cara.',
+  parrafos: [
+    'Somos Grupo Wolf, un emprendimiento familiar de Córdoba. Lo arrancó mi viejo y hoy lo seguimos entre la familia, con una idea sencilla: acercarte los perfumes que todo el mundo quiere, de una persona a otra, sin el local caro que después terminás pagando vos.',
+    'Cada frasco lo fabrica y lo rotula la casa Bagués. Es el mismo aroma que probás en la perfumería del shopping, pero a precio de reventa directa. Vos reconocés el perfume, nosotros te sacamos el sobreprecio de la marca de arriba.',
+    'Nada de comprar a ciegas. Me escribís por WhatsApp, te cuento qué hay y qué está por llegar, y lo retirás los viernes acá en Córdoba. Si algo no te cierra, lo hablamos tranquilos.',
+  ],
+  firma: 'Sebastián, de Grupo Wolf',
 };
 
 export const CATALOGO = {

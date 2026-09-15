@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { esPublicable, presentacionPorDefecto } from '../../lib/producto';
+import { esPublicable, presentacionPorDefecto, tituloDe } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import useReveal from '../../hooks/useReveal';
 import { DESTACADOS } from '../../config/contenido';
@@ -66,8 +66,8 @@ export default function Destacados({ products, onOpen }) {
                     <ProductThumb producto={p} ratio={PROPORCION.destacado} />
                   </span>
                   <span className={s.info}>
-                    <span className={s.nombre}>{p.inspirado_en || p.nombre}</span>
-                    <span className={s.casa}>{p.nombre}</span>
+                    <span className={s.nombre}>{tituloDe(p)}</span>
+                    {p.familia_olfativa && <span className={s.casa}>{p.familia_olfativa}</span>}
                     {pres && <span className={`${s.precio} tnum`}>{DESTACADOS.desde} {pesos(pres.precio)}</span>}
                   </span>
                 </button>

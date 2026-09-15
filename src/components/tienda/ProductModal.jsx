@@ -61,7 +61,7 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
 
           <h2 className={s.nombre}>{titulo}</h2>
           <p className={s.inspirado}>
-            {aclarar
+            {aclarar && !String(producto.nombre).includes('*')
               ? `Versión inspirada. En el catálogo figura como ${producto.nombre}.`
               : 'Versión inspirada de la casa Bagués.'}
           </p>

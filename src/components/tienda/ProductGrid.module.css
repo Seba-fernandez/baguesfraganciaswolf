@@ -18,7 +18,7 @@
   position: relative; z-index: 1;
   display: flex; flex-direction: column; gap: 12px;
   padding: 14px; margin-bottom: 26px;
-  border-radius: var(--r-surface);
+  border-radius: 24px;
 }
 @media (min-width: 900px) {
   .barra { flex-direction: row; align-items: flex-start; flex-wrap: wrap; gap: 14px; padding: 16px 18px; }
@@ -97,19 +97,20 @@
   display: flex; align-items: center; justify-content: center; gap: 8px;
   margin-top: 34px; flex-wrap: wrap;
 }
+/* Paginación y flechas: van sobre el fondo oscuro y podrían quedar con poco
+   contraste, así que son vidrio Clear (clase global .tglass-clear en el JSX).
+   Acá sólo el tamaño, el color del texto y el radio. */
 .flecha, .numero {
-  min-width: 44px; min-height: 44px; padding: 0 12px;
+  min-width: 46px; min-height: 46px; padding: 0 14px;
   display: inline-flex; align-items: center; justify-content: center;
-  border-radius: var(--r-pill); background: none;
-  border: 1px solid var(--line); color: var(--ink-dim);
-  font-family: inherit; font-size: 0.88rem; cursor: pointer;
-  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  border-radius: var(--r-pill); border: 0;
+  color: var(--ink-dim);
+  font-family: inherit; font-size: 0.9rem; cursor: pointer;
 }
-.flecha:hover:not(:disabled), .numero:hover { color: var(--ink); border-color: var(--line-bright); }
+.flecha:hover:not(:disabled), .numero:hover { color: var(--ink); }
 .flecha:disabled { opacity: 0.32; cursor: not-allowed; }
-.flecha:focus-visible, .numero:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
-.numeroOn { background: var(--amber); border-color: var(--amber); color: var(--on-amber); font-weight: 600; }
-.numeroOn:hover { color: var(--on-amber); }
+/* La página actual sí es sólida (el acento), no vidrio: marca dónde estás. */
+.numeroOn, .numeroOn:hover { background: var(--amber); color: var(--on-amber); font-weight: 700; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3); }
 .numeros { display: flex; align-items: center; gap: 6px; }
 .puntos { color: var(--ink-faint); padding: 0 2px; }
 

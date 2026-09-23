@@ -10,13 +10,14 @@ El problema es que nuestro catálogo tiene los nombres censurados con asteriscos
 propio a cada frasco, y Arizona es Sauvage. Así que hay que emparejar, y ahí es
 donde se cometen errores.
 
-## Los tres pasos
+## Los cuatro pasos
 
 ```
 npm run fotos:catalogos    baja los dos catálogos y el nuestro
 npm run fotos:emparejar    decide de dónde sale cada foto e imprime la lista
 npm run fotos:traer        baja, comprime y regenera el índice de la web
-npm run fotos              los tres, uno atrás del otro
+npm run fotos:fondos       separa las fotos con fondo propio de las de porcelana
+npm run fotos              los cuatro, uno atrás del otro
 ```
 
 **Conviene leer la lista que imprime el paso 2 antes de correr el 3.** El paso 2
@@ -36,6 +37,7 @@ falta ninguna credencial de administrador.
 | `public/perfumes/*.webp` | las fotos de Unlock | sí |
 | `public/perfumes/bagues/*.webp` | los frascos de 50 ml de Bagués | sí |
 | `src/data/fotos.js` | el índice que consulta la web | sí, generado |
+| `src/data/fotosFondo.js` | cuáles tienen fondo propio y van a sangre | sí, generado |
 
 Lo de `datos/` no se versiona porque se vuelve a bajar en un minuto y queda
 viejo enseguida.
@@ -55,6 +57,17 @@ correctas.
 Es a propósito que rechace de más. Una foto equivocada es peor que ninguna:
 cuando no hay foto se muestra la inicial del aroma y no pasa nada, pero una foto
 mal puesta hace que la clienta pida un perfume que no es.
+
+## Por qué el cuarto paso
+
+Las fotos son de dos clases y la tarjeta las muestra distinto: un recorte o un
+frasco sobre blanco de estudio se apoya sobre el azulejo de porcelana, con aire
+alrededor; una foto con fondo propio (mármol, luces, una escena) ocupa el cuadro
+entero a sangre, porque achicada adentro del azulejo parece una foto pegada
+encima de otra.
+
+`fotos:fondos` mira las esquinas y los bordes de cada imagen y las separa solo,
+en `src/data/fotosFondo.js`. Hoy da 39 fotos con fondo propio, todas de Unlock.
 
 ## Sobre `--limpiar`
 

@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { montarVidrioLiquido } from '../../lib/vidrioLiquido';
 import { useCart } from '../../contexts/CartContext';
 import CartSheet from './CartSheet';
 import VolverArriba from './VolverArriba';
@@ -15,27 +17,14 @@ const CartIcon = () => (
 
 export default function TiendaLayout({ children, settings, onVerPromo }) {
   const { count, open, setOpen } = useCart();
+  const raiz = useRef(null);
+
+  // Lente de vidrio liquido en el canto de cada superficie de vidrio (solo
+  // Chromium de escritorio; ver src/lib/vidrioLiquido.js).
+  useEffect(() => montarVidrioLiquido(raiz.current), []);
 
   return (
-    <div className="tienda">
-      {/* Filtro de refraccion del vidrio. Un ruido suave desplaza los pixeles
-          del fondo que se ven a traves de la placa: los haces se quiebran al
-          cruzar el canto, como un vidrio grueso con agua, no un simple
-          desenfoque. Vive una sola vez en el DOM y lo usan las superficies de
-          vidrio via backdrop-filter: url(#tvidrio). */}
-      <svg className="tsvg" aria-hidden="true" focusable="false" width="0" height="0">
-        <filter id="tvidrio" x="-15%" y="-15%" width="130%" height="130%" colorInterpolationFilters="sRGB">
-          {/* Dos escalas de ruido: una onda larga que ondula todo el fondo como
-              agua, y una fina que agita el detalle. Suavizadas, para que el
-              vidrio se vea mojado y no granulado. */}
-          <feTurbulence type="fractalNoise" baseFrequency="0.006 0.011" numOctaves="2" seed="14" result="ondaLarga" />
-          <feTurbulence type="fractalNoise" baseFrequency="0.02 0.03" numOctaves="1" seed="7" result="ondaFina" />
-          <feBlend in="ondaLarga" in2="ondaFina" mode="multiply" result="ruido" />
-          <feGaussianBlur in="ruido" stdDeviation="1.1" result="suave" />
-          <feDisplacementMap in="SourceGraphic" in2="suave" scale="17" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </svg>
-
+    <div className="tienda" ref={raiz}>
       <div className="tfondo" aria-hidden="true" />
 
       <header className={s.bar}>
@@ -47,7 +36,7 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
           <a href="/#como">{CABECERA.como}</a>
         </nav>
         <button
-          className={s.carrito}
+          className={`${s.carrito} tglass-clear`}
           onClick={() => setOpen(true)}
           aria-label={`${CABECERA.verPedido} (${count} ${count === 1 ? 'ítem' : 'ítems'})`}
         >

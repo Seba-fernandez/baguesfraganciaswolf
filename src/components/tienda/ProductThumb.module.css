@@ -8,7 +8,7 @@
    normaliza el blanco de estudio (--tile), así el frasco flota sobre una
    superficie iluminada, sin recuadro blanco crudo y sin recortes dentados. Un
    viñeteo suave adentro le da profundidad de vidriera. */
-.wrap:has(> .img) {
+.wrap:not(.sangre):has(> .img) {
   background:
     radial-gradient(120% 96% at 50% 6%, rgba(255, 255, 255, 0.34) 0%, transparent 44%),
     radial-gradient(130% 120% at 50% 120%, rgba(120, 92, 62, 0.20) 0%, transparent 58%),
@@ -17,6 +17,11 @@
 }
 /* contain para ver el frasco entero, con aire alrededor para que respire. */
 .img { width: 100%; height: 100%; object-fit: contain; display: block; padding: clamp(8px, 3%, 18px); }
+
+/* Foto con fondo propio: a sangre. Encuadre centrado apenas arriba del medio,
+   que es donde suele estar el frasco en una foto de producto. */
+.sangre { background: var(--bg-3); }
+.imgSangre { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; display: block; }
 
 /* Placeholder tipografico. Tres tonos cálidos, para que las tarjetas sin foto
    no se lean como una pared plana. */

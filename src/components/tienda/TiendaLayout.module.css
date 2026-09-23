@@ -1,12 +1,14 @@
 /* La cabecera NO usa vidrio: es fija y se repinta en cada cuadro del scroll,
    asi que un backdrop-filter ahi es de lo que mas traba en el celular. En su
-   lugar, un velo oscuro degradado que asegura la lectura de la marca y el nav
-   sobre el verde, a costo cero. */
+   lugar, un velo espresso degradado que asegura la lectura de la marca y el
+   nav sobre la escena del hero, a costo cero. El vidrio va en el boton del
+   pedido, que es chico. */
 .bar {
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; gap: 10px;
-  padding: 14px max(4vw, calc((100vw - var(--wrap)) / 2));
-  background: linear-gradient(to bottom, rgba(9, 13, 11, 0.86) 0%, rgba(9, 13, 11, 0.6) 55%, rgba(9, 13, 11, 0) 100%);
+  height: var(--bar-h);
+  padding: 0 max(4vw, calc((100vw - var(--wrap)) / 2));
+  background: linear-gradient(to bottom, rgba(18, 11, 8, 0.82) 0%, rgba(18, 11, 8, 0.5) 60%, rgba(18, 11, 8, 0) 100%);
   border-bottom: 0;
 }
 
@@ -36,11 +38,9 @@
 .carrito {
   position: relative; margin-left: auto; flex-shrink: 0;
   width: 46px; height: 46px; border-radius: 50%;
-  background: var(--bg-2); border: 1px solid var(--line); color: var(--ink);
+  border: 0; color: var(--ink);
   display: grid; place-items: center; cursor: pointer;
-  transition: border-color var(--dur) var(--ease);
 }
-.carrito:hover { border-color: var(--amber); }
 .carrito:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 .badge {
   position: absolute; top: -2px; right: -2px; min-width: 19px; height: 19px; padding: 0 5px;

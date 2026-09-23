@@ -7,8 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "fondo": "node scripts/fondo/generar.mjs",
-    "fotos": "npm run fotos:catalogos && npm run fotos:emparejar && npm run fotos:traer",
+    "fondo": "node scripts/fondo/generar-duna.mjs",
+    "fotos": "npm run fotos:catalogos && npm run fotos:emparejar && npm run fotos:traer && npm run fotos:fondos",
+    "fotos:fondos": "node scripts/fotos/clasificar-fondos.mjs",
     "fotos:catalogos": "node scripts/fotos/bajar-catalogos.mjs",
     "fotos:emparejar": "node scripts/fotos/emparejar.mjs",
     "fotos:traer": "node scripts/fotos/traer-fotos.mjs"

@@ -30,7 +30,7 @@ export default function VolverArriba({ oculto = false }) {
   return (
     <button
       type="button"
-      className={`${s.boton} ${visible && !oculto ? s.visible : ''}`}
+      className={`${s.boton} tglass-clear ${visible && !oculto ? s.visible : ''}`}
       onClick={subir}
       aria-label={VOLVER_ARRIBA}
       tabIndex={visible && !oculto ? 0 : -1}

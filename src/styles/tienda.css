@@ -50,26 +50,36 @@
   --tile-2: #e2d3bd;
   --tile-3: #d7c4a8;
 
-  /* --- Vidrio. El desenfoque solo va en superficies flotantes (encabezado,
-     pedido, ficha): backdrop-filter es de lo mas caro que pinta un navegador
-     y ponerlo en las 104 tarjetas funde un celular de gama media. Las
-     tarjetas usan .tglass-lite, que se ve translucido igual porque el fondo
-     se ve a traves, pero no desenfoca nada. --- */
-  --glass-bg: rgba(38, 27, 20, 0.42);
-  --glass-bg-lite: rgba(38, 27, 20, 0.40);
-  /* saturate y brightness son lo que separa el vidrio del plastico esmerilado:
-     el vidrio mojado no solo desenfoca, tambien concentra y aviva el color de
-     lo que hay atras. Con el fondo de haces finos, la diferencia se nota. */
-  --glass-blur: blur(16px) saturate(185%) brightness(1.08);
-  --glass-canto: rgba(243, 236, 225, 0.34);
-  /* La sombra del vidrio lleva tres cosas: la caida que lo despega del fondo,
-     una linea de luz nitida en el canto de arriba (el filo del vidrio real) y
-     una sombra interna abajo que le da grosor. */
-  --glass-sombra:
-    0 22px 50px -24px rgba(0, 0, 0, 0.78),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -5px 16px rgba(0, 0, 0, 0.12);
+  /* --- Vidrio. Un solo material en tres grosores (ver "vidrio" abajo):
+       clear  controles chicos: casi no desenfoca, se ve el fondo tal cual
+       frost  placas con texto encima: desenfoca para que se lea
+       card   tarjetas: frost liviano
+     El tinte es casi nada: lo que hace leer vidrio es la lente del canto (JS,
+     src/lib/vidrioLiquido.js), el filo especular y la sombra, no el gris. --- */
+  --v-tinte: rgba(255, 244, 230, 0.05);
+  --v-tinte-hover: rgba(255, 244, 230, 0.1);
+  --v-tinte-frost: rgba(33, 22, 16, 0.38);
+  --v-clear: blur(1.5px) saturate(1.8) brightness(1.1);
+  --v-frost: blur(18px) saturate(1.7) brightness(0.96);
+  --v-card: blur(10px) saturate(1.5);
+  /* Filo, grosor y caida. Cinco sombras, cada una con un trabajo:
+     1 la linea de luz nitida del canto de arriba
+     2 el rebote tenue del canto de abajo
+     3 la luz que junta el canto al curvarse (brillo interno parejo)
+     4 el grosor: la cara interna se oscurece hacia abajo
+     5 la sombra de contacto, corta y oscura
+     6 la caida larga que lo despega */
+  --v-sombra:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0.5px rgba(255, 255, 255, 0.14),
+    inset 0 0 16px -4px rgba(255, 246, 232, 0.16),
+    inset 0 -14px 22px -18px rgba(20, 8, 4, 0.55),
+    0 2px 3px -1px rgba(10, 5, 3, 0.45),
+    0 22px 44px -22px rgba(10, 5, 3, 0.75);
   --danger: #d98a72;
+
+  /* Alto del encabezado: el hero sube por detras. */
+  --bar-h: 74px;
 
   /* --- Radios: cero en imagenes y multimedia, pill en botones y chips. --- */
   --r-media: 0;
@@ -86,13 +96,9 @@
 
   --wrap: min(1280px, 92vw);
 
-  /* Cuanto se ve la foto del fondo. 1 = como esta; 0 = verde liso, sin textura.
-     Atras siempre queda --bg, asi que bajarla oscurece, no transparenta. */
-  --fondo-opacidad: 1;
-
-  /* Grano de pelicula sobre el fondo. Cuanto mas alto, mas sucia y mas
-     fotografica se ve la imagen. Arriba de 0.5 empieza a comerse los haces. */
-  --grano: 0.34;
+  /* Grano de pelicula sobre el fondo. Cuanto mas alto, mas "crispy" y menos
+     difuminado se ve, que es lo que se pidio. */
+  --grano: 0.16;
 
   /* Cormorant: una didone de contraste altisimo, romantica y sensual, con la
      cara de un aviso de perfume. Distinta de la Fraunces anterior y a anos luz
@@ -137,6 +143,9 @@
   letter-spacing: 0;
   line-height: 1.05;
   color: var(--ink);
+  /* Sombra imperceptible: no se ve como sombra, sólo despega el texto del fondo
+     cálido donde el contraste podría flaquear. En las cards oscuras no se nota. */
+  text-shadow: 0 1px 22px rgba(0, 0, 0, 0.22);
 }
 
 .tienda a { color: inherit; text-decoration: none; }
@@ -150,304 +159,230 @@
 }
 
 /* ---------- fondo ----------
-   Textura propia (public/fondo.jpg). Haces verdes en diagonal, una sola
-   direccion, con grano encima: la imagen que pidio el, tipo spray de aroma.
-   La genera scripts/fondo/generar.mjs, que se corre con `npm run fondo`.
+   Toda la pagina, no solo la portada: el vidrio necesita algo con detalle
+   detras para leerse como vidrio (sobre negro liso, cualquier vidrio es un
+   panel gris). Tres capas, todas dibujadas, cero foto:
 
-   El verde es brillante a proposito, y por eso NINGUN texto se apoya sobre el
-   crudo: el hero va sobre una placa de vidrio (ver Hero.module.css) y el resto
-   del contenido queda mas abajo, donde el telon ya se desvanecio al --bg. Los
-   haces son el escenario, no el papel donde se escribe. */
-/* El fondo verde no cubre toda la pagina: es el telon del arranque. Ocupa el
-   alto de la portada y un poco mas, y se desvanece en el --bg de abajo. Asi el
-   verde vivo es lo primero que se ve, con toda su fuerza, y el catalogo de mas
-   abajo queda sobre oscuro parejo, donde el texto y las cards de vidrio se leen
-   sin pelear con los haces.
-   Va con position:absolute, no fixed: se va con el scroll, que es barato. El
-   fixed obligaba a repintar en cada cuadro. */
+   1. Campos de luz calida (oro de arena, terracota, rosa-vino) que se repiten
+      cada 1700px, desfasados para que no se note el patron.
+   2. Surcos: lineas sinoidales finas en oro y vino (public/fondo/surcos.svg,
+      lo genera scripts/fondo/generar-duna.mjs). Son las que el canto del vidrio
+      quiebra: una linea que se dobla al cruzar el borde es lo que hace leer
+      "lente".
+   3. Grano de pelicula con contraste alto, en overlay: crispy, no difuminado.
+
+   Va con position:absolute a lo alto de toda la pagina, no fixed: se va con el
+   scroll y no obliga a repintar en cada cuadro. */
 .tfondo {
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 168vh; z-index: 0; pointer-events: none; overflow: hidden;
+  position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
 }
-/* La textura y la aureola ambar van en la misma capa: los degradados primero,
-   que quedan arriba, y la foto al final. Asi la capa de encima queda libre
-   para el grano, que necesita mezclarse distinto. */
 .tfondo::before {
   content: ''; position: absolute; inset: 0;
-  /* Campos de luz cálidos que se cruzan como en la duna de arena de la
-     referencia: oro de arena arriba a la derecha, terracota al centro, el
-     rosa-vino abajo a la izquierda. Sin rayas ni conos: sólo degradados suaves
-     que se funden, con grano encima. Es lo que le da al vidrio algo cálido para
-     refractar. Todo dibujado por CSS, cero foto, alta definición sin peso. */
   background:
-    radial-gradient(72% 58% at 82% 4%, rgba(224, 168, 96, 0.62) 0%, transparent 60%),
-    radial-gradient(58% 52% at 24% 16%, rgba(206, 120, 86, 0.44) 0%, transparent 62%),
-    radial-gradient(50% 48% at 64% 40%, rgba(210, 132, 96, 0.30) 0%, transparent 66%),
-    radial-gradient(56% 54% at 14% 68%, rgba(224, 112, 138, 0.38) 0%, transparent 66%),
-    radial-gradient(70% 60% at 58% 104%, rgba(150, 74, 58, 0.55) 0%, transparent 72%),
-    radial-gradient(42% 46% at 100% 82%, rgba(214, 168, 98, 0.28) 0%, transparent 60%),
-    linear-gradient(168deg, #241811 0%, #180f0b 56%, #120b08 100%);
-  opacity: var(--fondo-opacidad);
-  /* El desvanecido al oscuro. Empieza pasada la portada y termina antes del
-     final del telon, para que el corte no se note. */
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 88%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 88%);
+    url('/fondo/surcos.svg') 0 0 / 100% max(100%, 3200px) no-repeat,
+    /* Cada campo cabe entero en su baldosa de 1700px (centro y radio lejos de
+       los bordes): si se sale, el corte de la repeticion dibuja una raya. */
+    radial-gradient(34% 22% at 86% 26%, rgba(214, 168, 98, 0.15) 0%, transparent 100%) 0 0 / 100% 1700px repeat-y,
+    radial-gradient(38% 24% at 8% 58%, rgba(224, 112, 138, 0.11) 0%, transparent 100%) 0 0 / 100% 1700px repeat-y,
+    radial-gradient(40% 20% at 60% 80%, rgba(206, 120, 86, 0.12) 0%, transparent 100%) 0 0 / 100% 1700px repeat-y;
 }
-
-/* Grano de pelicula. No va adentro del JPEG: el ruido le rompe la compresion y
-   multiplica el peso por cinco. Va acá, generado por el navegador.
-
-   Se mezcla en multiply, o sea que solo oscurece. Eso importa por dos motivos:
-   el contraste del texto solo puede mejorar, nunca empeorar, y el grano
-   aparece donde hay luz y desaparece en el negro, que es como se comporta el
-   grano de verdad. */
 .tfondo::after {
   content: ''; position: absolute; inset: 0;
   opacity: var(--grano);
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2' intercept='-0.5'/%3E%3CfeFuncG type='linear' slope='2' intercept='-0.5'/%3E%3CfeFuncB type='linear' slope='2' intercept='-0.5'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
   background-size: 220px 220px;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 88%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 88%);
 }
 
-/* Halo ambiente. Un verde y un ambar muy tenues, fijos, detras de todo el
-   contenido. No se ven como manchas: lo que hacen es darle algo que reflejar al
-   vidrio de las cards cuando ya paso el telon verde y el fondo es oscuro. Tan
-   suave que no toca el contraste del texto, que va sobre las cards. */
-.tienda::before {
-  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(60% 50% at 86% 14%, rgba(214, 168, 98, 0.12) 0%, transparent 60%),
-    radial-gradient(55% 52% at 6% 62%, rgba(224, 112, 138, 0.10) 0%, transparent 62%),
-    radial-gradient(50% 46% at 96% 90%, rgba(206, 120, 86, 0.09) 0%, transparent 60%);
-}
-
-/* El contenido va por encima del fondo y del halo. */
+/* El contenido va por encima del fondo. */
 .tienda > header, .tienda > main, .tienda > footer { position: relative; z-index: 1; }
+/* El encabezado encima del hero, que sube por detras de el. */
+.tienda > header { z-index: 5; }
 
 /* ---------- vidrio ----------
-   Tres capas, como el vidrio real: el fondo desenfocado, un canto que suma
-   luz (screen) y otro que la refracta (overlay). Los cantos son
-   pseudo-elementos y no marcado extra. */
-.tsvg { position: absolute; width: 0; height: 0; overflow: hidden; }
+   Un solo material. Se arma en capas, como el vidrio de verdad:
 
-.tglass {
+   - backdrop-filter: la LENTE del canto primero (var --lente, la pone
+     src/lib/vidrioLiquido.js en Chromium de escritorio; en el resto queda
+     vacia) y despues el desenfoque, la saturacion y el brillo. La saturacion
+     es lo que separa vidrio de plastico: el vidrio concentra el color de atras.
+   - fondo: un tinte casi invisible y un velo de luz que baja desde arriba.
+   - box-shadow (--v-sombra): filo, grosor y caida.
+   - ::before: el filo especular. No es un borde parejo: un conic-gradient
+     recortado al contorno, encendido arriba a la izquierda (de donde viene la
+     luz) y con un rebote abajo a la derecha, apagado a los costados.
+   - ::after: el reflejo de la cara de arriba, una media luna de luz.
+
+   Clases:
+     .tglass-clear  controles (flechas, paginas, volver arriba)
+     .tbtn.clear    boton de vidrio claro
+     .tbtn          boton principal: el mismo vidrio, teñido de rosa-vino
+     .tglass        placas con contenido (barra de filtros, marco)
+     .tglass-lite   tarjetas */
+/* Posicion con :where (especificidad cero): las capas del vidrio necesitan un
+   padre posicionado, pero si el componente lo pone fixed o absolute (volver
+   arriba, flechas del carrusel) tiene que ganar el componente. */
+:where(.tglass-clear, .tbtn, .tglass, .tglass-lite) {
   position: relative;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-sombra);
+  isolation: isolate;
 }
-/* Refraccion de verdad: el filtro SVG desplaza el fondo antes del desenfoque,
-   asi los haces se quiebran y ondulan al cruzar el vidrio, como agua sobre el
-   canto. Es CARO: displazar un backdrop cuesta GPU en serio. Por eso va SOLO en
-   la placa del hero (.tglass-wet), que es una, esta arriba de todo y se va con
-   el scroll. En la cabecera fija o en las 100 tarjetas fundiria el celular.
-   Donde no hay soporte, queda el desenfoque comun, que ya se ve bien. */
-/* SOLO en escritorio. En el celular, desplazar el backdrop mientras el hero
-   esta en pantalla es lo que lo dejaba trabado (el catalogo, sin este filtro,
-   corria bien). Ahi el hero queda con desenfoque comun, que va fluido; la
-   refraccion mojada se ve en la compu, que la banca. */
-@media (min-width: 768px) {
-  @supports (backdrop-filter: url("#tvidrio")) {
-    .tglass-wet {
-      backdrop-filter: url("#tvidrio") var(--glass-blur);
-      -webkit-backdrop-filter: url("#tvidrio") var(--glass-blur);
-    }
-  }
+.tglass-clear,
+.tbtn.clear,
+.tbtn.ghost,
+.tglass,
+.tglass-lite {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.1) 0%, rgba(255, 250, 240, 0) 42%),
+    var(--v-tinte);
+  -webkit-backdrop-filter: var(--lente,) var(--v-clear);
+  backdrop-filter: var(--lente,) var(--v-clear);
+  box-shadow: var(--v-sombra);
+  transition:
+    background var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.tglass {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.08) 0%, rgba(255, 250, 240, 0) 30%),
+    var(--v-tinte-frost);
+  -webkit-backdrop-filter: var(--lente,) var(--v-frost);
+  backdrop-filter: var(--lente,) var(--v-frost);
 }
 .tglass-lite {
-  position: relative;
-  background: var(--glass-bg-lite);
-  /* Sin desenfoque (son muchas cards, seria carisimo), pero con los dos rasgos
-     que hacen leer el vidrio: la linea de luz del canto de arriba y una sombra
-     tenue que la despega del fondo. Es lo que la skill de gusto llama el filo
-     refractado. */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
-    0 14px 32px -22px rgba(0, 0, 0, 0.85);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.07) 0%, rgba(255, 250, 240, 0) 30%),
+    rgba(33, 22, 16, 0.3);
+  -webkit-backdrop-filter: var(--lente,) var(--v-card);
+  backdrop-filter: var(--lente,) var(--v-card);
 }
-/* En escritorio las cards SI desenfocan el fondo: son pocas por pantalla y la
-   compu lo banca. Asi el vidrio de la card distorsiona lo que tiene detras, no
-   es solo un panel translucido. En el celular no, para no reintroducir lag. */
-@media (min-width: 768px) {
+/* En el celular las tarjetas no desenfocan: son muchas y el scroll se traba.
+   Quedan translucidas con su filo y su sombra, que ya las lee como vidrio. */
+@media (max-width: 767px) {
   .tglass-lite {
-    backdrop-filter: blur(8px) saturate(135%);
-    -webkit-backdrop-filter: blur(8px) saturate(135%);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    background:
+      linear-gradient(180deg, rgba(255, 250, 240, 0.07) 0%, rgba(255, 250, 240, 0) 30%),
+      rgba(38, 26, 19, 0.62);
   }
 }
-/* El canto no es un borde parejo: en el vidrio real la luz pega arriba y se
-   apaga abajo. Se dibuja con un degradado recortado al contorno (mascara
-   padding-box contra border-box), que es lo unico que da ese canto vivo sin
-   sumar marcado. Sobre un fondo casi negro, un mix-blend-mode overlay no
-   rinde: por eso el brillo va explicito. */
+
+.tglass-clear::before,
+.tbtn::before,
 .tglass::before,
 .tglass-lite::before {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(
-    155deg,
-    rgba(243, 236, 225, 0.44) 0%,
-    rgba(243, 236, 225, 0.10) 32%,
-    rgba(243, 236, 225, 0.03) 62%,
-    rgba(224, 112, 138, 0.20) 100%
+  background: conic-gradient(
+    from 200deg,
+    rgba(255, 255, 255, 0.12) 0deg,
+    rgba(255, 255, 255, 0.95) 70deg,
+    rgba(255, 255, 255, 0.2) 120deg,
+    rgba(255, 255, 255, 0.05) 170deg,
+    rgba(255, 255, 255, 0.05) 200deg,
+    rgba(255, 236, 214, 0.55) 250deg,
+    rgba(255, 255, 255, 0.08) 300deg,
+    rgba(255, 255, 255, 0.12) 360deg
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   mask-composite: exclude;
+  opacity: 0.85;
   transition: opacity var(--dur) var(--ease);
 }
-/* Reflejo especular: la mancha de luz que deja el vidrio en su cara de arriba,
-   mas la franja fina del borde superior. Son dos cosas distintas y por eso son
-   dos degradados: la mancha da volumen, la franja da filo. Es lo que separa
-   "mojado" de "esmerilado". */
+.tglass-clear::after,
+.tbtn::after,
 .tglass::after,
 .tglass-lite::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
+  content: ''; position: absolute; inset: 1px; pointer-events: none; z-index: 1;
   border-radius: inherit;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.02) 22%, transparent 44%),
-    radial-gradient(130% 78% at 16% -14%, rgba(255, 255, 255, 0.13) 0%, transparent 58%);
-  opacity: 0.92;
-  transition: opacity var(--dur) var(--ease);
+  background: radial-gradient(120% 60% at 30% -18%, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.06) 48%, transparent 64%);
+  opacity: 0.9;
+  transition: opacity var(--dur) var(--ease), transform var(--dur-slow) var(--ease);
+}
+/* Placas y tarjetas: reflejo mas bajo, que no lave el contenido. */
+.tglass::after,
+.tglass-lite::after { opacity: 0.4; }
+
+/* Lo de adentro va por encima del reflejo. */
+.tglass-clear > *,
+.tbtn > * { position: relative; z-index: 3; }
+
+/* Hover: el vidrio se aclara, el filo se enciende y el reflejo se corre, como
+   si la luz resbalara por la cara. Sin crecer: un vidrio no se infla. */
+@media (hover: hover) {
+  .tglass-clear:hover,
+  .tbtn.clear:hover,
+  .tbtn.ghost:hover {
+    background:
+      linear-gradient(180deg, rgba(255, 250, 240, 0.14) 0%, rgba(255, 250, 240, 0) 46%),
+      var(--v-tinte-hover);
+  }
+  .tglass-clear:hover::before,
+  .tbtn:hover::before { opacity: 1; }
+  .tglass-clear:hover::after,
+  .tbtn:hover::after { transform: translateX(8%); }
 }
 
-/* Sin soporte de backdrop-filter (Firefox viejo, modos de ahorro), el vidrio
-   cae a una superficie solida y opaca: se pierde el efecto, nunca la lectura. */
+/* Sin backdrop-filter (Firefox viejo, modos de ahorro): cae a un vidrio solido
+   tenue. Se pierde el efecto, nunca la lectura. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .tglass { background: var(--bg-2); }
-  .tglass-lite { background: var(--bg-2); }
+  .tglass-clear, .tbtn.clear, .tbtn.ghost { background: rgba(70, 52, 40, 0.72); }
+  .tglass, .tglass-lite { background: var(--bg-2); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .tglass-clear, .tbtn.clear, .tbtn.ghost { background: #3a2a20; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .tglass, .tglass-lite { background: var(--bg-2); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 
-/* ---------- botones: radio pill, un solo acento ----------
+/* ---------- botones ----------
    Ojo con la especificidad: `.tienda a` (0,1,1) le gana a `.tbtn` (0,1,0),
    asi que un boton que es <a> heredaba color hueso sobre fondo ambar y
    quedaba en 2:1, ilegible. Por eso las reglas de color van calificadas con
    .tienda, que empata en especificidad y gana por orden. */
 .tienda .tbtn { color: var(--on-amber); }
-.tienda .tbtn.ghost { color: var(--ink); }
+.tienda .tbtn.ghost,
+.tienda .tbtn.clear { color: var(--ink); }
 
 .tbtn {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   padding: 14px 26px; border-radius: var(--r-pill);
-  background: var(--amber); color: var(--on-amber); border: 0;
+  border: 0;
   font-family: var(--f-body); font-size: 0.92rem; font-weight: 600;
   letter-spacing: 0.01em; cursor: pointer; min-height: 48px;
-  transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
+  text-decoration: none;
 }
-.tbtn:hover { background: #e37e94; }
+/* El principal: el mismo vidrio, teñido de rosa-vino. Tinte alto (se tiene que
+   leer de lejos y el texto oscuro necesita contraste), pero con lente, filo y
+   reflejo: es cristal de color, no plastico. */
+.tbtn:not(.clear):not(.ghost) {
+  background:
+    linear-gradient(180deg, rgba(255, 214, 224, 0.5) 0%, rgba(255, 214, 224, 0) 48%),
+    rgba(224, 112, 138, 0.9);
+  -webkit-backdrop-filter: var(--lente,) blur(4px) saturate(1.6);
+  backdrop-filter: var(--lente,) blur(4px) saturate(1.6);
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0.5px rgba(255, 255, 255, 0.2),
+    inset 0 -14px 20px -16px rgba(90, 20, 36, 0.6),
+    0 2px 3px -1px rgba(60, 12, 24, 0.5),
+    0 16px 36px -16px rgba(170, 60, 86, 0.6);
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
+}
+@media (hover: hover) {
+  .tbtn:not(.clear):not(.ghost):hover {
+    background:
+      linear-gradient(180deg, rgba(255, 224, 232, 0.6) 0%, rgba(255, 224, 232, 0) 52%),
+      rgba(232, 128, 152, 0.94);
+  }
+}
 .tbtn:active { transform: scale(0.985); }
-.tbtn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.tbtn:focus-visible,
+.tglass-clear:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .tbtn:disabled { opacity: 0.42; cursor: not-allowed; }
-
-/* El boton secundario es una pastilla de vidrio, no un contorno vacio. Lleva
-   el mismo tratamiento que las superficies: desenfoque, canto de luz y reflejo.
-   Son pocos en la pagina, asi que el costo del desenfoque no pesa. */
-.tbtn.ghost {
-  position: relative;
-  background: rgba(235, 232, 221, 0.07);
-  color: var(--ink);
-  border: 0;
-  backdrop-filter: blur(12px) saturate(180%) brightness(1.12);
-  -webkit-backdrop-filter: blur(12px) saturate(180%) brightness(1.12);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -6px 12px -8px rgba(0, 0, 0, 0.55),
-    0 10px 26px -16px rgba(0, 0, 0, 0.8);
-  overflow: hidden;
-  transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
-}
-/* El canto: mismo recorte de mascara que el vidrio grande. */
-.tbtn.ghost::before {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    150deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.12) 34%,
-    rgba(255, 255, 255, 0.04) 64%,
-    rgba(224, 112, 138, 0.28) 100%
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-}
-/* La gota de luz de la cara de arriba. */
-.tbtn.ghost::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 52%);
-}
-.tbtn.ghost:hover { background: rgba(235, 232, 221, 0.12); }
-
-/* El boton principal es ambar macizo, no vidrio: es el unico acento del sitio
-   y tiene que leerse de lejos. Lo unico que se le suma es el brillo de arriba,
-   para que pertenezca al mismo material que el resto. */
-.tbtn:not(.ghost) {
-  position: relative; overflow: hidden;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34), 0 12px 28px -18px rgba(0, 0, 0, 0.9);
-}
-.tbtn:not(.ghost)::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, transparent 46%);
-}
-
 .tbtn.wide { width: 100%; }
-
-/* ---------- vidrio "Clear" (estilo iOS) ----------
-   El más transparente de todos: se ve el fondo casi entero a través, con un
-   canto de luz blanco y nítido y un brillo arriba. Es el que pidió para el CTA
-   grande del catálogo. Va en pocos lugares (hero, chips de promo), así que el
-   desenfoque fuerte no pesa. */
-.tienda .tbtn.clear { color: var(--ink); }
-.tbtn.clear {
-  position: relative; overflow: hidden;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px) saturate(150%) brightness(1.18);
-  -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(1.18);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    inset 0 -10px 22px -12px rgba(0, 0, 0, 0.5),
-    0 18px 44px -18px rgba(0, 0, 0, 0.78);
-  transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease);
-}
-/* Canto de luz blanco, recortado al contorno (no un borde parejo). */
-.tbtn.clear::before {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  border-radius: inherit; padding: 1px;
-  background: linear-gradient(
-    150deg,
-    rgba(255, 255, 255, 0.85) 0%,
-    rgba(255, 255, 255, 0.18) 36%,
-    rgba(255, 255, 255, 0.06) 66%,
-    rgba(255, 255, 255, 0.4) 100%
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-}
-/* El brillo de la cara de arriba: lo que lo hace leer "mojado", no plano. */
-.tbtn.clear::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.04) 40%, transparent 60%);
-}
-.tbtn.clear > * { position: relative; z-index: 1; }
-.tbtn.clear:hover { background: rgba(255, 255, 255, 0.14); }
-.tbtn.clear:active { transform: scale(0.985); }
-.tbtn.clear:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-/* Sin backdrop-filter, cae a un vidrio sólido tenue: nunca se pierde la lectura. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .tbtn.clear { background: rgba(60, 44, 34, 0.6); }
-}
 
 /* ---------- reveal (IntersectionObserver, ver useReveal.js) ---------- */
 .treveal { opacity: 0; transform: translateY(20px); }

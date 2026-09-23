@@ -64,47 +64,58 @@ Eso está en `src/components/tienda/ProductThumb.jsx`, en la función `fotoDe`.
 
 ## Rehacer TODAS las fotos
 
-Cuando entra un ciclo con aromas nuevos. Son tres pasos y están documentados en
-[`scripts/fotos/README.md`](../scripts/fotos/README.md). El resumen:
+Cuando entra un ciclo con aromas nuevos. Son cuatro pasos y están documentados
+en [`scripts/fotos/README.md`](../scripts/fotos/README.md). El resumen:
 
 ```
 npm run fotos:catalogos    baja los catálogos de las dos proveedoras y el nuestro
 npm run fotos:emparejar    decide de dónde sale cada foto e imprime la lista
 npm run fotos:traer        baja, comprime y regenera el índice
+npm run fotos:fondos       separa las que tienen fondo propio de las de porcelana
 ```
 
 **Conviene mirar la lista del segundo paso antes de correr el tercero.** Ahí ya
 se vio un error: había fotos que se cruzaban entre perfumes de la misma familia.
 
-`npm run fotos` corre los tres de una.
+`npm run fotos` corre los cuatro de una.
 
 ## Cambiar el orden de los bloques de la página
 
 En **`src/components/tienda/HomeScreen.jsx`**. Es una lista de bloques en el
-orden en que se ven: inicio, destacados, catálogo y cómo funciona. Mover un
-bloque es mover una línea. La ficha del aroma es la última porque no es un
-bloque de la página: se abre encima.
+orden en que se ven: inicio, destacados, quiénes somos y cómo funciona. Mover un
+bloque es mover una línea. El catálogo completo no está ahí: vive en su propia
+página (`CatalogoScreen.jsx`), y la ficha del aroma tampoco, porque se abre
+encima de lo que haya.
 
 ## Cambiar colores, tipografías o espacios
 
-En **`src/styles/tienda.css`**, arriba de todo, están las variables. Ahí se
-definen el fondo, los tonos de texto, el ámbar del acento, los redondeos y las
-duraciones de las animaciones. Cambiar una variable cambia toda la web de una.
+En **`src/styles/tienda.css`**, arriba de todo, están las variables: el fondo,
+los tonos de texto, el acento rosa-vino, el oro de arena, los redondeos, el
+vidrio y las duraciones. Cambiar una variable cambia toda la web de una. El
+sistema completo está explicado en [`DISENO.md`](DISENO.md).
 
-Dos cosas que ya costaron caro y conviene saber:
+Tres cosas que ya costaron caro y conviene saber:
 
 - **El acento es uno solo.** Si aparece un segundo color de acento, la web deja
-  de leerse como una sola cosa.
+  de leerse como una sola cosa. Las variables se llaman `--amber*` por herencia,
+  pero el valor es rosa-vino.
 - **Cuidado con la especificidad.** `.tienda a` le gana a `.tbtn`, así que un
   enlace con pinta de botón hereda el color del texto y queda ilegible. Ya pasó
   dos veces. Si un color no se aplica, es esto antes que cualquier otra cosa.
+- **Las reglas genéricas del vidrio van con `:where()`** para que no le ganen al
+  componente. Sin eso, `position: relative` del vidrio pisaba el `position:
+  fixed` del botón de volver arriba y lo mandaba al borde de la pantalla.
 
 ## Cambiar el fondo
 
-Es una sola imagen, `public/fondo.jpg`. La clase que la pone es `.tfondo` en
-`src/styles/tienda.css`. Si se cambia por otra imagen, hay que medirle el punto
-más claro: si el fondo aclara demasiado, el texto gris deja de cumplir contraste
-y hay que recalcular los tonos.
+No es una foto: son SVG que dibuja un script. La escena del inicio está en
+`public/hero/`, la textura de la página en `public/fondo/`, y las genera
+`npm run fondo`. Qué se puede tocar está en
+[`scripts/fondo/README.md`](../scripts/fondo/README.md).
+
+Si se cambia por algo más claro, hay que medirle el punto más claro: si el fondo
+aclara, el texto tenue deja de cumplir contraste y hay que recalcular los tonos
+o ahumar el vidrio que quede encima.
 
 ## Cambiar precios, códigos, promociones o el ciclo
 
@@ -117,31 +128,13 @@ pone en riesgo, hay que frenar.
 
 ---
 
-## Cómo está repartido el proyecto
+## Dónde está cada cosa
 
-```
-src/
-  config/       textos y números editables (contenido.js, ajustes.js)
-  components/
-    tienda/     la web pública que ve la clienta
-    panel/      las pantallas de gestión
-    layout/     la estructura del panel
-    auth/       ingreso al panel
-    ui/         piezas sueltas que se reusan
-  hooks/        pedidos a la base y comportamientos de pantalla
-  lib/          reglas del negocio, sin nada visual
-  data/         constantes y el índice de fotos que genera el script
-  styles/       las variables y el sistema visual de la tienda
-scripts/fotos/  el pipeline de imágenes, en tres pasos
-supabase/       las migraciones de la base
-public/         fotos, fondo e íconos
-```
-
-Lo importante de esa división: **`lib/` no sabe nada de pantallas y
-`components/` no calcula reglas de negocio.** Las promociones 2x1 se calculan en
-`src/lib/promos.js` y se pueden probar sin abrir la web. El armado del mensaje
-de WhatsApp está en `src/lib/whatsapp.js`. Si una cuenta da mal, el error está
-en `lib/`, no en la pantalla.
+El mapa de carpetas, el modelo de datos y las convenciones están en
+[`ARQUITECTURA.md`](ARQUITECTURA.md). Lo único que hace falta saber para tocar
+cosas del día a día: **`lib/` no sabe nada de pantallas y `components/` no
+calcula reglas de negocio.** Si una cuenta da mal (el 2x1, el mensaje de
+WhatsApp), el error está en `src/lib/`, no en la pantalla.
 
 ## Antes de dar algo por hecho
 

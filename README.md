@@ -1,24 +1,27 @@
 # Bagues Grupo Wolf
 
 Tienda y panel de gestión para una venta de perfumería en Córdoba, Argentina.
-Reemplaza un circuito que antes vivía repartido entre Instagram, Drive y Linktree, catálogo
-en PDF y campañas cambiantes.
-
+Reemplaza un circuito que vivía repartido entre Instagram, Drive, un catálogo en
+PDF y campañas que cambian todos los meses.
 
 **En producción:** https://baguesfraganciaswolf.vercel.app
 
-> Este archivo es la memoria del proyecto. Lo que está escrito acá no se borra
-> cuando algo cambia: se agrega abajo. La idea es poder leerlo de arriba hacia
-> abajo y entender cómo fue creciendo y por qué se decidió cada cosa.
+| | |
+| --- | --- |
+| Qué es esto, por qué existe y en qué estado está | [`docs/CONTEXTO.md`](docs/CONTEXTO.md) |
+| Sistema visual y kit de marca | [`docs/DISENO.md`](docs/DISENO.md) |
+| El esqueleto reutilizable en otro proyecto | [`docs/KIT.md`](docs/KIT.md) |
+| Cómo está armado por dentro | [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) |
+| Qué tocar para cambiar qué | [`docs/EDITAR.md`](docs/EDITAR.md) |
 
 ---
 
 ## Qué resuelve
 
 Vendo perfumes por WhatsApp. El catálogo de mi proveedora cambia todos los
-meses: dos listas nuevas, más de cien aromas, los precios que cambian y las
+meses: dos listas nuevas, más de cien aromas, precios que se mueven y
 promociones que duran un ciclo. Antes eso era mandar un PDF por chat, que la
-clienta me preguntara precio por precio, y anotar los pedidos a mano.
+clienta preguntara precio por precio, y anotar los pedidos a mano.
 
 El sistema tiene que sacarme trabajo, no agregarme. Ese fue el criterio con el
 que se decidió todo:
@@ -29,17 +32,14 @@ que se decidió todo:
    se abandona solo en el mes tres.
 
 No hay pasarela de pago y no la va a haber. El cierre es hablando por WhatsApp,
-porque ahí es donde pido la seña y donde acuerdo la entrega. La web arma el
-pedido, no lo cobra.
+porque ahí pido la seña y acuerdo la entrega. La web arma el pedido, no lo cobra.
 
 ---
 
-## Herramientas y lenguajes
-
-Esto es la base fija del proyecto.
+## Herramientas
 
 | Qué | Con qué |
-|---|---|
+| --- | --- |
 | Lenguajes | JavaScript (ES2022), HTML, CSS, SQL |
 | Interfaz | React 18 |
 | Compilador y servidor de desarrollo | Vite 5 |
@@ -47,10 +47,10 @@ Esto es la base fija del proyecto.
 | Estilos | CSS Modules y variables CSS. Sin Tailwind ni biblioteca de componentes |
 | Base de datos | PostgreSQL, en Supabase |
 | Ingreso al panel | Supabase Auth con cuenta de Google |
-| Seguridad de datos | Políticas de fila (Row Level Security) en todas las tablas |
+| Seguridad de datos | Políticas de fila (RLS) en todas las tablas |
 | Archivos | Supabase Storage |
-| Tres dimensiones | Three.js |
-| Movimiento | CSS nativo. GSAP disponible |
+| Movimiento | CSS nativo, con GSAP para la entrada y el parallax del inicio |
+| Gráficos | SVG generado por scripts propios. Sin fotos de banco ni 3D |
 | Publicación | Vercel, automática desde la rama principal |
 | Versionado | Git y GitHub |
 
@@ -60,35 +60,24 @@ trabajar así es parte del oficio, y prefiero decirlo antes que disimularlo.
 
 ---
 
-## Cómo está armado
+## Qué hay en la web
 
-Una sola aplicación con dos zonas que comparten la misma base de datos:
+**La tienda** (`/`) abre con una escena de dunas al atardecer, dibujada por un
+script, con el frasco parado sobre la arena y su sombra de contacto. Abajo, la
+promoción del ciclo en barras de cristal, la cinta de nombres reconocibles, una
+selección curada, quiénes somos y los tres pasos de cómo funciona. El catálogo
+completo vive en su propia página (`/catalogo`) con buscador, filtros por género
+y promoción, y paginado.
 
-- **La tienda**, en la raíz. Pública, sin cuenta ni registro. Catálogo,
-  buscador, filtros, ficha de cada aroma y armado del pedido.
-- **El panel**, en `/panel`. Privado: entra una sola cuenta de correo, la mía.
-  Pedidos, catálogo y ajustes.
+Cada aroma abre una ficha con la pirámide olfativa y los tamaños de las dos
+líneas, cada uno con su código. El pedido se arma en un cajón lateral, calcula
+el 2x1 y termina en un mensaje de WhatsApp listo para enviar.
 
-Las dos zonas se cargan por separado, así que quien entra a comprar no descarga
-el código del panel.
+**El panel** (`/panel`) es privado: pedidos por estado, catálogo con edición
+rápida de precio y disponibilidad para la carga mensual, clientes y ajustes.
 
-### La base
-
-Seis tablas: productos, pedidos, renglones de pedido, clientes, ajustes y
-promociones. Todas con políticas de fila activas.
-
-Lo que más me costó entender, y lo que más me sirvió después, es que la
-seguridad no se pone en el navegador. Los precios no se toman de lo que manda
-la página: cuando entra un pedido, una función del servidor busca el precio
-real en la base. Si alguien edita el precio desde las herramientas del
-navegador, no le sirve de nada.
-
-### Cómo se guarda un pedido
-
-La tienda no escribe en las tablas. Tiene un solo camino de entrada: una
-función en la base que valida el nombre, normaliza el teléfono, limita la
-cantidad de renglones y busca los precios del lado del servidor. Es el único
-lugar por donde la web puede dejar algo escrito.
+La dirección de arte, la paleta, el material de vidrio y los fondos generados
+están explicados en [`docs/DISENO.md`](docs/DISENO.md).
 
 ---
 
@@ -118,22 +107,16 @@ sale escrito en el mensaje de WhatsApp:
 [10281126] L* B*MB* 50ml (Granada) x2
 ```
 
-### Las promociones son un dato, no programación
+### Lo que se configura no se programa
 
-El 2x1 del ciclo está guardado en la tabla de ajustes, no escrito adentro del
-programa. Cuando cambia el ciclo, cambio el dato y la web se acomoda sola. Si
-lo hubiera dejado escrito en el código, cada mes tendría que tocar el programa,
-que es justo el trabajo que quiero evitar.
+El 2x1 del ciclo está guardado en la base, no escrito adentro del programa.
+Cuando cambia el ciclo, cambio el dato y la web se acomoda sola. Lo mismo con
+los textos: cada frase visible está en `src/config/contenido.js` y los números
+que uno alguna vez quiere mover, en `src/config/ajustes.js`. Los componentes no
+tienen texto propio.
 
-La cuenta es por grupos que no se mezclan entre sí. Para cada grupo:
-
-```
-subtotal = techo(unidades / 2) x precio del par
-```
-
-De ahí sale un detalle que mueve plata: **llevar tres cuesta lo mismo que
-llevar cuatro**. Cuando el pedido queda impar, el carrito lo dice y ofrece
-sumar uno más sin pagar nada extra.
+Si estuviera escrito en el código, cada mes tendría que tocar el programa, que es
+justo el trabajo que quiero evitar.
 
 ### El aviso automático se borró a propósito
 
@@ -142,56 +125,40 @@ saqué por dos razones.
 
 La primera es que estaba repetido: cuando la clienta confirma, el mensaje sale
 de su teléfono, así que ya me llega en la conversación con ella y con el hilo
-abierto. El del robot llegaba aparte y me obligaba a copiar el número a mano
-para empezar a hablar. Me agregaba trabajo.
+abierto. El del robot llegaba aparte y me obligaba a copiar el número a mano.
+Me agregaba trabajo.
 
 La segunda es que estaba mal hecho: se disparaba al crear el pedido, pero los
 renglones y el total se escriben un instante después. El aviso podía salir con
 el pedido vacío y en cero.
 
 En su lugar no puse nada nuevo que mantener. El panel ya escuchaba la tabla en
-vivo, así que ahora la cantidad de pedidos sin abrir aparece en el título de la
+vivo, así que la cantidad de pedidos sin abrir aparece en el título de la
 pestaña.
 
-### Cuatro superficies con desenfoque, no ciento cuatro
+### El vidrio es una lente, y la lente tiene presupuesto
 
-El efecto de vidrio translúcido usa `backdrop-filter`, que es de lo más caro
-que dibuja un navegador. Puesto en las cien tarjetas del catálogo, funde un
-teléfono de gama media, que es justo donde me compran.
+El efecto de cristal no es un panel translúcido: el canto **refracta** el fondo,
+con un mapa de desplazamiento calculado para el tamaño exacto de cada elemento.
+Se ve en los botones, las barras de promoción y los controles.
 
-El desenfoque quedó solo en las superficies que flotan: el encabezado, la
-ficha, el pedido y las promociones del inicio. Las tarjetas usan una versión
-sin desenfoque que igual se ve translúcida, porque el fondo se ve a través.
-Medido sobre la página publicada: cuatro elementos con desenfoque, no cien.
+Pero es caro. Medido con un scroll instrumentado, ponerlo también en las placas
+grandes y en las doce tarjetas del catálogo tiraba el scroll a 15-25 cuadros por
+segundo. Quedó solo en los controles y en una sola pasada de desplazamiento; en
+las placas alcanza el vidrio de CSS. Con eso el tiempo de cuadro quedó igual que
+sin el efecto.
 
-### Los textos salen de un archivo, no de las pantallas
+Es el mismo criterio de siempre en este proyecto: el rendimiento es una decisión
+de diseño, no un ajuste del final. Me compran desde un teléfono de gama media.
 
-Cada frase de la tienda estaba escrita adentro del componente donde se veía. Con
-eso, cambiar el aviso legal era abrir dos archivos distintos y acordarse de los
-dos, y cambiar el título de la portada era editar programación para corregir una
-coma.
+### Los fondos los dibuja un script
 
-Ahora todo el texto visible está en un solo archivo, `src/config/contenido.js`,
-agrupado por dónde aparece. Los componentes no tienen texto propio: leen de ahí.
-Los números que uno alguna vez quiere mover, como cuántos aromas entran por
-página, están en `src/config/ajustes.js`, con un comentario que dice qué pasa si
-se cambian.
-
-Es la misma idea que las promociones: lo que se configura no se programa. La
-diferencia es que las promociones cambian todos los meses y viven en la base,
-mientras que los textos cambian cada tanto y con esto quedan a un archivo de
-distancia, sin necesidad de entender React para tocarlos.
-
-Escribí aparte una guía de qué tocar para cambiar qué, en
-[`docs/EDITAR.md`](docs/EDITAR.md), ordenada por lo que uno quiere hacer y no
-por cómo está armado el proyecto adentro.
-
-### El fondo animado no es una foto
-
-Las líneas de luz que cruzan el fondo son gradientes animados, no una imagen
-descargada. Una foto habría pesado cientos de kilobytes contra un presupuesto
-de ciento cincuenta hasta que se ve el primer perfume, y habría traído zonas
-claras impredecibles justo donde el texto tiene que leerse.
+La escena del hero y la textura de la página son SVG generados
+(`npm run fondo`), no fotos. Una foto habría pesado cientos de kilobytes contra
+un presupuesto de 150 kB hasta que se ve el primer perfume, y habría traído
+zonas claras impredecibles justo donde el texto tiene que leerse. Además, el
+vidrio necesita algo con detalle detrás para leerse como vidrio: sobre negro
+liso, cualquier cristal es un panel gris.
 
 ---
 
@@ -202,89 +169,77 @@ apellido.
 
 ### Un error que todavía no había pasado, pero iba a pasar
 
-El editor del panel guardaba cada tamaño con tres datos: mililitros, precio y
-si está disponible. El problema es que en la base cada tamaño tiene además el
-código de proveedora, la línea y el grupo de promoción.
+El editor del panel guardaba cada tamaño con tres datos: mililitros, precio y si
+está disponible. En la base cada tamaño tiene además el código de proveedora, la
+línea y el grupo de promoción.
 
-La primera vez que yo tocara un precio desde el panel, esos datos se borraban.
-Y como el precio es justo lo que cambio todos los meses, iba a pasar seguro. El
-resultado habrían sido pedidos de ese aroma sin código, imposibles de cargar.
-
-Se arregló conservando los datos originales al guardar. Ahora además el código
-se ve en el editor, para poder controlarlo de un vistazo.
+La primera vez que yo tocara un precio desde el panel, esos datos se borraban. Y
+como el precio es justo lo que cambio todos los meses, iba a pasar seguro. El
+resultado habrían sido pedidos sin código, imposibles de cargar. Se arregló
+conservando los datos originales al guardar, y ahora el código se ve en el
+editor.
 
 ### Productos que desaparecían y no volvían
 
 Tocando los filtros del catálogo varias veces, algunos perfumes quedaban
-invisibles para siempre.
-
-La causa: la aparición gradual se enganchaba una sola vez, al cargar la página.
-Cuando el filtro cambia se crean tarjetas nuevas que ese enganche ya no ve, y
-quedaban con transparencia en cero para siempre. Se resolvió con un observador
-que vigila el contenido nuevo mientras la página viva.
+invisibles para siempre. La causa: la aparición gradual se enganchaba una sola
+vez, al cargar la página. Cuando el filtro cambia se crean tarjetas nuevas que
+ese enganche ya no ve, y quedaban con transparencia en cero. Se resolvió con un
+observador que vigila el contenido nuevo mientras la página viva.
 
 ### Un botón ilegible por una regla de prioridad
 
-Los botones que son enlaces quedaban con texto claro sobre fondo ámbar: dos a
-uno de contraste, ilegible. Los que son botones comunes estaban bien, y por eso
-mirando la pantalla no saltaba.
+Los botones que son enlaces quedaban con texto claro sobre el acento: dos a uno
+de contraste. Los que son botones comunes estaban bien, y por eso mirando la
+pantalla no saltaba. La causa es la prioridad de las reglas de estilo: la regla
+que pinta los enlaces le ganaba a la del botón. Lo encontré midiendo el
+contraste, no mirándolo.
 
-La causa es la prioridad de las reglas de estilo: la regla que pinta los
-enlaces le ganaba a la del botón. Lo encontré midiendo el contraste sobre la
-página publicada, no mirándola. Quedó en siete y medio a uno.
-
-Lo mismo me volvió a pasar una hora después con otra regla que nunca se
-aplicaba. La borré en vez de dejarla: una regla que miente sobre lo que hace es
-peor que no tenerla.
+Lo mismo volvió a pasar con el vidrio: la regla que lo posiciona le ganaba a la
+del componente, y el botón de "volver arriba" —que tiene que quedar fijo en la
+esquina— apareció pegado al borde izquierdo. Se arregló bajándole la prioridad a
+la regla genérica con `:where()`, para que el componente siempre gane.
 
 ### El texto más tenue se caía por debajo del mínimo
 
-Cuando sumé el fondo con líneas de luz, calculé el contraste componiendo las
-capas y el texto terciario daba tres con nueve a uno, debajo del mínimo
-aceptable. Contra el fondo plano daba cinco con uno, por eso no se veía venir.
+Cuando sumé el fondo con textura, calculé el contraste componiendo las capas y
+el texto terciario daba 3,9:1, debajo del mínimo. Contra el fondo plano daba
+5,1:1, por eso no se veía venir. Lo mismo pasó con el cristal transparente sobre
+la arena clara del hero: 2,5:1. Se resolvió ahumando ese vidrio hasta ~4,8:1.
 
-Recalculé los dos niveles de texto contra el peor fondo posible, no contra el
-plano. Es la diferencia entre medir la parte cómoda y medir donde de verdad
-falla.
+Es la diferencia entre medir la parte cómoda y medir donde de verdad falla.
 
 ### El panel daba error y no era el programa
 
 Escribiendo la dirección del panel me aparecía un error. No era mi código:
 faltaba un archivo de configuración. La página es una sola y el recorrido
 interno lo resuelve el navegador, pero el servidor buscaba un archivo físico en
-esa dirección, no lo encontraba y cortaba antes de que la aplicación arrancara.
-Se resolvió con cuatro líneas.
+esa dirección y cortaba antes de que la aplicación arrancara. Se resolvió con
+cuatro líneas.
 
 ### Un dato de prueba llegando a la tienda
 
-Había un producto que se llamaba literalmente "456", visible para cualquiera
-que entrara. Se limpió el dato y además quedó una defensa en el programa: un
-producto con nombre puramente numérico no se muestra aunque exista.
+Había un producto que se llamaba literalmente "456", visible para cualquiera. Se
+limpió el dato y además quedó una defensa en el programa: un producto con nombre
+puramente numérico no se muestra aunque exista.
 
 ---
 
 ## Lo que aprendí
 
 - **Verificar antes de afirmar.** Casi todos los errores de arriba aparecieron
-  midiendo sobre la página de verdad: contraste calculado sobre lo que dibuja
-  el navegador, capturas a varios anchos de pantalla, consultas a la base real.
-  Mirando la pantalla, ninguno saltaba.
-- **Medir donde falla, no donde es cómodo.** El contraste contra el fondo plano
-  daba bien; contra el peor fondo posible, no.
+  midiendo sobre la página de verdad: contraste calculado sobre lo que dibuja el
+  navegador, capturas a seis anchos de pantalla, tiempos de cuadro durante un
+  scroll real. Mirando la pantalla, ninguno saltaba.
+- **Medir donde falla, no donde es cómodo.**
 - **La seguridad va del lado del servidor.** Los precios se buscan en la base
   cuando entra el pedido. Lo que manda el navegador no se confía.
-- **Lo que se configura no se programa.** Las promociones y los textos del
-  ciclo son datos editables. Escritos adentro del código, cada mes sería
-  trabajo de programación.
-- **El rendimiento es una decisión de diseño, no un ajuste del final.** Dónde
-  poner el desenfoque, o si el fondo es una foto o un gradiente, define si la
-  página anda en un teléfono común.
+- **El rendimiento es una decisión de diseño**, no un ajuste del final.
 - **Un sistema que agrega trabajo está fallado**, por bien construido que esté.
   Por eso saqué el aviso automático en vez de arreglarlo.
-- **Borrar también es avanzar.** El aviso repetido, la regla de estilo que no
-  hacía nada, y un intento de dibujar los frascos en tres dimensiones que
-  bloqueaba la pantalla varios segundos: los tres se fueron y el proyecto quedó
-  mejor.
+- **Borrar también es avanzar.** El aviso repetido, una regla de estilo que no
+  hacía nada, y el frasco en tres dimensiones que bloqueaba la pantalla varios
+  segundos y pesaba medio megabyte: los tres se fueron y el proyecto quedó mejor.
 
 ---
 
@@ -292,23 +247,24 @@ producto con nombre puramente numérico no se muestra aunque exista.
 
 Andando en producción:
 
-- Catálogo del ciclo con más de cien aromas y sus tamaños.
+- Catálogo del ciclo con más de cien aromas y sus tamaños, en página propia.
 - Buscador por nombre o por el perfume en el que se inspira, y filtros por
   género y por promoción.
 - Ficha por aroma con pirámide olfativa y los tamaños de las dos listas.
 - Pedido con la cuenta del 2x1 y el aviso de "te falta uno".
 - Mensaje de WhatsApp armado con el código de proveedora de cada renglón.
-- Panel privado con pedidos, catálogo y ajustes.
+- Panel privado con pedidos, catálogo, clientes y ajustes.
 - Vista previa con imagen propia cuando se pega el enlace en WhatsApp.
-
-- Fotos de los envases reales en setenta y nueve de los ciento cinco aromas,
-  bajadas y emparejadas por un script propio.
+- Fotos de los envases reales en 79 de los 105 aromas, bajadas y emparejadas por
+  un script propio.
 
 Pendiente:
 
-- Los veintiséis aromas que quedan sin foto. No están publicados en ninguna de
-  las dos webs de las proveedoras, así que para esos hacen falta los PDF del
-  catálogo. Mientras no estén, se muestra la inicial del aroma.
+- Los 26 aromas que quedan sin foto. No están publicados en ninguna de las dos
+  webs de las proveedoras, así que hacen falta los PDF del catálogo. Mientras
+  tanto se muestra la inicial del aroma.
+- Llevar el vidrio a la ficha y al cajón del pedido, que todavía son paneles
+  opacos.
 - Bajar el peso de la página de inicio.
 - Generar el HTML de la tienda al momento de publicar, para que se lea sin
   esperar a que cargue el programa.
@@ -332,18 +288,14 @@ VITE_SUPABASE_ANON_KEY=
 La dirección raíz es la tienda. El panel está en `/panel` y pide cuenta de
 Google; solo entra el correo autorizado en la base.
 
-Para rehacer las fotos de los envases cuando entra un ciclo nuevo:
-
 ```bash
-npm run fotos
+npm run fotos    # rehace las fotos de los envases cuando entra un ciclo nuevo
+npm run fondo    # redibuja la escena del hero y la textura de la página
 ```
 
-Son tres pasos y conviene correrlos de a uno, porque el segundo imprime qué foto
-le tocó a cada aroma y ahí se revisa antes de bajar nada. Está explicado en
-[`scripts/fotos/README.md`](scripts/fotos/README.md).
-
-Para cambiar textos, fotos sueltas, colores o el orden de los bloques, la guía
-está en [`docs/EDITAR.md`](docs/EDITAR.md).
+El pipeline de fotos son cuatro pasos y conviene correrlos de a uno: el segundo
+imprime qué foto le tocó a cada aroma y ahí se revisa antes de bajar nada. Está
+explicado en [`scripts/fotos/README.md`](scripts/fotos/README.md).
 
 ---
 

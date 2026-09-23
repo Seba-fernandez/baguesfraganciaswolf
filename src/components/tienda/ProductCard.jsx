@@ -65,7 +65,7 @@ export default function ProductCard({ producto, onOpen, promos = {} }) {
           </span>
           <button
             type="button"
-            className={s.add}
+            className={`tbtn ${s.add}`}
             onClick={() => addItem(producto, elegida, 1)}
             disabled={!elegida}
             aria-label={`Agregar ${titulo} al pedido`}

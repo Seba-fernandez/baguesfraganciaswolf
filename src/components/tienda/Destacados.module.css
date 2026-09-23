@@ -1,18 +1,11 @@
 .section { padding-block: clamp(40px, 6vw, 76px); }
 
-/* El marco que la contiene: un fondo apenas mas claro que la pagina, un canto
-   tenue y un resplandor ambar arriba a la izquierda. Es lo que la separa del
-   catalogo abierto de abajo y la hace leer como vidriera curada. */
+/* El marco que la contiene es una placa de vidrio (.tglass en el JSX): lo que la
+   separa del catalogo abierto y la hace leer como vidriera curada. Aca solo la
+   forma. Sin overflow:hidden: las flechas de vidrio asoman por el canto. */
 .marco {
-  position: relative;
   padding: clamp(20px, 3.5vw, 38px);
-  border-radius: 20px;
-  border: 1px solid var(--line);
-  background:
-    radial-gradient(80% 120% at 6% 0%, rgba(214, 168, 98, 0.09) 0%, transparent 55%),
-    linear-gradient(180deg, rgba(243, 236, 225, 0.04) 0%, rgba(243, 236, 225, 0.015) 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  overflow: hidden;
+  border-radius: 26px;
 }
 
 .head { margin-bottom: 22px; }
@@ -41,17 +34,14 @@
 /* Flechas grises, sutiles. Se apoyan en el borde del marco; al llegar al tope,
    el JS las hace volver al inicio. Se ocultan del lector de pantalla porque el
    carrusel se puede recorrer con el teclado por los propios items. */
+/* El vidrio lo pone .tglass-clear (clase global en el JSX); acá posición y forma. */
 .flecha {
   position: absolute; top: 38%; transform: translateY(-50%); z-index: 2;
-  width: 42px; height: 42px; border-radius: 50%;
+  width: 44px; height: 44px; border-radius: 50%;
   display: grid; place-items: center;
-  background: rgba(28, 18, 12, 0.72); color: var(--ink-dim);
-  border: 1px solid var(--line-bright); cursor: pointer;
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  color: var(--ink-dim); border: 0; cursor: pointer;
 }
-.flecha:hover { color: var(--ink); border-color: var(--amber); background: rgba(28, 18, 12, 0.9); }
-.flecha:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.flecha:hover { color: var(--ink); }
 .flechaIzq { left: -6px; }
 .flechaDer { right: -6px; }
 @media (min-width: 560px) { .flechaIzq { left: -18px; } .flechaDer { right: -18px; } }

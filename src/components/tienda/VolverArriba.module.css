@@ -1,6 +1,8 @@
 /* Vidrio gris, apenas presente. Se agranda el area de toque a 46px pero se
    dibuja mas chico, para que sea comodo sin ser un boton grande encima del
    contenido. */
+/* El vidrio (fondo, canto, brillo) lo pone la clase global .tglass-clear del
+   JSX; acá sólo posición, tamaño y el aparecer/desaparecer. */
 .boton {
   position: fixed;
   right: 16px;
@@ -9,23 +11,18 @@
   width: 46px; height: 46px;
   display: grid; place-items: center;
   border-radius: var(--r-pill);
-  border: 1px solid rgba(235, 232, 221, 0.16);
-  background: rgba(28, 34, 31, 0.42);
-  backdrop-filter: blur(12px) saturate(130%);
-  -webkit-backdrop-filter: blur(12px) saturate(130%);
   color: var(--ink-dim);
   cursor: pointer;
 
   /* Escondido: no ocupa lugar ni recibe toques hasta que aparece. */
   opacity: 0; transform: translateY(10px); pointer-events: none;
   transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease),
-              color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+              color var(--dur) var(--ease);
 }
 .visible { opacity: 1; transform: none; pointer-events: auto; }
 
-.boton:hover { color: var(--ink); border-color: rgba(235, 232, 221, 0.3); }
+.boton:hover { color: var(--ink); }
 .boton:active { transform: scale(0.94); }
-.boton:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 
 /* En pantalla ancha se corre un poco mas adentro y queda mas discreto. */
 @media (min-width: 900px) {

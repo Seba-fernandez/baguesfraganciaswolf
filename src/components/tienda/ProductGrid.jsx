@@ -157,7 +157,7 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
             <nav className={s.paginador} aria-label="Páginas del catálogo">
               <button
                 type="button"
-                className={s.flecha}
+                className={`${s.flecha} tglass-clear`}
                 onClick={() => irA(pagActual - 1)}
                 disabled={pagActual === 0}
                 aria-label="Página anterior"
@@ -180,7 +180,7 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
                       <button
                         key={i}
                         type="button"
-                        className={`${s.numero} ${i === pagActual ? s.numeroOn : ''} tnum`}
+                        className={`${s.numero} ${i === pagActual ? s.numeroOn : 'tglass-clear'} tnum`}
                         onClick={() => irA(i)}
                         aria-current={i === pagActual ? 'page' : undefined}
                       >
@@ -192,7 +192,7 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
 
               <button
                 type="button"
-                className={s.flecha}
+                className={`${s.flecha} tglass-clear`}
                 onClick={() => irA(pagActual + 1)}
                 disabled={pagActual === paginas - 1}
                 aria-label="Página siguiente"

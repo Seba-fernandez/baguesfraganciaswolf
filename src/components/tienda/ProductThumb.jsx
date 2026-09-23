@@ -1,4 +1,5 @@
 import { FOTO_UNLOCK, FOTO_BAGUES } from '../../data/fotos';
+import { FOTO_FONDO_PROPIO } from '../../data/fotosFondo';
 import { CARPETA_FOTOS, PROPORCION } from '../../config/ajustes';
 import s from './ProductThumb.module.css';
 
@@ -46,14 +47,17 @@ export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.ta
   const imagen = src ?? (producto?.imagen_url || fotoDe(producto, linea));
 
   if (imagen) {
+    // Foto con fondo propio (escena, marmol, luces): a sangre, cubre el cuadro.
+    // Recorte o blanco de estudio: apoyado sobre el azulejo de porcelana.
+    const aSangre = FOTO_FONDO_PROPIO.has(imagen);
     return (
-      <div className={s.wrap} style={{ aspectRatio: ratio }}>
+      <div className={`${s.wrap} ${aSangre ? s.sangre : ''}`} style={{ aspectRatio: ratio }}>
         <img
           src={imagen}
           alt={alt || producto?.inspirado_en || ''}
           loading="lazy"
           decoding="async"
-          className={s.img}
+          className={aSangre ? s.imgSangre : s.img}
         />
       </div>
     );

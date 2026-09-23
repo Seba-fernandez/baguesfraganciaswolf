@@ -12,7 +12,7 @@ export default function Nosotros() {
 
   return (
     <section className={`tw ${s.section}`} id="nosotros" ref={ref}>
-      <div className={`${s.marco} treveal`}>
+      <div className={`${s.marco} tglass treveal`}>
         <div className={s.izq}>
           <p className={s.eyebrow}>{NOSOTROS.eyebrow}</p>
           <h2 className={s.titulo}>{NOSOTROS.titulo}</h2>

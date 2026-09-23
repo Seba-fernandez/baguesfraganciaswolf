@@ -37,7 +37,7 @@ export default function Destacados({ products, onOpen }) {
 
   return (
     <section className={`tw ${s.section}`} ref={ref}>
-      <div className={s.marco}>
+      <div className={`${s.marco} tglass`}>
         <header className={s.head}>
           <p className={s.eyebrow}>{DESTACADOS.eyebrow}</p>
           <h2 className={s.titulo}>{DESTACADOS.titulo}</h2>
@@ -45,7 +45,7 @@ export default function Destacados({ products, onOpen }) {
         </header>
 
         <div className={s.carrusel}>
-          <button type="button" className={`${s.flecha} ${s.flechaIzq}`} onClick={() => mover(-1)} aria-label="Anterior">
+          <button type="button" className={`${s.flecha} ${s.flechaIzq} tglass-clear`} onClick={() => mover(-1)} aria-label="Anterior">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="m15 18-6-6 6-6" />
             </svg>
@@ -75,7 +75,7 @@ export default function Destacados({ products, onOpen }) {
             })}
           </div>
 
-          <button type="button" className={`${s.flecha} ${s.flechaDer}`} onClick={() => mover(1)} aria-label="Siguiente">
+          <button type="button" className={`${s.flecha} ${s.flechaDer} tglass-clear`} onClick={() => mover(1)} aria-label="Siguiente">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="m9 18 6-6-6-6" />
             </svg>

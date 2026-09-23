@@ -4,23 +4,23 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { INICIO, conDatos } from '../../config/contenido';
 import { AROMAS_APROX } from '../../config/ajustes';
-import { tituloDe } from '../../lib/producto';
 import { pesos } from '../../lib/format';
-import ProductThumb from './ProductThumb';
 import s from './Hero.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Hero editorial. Ya no es un cuadro de vidrio con texto adentro: el título vive
- * directo sobre el fondo cálido (la zona de la izquierda es la más oscura, así
- * se lee sin recuadro) y a la derecha flota un frasco de verdad, el más pedido
- * del ciclo, sobre su azulejo de porcelana.
+ * Hero editorial sobre un escenario: dunas de arena al atardecer (public/hero/
+ * duna.svg, lo genera scripts/fondo/generar-duna.mjs) a sangre, y el frasco
+ * parado sobre el piso de la duna con su sombra de contacto. Nada de caja ni
+ * azulejo: el frasco está EN la escena.
  *
  *  - La corona: Wolf como firma, Casa Bagués como aval. Presencia sin explicar.
- *  - El título grande, la bajada y la fila de datos duros.
- *  - El CTA principal es una pastilla de vidrio "Clear" que lleva al catálogo.
- *  - Abajo, la promo del ciclo y la cinta de nombres que la gente reconoce.
+ *  - El título grande, la bajada y la fila de datos duros, sobre un velo que
+ *    oscurece sólo detrás del texto.
+ *  - Los CTA y las promos del ciclo son vidrio: flotan sobre la arena, que es
+ *    donde el vidrio tiene algo que refractar.
+ *  - Abajo, fuera de la escena, la cinta de nombres que la gente reconoce.
  *
  * La entrada es coreografiada con GSAP y respeta prefers-reduced-motion.
  */
@@ -41,18 +41,18 @@ export default function Hero({
         .from('[data-hero="bajada"]', { autoAlpha: 0, y: 14, duration: 0.6 }, '-=0.42')
         .from('[data-hero="cta"]', { autoAlpha: 0, y: 14, duration: 0.6, stagger: 0.08 }, '-=0.42')
         .from('[data-hero="meta"] > *', { autoAlpha: 0, y: 10, duration: 0.5, stagger: 0.07 }, '-=0.36')
-        .from('[data-hero="showcase"]', { autoAlpha: 0, y: 24, scale: 0.96, duration: 1, ease: 'power2.out' }, 0.2)
-        .from('[data-hero="promos"]', { autoAlpha: 0, y: 14, duration: 0.6 }, '-=0.4')
+        .from('[data-hero="escena"]', { autoAlpha: 0, scale: 1.04, duration: 1.4, ease: 'power2.out' }, 0)
+        .from('[data-hero="frasco"]', { autoAlpha: 0, y: 26, duration: 1.1, ease: 'expo.out' }, 0.35)
+        .from('[data-hero="sombra"]', { autoAlpha: 0, scaleX: 0.6, duration: 1.1, ease: 'expo.out' }, 0.35)
+        .from('[data-hero="promos"] > *', { autoAlpha: 0, y: 14, duration: 0.6, stagger: 0.08 }, '-=0.5')
         .from('[data-hero="cinta"]', { autoAlpha: 0, duration: 0.8 }, '-=0.3');
     });
 
-    // Parallax del fondo: SOLO en escritorio (en el celular mover el fondo mientras
-    // el vidrio lo relee es lo que traba).
-    mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
-      const fondo = document.querySelector('.tfondo');
-      if (!fondo) return;
-      const st = gsap.to(fondo, {
-        yPercent: -7, ease: 'none',
+    // Parallax de la escena: la arena baja más lento que el frasco. SOLO en
+    // escritorio (en el celular mover el fondo bajo el vidrio traba).
+    mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+      const st = gsap.to('[data-hero="escena"]', {
+        yPercent: 8, ease: 'none',
         scrollTrigger: { trigger: scope.current, start: 'top top', end: 'bottom top', scrub: true },
       });
       return () => st.scrollTrigger?.kill();
@@ -63,6 +63,20 @@ export default function Hero({
 
   return (
     <section className={s.hero} ref={scope} id="inicio-hero">
+      <div className={s.escenario}>
+      {/* La escena y el velo son decorativos. */}
+      <div className={s.escena} data-hero="escena" aria-hidden="true" />
+      <div className={s.velo} aria-hidden="true" />
+
+      {/* El frasco (fondo transparente) sobre el piso de la duna, con su sombra
+          de contacto. Imagen decorativa para el lector de pantalla. */}
+      <div className={s.banda}>
+        <div className={s.showcase} aria-hidden="true">
+          <span className={s.sombra} data-hero="sombra" />
+          <img src="/hero/frasco.webp" alt="" className={s.frasco} data-hero="frasco" decoding="async" fetchPriority="high" width="613" height="736" />
+        </div>
+      </div>
+
       <div className={`tw ${s.inner}`}>
         <div className={s.texto}>
           <p className={s.corona} data-hero="corona">
@@ -81,11 +95,11 @@ export default function Hero({
           <p className={s.bajada} data-hero="bajada">{INICIO.bajada}</p>
 
           <div className={s.acciones}>
-            <Link to="/catalogo" className="tbtn clear" data-hero="cta">
+            <Link to="/catalogo" className="tbtn" data-hero="cta">
               <span>{INICIO.verCatalogo}</span>
               <span className={s.ctaFlecha} aria-hidden="true">→</span>
             </Link>
-            <a href="#como" className="tbtn ghost" data-hero="cta">{INICIO.verComo}</a>
+            <a href="#como" className="tbtn clear" data-hero="cta">{INICIO.verComo}</a>
           </div>
 
           <div className={s.meta} data-hero="meta">
@@ -95,23 +109,6 @@ export default function Hero({
             ) : null}
           </div>
         </div>
-
-        {heroProducto && (
-          <div className={s.showcase} data-hero="showcase">
-            <button
-              type="button"
-              className={s.showcaseTile}
-              onClick={() => onOpen?.(heroProducto)}
-              aria-label={`Ver ${tituloDe(heroProducto)}`}
-            >
-              <ProductThumb producto={heroProducto} ratio="4 / 5" />
-            </button>
-            <span className={s.showcaseCap}>
-              <span className={s.showcaseEtiqueta}>{INICIO.showcaseEtiqueta}</span>
-              <span className={s.showcaseNombre}>{tituloDe(heroProducto)}</span>
-            </span>
-          </div>
-        )}
       </div>
 
       {lista.length > 0 && (
@@ -135,6 +132,7 @@ export default function Hero({
           ))}
         </div>
       )}
+      </div>
 
       {/* La cinta de nombres, de borde a borde, en movimiento. Duplicada para que
           el bucle no tenga costura. Se frena al pasar el mouse. */}

@@ -38,7 +38,13 @@ export default function Hero({
   return (
     <section className={s.hero} id="inicio-hero">
       <div className={s.escenario}>
-      {/* La escena y el velo son decorativos. */}
+      {/* La escena y el velo son decorativos.
+
+          La escena se dibuja como background-image y no como <img>. Se probaron
+          las dos: con <img> el LCP medido empeoraba ~150 ms (2557 contra 2411),
+          porque el pintado queda atado a la decodificación del elemento. El
+          fondo lo descubre igual de temprano el <link rel=preload> de
+          index.html, que va con fetchpriority alta. */}
       <div className={s.escena} data-hero="escena" aria-hidden="true" />
       <div className={s.velo} aria-hidden="true" />
 

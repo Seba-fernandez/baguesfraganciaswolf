@@ -34,12 +34,16 @@ if (raiz.hasChildNodes()) {
   //
   // requestIdleCallback la corre en el primer hueco libre; el timeout es el
   // techo, para que en un teléfono que nunca queda ocioso se hidrate igual.
-  const hidratar = () => hydrateRoot(raiz, app)
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(hidratar, { timeout: 1200 })
-  } else {
-    setTimeout(hidratar, 1)
+  // Espera al evento `load` además del hueco libre. Hidratar dispara los dos
+  // pedidos a la base, y esos compiten por el ancho de banda justo con la imagen
+  // del hero, que es la que define el LCP. Después de `load` las imágenes de la
+  // primera pantalla ya bajaron y no hay nada que quitarles.
+  const hidratar = () => {
+    if ('requestIdleCallback' in window) requestIdleCallback(() => hydrateRoot(raiz, app), { timeout: 800 })
+    else setTimeout(() => hydrateRoot(raiz, app), 1)
   }
+  if (document.readyState === 'complete') hidratar()
+  else window.addEventListener('load', hidratar, { once: true })
 } else {
   createRoot(raiz).render(app)
 }

@@ -123,17 +123,17 @@ if (linkCss) {
     ].filter(Boolean);
 
     /*
-     * Se embebe la hoja ENTERA, no solo la parte de la primera pantalla.
+     * Las dos mitades van EMBEBIDAS, no en archivos aparte.
      *
-     * El corte por modulo esta implementado arriba (dividirCss) y se probo:
-     * daba 20,8 kB embebidos + 14,6 kB diferidos, y el resultado fue PEOR —
-     * mediana 93 contra 96 con la hoja entera. La razon es que el trabajo de
-     * estilo que el corte venia a evitar ya lo evita content-visibility en
-     * tienda.css, asi que lo unico que quedaba era el costo nuevo: una request
-     * mas y una segunda hoja que procesar.
+     * Primero se probo dejar la segunda mitad en su archivo y pedirla con
+     * <link media="print">: salio peor (mediana 93 contra 96), porque el viaje
+     * de red extra costaba mas que lo que ahorraba.
      *
-     * Se deja la funcion escrita porque el dia que la tienda crezca a muchas
-     * pantallas el balance puede darse vuelta, y porque documenta la medicion.
+     * Embebida en un <style media="print"> no hay viaje de red y se conserva lo
+     * que importa: el navegador no cruza esas reglas contra los elementos
+     * mientras la media no aplique, asi que el calculo de estilo del primer
+     * dibujado solo mira las de la primera pantalla. Un rAF despues de pintar
+     * la activa, que para entonces ya no bloquea nada.
      */
     void dividirCss;
     void hashes;

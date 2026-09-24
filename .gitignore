@@ -13,3 +13,4 @@ scripts/fotos/datos/
 
 # Borradores de trabajo. Los scripts que sirven viven en scripts/
 .tmp/
+dist-ssr

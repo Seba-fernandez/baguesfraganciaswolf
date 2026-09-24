@@ -5,14 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs",
     "preview": "vite preview",
-    "fondo": "node scripts/fondo/generar-duna.mjs",
-    "fotos": "npm run fotos:catalogos && npm run fotos:emparejar && npm run fotos:traer && npm run fotos:fondos",
+    "fondo": "node scripts/fondo/generar-duna.mjs && node scripts/fondo/rasterizar.mjs",
+    "fotos": "npm run fotos:catalogos && npm run fotos:emparejar && npm run fotos:traer && npm run fotos:fondos && npm run fotos:variantes",
     "fotos:fondos": "node scripts/fotos/clasificar-fondos.mjs",
     "fotos:catalogos": "node scripts/fotos/bajar-catalogos.mjs",
     "fotos:emparejar": "node scripts/fotos/emparejar.mjs",
-    "fotos:traer": "node scripts/fotos/traer-fotos.mjs"
+    "fotos:traer": "node scripts/fotos/traer-fotos.mjs",
+    "build:cliente": "vite build",
+    "fondo:duna": "node scripts/fondo/generar-duna.mjs",
+    "fondo:webp": "node scripts/fondo/rasterizar.mjs",
+    "fotos:variantes": "node scripts/fotos/variantes.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.0",

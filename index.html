@@ -3,12 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0f1512" />
+    <meta name="theme-color" content="#17110d" />
     <meta name="description" content="Fragancias inspiradas en los grandes perfumes de diseñador. Elegí, armá tu pedido y te lo confirmo por WhatsApp." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Bagues Grupo Wolf · Perfumes</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href="https://baguesfraganciaswolf.vercel.app/" />
+    <!-- Agentic Resource Discovery: "ard" es la relación de la versión actual
+         del spec, "ai-catalog" la anterior, que es la que todavía busca
+         Lighthouse 13.5. Se declaran las dos. -->
+    <link rel="ard" href="/.well-known/ard.json" />
+    <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
+
+    <!-- La base de datos está en otro origen: abrir la conexión temprano le
+         ahorra al primer pedido el DNS, el TCP y el TLS (~300 ms en 4G). -->
+    <link rel="preconnect" href="https://wynownataftnompltsok.supabase.co" crossorigin />
+
+    <!-- Las tres fuentes que no se ven en la primera pantalla, fuera del camino
+         crítico: media="print" hace que el navegador la baje sin bloquear el
+         dibujado, y el onload la libera. Las cuatro que sí se ven están
+         declaradas en el CSS, que viaja embebido en este mismo documento.
+         Sin preload de fuentes a propósito: con el CSS embebido el navegador
+         las descubre al instante, y un preload solo les daría prioridad por
+         encima de la imagen del hero, que es la que define el LCP. -->
+    <link rel="stylesheet" href="/fuentes-diferidas.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="/fuentes-diferidas.css" /></noscript>
+
+    <!-- La escena del hero es el elemento más grande de la primera pantalla y
+         vive en un background-image, que el navegador no puede descubrir hasta
+         parsear el CSS. Cada tamaño precarga solo el suyo. -->
+    <link rel="preload" href="/hero/duna-movil.webp" as="image" media="(max-width: 899px)" fetchpriority="high" />
+    <link rel="preload" href="/hero/duna.webp" as="image" media="(min-width: 900px)" fetchpriority="high" />
+    <link rel="preload" href="/hero/frasco-420.webp" as="image" media="(max-width: 899px)" fetchpriority="high" />
 
     <!-- Open Graph: WhatsApp es el canal de venta. Sin esto el link pega gris. -->
     <meta property="og:type" content="website" />
@@ -25,18 +52,51 @@
     <meta name="twitter:title" content="Bagues Grupo Wolf · Perfumes" />
     <meta name="twitter:description" content="Fragancias inspiradas en los grandes perfumes de diseñador. Armá tu pedido y te lo confirmo por WhatsApp." />
     <meta name="twitter:image" content="https://baguesfraganciaswolf.vercel.app/og.jpg" />
+
     <style>
+      /* Reset mínimo y color de fondo, embebidos.
+         Antes esto venía de global.css, que es la hoja del PANEL y arrancaba con
+         un @import a Google Fonts: una request que bloquea el dibujado y que la
+         tienda pagaba sin usar una sola de esas tres familias. La hoja se mudó
+         adentro del panel; lo poco que la tienda necesitaba quedó acá, sin
+         costar un viaje de red. */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { background: #17110d; }
+      body {
+        min-height: 100vh;
+        background: #17110d;
+        color: #f3ece1;
+        font-family: system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      img { max-width: 100%; }
+
       /* La barra de la ventana la pinta el documento: si se declara solo
          dentro de la tienda, el navegador ya resolvio la del scroll principal. */
       html { scrollbar-width: thin; scrollbar-color: rgba(235,232,221,0.22) transparent; }
       html::-webkit-scrollbar { width: 11px; }
-      html::-webkit-scrollbar-track { background: #0f1512; }
+      html::-webkit-scrollbar-track { background: #17110d; }
       html::-webkit-scrollbar-thumb {
         background: rgba(235,232,221,0.18); border-radius: 999px;
-        border: 3px solid #0f1512; background-clip: content-box;
+        border: 3px solid #17110d; background-clip: content-box;
       }
       html::-webkit-scrollbar-thumb:hover { background: rgba(235,232,221,0.34); background-clip: content-box; }
     </style>
+
+    <script>
+      // Vuelta del ingreso con Google. Google redirige a la raíz con un ?code=,
+      // y quien lo tiene que canjear es el panel. Antes eso obligaba a montar el
+      // contexto de sesión —y con él el cliente de base de datos entero— en la
+      // tienda pública, que no lo usa para nada.
+      // Acá se desvía antes de que baje una sola línea del bundle, con la query
+      // intacta para que el panel la procese.
+      (function () {
+        var l = window.location;
+        if (l.pathname === '/' && /[?&]code=/.test(l.search)) {
+          l.replace('/panel' + l.search + l.hash);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -43,6 +43,19 @@ export function fotoDe(producto, linea) {
   return null;
 }
 
+/**
+ * Las fotos del pipeline tienen dos anchos mas chicos al lado, generados por
+ * scripts/fotos/variantes.mjs: foto-360w.webp y foto-560w.webp.
+ *
+ * Solo las del pipeline: una foto subida a mano desde el panel (imagen_url) no
+ * tiene variantes, asi que en ese caso se sirve sola y sin srcset.
+ */
+function conVariantes(ruta) {
+  if (!ruta || !ruta.startsWith('/perfumes/')) return null;
+  const base = ruta.replace(/\.webp$/, '');
+  return `${base}-360w.webp 360w, ${base}-560w.webp 560w, ${ruta} 800w`;
+}
+
 export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.tarjeta, linea }) {
   const imagen = src ?? (producto?.imagen_url || fotoDe(producto, linea));
 
@@ -50,10 +63,16 @@ export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.ta
     // Foto con fondo propio (escena, marmol, luces): a sangre, cubre el cuadro.
     // Recorte o blanco de estudio: apoyado sobre el azulejo de porcelana.
     const aSangre = FOTO_FONDO_PROPIO.has(imagen);
+    const srcSet = conVariantes(imagen);
     return (
       <div className={`${s.wrap} ${aSangre ? s.sangre : ''}`} style={{ aspectRatio: ratio }}>
         <img
           src={imagen}
+          {...(srcSet ? {
+            srcSet,
+            // Dos por fila en el celular, tarjeta de ~250 px en escritorio.
+            sizes: '(max-width: 767px) 46vw, 250px',
+          } : {})}
           alt={alt || producto?.inspirado_en || ''}
           loading="lazy"
           decoding="async"

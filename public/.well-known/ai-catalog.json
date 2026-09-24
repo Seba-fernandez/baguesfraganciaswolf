@@ -1,0 +1,16 @@
+{
+  "specVersion": "1.0",
+  "entries": [
+    {
+      "identifier": "urn:air:baguesfraganciaswolf.vercel.app:catalog:perfumes",
+      "displayName": "Catálogo de fragancias · Bagues Grupo Wolf",
+      "type": "text/markdown",
+      "url": "https://baguesfraganciaswolf.vercel.app/llms.txt",
+      "representativeQueries": [
+        "perfumes inspirados en Córdoba Argentina",
+        "versiones inspiradas casa Bagués precio",
+        "comprar fragancia por WhatsApp Córdoba"
+      ]
+    }
+  ]
+}

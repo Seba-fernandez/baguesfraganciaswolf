@@ -32,7 +32,7 @@
 
     <!-- La escena del hero es el elemento más grande de la primera pantalla y
          vive en un background-image, que el navegador no puede descubrir hasta
-         parsear el CSS. Cada tamaño precarga solo el suyo. -->
+         parsear el CSS. Cada tamaño precarga solo el suyo, con prioridad alta. -->
     <link rel="preload" href="/hero/duna-movil.webp" as="image" media="(max-width: 899px)" fetchpriority="high" />
     <link rel="preload" href="/hero/duna.webp" as="image" media="(min-width: 900px)" fetchpriority="high" />
     <link rel="preload" href="/hero/frasco-420.webp" as="image" media="(max-width: 899px)" fetchpriority="high" />

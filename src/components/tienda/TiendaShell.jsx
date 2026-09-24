@@ -4,9 +4,14 @@ import useDatosTienda from '../../hooks/useDatosTienda';
 import { CartProvider } from '../../contexts/CartContext';
 import { indexarPromos } from '../../lib/promos';
 import { esPublicable, presentacionPorDefecto, tituloDe } from '../../lib/producto';
+import { lazy, Suspense } from 'react';
 import TiendaLayout from './TiendaLayout';
-import ProductModal from './ProductModal';
 import { fotoDe } from './ProductThumb';
+
+// La ficha se carga cuando se abre una, no antes. Se lleva con ella su CSS, que
+// si no viaja embebido en el HTML de la portada y el navegador lo cruza contra
+// todos los elementos antes del primer dibujado, para una hoja que no se ve.
+const ProductModal = lazy(() => import('./ProductModal'));
 
 /**
  * Cáscara de la tienda pública. Carga una sola vez los productos, los ajustes y
@@ -75,7 +80,11 @@ export default function TiendaShell() {
     <CartProvider promosCiclo={settings?.promos_ciclo}>
       <TiendaLayout settings={settings} onVerPromo={verPromo}>
         <Outlet context={ctx} />
-        {abierto && <ProductModal producto={abierto} onClose={cerrar} promos={promos} />}
+        {abierto && (
+          <Suspense fallback={null}>
+            <ProductModal producto={abierto} onClose={cerrar} promos={promos} />
+          </Suspense>
+        )}
       </TiendaLayout>
     </CartProvider>
   );

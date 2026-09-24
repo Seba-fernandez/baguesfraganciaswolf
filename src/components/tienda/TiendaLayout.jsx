@@ -1,8 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { montarVidrioLiquido } from '../../lib/vidrioLiquido';
 import { useCart } from '../../contexts/CartContext';
-import CartSheet from './CartSheet';
+// El cajón del pedido, igual que la ficha: se carga la primera vez que se abre.
+// Mientras tanto no existe ni su JavaScript ni su CSS, y no se ve nunca al
+// entrar. Una vez cargado se queda montado, así la animación de cierre corre.
+const CartSheet = lazy(() => import('./CartSheet'));
 import VolverArriba from './VolverArriba';
 import { MARCA, CABECERA, LEGAL, PIE } from '../../config/contenido';
 import '../../styles/tienda.css';
@@ -18,10 +21,24 @@ const CartIcon = () => (
 export default function TiendaLayout({ children, settings, onVerPromo }) {
   const { count, open, setOpen } = useCart();
   const raiz = useRef(null);
+  const [pedidoUsado, setPedidoUsado] = useState(false);
 
   // Lente de vidrio liquido en el canto de cada superficie de vidrio (solo
   // Chromium de escritorio; ver src/lib/vidrioLiquido.js).
   useEffect(() => montarVidrioLiquido(raiz.current), []);
+
+  // Apenas se abre una vez, el cajón queda montado para siempre: necesita seguir
+  // vivo después de cerrarse para animar la salida.
+  useEffect(() => { if (open) setPedidoUsado(true); }, [open]);
+
+  // Y se trae el código del cajón en el primer rato libre, sin esperar a que lo
+  // abran: así el primer toque no tiene espera en una conexión lenta. Es un
+  // chunk de 2,5 kB y para cuando corre esto la primera pantalla ya está.
+  useEffect(() => {
+    if (!('requestIdleCallback' in window)) return;
+    const id = requestIdleCallback(() => { import('./CartSheet'); }, { timeout: 4000 });
+    return () => cancelIdleCallback(id);
+  }, []);
 
   return (
     <div className="tienda" ref={raiz}>
@@ -86,7 +103,11 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
 
       <VolverArriba oculto={open} />
 
-      <CartSheet settings={settings} onVerPromo={onVerPromo} />
+      {pedidoUsado && (
+        <Suspense fallback={null}>
+          <CartSheet settings={settings} onVerPromo={onVerPromo} />
+        </Suspense>
+      )}
     </div>
   );
 }

@@ -10,13 +10,24 @@
 
 /* Fuentes alojadas en el proyecto (public/fonts), no traidas de Google. Se ven
    sin depender de la red, la web no filtra la visita a un tercero y arranca sin
-   una request que bloquea el render. Subset latino, pesan ~125 kB en total. */
+   una request que bloquea el render. Subset latino.
+
+   Aca van SOLO las cuatro que se ven en la primera pantalla. Las otras tres
+   viven en public/fuentes-diferidas.css, que index.html carga sin bloquear.
+
+   El motivo: el navegador descarga una fuente cuando encuentra texto que la usa,
+   y con la portada ya pre-generada en el HTML ese texto existe desde el primer
+   milisegundo. Las siete salian juntas —125 kB— compitiendo por el ancho de
+   banda contra la imagen del hero, que es la que define el LCP. Declarando solo
+   estas cuatro, las otras ni se enteran hasta despues del primer dibujado.
+
+   Cuales son cuales sale de mirar el hero: el titulo es Cormorant 600, la marca
+   y la corona son Cormorant 400, el cuerpo es Figtree 400 y los botones
+   Figtree 600. La italica (la cinta de nombres) y Figtree 500 (las etiquetas de
+   seccion) recien aparecen mas abajo. */
 @font-face { font-family: 'Cormorant'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/cormorant-400.woff2') format('woff2'); }
-@font-face { font-family: 'Cormorant'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/cormorant-500.woff2') format('woff2'); }
 @font-face { font-family: 'Cormorant'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/cormorant-600.woff2') format('woff2'); }
-@font-face { font-family: 'Cormorant'; font-style: italic; font-weight: 500; font-display: swap; src: url('/fonts/cormorant-italic-500.woff2') format('woff2'); }
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/figtree-400.woff2') format('woff2'); }
-@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/figtree-500.woff2') format('woff2'); }
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/figtree-600.woff2') format('woff2'); }
 
 .tienda {
@@ -179,25 +190,76 @@
 .tfondo::before {
   content: ''; position: absolute; inset: 0;
   background:
-    url('/fondo/surcos.svg') 0 0 / 100% max(100%, 3200px) no-repeat,
     /* Cada campo cabe entero en su baldosa de 1700px (centro y radio lejos de
        los bordes): si se sale, el corte de la repeticion dibuja una raya. */
     radial-gradient(34% 22% at 86% 26%, rgba(214, 168, 98, 0.15) 0%, transparent 100%) 0 0 / 100% 1700px repeat-y,
     radial-gradient(38% 24% at 8% 58%, rgba(224, 112, 138, 0.11) 0%, transparent 100%) 0 0 / 100% 1700px repeat-y,
     radial-gradient(40% 20% at 60% 80%, rgba(206, 120, 86, 0.12) 0%, transparent 100%) 0 0 / 100% 1700px repeat-y;
 }
-.tfondo::after {
-  content: ''; position: absolute; inset: 0;
-  opacity: var(--grano);
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2' intercept='-0.5'/%3E%3CfeFuncG type='linear' slope='2' intercept='-0.5'/%3E%3CfeFuncB type='linear' slope='2' intercept='-0.5'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 220px 220px;
+/* Los surcos, solo de 768px para arriba.
+   Son 125 kB de lineas finisimas cuyo trabajo es que el canto del vidrio las
+   QUIEBRE: esa refraccion es la lente de vidrioLiquido.js, que corre unicamente
+   en Chromium de escritorio. En el celular no hay lente, las tarjetas ni
+   siquiera desenfocan, y los surcos quedaban como decoracion invisible que
+   igual habia que descargar antes de ver el primer perfume.
+   En WebP no es alternativa: medido, el mismo dibujo pasa de 122 kB a 323 kB,
+   porque el alfa no comprime lineas de un pixel. */
+@media (min-width: 768px) {
+  .tfondo::before {
+    background:
+      url('/fondo/surcos.svg') 0 0 / 100% max(100%, 3200px) no-repeat,
+      radial-gradient(34% 22% at 86% 26%, rgba(214, 168, 98, 0.15) 0%, transparent 100%) 0 0 / 100% 1700px repeat-y,
+      radial-gradient(38% 24% at 8% 58%, rgba(224, 112, 138, 0.11) 0%, transparent 100%) 0 0 / 100% 1700px repeat-y,
+      radial-gradient(40% 20% at 60% 80%, rgba(206, 120, 86, 0.12) 0%, transparent 100%) 0 0 / 100% 1700px repeat-y;
+  }
+}
+/* Grano de la pagina, tambien solo de 768px para arriba.
+   Es una capa del alto de todo el documento con un feTurbulence mezclado en
+   `overlay`. El blend la saca a su propia capa de composicion y obliga a
+   rasterizar el filtro antes de poder dibujar lo que esta debajo: medido con
+   Lighthouse en un telefono de gama media, esta capa y la de la escena sumaban
+   ~900 ms de LCP.
+
+   En escritorio se sostiene (hay CPU de sobra y ahi si esta la lente del vidrio
+   que le da sentido a la textura). En el celular se va, junto con los surcos:
+   el fondo queda con sus campos de luz calida, que son gradientes de CSS y
+   salen gratis. */
+@media (min-width: 768px) {
+  .tfondo::after {
+    content: ''; position: absolute; inset: 0;
+    opacity: var(--grano);
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2' intercept='-0.5'/%3E%3CfeFuncG type='linear' slope='2' intercept='-0.5'/%3E%3CfeFuncB type='linear' slope='2' intercept='-0.5'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size: 220px 220px;
+  }
 }
 
 /* El contenido va por encima del fondo. */
 .tienda > header, .tienda > main, .tienda > footer { position: relative; z-index: 1; }
 /* El encabezado encima del hero, que sube por detras de el. */
 .tienda > header { z-index: 5; }
+
+/* ---------- lo que esta fuera de pantalla no se dibuja todavia ----------
+   Con la portada pre-generada, el HTML llega con TODA la pagina escrita: el
+   hero, los destacados, nosotros, como funciona y el pie. El navegador tenia
+   que calcular estilo y posicion de todo eso antes del primer dibujado, aunque
+   nada de lo de abajo se vea. Medido en un telefono de gama media, ese trabajo
+   eran 594 ms de "Style & Layout", y era lo que fijaba el FCP.
+
+   content-visibility: auto le dice al navegador que puede saltearse ese trabajo
+   hasta que la seccion se acerque a la pantalla. El contenido sigue estando en
+   el HTML (para el buscador y para el lector de pantalla); lo unico que cambia
+   es CUANDO se calcula como se ve.
+
+   contain-intrinsic-size es el alto que asume mientras tanto: sin ese dato la
+   barra de scroll saltaria al ir apareciendo cada seccion. Con `auto`, ademas,
+   recuerda el alto real una vez que la midio. El hero queda afuera: es
+   justamente lo que hay que dibujar primero. */
+.tienda > main > section:not(#inicio-hero),
+.tienda > footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+}
 
 /* ---------- vidrio ----------
    Un solo material. Se arma en capas, como el vidrio de verdad:

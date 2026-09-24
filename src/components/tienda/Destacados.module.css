@@ -23,9 +23,27 @@
    la compu. */
 .carrusel { position: relative; }
 
+/* El eje vertical va EXPLICITAMENTE en hidden. Con solo overflow-x:auto, el
+   otro eje computa a auto (regla del spec: si uno deja de ser visible, el otro
+   tambien), asi que la pista quedaba scrolleable en vertical: al arrastrar el
+   dedo hacia abajo sobre el carrusel, el gesto se lo comia la pista en vez de
+   bajar la pagina, y el scroll se sentia trabado hasta tocar en otro lado.
+
+   Con overflow-y en hidden alcanza: el elemento deja de ser scrolleable en
+   vertical y el navegador encadena solo el gesto al documento. NO va
+   touch-action: pan-x aca — eso limitaria el gesto a horizontal y volveria a
+   trabar el scroll de la pagina, que es justo el sintoma que se arregla.
+
+   overscroll-behavior-x corta el encadenamiento al llegar al tope horizontal
+   (si no, en iOS el gesto sigue de largo y dispara el "volver atras").
+   El snap pasa de mandatory a proximity: mandatory pelea con el dedo y hace que
+   la pista se sienta imantada mientras uno todavia esta decidiendo el gesto. */
 .fila {
   display: grid; grid-auto-flow: column; grid-auto-columns: minmax(178px, 232px);
-  gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory;
+  gap: 14px;
+  overflow-x: auto; overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
   padding-bottom: 6px; scrollbar-width: none;
 }
 .fila::-webkit-scrollbar { display: none; }

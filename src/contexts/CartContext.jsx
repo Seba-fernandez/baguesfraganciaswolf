@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { calcularCarrito } from '../lib/promos';
 import { tituloDe } from '../lib/producto';
 
@@ -13,17 +13,28 @@ const STORAGE_KEY = 'bgw-carrito-v2'; // v2: el item ahora lleva codigo y grupo_
 const keyOf = (productId, ml) => `${productId}::${ml ?? ''}`;
 
 export function CartProvider({ children, promosCiclo = [] }) {
-  const [items, setItems] = useState(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
+  // Arranca SIEMPRE vacío y el carrito guardado se lee en un efecto, no en el
+  // inicializador. La portada se pre-genera como HTML en el build, y ahí no
+  // existe localStorage: si el primer dibujado del cliente leyera el carrito y
+  // el del servidor no, React encontraría un marcado distinto al hidratar y
+  // volvería a dibujar toda la cáscara (el contador del carrito vive en el
+  // encabezado). Con las dos partes arrancando en vacío, coinciden.
+  const [items, setItems] = useState([]);
   const [open, setOpen] = useState(false);
+  const cargado = useRef(false);
 
   useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) setItems(JSON.parse(raw));
+    } catch { /* sin carrito guardado, o almacenamiento bloqueado */ }
+    cargado.current = true;
+  }, []);
+
+  useEffect(() => {
+    // Sin esta guarda, el primer disparo (con items todavía en vacío) pisaría
+    // el carrito guardado antes de que el efecto de arriba alcance a leerlo.
+    if (!cargado.current) return;
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch { /* noop */ }
   }, [items]);
 

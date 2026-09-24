@@ -5,6 +5,110 @@
   margin-top: calc(-1 * var(--bar-h));
 }
 
+/* ============================================================================
+   ENTRADA — la coreografía que antes armaba GSAP, ahora declarativa.
+   Cada pieza entra con su propio keyframe y su retraso; los tiempos y las
+   curvas son los mismos que tenía la línea de tiempo (power3/power4/expo se
+   aproximan con cubic-bezier de salida fuerte).
+
+   Van con animation-fill-mode: both, así el elemento arranca en el estado
+   inicial del keyframe sin necesidad de dejarlo en opacity:0 desde el CSS: si
+   las animaciones no corren (reduced-motion, o un navegador que las ignore),
+   nada queda invisible.
+   ============================================================================ */
+@keyframes heroSube {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes heroVerso {
+  from { transform: translateY(118%); }
+  to   { transform: none; }
+}
+/* La escena NO se desvanece: solo se acerca.
+   Es el elemento más grande de la primera pantalla, o sea el que define el LCP.
+   Mientras esté en opacity:0 el navegador considera que todavía no se dibujó
+   nada grande, así que un fade de entrada retrasa la métrica exactamente lo que
+   dura el fade — medido, 704 ms de "element render delay" sobre un archivo que
+   tardaba 82 ms en bajar. La animación de escala se ve igual de bien y el
+   elemento cuenta como pintado desde el primer cuadro. */
+@keyframes heroEscena {
+  from { transform: scale(1.04); }
+  to   { transform: none; }
+}
+@keyframes heroFrasco {
+  from { opacity: 0; transform: translateY(26px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes heroSombra {
+  from { opacity: 0; transform: translateX(-56%) scaleX(0.6); }
+  to   { opacity: 1; transform: translateX(-56%) scaleX(1); }
+}
+@keyframes heroAparece {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* --sal: la curva de salida fuerte (equivalente a power3.out). */
+  .escenario {
+    --sal: cubic-bezier(0.16, 1, 0.3, 1);
+    --salFuerte: cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .escena { animation: heroEscena 1.4s var(--sal) both; }
+
+  .corona { animation: heroSube 0.6s var(--sal) both; }
+
+  /* Los versos suben desde atrás de su renglón, uno detrás del otro. El
+     recorte lo hace .lineaWrap con overflow:hidden. */
+  .linea { animation: heroVerso 0.95s var(--salFuerte) both; }
+  .lineaWrap:nth-child(1) .linea { animation-delay: 0.08s; }
+  .lineaWrap:nth-child(2) .linea { animation-delay: 0.17s; }
+  .lineaWrap:nth-child(3) .linea { animation-delay: 0.26s; }
+
+  .bajada { animation: heroSube 0.6s var(--sal) 0.62s both; }
+
+  .acciones :global(.tbtn) { animation: heroSube 0.6s var(--sal) both; }
+  .acciones :global(.tbtn):nth-child(1) { animation-delay: 0.78s; }
+  .acciones :global(.tbtn):nth-child(2) { animation-delay: 0.86s; }
+
+  .meta > * { animation: heroSube 0.5s var(--sal) both; }
+  .meta > *:nth-child(1) { animation-delay: 1s; }
+  .meta > *:nth-child(2) { animation-delay: 1.07s; }
+
+  .frasco { animation: heroFrasco 1.1s var(--salFuerte) 0.35s both; }
+  .sombra { animation: heroSombra 1.1s var(--salFuerte) 0.35s both; }
+
+  .promos > * { animation: heroSube 0.6s var(--sal) both; }
+  .promos > *:nth-child(1) { animation-delay: 1.15s; }
+  .promos > *:nth-child(2) { animation-delay: 1.23s; }
+  .promos > *:nth-child(3) { animation-delay: 1.31s; }
+
+  .cinta { animation: heroAparece 0.8s linear 1.4s both; }
+}
+
+/* Parallax: la arena baja más lento que el frasco. Antes lo hacía ScrollTrigger
+   con un listener de scroll; ahora es una animación manejada por el scroll del
+   documento, que corre en el hilo del compositor y no ejecuta JavaScript en
+   ningún cuadro.
+
+   Solo escritorio (en el celular mover el fondo bajo el vidrio traba) y solo
+   donde el navegador la soporta: donde no, simplemente no hay parallax. */
+@supports (animation-timeline: view()) {
+  @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    .escenario { view-timeline-name: --escenario; }
+    .escena {
+      animation: heroEscena 1.4s var(--sal) both, heroParallax linear both;
+      animation-timeline: auto, --escenario;
+      animation-range: normal, contain 0% exit 100%;
+    }
+  }
+}
+@keyframes heroParallax {
+  from { transform: translateY(0); }
+  to   { transform: translateY(8%); }
+}
+
 /* ---------- el escenario ----------
    Caja de alto fijo con container-type: size. Así el frasco se puede parar
    EXACTO sobre el piso de la duna con unidades de contenedor, sin JS:
@@ -25,17 +129,17 @@
 
 .escena {
   position: absolute; inset: 0; z-index: 0;
-  background: url('/hero/duna.svg') 50% 100% / cover no-repeat;
+  background: url('/hero/duna.webp') 50% 100% / cover no-repeat;
   transform-origin: 50% 100%;
 }
-/* Grano de película propio de la escena: sobre color vivo el grano tiene que
-   ser más marcado para que la arena se lea crispy y no vector limpio. */
-.escena::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  opacity: 0.42; mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.8' intercept='-0.4'/%3E%3CfeFuncG type='linear' slope='1.8' intercept='-0.4'/%3E%3CfeFuncB type='linear' slope='1.8' intercept='-0.4'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 220px 220px;
-}
+/* El grano de la escena ya NO se pone acá: viene horneado en el propio WebP
+   (scripts/fondo/rasterizar.mjs).
+   Era una capa a pantalla completa con un feTurbulence en overlay, y medida con
+   Lighthouse costaba carísimo: el blend obliga a componer la capa aparte y el
+   filtro hay que rasterizarlo antes de poder dibujar lo que tiene debajo, así
+   que la escena —que es el elemento del LCP— esperaba por él. Entre esta capa y
+   la de la página sumaban ~900 ms de LCP en un teléfono de gama media.
+   Horneado cuesta 1,5 kB de archivo y cero milisegundos. */
 
 /* El velo: oscurece sólo detrás del texto (una elipse a la izquierda) y funde la
    escena con la página abajo. Las crestas de la derecha quedan con todo su color. */
@@ -235,7 +339,7 @@
   }
   .escena {
     inset: 0 0 auto 0; height: var(--banda);
-    background-image: url('/hero/duna-movil.svg');
+    background-image: url('/hero/duna-movil.webp');
     -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
     mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
   }

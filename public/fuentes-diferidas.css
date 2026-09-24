@@ -1,0 +1,10 @@
+/* Las fuentes que NO se ven en la primera pantalla.
+   index.html las carga sin bloquear el dibujado (media="print" y se libera al
+   terminar de bajar). Hasta entonces el texto de mas abajo se dibuja con la
+   fuente de respaldo y cambia al llegar esta hoja; como esta fuera de la
+   pantalla, ese cambio no mueve nada de lo que la persona esta mirando.
+
+   Ver la explicacion larga en src/styles/tienda.css, arriba de las otras. */
+@font-face { font-family: 'Cormorant'; font-style: italic; font-weight: 500; font-display: swap; src: url('/fonts/cormorant-italic-500.woff2') format('woff2'); }
+@font-face { font-family: 'Cormorant'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/cormorant-500.woff2') format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/figtree-500.woff2') format('woff2'); }

@@ -1,8 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import useProducts from '../../hooks/useProducts';
-import useSettings from '../../hooks/useSettings';
-import { useAuth } from '../../contexts/AuthContext';
+import { useMemo, useState } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import useDatosTienda from '../../hooks/useDatosTienda';
 import { CartProvider } from '../../contexts/CartContext';
 import { indexarPromos } from '../../lib/promos';
 import { esPublicable, presentacionPorDefecto, tituloDe } from '../../lib/producto';
@@ -16,22 +14,18 @@ import { fotoDe } from './ProductThumb';
  * contexto del Outlet. La ficha del producto vive acá, adentro de .tienda, para
  * que se abra igual desde cualquiera de las dos.
  */
-function useVolverAlPanelSiEsAdmin() {
-  const [teniaCode] = useState(() => /[?&]code=/.test(window.location.search));
-  const { user, loading, isAdmin } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  useEffect(() => {
-    if (teniaCode && !loading && user && isAdmin && location.pathname === '/') {
-      navigate('/panel', { replace: true });
-    }
-  }, [teniaCode, loading, user, isAdmin, location.pathname, navigate]);
-}
-
+/*
+ * La vuelta del ingreso con Google ya NO se resuelve acá. Google redirige a la
+ * raíz con un ?code=, y antes este componente esperaba a que el contexto de
+ * sesión lo procesara para mandar al admin a /panel — lo que obligaba a montar
+ * ese contexto (y con él todo el cliente de base de datos) en la tienda pública.
+ *
+ * Ahora el desvío lo hace un script de cuatro líneas en index.html, que corre
+ * antes de que baje el bundle: si hay ?code= en la raíz, redirige a /panel con
+ * la query intacta y ahí el panel lo procesa. La tienda nunca se entera.
+ */
 export default function TiendaShell() {
-  useVolverAlPanelSiEsAdmin();
-  const { products, loading } = useProducts();
-  const { settings } = useSettings();
+  const { products, settings, loading } = useDatosTienda();
   const [abierto, setAbierto] = useState(null);
   const [promoActiva, setPromoActiva] = useState(null);
   const navigate = useNavigate();

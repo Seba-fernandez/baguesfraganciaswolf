@@ -1,0 +1,12 @@
+# Bagues Grupo Wolf
+User-agent: *
+Allow: /
+Disallow: /panel
+
+Sitemap: https://baguesfraganciaswolf.vercel.app/sitemap.xml
+
+# Sin la directiva "Agentmap:" del spec de Agentic Resource Discovery, aunque
+# ese spec la pida: el validador de robots.txt de Lighthouse no la conoce y la
+# marca como directiva desconocida, lo que invalida el archivo entero y baja el
+# puntaje de SEO. El catálogo de agentes se descubre igual por las dos vías que
+# quedan: el <link rel="ard"> de index.html y /.well-known/ard.json.

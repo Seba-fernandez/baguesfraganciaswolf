@@ -1,0 +1,25 @@
+# Bagues Grupo Wolf
+
+> Venta particular de fragancias en Córdoba, Argentina. Grupo Wolf revende
+> perfumes de la casa Bagués: versiones inspiradas en perfumes de diseñador,
+> rotuladas como tales por su fabricante. El pedido se arma en la web y se
+> cierra por WhatsApp; el sitio no procesa pagos.
+
+## Páginas
+
+- [Inicio](https://baguesfraganciaswolf.vercel.app/): la vidriera, la promoción del ciclo y los tres pasos de cómo funciona.
+- [Catálogo](https://baguesfraganciaswolf.vercel.app/catalogo): los aromas del ciclo, con buscador y filtros por género y promoción. Cada aroma abre una ficha con su pirámide olfativa y los tamaños disponibles.
+
+## Cómo funciona la venta
+
+- Se arma el pedido en la web. No se paga nada ahí.
+- El pedido sale como mensaje de WhatsApp desde el teléfono de quien compra.
+- Se confirma stock, total y tiempos por esa conversación.
+- El retiro es los viernes, en Córdoba.
+
+## Aclaración importante
+
+- Todos los productos son fragancias **de la casa Bagués**, elaboradas y rotuladas por esa firma, y se comercializan como versiones inspiradas.
+- Los nombres de perfumes de diseñador se citan **solo como referencia olfativa descriptiva**, para identificar el perfil aromático.
+- No se venden productos originales. No existe vínculo, licencia, patrocinio ni autorización de las marcas citadas, que pertenecen a sus respectivos titulares.
+- Bagues Grupo Wolf es un revendedor particular independiente y no representa a ninguna de esas marcas.

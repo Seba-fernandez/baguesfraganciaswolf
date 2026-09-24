@@ -1,13 +1,8 @@
-import { useLayoutEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { INICIO, conDatos } from '../../config/contenido';
 import { AROMAS_APROX } from '../../config/ajustes';
 import { pesos } from '../../lib/format';
 import s from './Hero.module.css';
-
-gsap.registerPlugin(ScrollTrigger);
 
 /**
  * Hero editorial sobre un escenario: dunas de arena al atardecer (public/hero/
@@ -22,7 +17,16 @@ gsap.registerPlugin(ScrollTrigger);
  *    donde el vidrio tiene algo que refractar.
  *  - Abajo, fuera de la escena, la cinta de nombres que la gente reconoce.
  *
- * La entrada es coreografiada con GSAP y respeta prefers-reduced-motion.
+ * La entrada es la MISMA coreografía que antes hacía GSAP, ahora en CSS puro
+ * (ver los @keyframes de Hero.module.css). Se cambió por peso: gsap más
+ * ScrollTrigger eran 49 kB comprimidos en el chunk de la portada, para una
+ * línea de tiempo que arranca sola y un parallax. Los `data-hero` quedaron
+ * porque ahora son los ganchos de los `animation-delay` en el CSS.
+ *
+ * Como las animaciones son declarativas, corren apenas el navegador dibuja, sin
+ * esperar a que el JavaScript se descargue y se ejecute: además de pesar menos,
+ * la entrada se ve antes. El parallax pasó a scroll-driven animation nativa y
+ * el respeto por prefers-reduced-motion lo hace una media query.
  */
 export default function Hero({
   settings, promos = {}, onVerPromo, onOpen,
@@ -30,39 +34,9 @@ export default function Hero({
 }) {
   const lista = Object.values(promos);
   const aromas = totalAromas || AROMAS_APROX;
-  const scope = useRef(null);
-
-  useLayoutEffect(() => {
-    const mm = gsap.matchMedia();
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-      tl.from('[data-hero="corona"]', { autoAlpha: 0, y: 12, duration: 0.6 })
-        .from('[data-hero="linea"]', { yPercent: 118, duration: 0.95, stagger: 0.09, ease: 'power4.out' }, 0.08)
-        .from('[data-hero="bajada"]', { autoAlpha: 0, y: 14, duration: 0.6 }, '-=0.42')
-        .from('[data-hero="cta"]', { autoAlpha: 0, y: 14, duration: 0.6, stagger: 0.08 }, '-=0.42')
-        .from('[data-hero="meta"] > *', { autoAlpha: 0, y: 10, duration: 0.5, stagger: 0.07 }, '-=0.36')
-        .from('[data-hero="escena"]', { autoAlpha: 0, scale: 1.04, duration: 1.4, ease: 'power2.out' }, 0)
-        .from('[data-hero="frasco"]', { autoAlpha: 0, y: 26, duration: 1.1, ease: 'expo.out' }, 0.35)
-        .from('[data-hero="sombra"]', { autoAlpha: 0, scaleX: 0.6, duration: 1.1, ease: 'expo.out' }, 0.35)
-        .from('[data-hero="promos"] > *', { autoAlpha: 0, y: 14, duration: 0.6, stagger: 0.08 }, '-=0.5')
-        .from('[data-hero="cinta"]', { autoAlpha: 0, duration: 0.8 }, '-=0.3');
-    });
-
-    // Parallax de la escena: la arena baja más lento que el frasco. SOLO en
-    // escritorio (en el celular mover el fondo bajo el vidrio traba).
-    mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
-      const st = gsap.to('[data-hero="escena"]', {
-        yPercent: 8, ease: 'none',
-        scrollTrigger: { trigger: scope.current, start: 'top top', end: 'bottom top', scrub: true },
-      });
-      return () => st.scrollTrigger?.kill();
-    });
-
-    return () => mm.revert();
-  }, []);
 
   return (
-    <section className={s.hero} ref={scope} id="inicio-hero">
+    <section className={s.hero} id="inicio-hero">
       <div className={s.escenario}>
       {/* La escena y el velo son decorativos. */}
       <div className={s.escena} data-hero="escena" aria-hidden="true" />
@@ -73,7 +47,29 @@ export default function Hero({
       <div className={s.banda}>
         <div className={s.showcase} aria-hidden="true">
           <span className={s.sombra} data-hero="sombra" />
-          <img src="/hero/frasco.webp" alt="" className={s.frasco} data-hero="frasco" decoding="async" fetchPriority="high" width="613" height="736" />
+          {/* <picture> con media, no srcset con anchos: el frasco se ve a ~196
+              px en el celular, y con `sizes` el navegador multiplica por la
+              densidad de pantalla (2,6 en el Moto G del test) y termina
+              eligiendo igual el archivo grande. Con media la decisión es
+              explícita y no depende de esa cuenta: el teléfono baja 47 kB en vez
+              de 101 kB.
+
+              fetchpriority alta porque compite por el ancho de banda con la
+              escena del fondo. Va en minúsculas a propósito: React 18 no conoce
+              fetchPriority en camelCase y lo descarta sin escribirlo. */}
+          <picture>
+            <source media="(max-width: 899px)" srcSet="/hero/frasco-420.webp" width="420" height="504" />
+            <img
+              src="/hero/frasco-613.webp"
+              alt=""
+              className={s.frasco}
+              data-hero="frasco"
+              decoding="async"
+              fetchpriority="high"
+              width="613"
+              height="736"
+            />
+          </picture>
         </div>
       </div>
 

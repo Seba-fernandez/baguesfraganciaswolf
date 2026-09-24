@@ -205,9 +205,12 @@ Al 22 de septiembre de 2026 la portada pedía **≈600 kB comprimidos** antes de
 mostrar el primer perfume, contra el presupuesto de 150 kB que declara el
 README. PageSpeed en celular daba **70**.
 
-Al 24 de septiembre está en **96-97** (mediana de cinco corridas sobre el sitio
-publicado, mínimo 95), con el resto de las categorías en 100 —salvo la de
-agentes, que da 98—. Esto es lo que se hizo, en orden de lo que devolvió.
+Al 24 de septiembre está en **96** (mediana de seis corridas sobre el sitio
+publicado; ninguna bajó de 95), con el resto de las categorías en 100 —salvo la
+de agentes, que da 98—. Esto es lo que se hizo, en orden de lo que devolvió.
+
+Conviene medir siempre así: una sola corrida de Lighthouse varía cuatro o cinco
+puntos, y es facilísimo festejar una mejora que era ruido.
 
 | | antes | después |
 | --- | --- | --- |
@@ -216,7 +219,8 @@ agentes, que da 98—. Esto es lo que se hizo, en orden de lo que devolvió.
 | LCP | 5,2 s | **2,7 s** |
 | Speed Index | 5,1 s | **1,8 s** |
 | TBT / CLS | 0 / 0 | 0 / 0 |
-| Bytes hasta el primer dibujado | ≈600 kB | **≈116 kB** |
+| Bytes que frenan el primer dibujado | ≈600 kB | **≈116 kB** |
+| Primera tanda de red completa | ≈600 kB | ≈217 kB |
 | SEO | 92 | **100** |
 | Navegación con agentes | 50 | **98** |
 
@@ -309,6 +313,15 @@ Queda anotado para no repetirlo. Está también en los comentarios del código:
 
 ### Lo que queda
 
+- **El filo especular del vidrio cuesta entre uno y dos puntos.** Está medido:
+  desactivando el `::before` con el `conic-gradient` enmascarado, la portada
+  pasa de 96 a 97 y el FCP baja ~150 ms, porque `mask-composite` obliga a una
+  pasada de rasterizado aparte por cada superficie. Son solo cuatro elementos en
+  la primera pantalla. **No se tocó**: es la firma del material y lo que hace
+  que el vidrio se lea como vidrio (ver [`DISENO.md`](DISENO.md)). Cambiarlo por
+  sombras `inset` direccionales sería más barato y se vería distinto — es una
+  decisión de diseño, no de rendimiento, y por eso queda anotada acá en vez de
+  aplicada.
 - El bundle inicial son 76,5 kB comprimidos y casi todo es React + React Router.
   Bajarlo de ahí implica cambiar de biblioteca, que no se hizo: el panel maneja
   pedidos y plata, y una incompatibilidad sutil ahí es peor que dos puntos.

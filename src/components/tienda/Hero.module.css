@@ -206,7 +206,9 @@
   border-bottom: 1px solid var(--line-bright);
 }
 .coronaMarca {
-  font-family: var(--f-display);
+  /* Peso 600 por la misma razon que .marca: deja Cormorant 400 fuera de la
+     primera pantalla. */
+  font-family: var(--f-display); font-weight: 600;
   font-size: clamp(1.15rem, 2.2vw, 1.5rem);
   letter-spacing: 0.26em; text-transform: uppercase;
   color: var(--ink); line-height: 1;

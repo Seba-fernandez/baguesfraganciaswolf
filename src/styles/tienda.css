@@ -21,11 +21,14 @@
    banda contra la imagen del hero, que es la que define el LCP. Declarando solo
    estas cuatro, las otras ni se enteran hasta despues del primer dibujado.
 
-   Cuales son cuales sale de mirar el hero: el titulo es Cormorant 600, la marca
-   y la corona son Cormorant 400, el cuerpo es Figtree 400 y los botones
-   Figtree 600. La italica (la cinta de nombres) y Figtree 500 (las etiquetas de
-   seccion) recien aparecen mas abajo. */
-@font-face { font-family: 'Cormorant'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/cormorant-400.woff2') format('woff2'); }
+   Cuales son cuales sale de mirar el hero: el titulo es Cormorant 600, el cuerpo
+   Figtree 400 y los botones Figtree 600. La marca y la corona tambien usan
+   Cormorant 600 a proposito, para no traer una cuarta cara (ver .marca en
+   TiendaLayout.module.css). Cormorant 400, la italica y Figtree 500 recien
+   aparecen mas abajo, asi que van en la hoja diferida.
+
+   Medido en produccion: las cuatro caras criticas eran 67 kB a prioridad
+   maxima, y le robaban ancho de banda a la imagen que define el LCP. Son 45. */
 @font-face { font-family: 'Cormorant'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/cormorant-600.woff2') format('woff2'); }
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/figtree-400.woff2') format('woff2'); }
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/figtree-600.woff2') format('woff2'); }

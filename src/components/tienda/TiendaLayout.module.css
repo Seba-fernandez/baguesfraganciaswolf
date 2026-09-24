@@ -13,7 +13,13 @@
 }
 
 .marca {
-  font-family: var(--f-display); font-size: 1.02rem; letter-spacing: 0.04em;
+  /* Peso 600 y no 400: es el unico uso de Cormorant 400 en la primera
+     pantalla junto con la corona del hero, y esa cara son 22 kB que competian
+     por el ancho de banda con la imagen del LCP. En un sello de marca el trazo
+     mas firme ademas queda mejor (ver docs/DISENO.md: Cormorant es de trazo
+     fino y pide peso medio-alto). */
+  font-family: var(--f-display); font-weight: 600;
+  font-size: 1.02rem; letter-spacing: 0.04em;
   color: var(--ink); white-space: nowrap; flex-shrink: 0;
 }
 .marcaWolf { color: var(--amber); }

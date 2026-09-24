@@ -57,14 +57,14 @@ export default function Hero({
               px en el celular, y con `sizes` el navegador multiplica por la
               densidad de pantalla (2,6 en el Moto G del test) y termina
               eligiendo igual el archivo grande. Con media la decisión es
-              explícita y no depende de esa cuenta: el teléfono baja 47 kB en vez
+              explícita y no depende de esa cuenta: el teléfono baja 34 kB en vez
               de 101 kB.
 
               fetchpriority alta porque compite por el ancho de banda con la
               escena del fondo. Va en minúsculas a propósito: React 18 no conoce
               fetchPriority en camelCase y lo descarta sin escribirlo. */}
           <picture>
-            <source media="(max-width: 899px)" srcSet="/hero/frasco-420.webp" width="420" height="504" />
+            <source media="(max-width: 899px)" srcSet="/hero/frasco-380.webp" width="380" height="456" />
             <img
               src="/hero/frasco-613.webp"
               alt=""

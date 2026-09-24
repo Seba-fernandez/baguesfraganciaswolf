@@ -27,7 +27,19 @@
          Sin preload de fuentes a propósito: con el CSS embebido el navegador
          las descubre al instante, y un preload solo les daría prioridad por
          encima de la imagen del hero, que es la que define el LCP. -->
-    <link rel="stylesheet" href="/fuentes-diferidas.css" media="print" onload="this.media='all'" />
+    <script>
+      // La hoja se agrega recién en el evento `load`, no con el truco de
+      // media="print" + onload: ese se libera apenas baja el archivo, y medido
+      // en producción las fuentes que declara (23,8 kB solo la itálica) entraban
+      // igual en la carga inicial, compitiendo con la imagen que define el LCP.
+      // Las usa texto que está debajo del pliegue, así que puede esperar.
+      addEventListener('load', function () {
+        var l = document.createElement('link');
+        l.rel = 'stylesheet';
+        l.href = '/fuentes-diferidas.css';
+        document.head.appendChild(l);
+      });
+    </script>
     <noscript><link rel="stylesheet" href="/fuentes-diferidas.css" /></noscript>
 
     <!-- La escena del hero es el elemento más grande de la primera pantalla y
@@ -35,7 +47,7 @@
          parsear el CSS. Cada tamaño precarga solo el suyo, con prioridad alta. -->
     <link rel="preload" href="/hero/duna-movil.webp" as="image" media="(max-width: 899px)" fetchpriority="high" />
     <link rel="preload" href="/hero/duna.webp" as="image" media="(min-width: 900px)" fetchpriority="high" />
-    <link rel="preload" href="/hero/frasco-420.webp" as="image" media="(max-width: 899px)" fetchpriority="high" />
+    <link rel="preload" href="/hero/frasco-380.webp" as="image" media="(max-width: 899px)" fetchpriority="high" />
 
     <!-- Open Graph: WhatsApp es el canal de venta. Sin esto el link pega gris. -->
     <meta property="og:type" content="website" />

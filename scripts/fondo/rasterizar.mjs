@@ -116,14 +116,18 @@ if (fs.existsSync(FRASCO)) {
   // px con withoutEnlargement sobre un original de 613: sharp no agranda, asi
   // que el archivo salia de 613 px con un nombre que decia 960 y un descriptor
   // srcset que decia 760w. El navegador elegia por un dato falso.
-  await sharp(original).resize(420, null, { withoutEnlargement: true })
-    .webp({ quality: 80, alphaQuality: 90, effort: 6 })
-    .toFile(p('public/hero/frasco-420.webp'));
+  // 380 px de ancho y calidad 74. En produccion el frasco resulta ser el
+  // elemento del LCP en pantalla chica (se ve a ~196 px, o sea casi el doble de
+  // densidad), asi que cada kB suyo entra directo en la metrica: de 420w q80 a
+  // 380w q74 son 47 -> 34 kB sin que se note en pantalla.
+  await sharp(original).resize(380, null, { withoutEnlargement: true })
+    .webp({ quality: 74, alphaQuality: 88, effort: 6 })
+    .toFile(p('public/hero/frasco-380.webp'));
 
   await sharp(original).resize(613, null, { withoutEnlargement: true })
     .webp({ quality: 80, alphaQuality: 90, effort: 6 })
     .toFile(p('public/hero/frasco-613.webp'));
 
-  console.log(`  frasco-420.webp      ${kb(antes)} → ${kb(fs.statSync(p('public/hero/frasco-420.webp')).size)}`);
+  console.log(`  frasco-380.webp      ${kb(antes)} → ${kb(fs.statSync(p('public/hero/frasco-380.webp')).size)}`);
   console.log(`  frasco-613.webp      ${kb(antes)} → ${kb(fs.statSync(p('public/hero/frasco-613.webp')).size)}`);
 }

@@ -404,9 +404,17 @@ luz nítida, la cara de sombra es un plano definido, y encima van decenas de
 surcos finos. El sol es un **disco nítido**, no una mancha difusa: un disco se lee
 afiche, una mancha se lee plantilla.
 
-**El grano va en CSS, no dentro de la imagen.** Metido en un JPEG multiplica el
-peso por cinco y se come la compresión. Se mezcla en `overlay` con contraste alto
-para que quede crispy.
+**El grano va horneado en la imagen, no en CSS.** En CSS es una capa a pantalla
+completa con `feTurbulence` en `mix-blend-mode: overlay`, y ahí está la trampa:
+el blend obliga al navegador a componer esa capa aparte y a rasterizar el filtro
+**antes** de poder dibujar lo que tiene debajo. Medido, dos capas así sumaban
+**~900 ms de LCP** en un teléfono de gama media.
+
+Horneado cuesta cero milisegundos, pero la fuerza importa y la curva no es
+lineal: en una escena de degradados, a 0,42 de intensidad el WebP se va de 20 a
+134 kB porque el ruido destruye la compresión, y a 0,18 sube 1,5 kB. Medir esa
+curva antes de elegir. (La advertencia clásica de que el grano en imagen
+multiplica el peso por cinco vale para un JPEG de foto, no para esto.)
 
 **Para reusar:** la escena se define en `capas[]`, cada una con `base` (altura
 media de la cresta), `ondas` (amplitud, largo, fase), `luz`, `sombra` y `surcos`.
@@ -432,10 +440,16 @@ capas. La forma —montañas, olas, dunas, cintas— sale de las `ondas`.
 
 **Prohibido:** rebote, elástico, giros en loop, haces cruzados, glow de neón.
 
-> **Al reusar:** hoy esto lo hace GSAP + ScrollTrigger y **cuesta 49 kB
-> comprimidos** en la portada. La coreografía completa se puede escribir con
-> `@keyframes` + `animation-delay` y el parallax con `animation-timeline:
-> scroll()`. En un proyecto nuevo, arrancar sin GSAP.
+> **Sin librería de animación.** Esto lo hacía GSAP + ScrollTrigger y costaba
+> **49 kB comprimidos** en la portada; la coreografía completa entró en
+> `@keyframes` + `animation-delay`, y el parallax en `animation-timeline`
+> nativa. En un proyecto nuevo, arrancar así.
+>
+> **Y cuidado con animar el elemento del LCP.** La escena del hero entraba con un
+> fade desde `opacity: 0`: mientras esté en cero, el navegador considera que no
+> se dibujó nada grande, así que eran **704 ms** de retraso puro sobre la
+> métrica, sobre un archivo que tardaba 82 ms en bajar. Animar escala o posición
+> no tiene ese costo; animar opacidad sí.
 
 ---
 
@@ -536,44 +550,67 @@ lugar donde se toca.
 
 ## 11. Presupuesto de rendimiento
 
-Esto es parte del kit, no un apéndice. Este proyecto **no lo cumple** hoy (ver
-[`CONTEXTO.md`](CONTEXTO.md#la-deuda-rendimiento): ~600 kB contra un objetivo de
-150 kB). El proyecto nuevo arranca cumpliéndolo.
+Esto es parte del kit, no un apéndice. Este proyecto **arrancó sin cumplirlo**
+(~600 kB contra un objetivo de 150) y le costó una tanda entera de trabajo
+llegar: PageSpeed en celular de 70 a 96. El proyecto nuevo arranca cumpliéndolo.
 
 | Presupuesto | Tope |
 | --- | --- |
-| JS + CSS hasta la primera pantalla, comprimido | **150 kB** |
-| Imagen del hero | 80 kB |
+| Bytes hasta el primer dibujado, comprimidos | **150 kB** |
+| JS de la primera pantalla | 80 kB (React + router ya son ~63) |
+| Imagen del hero | 40 kB |
+| Caras tipográficas en la primera pantalla | **3**, ~45 kB |
 | Textura de fondo | 20 kB, **en mosaico que se repite** |
-| Fuentes en la primera pantalla | 2 caras, ~50 kB |
 | Superficies con `backdrop-filter` visibles a la vez | ≤ 15 |
 | Elementos con lente | solo controles, área < 90.000 px² |
 
-Las reglas que hacen que se cumpla:
+### Las doce reglas, todas salidas de una medición
 
-1. **El cliente de base de datos no va en el chunk inicial.** Una visitante
-   anónima no necesita auth, realtime ni storage para leer un catálogo. Cargar el
-   proveedor de sesión solo bajo la ruta privada.
-2. **Ninguna librería de animación en la portada.** CSS nativo alcanza para
+1. **La portada se pre-renderiza.** Una SPA no muestra nada hasta que parsea
+   todo el JavaScript. Con el HTML ya dibujado y el CSS embebido, el navegador
+   pinta apenas recibe el documento.
+2. **El cliente de base de datos no va en el chunk inicial.** Una visitante
+   anónima no necesita auth, realtime ni storage para leer un catálogo. Leer con
+   `fetch` contra la API REST y dejar el cliente completo en la zona privada.
+3. **La hidratación espera al evento `load`.** Dispara los pedidos de datos, y
+   esos compiten por el ancho de banda justo con la imagen del LCP.
+4. **Ninguna librería de animación en la portada.** CSS nativo alcanza para
    entrada, parallax y reveals.
-3. **Las fuentes se precargan desde `index.html`**, no se descubren desde el CSS
-   de un chunk diferido.
-4. **La textura de fondo se repite en mosaico.** Un dibujo único del alto del
-   documento es una textura gigante en memoria y es la capa que leen todos los
-   `backdrop-filter`.
-5. **El grano va horneado en la imagen**, o una sola capa. Dos capas a pantalla
-   completa con `mix-blend-mode` fuerzan recomposición en cada cuadro del scroll.
-6. **El mapa de la lente se calcula fuera del hilo principal** (`toBlob` +
-   `createObjectURL`, o un worker con `OffscreenCanvas`). Nunca `toDataURL`, que
-   es un encode PNG síncrono.
-7. **Las fotos van en dos o tres anchos con `srcset`.** `sharp` ya está en el
-   pipeline.
-8. **La portada se prerenderiza.** Una SPA sin HTML no muestra nada hasta que
-   parsea todo el JavaScript.
-9. **Medir el tiempo de cuadro durante un scroll real**, no mirar la pantalla.
-   Así se encontró el límite de la lente.
+5. **No animar la opacidad del elemento del LCP.** Cuesta exactamente lo que
+   dura el fade.
+6. **Contar las caras tipográficas, no los kilobytes.** Con la portada
+   pre-generada el texto existe desde el primer milisegundo, así que **todas**
+   las fuentes que aparezcan en el HTML salen juntas a prioridad máxima contra
+   la imagen del hero. Tres caras arriba, el resto en una hoja que se agrega en
+   `load`. Si una cara se usa en un solo lugar de la primera pantalla, cambiar
+   ese lugar de peso sale más barato que traerla.
+7. **El grano va horneado en la imagen**, y con la curva medida (ver *Los fondos
+   generados*). Dos capas con `mix-blend-mode` a pantalla completa son ~900 ms.
+8. **`content-visibility: auto` en todo lo que está debajo del pliegue**, con su
+   `contain-intrinsic-size`. El HTML pre-generado trae la página entera y el
+   navegador calculaba estilo y posición de todo antes del primer dibujado.
+9. **Las imágenes en varios anchos, con el descriptor honesto.** Y ojo: con
+   `srcset`/`sizes` el navegador multiplica por la densidad de pantalla, así que
+   en un teléfono de gama media termina eligiendo el archivo grande igual. Donde
+   la decisión tiene que ser exacta, `<picture>` con `media`.
+10. **Medir el elemento del LCP en producción, no en local.** Acá era la escena
+    del hero en local y **el frasco** en producción. Se optimiza el que es.
+11. **El mapa de la lente se calcula fuera del hilo principal** (`toBlob` +
+    `createObjectURL`, o un worker con `OffscreenCanvas`). Nunca `toDataURL`,
+    que es un encode PNG síncrono.
+12. **Medir cinco corridas y mirar la mediana.** Una sola corrida de Lighthouse
+    varía 4-5 puntos, y es fácil "mejorar" algo que en realidad era ruido.
 
----
+### Lo que suena bien y midió peor
+
+Tres cosas que parecían obvias y no lo eran. Verificar antes de darlas por
+buenas en el proyecto siguiente:
+
+| Idea | Resultado |
+| --- | --- |
+| Partir el CSS en crítico + diferido, el resto en su archivo | mediana 93 contra 96: el viaje de red extra cuesta más de lo que ahorra cuando ya hay `content-visibility` |
+| Lo mismo con las dos mitades embebidas, la segunda en `<style media="print">` | FCP de 1957 a 2107 ms |
+| La escena del hero como `<img>` en vez de `background-image` | LCP de 2411 a 2557 ms |
 
 ## 12. Qué NO copiar
 

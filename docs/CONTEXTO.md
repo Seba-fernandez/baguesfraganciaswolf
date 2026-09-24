@@ -84,9 +84,13 @@ disponibilidad, clientes y ajustes.
 
 React 18 + Vite 5 + React Router 7. CSS Modules y variables CSS, sin Tailwind ni
 biblioteca de componentes. PostgreSQL en Supabase con políticas de fila en todas
-las tablas. GSAP para la entrada y el parallax del inicio. Gráficos SVG
-generados por scripts propios: ni una foto de banco, ni 3D. Publicación en
-Vercel desde la rama principal.
+las tablas. Movimiento en CSS nativo, sin librería. Gráficos SVG generados por
+scripts propios y rasterizados a WebP en el build: ni una foto de banco, ni 3D.
+La portada se pre-genera como HTML al publicar. Vercel, desde la rama principal.
+
+La tienda pública **no usa `@supabase/supabase-js`**: lee con `fetch` contra
+PostgREST. El cliente completo vive solo en el panel. El porqué está en la
+sección de rendimiento.
 
 ---
 
@@ -132,8 +136,10 @@ es caro. Medido con un scroll instrumentado, ponerlo también en las placas
 grandes y en las doce tarjetas tiraba el scroll a 15-25 cuadros por segundo.
 Quedó solo en los controles y en una sola pasada.
 
-Ese criterio se aplicó a la lente. **Al resto del proyecto todavía no** — ver
-la sección de deuda, al final.
+Ese criterio se aplicó primero a la lente y después, en septiembre de 2026, al
+resto del proyecto: la sección de rendimiento del final es todo el trabajo de
+llevar PageSpeed de 70 a 96, y está escrita con las mediciones al lado —
+incluidas las tres cosas que se probaron y midieron **peor**.
 
 ---
 
@@ -169,17 +175,23 @@ La parte que más enseñó. Ninguno de estos saltaba mirando la pantalla.
 
 ---
 
-## Estado al 22 de septiembre de 2026
+## Estado al 24 de septiembre de 2026
 
 **Andando en producción:** catálogo del ciclo con más de cien aromas en página
 propia, buscador y filtros, ficha por aroma, pedido con la cuenta del 2x1 y el
 aviso de "te falta uno", mensaje de WhatsApp con el código de cada renglón,
 panel privado completo, vista previa con imagen propia al pegar el enlace.
 
-**Sin commitear** (rediseño completo del sistema visual): paleta Ámbar Noir,
-hero editorial sobre la escena de dunas, el material de vidrio con lente real,
-los fondos generados por script, y los documentos `DISENO.md`, `ARQUITECTURA.md`
-y este. El diseño está terminado y se ve como se quería.
+**Publicado el 22 de septiembre:** el rediseño completo del sistema visual
+—paleta Ámbar Noir, hero editorial sobre la escena de dunas, el material de
+vidrio con lente real, los fondos generados por script— más `DISENO.md`,
+`ARQUITECTURA.md`, `KIT.md` y este documento.
+
+**Publicado el 24 de septiembre:** el trabajo de rendimiento (ver la sección
+siguiente) y el arreglo del carrusel de destacados, que en el celular se comía
+el gesto de bajar: tenía `overflow-x: auto` sin declarar el eje vertical, y por
+la regla del spec —si un eje deja de ser `visible`, el otro pasa a `auto`— la
+pista quedaba scrolleable también en vertical y atrapaba el dedo.
 
 **Pendiente de producto:** 26 aromas sin foto (no están publicados en las webs
 de las proveedoras; hacen falta los PDF). Llevar el vidrio a la ficha y al cajón
@@ -187,97 +199,118 @@ del pedido, que todavía son paneles opacos.
 
 ---
 
-## La deuda: rendimiento
+## Rendimiento: la deuda que se pagó
 
-El diseño está donde tiene que estar. **El rendimiento no.** Esto está medido,
-no estimado: los números salen de `npm run build` y de `gzip`/`stat` sobre los
-archivos reales, el 22 de septiembre de 2026.
+Al 22 de septiembre de 2026 la portada pedía **≈600 kB comprimidos** antes de
+mostrar el primer perfume, contra el presupuesto de 150 kB que declara el
+README. PageSpeed en celular daba **70**.
 
-### Lo que pesa hoy la portada
+Al 24 de septiembre está en **96-97** (mediana de cinco corridas sobre el sitio
+publicado, mínimo 95), con el resto de las categorías en 100 —salvo la de
+agentes, que da 98—. Esto es lo que se hizo, en orden de lo que devolvió.
 
-En bytes comprimidos, que es lo que viaja:
-
-| Recurso | Comprimido | Qué es |
+| | antes | después |
 | --- | --- | --- |
-| `index-*.js` | **159,5 kB** | React + Router + **supabase-js** + contextos |
-| `HomeScreen-*.js` | **49,3 kB** | **GSAP + ScrollTrigger** |
-| `TiendaShell-*.js` + su CSS | 13,0 kB | La cáscara de la tienda |
-| CSS de la portada | 7,0 kB | `index.css` + `HomeScreen.css` |
-| Resto de chunks | ~8 kB | thumb, carrito, hooks, formato |
-| **JavaScript y CSS** | **≈ 237 kB** | |
-| `duna.svg` | **71,7 kB** | La escena del hero (210 kB en disco) |
-| `surcos.svg` | **43,1 kB** | La textura de la página (125 kB en disco) |
-| `frasco.webp` | **160,3 kB** | Ya comprimido, no baja más |
-| Fuentes (4-5 de 7) | ~92 kB | Cormorant + Figtree, woff2 |
-| **Total antes del primer perfume** | **≈ 600 kB** | |
+| Rendimiento (celular) | 70 | **96** |
+| FCP | 3,6 s | **1,7 s** |
+| LCP | 5,2 s | **2,7 s** |
+| Speed Index | 5,1 s | **1,8 s** |
+| TBT / CLS | 0 / 0 | 0 / 0 |
+| Bytes hasta el primer dibujado | ≈600 kB | **≈116 kB** |
+| SEO | 92 | **100** |
+| Navegación con agentes | 50 | **98** |
 
-El README declara un presupuesto de **150 kB hasta que se ve el primer
-perfume**. Está **cuatro veces por encima**. Y Vite ya avisa: el chunk principal
-mide 526 kB sin comprimir, arriba de su límite de 500 kB.
+### 1. La base de datos salió del bundle público
 
-En `/catalogo` se suman hasta 12 fotos de ~110 kB cada una: **1,3 MB más**.
+`main.jsx` montaba el contexto de sesión siempre, y ese arrastra
+`@supabase/supabase-js` entero: auth, realtime y storage. Una visitante anónima
+lo descargaba antes de ver el primer perfume.
 
-### Las causas, en orden de lo que más devuelve
+La tienda lee dos tablas y llama una función. Eso ahora es `fetch` pelado contra
+PostgREST ([`src/lib/apiTienda.js`](../src/lib/apiTienda.js)). El panel entero
+—contextos, sesión, `global.css` y su `@import` a Google Fonts— se mudó a
+[`PanelApp.jsx`](../src/components/panel/PanelApp.jsx), un chunk que la tienda
+nunca pide. **El bundle inicial pasó de 159,5 a 76,5 kB comprimidos.**
 
-1. **`supabase-js` entra en el chunk inicial.** `main.jsx` monta `AuthProvider`
-   siempre, y ese importa `lib/supabase`. Una visitante anónima que entra a
-   mirar perfumes se descarga el cliente completo de auth, realtime, storage y
-   postgrest antes de que se dibuje nada. La tienda solo necesita **leer** dos
-   tablas. Es el único item que puede sacar 40-50 kB de un saque.
-2. **GSAP + ScrollTrigger importados estáticamente en el hero.** 49,3 kB
-   comprimidos para una línea de tiempo de entrada y un parallax. Los dos se
-   pueden hacer en CSS nativo; como mínimo el import tiene que ser dinámico
-   adentro del efecto, para que no bloquee el chunk de la portada.
-3. **La página no existe hasta que corre el JavaScript.** Es una SPA sin
-   prerender: el hero no está en el HTML, se dibuja recién cuando bajaron y
-   parsearon `index.js` + `TiendaShell` + `HomeScreen`. El README ya lo tiene
-   anotado como pendiente y es lo que más cambia la sensación de velocidad.
-4. **Las fuentes se descubren tarde.** Los `@font-face` están en `tienda.css`,
-   que es el CSS del chunk de `TiendaShell`: recién se piden en la tercera tanda
-   de red. `index.html` no precarga ninguna. Dos `<link rel="preload">` para
-   Cormorant 600 y Figtree 400 adelantan el texto varios cientos de ms.
-5. **Los SVG del fondo son enormes.** `duna.svg` son 210 kB de miles de nodos
-   que el navegador tiene que parsear y rasterizar en el hilo principal, justo
-   en el elemento más grande de la primera pantalla. `surcos.svg` son otros
-   125 kB pintados a `100% max(100%, 3200px)` sobre una capa del alto de todo el
-   documento: es una textura gigante en memoria, y encima es la capa que leen
-   todos los `backdrop-filter`. Una escena de degradados sin fotos comprime muy
-   bien en WebP; los surcos deberían ser un mosaico chico que se repite, no un
-   dibujo único del alto de la página.
-6. **Dos capas de grano a pantalla completa con `mix-blend-mode: overlay`**
-   (`.tfondo::after` y `.escena::after`). El blend fuerza una capa de
-   composición propia y complica el cacheo del fondo; combinado con los
-   `backdrop-filter` de arriba, cada cuadro del scroll vuelve a leer el fondo.
-   El grano puede ir horneado en la imagen.
-7. **El mapa de la lente se calcula en el hilo principal.** `dibujarMapa()`
-   recorre píxel por píxel hasta 90.000 píxeles por cada tamaño distinto y
-   después llama a `toDataURL('image/png')`, que es un encode PNG **síncrono**.
-   Con una decena de tamaños distintos son cientos de miles de iteraciones más
-   una decena de encodes, todo durante el arranque. `toBlob` +
-   `URL.createObjectURL` ya lo vuelve asíncrono; un worker con `OffscreenCanvas`
-   lo saca del hilo principal.
-8. **Las fotos van en una sola resolución.** 112 archivos, 6,0 MB, hasta 128 kB
-   cada una, servidas igual a una tarjeta de 220 px en un celular. `sharp` ya es
-   una dependencia del proyecto: generar dos o tres anchos y usar `srcset` corta
-   la mitad de los bytes del catálogo.
-9. **Dos `MutationObserver` con `subtree: true` sobre toda la tienda**
-   ([`useReveal.js`](../src/hooks/useReveal.js) y
-   [`vidrioLiquido.js`](../src/lib/vidrioLiquido.js)), y cada uno vuelve a
-   correr un `querySelectorAll` sobre el subárbol completo en cada mutación.
-10. **Restos.** `vite-plugin-pwa` está instalado y no está cableado en
-    `vite.config.js`. `motion` (^12.43.0) se usa en un solo archivo del panel.
-    No hay `manualChunks`. `.cintaPista` tiene `will-change: transform` con una
-    animación infinita de 42 s que nunca deja descansar al compositor.
+De paso desapareció una cascada de tres viajes de red: la portada encadenaba
+`index.js` → `TiendaShell` → `HomeScreen`, cada `lazy` una espera en serie.
 
-### Un detalle chico pero visible
+### 2. La portada se genera en el build
 
-`index.html` todavía declara `theme-color="#0f1512"` y pinta la barra de scroll
-con ese mismo color: es el verde de la paleta **anterior**. La base actual es
-`#17110d`. Se ve en la barra del navegador en el celular.
+Era una SPA: el hero no existía hasta que el navegador bajaba, parseaba y
+ejecutaba el JavaScript. Ahora se dibuja una vez durante el build
+([`scripts/prerender.mjs`](../scripts/prerender.mjs)) y llega escrita en el HTML
+con el CSS embebido, así que se pinta apenas llega. React hidrata encima, y esa
+hidratación **espera al evento `load`**: dispara los pedidos a la base, que
+competían por el ancho de banda justo con la imagen del LCP.
 
-### El criterio para atacarlo
+### 3. Se fue GSAP
 
-El mismo que se usó con la lente, aplicado al resto del proyecto: **medir, poner
-un presupuesto, y que lo que no entre no entre.** El objetivo declarado son
-150 kB hasta el primer perfume. Los puntos 1, 2 y 4 juntos son la mitad del
-camino y no tocan una sola decisión de diseño.
+49 kB comprimidos para una línea de tiempo de entrada y un parallax. La
+coreografía es la misma, ahora en `@keyframes` con `animation-delay`; el
+parallax es una scroll-driven animation nativa. Al ser declarativa, además,
+corre sin esperar al JavaScript.
+
+### 4. El grano dejó de costar 900 ms
+
+Las dos capas de `feTurbulence` en `mix-blend-mode: overlay` a pantalla completa
+eran lo más caro del arranque: el blend obliga a componer la capa aparte y a
+rasterizar el filtro **antes** de poder dibujar lo que tiene debajo. El de la
+escena va horneado en el WebP (+1,5 kB de archivo, cero milisegundos); el de la
+página quedó solo en escritorio.
+
+La fuerza importa: a 0,42 el archivo se iba de 20 a 134 kB, porque el ruido
+destruye la compresión. A 0,18 cuesta 1,5 kB. Esa es la curva.
+
+### 5. La animación del hero retrasaba su propia métrica
+
+La escena entraba con un fade desde `opacity: 0`. Mientras esté en cero, el
+navegador considera que no se dibujó nada grande: eran **704 ms** de "element
+render delay" sobre un archivo que tardaba 82 ms en bajar. Ahora solo escala.
+
+### 6. Las fuentes competían con el LCP
+
+Con la portada pre-generada, el texto existe desde el primer milisegundo, así
+que las siete caras salían juntas —125 kB a prioridad máxima— contra la imagen
+del hero. Quedaron tres críticas (45 kB) y el resto en una hoja que se agrega
+recién en `load`. Cormorant 400 se fue del camino crítico poniendo la marca y la
+corona en 600, que es el peso que esta didone pide igual.
+
+### 7. Imágenes
+
+Los SVG del fondo se rasterizan a WebP: la escena de 210 a 43 kB, la del celular
+de 131 a 22 kB. Los surcos siguen en SVG —en WebP **suben** a 323 kB, porque el
+alfa no comprime líneas finas— y se piden solo en escritorio, que es donde corre
+la lente que les da sentido.
+
+Las fotos de producto tienen dos anchos más chicos: se servían a 800 px para
+mostrarse a 190. Son 2,4 MB menos por página de catálogo.
+
+En producción el LCP en pantalla chica resultó ser **el frasco**, no la escena:
+pasó de 47 a 34 kB.
+
+### 8. Lo que está fuera de pantalla no se dibuja
+
+El HTML pre-generado trae la página entera, y el navegador calculaba estilo y
+posición de todo antes del primer dibujado: 594 ms. Con `content-visibility:
+auto` en las secciones de abajo son 361.
+
+### Lo que se probó y midió PEOR
+
+Queda anotado para no repetirlo. Está también en los comentarios del código:
+
+- **Partir el CSS en crítico + diferido, con el resto en su propio archivo:**
+  mediana 93 contra 96. El trabajo de estilo que venía a evitar ya lo evita
+  `content-visibility`, así que solo quedaba el viaje de red extra.
+- **Lo mismo con las dos mitades embebidas**, la segunda en un `<style
+  media="print">` que se activa con un `rAF`: FCP de 1957 a 2107 ms.
+- **La escena del hero como `<img>`** en vez de `background-image`, buscando que
+  el navegador la priorice mejor: LCP de 2411 a 2557 ms.
+
+### Lo que queda
+
+- El bundle inicial son 76,5 kB comprimidos y casi todo es React + React Router.
+  Bajarlo de ahí implica cambiar de biblioteca, que no se hizo: el panel maneja
+  pedidos y plata, y una incompatibilidad sutil ahí es peor que dos puntos.
+- `/catalogo` no se pre-genera: su contenido sale de la base, así que el HTML
+  pre-generado sería la cáscara vacía.

@@ -49,7 +49,7 @@ porque ahí pido la seña y acuerdo la entrega. La web arma el pedido, no lo cob
 | Ingreso al panel | Supabase Auth con cuenta de Google |
 | Seguridad de datos | Políticas de fila (RLS) en todas las tablas |
 | Archivos | Supabase Storage |
-| Movimiento | CSS nativo, con GSAP para la entrada y el parallax del inicio |
+| Movimiento | CSS nativo, sin librería: `@keyframes` para la entrada y `animation-timeline` para el parallax |
 | Gráficos | SVG generado por scripts propios. Sin fotos de banco ni 3D |
 | Publicación | Vercel, automática desde la rama principal |
 | Versionado | Git y GitHub |
@@ -265,9 +265,12 @@ Pendiente:
   tanto se muestra la inicial del aroma.
 - Llevar el vidrio a la ficha y al cajón del pedido, que todavía son paneles
   opacos.
-- Bajar el peso de la página de inicio.
-- Generar el HTML de la tienda al momento de publicar, para que se lea sin
-  esperar a que cargue el programa.
+
+Hechos en septiembre de 2026: bajar el peso de la portada y generar su HTML al
+publicar. PageSpeed en celular pasó de 70 a 96, y los bytes hasta el primer
+dibujado de ~600 a ~116 kB. Está contado en
+[`docs/CONTEXTO.md`](docs/CONTEXTO.md#rendimiento-la-deuda-que-se-pagó), con las
+mediciones y con las tres ideas que sonaban bien y midieron peor.
 
 ---
 

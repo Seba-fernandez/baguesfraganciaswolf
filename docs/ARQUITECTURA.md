@@ -94,7 +94,7 @@ src/
   config/       textos y números editables (contenido.js, ajustes.js)
   components/
     tienda/     la web pública que ve la clienta
-    panel/      las pantallas de gestión
+    panel/      las pantallas de gestión, con PanelApp.jsx como puerta
     layout/     la estructura del panel
     auth/       ingreso al panel
     ui/         piezas sueltas que se reusan
@@ -102,13 +102,28 @@ src/
   lib/          reglas de negocio y material visual, sin JSX
   data/         constantes y los índices de fotos que generan los scripts
   styles/       tienda.css (tienda) y global.css (panel)
+  entry-server.jsx  solo para el build: dibuja la portada como HTML
 scripts/
-  fondo/        genera la escena del hero y la textura de la página
-  fotos/        el pipeline de imágenes, en cuatro pasos
+  fondo/        genera la escena del hero, la textura, y las rasteriza a WebP
+  fotos/        el pipeline de imágenes, en cinco pasos
+  prerender.mjs pega la portada dibujada y el CSS dentro de dist/index.html
 supabase/
   migrations/   el esquema, las políticas y la función de pedido
-public/         fotos, fuentes, escena del hero e íconos
+public/         fotos, fuentes, escena del hero, íconos y los archivos de raíz
+                (robots.txt, sitemap.xml, llms.txt, .well-known/)
 ```
+
+### La frontera entre la tienda y el panel
+
+Es la división que más pesa, y no es estética: **la tienda pública no carga
+`@supabase/supabase-js`.** Lee las dos tablas que necesita con `fetch` contra
+PostgREST (`lib/apiTienda.js`), y el cliente completo —auth, realtime, storage—
+vive únicamente adentro de `components/panel/PanelApp.jsx`, que es un chunk que
+la tienda nunca pide. Con él viajan los dos contextos y `global.css`.
+
+Si alguna vez un componente de `tienda/` importa `lib/supabase`, ese ahorro se
+pierde entero y en silencio. El porqué, con los números, está en
+[`CONTEXTO.md`](CONTEXTO.md#rendimiento-la-deuda-que-se-pagó).
 
 La división que importa: **`lib/` no sabe nada de pantallas y `components/` no
 calcula reglas de negocio.** Si una cuenta da mal, el error está en `lib/`.
@@ -119,6 +134,8 @@ calcula reglas de negocio.** Si una cuenta da mal, el error está en `lib/`.
 | `lib/whatsapp.js` | El armado del mensaje con los códigos |
 | `lib/producto.js` | Qué presentaciones se publican y cómo se titula un aroma |
 | `lib/vidrioLiquido.js` | La lente del vidrio (ver [`DISENO.md`](DISENO.md)) |
+| `lib/apiTienda.js` | La lectura del catálogo y el envío del pedido, sin supabase-js |
+| `hooks/useDatosTienda.js` | Los datos de la tienda pública, en un pedido por tabla |
 | `hooks/useReveal.js` | Las apariciones al hacer scroll |
 
 ---

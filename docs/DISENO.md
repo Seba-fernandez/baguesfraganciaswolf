@@ -165,9 +165,18 @@ tenues en oro y vino que bajan por todo el largo. No son decoración: son lo que
 el canto del vidrio **quiebra**. Una línea que se dobla al cruzar un borde es lo
 que hace leer "lente"; sobre negro liso, cualquier vidrio es un panel gris.
 
-**El grano** va en CSS, no dentro de la imagen: metido en un JPEG multiplica el
-peso por cinco y se come la compresión. Se mezcla en `overlay` con contraste
-alto para que quede crispy y no difuminado.
+**El grano de la escena va horneado en el WebP**, no en CSS. Iba en CSS —una
+capa con `feTurbulence` mezclada en `overlay`— hasta que se midió: el blend
+obliga a componer la capa aparte y a rasterizar el filtro antes de dibujar lo
+que tiene debajo, y entre esta capa y la de la página sumaban **~900 ms de LCP**
+en un teléfono de gama media.
+
+Horneado cuesta 1,5 kB de archivo y cero milisegundos, pero la fuerza importa:
+a 0,42 el WebP se va de 20 a 134 kB porque el ruido destruye la compresión; a
+0,18 sube apenas. (La vieja advertencia de que el grano en imagen multiplica el
+peso por cinco vale para un JPEG de foto, no para una escena de degradados.)
+
+El grano de la **página** sigue en CSS, y solo de 768 px para arriba.
 
 **El frasco del hero** está parado sobre el piso de la duna, con su sombra de
 contacto y el sol de contraluz atrás. No hay caja ni azulejo: el frasco está
@@ -205,11 +214,13 @@ cambiada la clienta pide un perfume que no es.
 --ease: cubic-bezier(0.22, 1, 0.36, 1);
 ```
 
-- **Entrada del hero** coreografiada con GSAP: la corona, los versos del titular
+- **Entrada del hero** coreografiada en CSS (`@keyframes` + `animation-delay`;
+  antes lo hacía GSAP, que costaba 49 kB comprimidos en la portada): la corona,
+  los versos del titular
   subiendo desde atrás de su renglón, la bajada, los botones, y el frasco con su
   sombra apareciendo desde abajo.
-- **Parallax** de la escena solo en escritorio: la arena baja más lento que el
-  frasco.
+- **Parallax** de la escena solo en escritorio, con `animation-timeline` nativa:
+  la arena baja más lento que el frasco. No ejecuta JavaScript en ningún cuadro.
 - **Hover del vidrio:** el cristal se aclara, el filo se enciende y el reflejo se
   corre, como si la luz resbalara por la cara. **No crece**: un vidrio no se infla.
 - **Reveals** al hacer scroll con `IntersectionObserver`, con un

@@ -53,27 +53,25 @@ export default function Hero({
       <div className={s.banda}>
         <div className={s.showcase} aria-hidden="true">
           <span className={s.sombra} data-hero="sombra" />
-          {/* <picture> con media, no srcset con anchos: el frasco se ve a ~196
-              px en el celular, y con `sizes` el navegador multiplica por la
-              densidad de pantalla (2,6 en el Moto G del test) y termina
-              eligiendo igual el archivo grande. Con media la decisión es
-              explícita y no depende de esa cuenta: el teléfono baja 34 kB en vez
-              de 101 kB.
+          {/* El grupo de frascos del ciclo, recortado sobre transparente, parado
+              sobre la arena de la duna. <picture> con media (no srcset con
+              anchos): el celular baja la version chica sin que la densidad de
+              pantalla lo empuje a la grande.
 
               fetchpriority alta porque compite por el ancho de banda con la
               escena del fondo. Va en minúsculas a propósito: React 18 no conoce
               fetchPriority en camelCase y lo descarta sin escribirlo. */}
           <picture>
-            <source media="(max-width: 899px)" srcSet="/hero/frasco-380.webp" width="380" height="456" />
+            <source media="(max-width: 899px)" srcSet="/hero/frascos-460.webp" width="460" height="292" />
             <img
-              src="/hero/frasco-613.webp"
+              src="/hero/frascos-760.webp"
               alt=""
               className={s.frasco}
               data-hero="frasco"
               decoding="async"
               fetchpriority="high"
-              width="613"
-              height="736"
+              width="760"
+              height="482"
             />
           </picture>
         </div>

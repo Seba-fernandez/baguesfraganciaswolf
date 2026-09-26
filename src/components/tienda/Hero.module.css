@@ -157,11 +157,14 @@
 .banda { display: contents; }
 .showcase {
   position: absolute; z-index: 2;
-  left: calc(50cqw + max(24cqw, 38.4cqh));
-  /* Un par de px por debajo del piso: el frasco se asienta EN la arena. */
+  /* El grupo es apaisado (760x482), asi que se dimensiona por ANCHO y se centra
+     un poco a la derecha del foco de la escena; la altura sale del aspect-ratio.
+     El borde de abajo se apoya en el piso de la duna (mismo anclaje que tenia el
+     frasco solo). */
+  left: 66cqw;
   bottom: calc(max(10cqw, 16cqh) - 6px);
-  height: min(50cqh, 480px);
-  aspect-ratio: 613 / 736;
+  width: min(58cqw, 640px);
+  aspect-ratio: 760 / 482;
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -359,7 +362,9 @@
   }
   .showcase {
     left: 50%; bottom: calc(max(16cqw, 16cqh) - 6px);
-    height: min(56cqh, 300px); transform: translateX(-50%);
+    /* En el celular tambien por ancho, centrado, para que el grupo apaisado no
+       se pase de la pantalla. */
+    width: min(90cqw, 400px); height: auto; transform: translateX(-50%);
   }
   .inner {
     height: auto; display: block;

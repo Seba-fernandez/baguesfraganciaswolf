@@ -103,31 +103,30 @@ for (const t of TRABAJOS) {
 }
 
 /**
- * El frasco del hero. Viene con fondo transparente a 613×736 y se muestra, como
- * mucho, a 480 px de alto en escritorio y 300 en el celular. Se sirven dos
- * anchos para que el telefono no baje el grande.
+ * El grupo de frascos del hero. La fuente es un PNG transparente de alta
+ * resolucion en scripts/fondo/fuentes/frascos-grupo.png.
+ *
+ * De donde salio: la imagen promo del ciclo (5 frascos en la playa) pasada por
+ * Canva (quitar fondo -> reagrupar sobre arena -> quitar fondo), exportada como
+ * PNG plano (el plan Free no exporta con alpha) y con el blanco recortado
+ * localmente por flood-fill desde los bordes (para no perforar los reflejos del
+ * vidrio). Ese PNG transparente quedo guardado como fuente para que el asset sea
+ * reproducible sin volver a pasar por Canva.
+ *
+ * Se sirven dos anchos: el celular baja el chico. Es un <picture> con media en
+ * Hero.jsx, asi que la densidad de pantalla no lo empuja al grande.
  */
-const FRASCO = p('public/hero/frasco.webp');
-if (fs.existsSync(FRASCO)) {
-  const original = fs.readFileSync(FRASCO);
-  const antes = original.length;
-
-  // Los nombres dicen el ancho REAL del archivo. El intento anterior pedia 760
-  // px con withoutEnlargement sobre un original de 613: sharp no agranda, asi
-  // que el archivo salia de 613 px con un nombre que decia 960 y un descriptor
-  // srcset que decia 760w. El navegador elegia por un dato falso.
-  // 380 px de ancho y calidad 74. En produccion el frasco resulta ser el
-  // elemento del LCP en pantalla chica (se ve a ~196 px, o sea casi el doble de
-  // densidad), asi que cada kB suyo entra directo en la metrica: de 420w q80 a
-  // 380w q74 son 47 -> 34 kB sin que se note en pantalla.
-  await sharp(original).resize(380, null, { withoutEnlargement: true })
-    .webp({ quality: 74, alphaQuality: 88, effort: 6 })
-    .toFile(p('public/hero/frasco-380.webp'));
-
-  await sharp(original).resize(613, null, { withoutEnlargement: true })
-    .webp({ quality: 80, alphaQuality: 90, effort: 6 })
-    .toFile(p('public/hero/frasco-613.webp'));
-
-  console.log(`  frasco-380.webp      ${kb(antes)} → ${kb(fs.statSync(p('public/hero/frasco-380.webp')).size)}`);
-  console.log(`  frasco-613.webp      ${kb(antes)} → ${kb(fs.statSync(p('public/hero/frasco-613.webp')).size)}`);
+const FRASCOS = p('scripts/fondo/fuentes/frascos-grupo.png');
+if (fs.existsSync(FRASCOS)) {
+  const fuente = sharp(FRASCOS).trim({ threshold: 1 });
+  const buf = await fuente.toBuffer();
+  for (const w of [760, 460]) {
+    const out = p(`public/hero/frascos-${w}.webp`);
+    await sharp(buf).resize(w, null, { withoutEnlargement: true })
+      .webp({ quality: 86, alphaQuality: 100, effort: 6 })
+      .toFile(out);
+    console.log(`  frascos-${w}.webp     -> ${kb(fs.statSync(out).size)}`);
+  }
+} else {
+  console.warn('  falta scripts/fondo/fuentes/frascos-grupo.png — no se regeneran los frascos del hero');
 }

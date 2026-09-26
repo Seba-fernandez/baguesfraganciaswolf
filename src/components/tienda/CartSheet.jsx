@@ -61,6 +61,13 @@ export default function CartSheet({ settings, onVerPromo }) {
   }
 
   const faltantes = (grupos || []).filter((g) => g.faltaUno);
+  // El sello "2x1" del renglon solo se muestra si el grupo esta ACTIVO en el
+  // ciclo (igual que la tarjeta y la ficha, que miran promos[grupo]). Un
+  // producto puede seguir cargando grupo_promo en sus presentaciones de un
+  // ciclo anterior; sin promo activa, no hay 2x1 y el precio es unitario, asi
+  // que mostrar el sello mentiria. `grupos` sale del motor de promos con las
+  // reglas de settings.promos_ciclo: vacio cuando no hay 2x1.
+  const gruposActivos = new Set((grupos || []).map((g) => g.grupo));
 
   return (
     <>
@@ -94,7 +101,7 @@ export default function CartSheet({ settings, onVerPromo }) {
                         <p className={s.itemMeta}>
                           <span className="tnum">{it.ml} ml</span>
                           {it.nombre_proveedor ? ` · ${it.nombre_proveedor}` : ''}
-                          {it.grupo_promo ? <span className={s.itemSello}>2x1</span> : null}
+                          {it.grupo_promo && gruposActivos.has(it.grupo_promo) ? <span className={s.itemSello}>2x1</span> : null}
                         </p>
                         <div className={s.stepper}>
                           <button type="button" onClick={() => setCantidad(it.key, it.cantidad - 1)} aria-label="Restar">-</button>

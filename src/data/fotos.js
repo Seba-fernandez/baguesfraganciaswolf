@@ -108,7 +108,6 @@ export const FOTO_BAGUES = new Set([
   "bagues-venus",
   "bagues-versace-eros-fem",
   "bagues-very-irresistible",
-  "hawai-masculino",
   "unlock-212-heroes-fem",
   "unlock-212-heroes-hom",
   "unlock-212-vip-rose",

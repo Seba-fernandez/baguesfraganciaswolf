@@ -5,8 +5,10 @@ import s from './ImageUpload.module.css';
 /**
  * Sube una imagen a Supabase Storage y devuelve la URL pública por onChange.
  * bucket: 'productos' | 'promos'
+ * respaldo: foto que se muestra cuando no se subió ninguna (la del catálogo).
+ *   Tocar sube una nueva, que pasa a ganarle.
  */
-export default function ImageUpload({ value, onChange, bucket = 'productos' }) {
+export default function ImageUpload({ value, onChange, bucket = 'productos', respaldo = null }) {
   const inputRef = useRef(null);
   const [subiendo, setSubiendo] = useState(false);
   const [error, setError] = useState(null);
@@ -40,8 +42,8 @@ export default function ImageUpload({ value, onChange, bucket = 'productos' }) {
         onClick={() => inputRef.current?.click()}
         disabled={subiendo}
       >
-        {value ? (
-          <img src={value} alt="Vista previa" className={s.preview} />
+        {value || respaldo ? (
+          <img src={value || respaldo} alt="Vista previa" className={s.preview} />
         ) : (
           <span className={s.placeholder}>{subiendo ? 'Subiendo…' : '+ Foto'}</span>
         )}

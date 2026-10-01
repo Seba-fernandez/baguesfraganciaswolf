@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase, authHelpers } from '../lib/supabase'
 import { ADMIN_EMAILS } from '../data/constants'
+import { vaciarCache } from '../lib/cachePanel'
 
 const AuthContext = createContext({})
 
@@ -51,7 +52,7 @@ export function AuthProvider({ children }) {
     signUp: authHelpers.signUp,
     signIn: authHelpers.signIn,
     signInWithGoogle: authHelpers.signInWithGoogle,
-    signOut: authHelpers.signOut,
+    signOut: async () => { vaciarCache(); return authHelpers.signOut() },
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

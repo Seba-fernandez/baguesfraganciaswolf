@@ -6,7 +6,7 @@ import { indexarPromos } from '../../lib/promos';
 import { esPublicable, presentacionPorDefecto, tituloDe } from '../../lib/producto';
 import { lazy, Suspense } from 'react';
 import TiendaLayout from './TiendaLayout';
-import { fotoDe } from './ProductThumb';
+import { fotoDe } from '../../lib/fotos';
 
 // La ficha se carga cuando se abre una, no antes. Se lleva con ella su CSS, que
 // si no viaja embebido en el HTML de la portada y el navegador lo cruza contra

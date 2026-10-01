@@ -1,3 +1,4 @@
+import { fotoDe, fotoChica } from '../../lib/fotos';
 import { useState } from 'react';
 import { GENEROS, MOMENTOS, ML_SUGERIDOS } from '../../data/constants';
 import ImageUpload from '../ui/ImageUpload';
@@ -76,7 +77,7 @@ export default function ProductoEditor({ producto, onClose, onCreate, onUpdate, 
 
         <div className={s.field}>
           <label className={s.label}>Foto del frasco</label>
-          <ImageUpload value={form.imagen_url} onChange={(url) => set('imagen_url', url)} bucket="productos" />
+          <ImageUpload value={form.imagen_url} onChange={(url) => set('imagen_url', url)} bucket="productos" respaldo={fotoChica(fotoDe(form))} />
         </div>
 
         <div className={s.row2}>
@@ -143,7 +144,7 @@ export default function ProductoEditor({ producto, onClose, onCreate, onUpdate, 
                   {p.codigo}{p.nombre_proveedor ? ` · ${p.nombre_proveedor}` : ''}
                 </span>
               )}
-              <button type="button" className={s.btnGhost} style={{ padding: '8px 10px', borderRadius: 10 }} onClick={() => delPres(i)}>✕</button>
+              <button type="button" className={s.btnGhost} style={{ padding: '8px 10px', borderRadius: 'var(--r-sm)' }} onClick={() => delPres(i)}>✕</button>
             </div>
           ))}
           <datalist id="ml-sugeridos">{ML_SUGERIDOS.map((ml) => <option key={ml} value={ml} />)}</datalist>

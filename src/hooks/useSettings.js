@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { leerCache, guardarCache, traerConCache } from '../lib/cachePanel';
 
 const DEFAULTS = {
   whatsapp_owner: '',
@@ -12,18 +13,23 @@ const DEFAULTS = {
   ciclo_hasta: null,
 };
 
+const CLAVE = 'settings';
+const buscar = () => supabase.from('settings').select('*').eq('id', 1).single();
+
+export const precargarAjustes = () => traerConCache(CLAVE, buscar);
+
 export default function useSettings() {
-  const [settings, setSettings] = useState(DEFAULTS);
-  const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState(() => ({ ...DEFAULTS, ...(leerCache(CLAVE) || {}) }));
+  const [loading, setLoading] = useState(() => !leerCache(CLAVE));
 
   const load = useCallback(async () => {
-    setLoading(true);
-    const { data } = await supabase.from('settings').select('*').eq('id', 1).single();
+    const { data } = await traerConCache(CLAVE, buscar);
     if (data) setSettings({ ...DEFAULTS, ...data });
     setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (!loading) guardarCache(CLAVE, settings); }, [settings, loading]);
 
   const updateSettings = useCallback(async (patch) => {
     setSettings((s) => ({ ...s, ...patch }));

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs",
+    "build": "node scripts/fotos/variantes.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs",
     "preview": "vite preview",
     "fondo": "node scripts/fondo/generar-duna.mjs && node scripts/fondo/rasterizar.mjs",
     "fotos": "npm run fotos:componer && npm run fotos:variantes",

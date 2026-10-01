@@ -4,6 +4,7 @@ import { pesos } from '../../lib/format';
 import Toggle from '../ui/Toggle';
 import FAB from '../ui/FAB';
 import { IconBottle } from '../ui/Icon';
+import { fotoDe, fotoChica } from '../../lib/fotos';
 import ProductoEditor from './ProductoEditor';
 import ProductosTabla from './ProductosTabla';
 import s from './panel.module.css';
@@ -77,7 +78,11 @@ export default function ProductosScreen() {
           {visibles.map((producto) => (
             <div key={producto.id} className={`${p.card} ${!producto.activo ? p.paused : ''}`}>
               <button type="button" className={p.thumbBtn} onClick={() => setEditando(producto)} aria-label={`Editar ${producto.nombre}`}>
-                {producto.imagen_url ? <img src={producto.imagen_url} alt="" /> : <IconBottle size={22} />}
+                {(() => {
+                  // La foto subida a mano gana; si no hay, la del catálogo (la misma que ve la clienta).
+                  const src = producto.imagen_url || fotoChica(fotoDe(producto));
+                  return src ? <img src={src} alt="" loading="lazy" decoding="async" /> : <IconBottle size={22} />;
+                })()}
               </button>
               <button type="button" className={p.body} onClick={() => setEditando(producto)}>
                 <span className={p.name}>{producto.nombre}</span>

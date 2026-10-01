@@ -1,7 +1,7 @@
 .wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 
 .drop {
-  width: 120px; height: 150px; border-radius: 12px; overflow: hidden;
+  width: 120px; height: 150px; border-radius: var(--r-md); overflow: hidden;
   background: var(--glass-bg); border: 1px dashed var(--glass-border-strong);
   display: flex; align-items: center; justify-content: center;
 }

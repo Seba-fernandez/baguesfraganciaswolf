@@ -1,4 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+/* Fuentes: las mismas Figtree que ya aloja la tienda en /public/fonts. Antes
+   el panel pedía tres familias a Google Fonts con un @import, que frena el
+   primer dibujado hasta que contesta otro servidor. */
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/figtree-400.woff2') format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/figtree-500.woff2') format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/figtree-600.woff2') format('woff2'); }
 
 /* === TOKENS — NOCHE (oscuro, default) ===
    Misma familia "Vino & Pino" que la tienda (ver src/styles/tienda.css):
@@ -40,6 +45,8 @@
   --card-shadow-hover: rgba(0, 0, 0, 0.26);
   --glass-tint: rgba(0, 0, 0, 0.1);
   --glass-tint-strong: rgba(0, 0, 0, 0.12);
+  --surface: #1f1915;
+  --surface-strong: #251e19;
 }
 
 /* === TOKENS — DÍA (claro, marfil) ===
@@ -80,12 +87,22 @@
   --card-shadow-hover: rgba(90, 50, 20, 0.16);
   --glass-tint: rgba(122, 22, 37, 0.02);
   --glass-tint-strong: rgba(122, 22, 37, 0.03);
+  --surface: #f8f1e5;
+  --surface-strong: #fbf6ee;
 }
 
 :root {
-  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
-  --font-body: 'Onest', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Figtree', system-ui, sans-serif;
+  --font-body: 'Figtree', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Esquinas del panel. Más rectas que antes (había de 16 a 28 px y píldoras
+     en todos los botones): es una herramienta de trabajo, se lee más ordenada
+     y entra más en pantalla. Círculos (avatares, puntos) siguen en 50%. */
+  --r-xs: 4px;   /* chips, badges, puntos de estado chicos */
+  --r-sm: 6px;   /* botones, inputs, pastillas */
+  --r-md: 8px;   /* tarjetas, filas, cajas */
+  --r-lg: 10px;  /* hojas, modales, placas grandes */
 }
 
 /* === RESET === */
@@ -99,7 +116,6 @@ body {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background 0.5s ease;
   /* Sin overflow:hidden acá: lo necesita el panel (shell de altura fija con
      scroll interno en .app-main), pero bloquearía el scroll normal de la
      tienda pública. .app-shell ya trae su propio overflow:hidden. */
@@ -109,68 +125,26 @@ button { font-family: inherit; background: none; border: none; color: inherit; c
 input, textarea { font-family: inherit; outline: none; }
 ::-webkit-scrollbar { display: none; }
 
-/* === GLASS SYSTEM === */
+/* === SUPERFICIES ===
+   Se siguen llamando .glass y .glass-strong para no tocar cada componente,
+   pero ya no desenfocan lo de atrás. backdrop-filter con blur de 24-40 px (y
+   encima un filtro SVG de refracción) se recalculaba en cada cuadro de scroll
+   sobre un fondo animado: era la principal causa de que el panel se trabara.
+   Ahora son superficies sólidas con un filo de luz arriba. */
 
 .glass {
   position: relative;
-  background: var(--glass-bg);
+  background: var(--surface);
   border: 1px solid var(--glass-border);
-  isolation: isolate;
-  backdrop-filter: blur(24px) saturate(180%) brightness(1.1);
-  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.1);
+  box-shadow: inset 0 1px 0 var(--glass-inset-top);
 }
 
 .glass-strong {
   position: relative;
-  background: var(--glass-bg-strong);
+  background: var(--surface-strong);
   border: 1px solid var(--glass-border-strong);
-  isolation: isolate;
-  backdrop-filter: blur(40px) saturate(200%) brightness(1.12);
-  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.12);
+  box-shadow: inset 0 1px 0 var(--glass-inset-top), 0 12px 32px var(--card-shadow);
 }
-
-@supports (backdrop-filter: url(#x) blur(1px)) {
-  .glass {
-    backdrop-filter: url(#vajilla-glass-displace) blur(20px) saturate(180%) brightness(1.08);
-    -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.1);
-  }
-  .glass-strong {
-    backdrop-filter: url(#vajilla-glass-displace-strong) blur(32px) saturate(200%) brightness(1.12);
-    -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.12);
-  }
-}
-
-.glass::before, .glass-strong::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.glass::before {
-  background: linear-gradient(135deg, var(--glass-sheen-start) 0%, var(--glass-sheen-mid) 50%, transparent 100%);
-  box-shadow: inset 0 1px 0 var(--glass-inset-top), inset 0 -1px 0 var(--glass-inset-bottom);
-}
-
-.glass-strong::before {
-  background: linear-gradient(135deg, var(--glass-sheen-start) 0%, var(--glass-sheen-mid) 50%, transparent 100%);
-  box-shadow: inset 0 1.5px 0 var(--glass-inset-top), inset 0 -1px 0 var(--glass-inset-bottom);
-}
-
-.glass::after, .glass-strong::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.glass::after { background: var(--glass-tint); }
-.glass-strong::after { background: var(--glass-tint-strong); }
-.glass > *, .glass-strong > * { position: relative; z-index: 1; }
 
 /* === BACKGROUND === */
 
@@ -178,26 +152,16 @@ input, textarea { font-family: inherit; outline: none; }
   position: fixed;
   inset: 0;
   z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  transition: background 0.5s ease;
-}
-
-.bg-scene--dark { background: var(--bg-scene); }
-.bg-scene--light { background: linear-gradient(135deg, #f3e9d7 0%, #ece0c9 55%, #e8dcc2 100%); }
-
-.coral-grain {
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 20% 30%, rgba(122,22,37,0.05) 0%, transparent 1%),
-    radial-gradient(circle at 60% 70%, rgba(122,22,37,0.04) 0%, transparent 1%),
-    radial-gradient(circle at 80% 20%, rgba(122,22,37,0.035) 0%, transparent 1%);
-  background-size: 3px 3px, 5px 5px, 4px 4px;
-  opacity: 0.5;
-  mix-blend-mode: multiply;
   pointer-events: none;
 }
+
+.bg-scene--dark {
+  background:
+    radial-gradient(120% 70% at 0% 0%, #1d2a24 0%, transparent 55%),
+    radial-gradient(90% 60% at 100% 10%, #2a1418 0%, transparent 55%),
+    var(--bg-scene);
+}
+.bg-scene--light { background: linear-gradient(160deg, #f3e9d7 0%, #ece0c9 60%, #e8dcc2 100%); }
 
 /* === LAYOUT SHELL ===
    <960px: shell mobile de siempre — una columna centrada, BottomNav flotante.

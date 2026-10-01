@@ -95,7 +95,7 @@ export default function NuevoPedidoForm({ products, onClose, onCreate }) {
         <div className={s.field}>
           <label className={s.label}>Perfumes</label>
           {items.map((it, i) => (
-            <div key={i} style={{ border: '1px solid var(--glass-border)', borderRadius: 12, padding: 10, marginBottom: 8 }}>
+            <div key={i} style={{ border: '1px solid var(--glass-border)', borderRadius: 'var(--r-md)', padding: 10, marginBottom: 8 }}>
               <select
                 className={s.select}
                 value={it.product_id}
@@ -129,7 +129,7 @@ export default function NuevoPedidoForm({ products, onClose, onCreate }) {
                 <input className={s.input} style={{ flex: 1 }} inputMode="numeric" value={it.precio_unitario}
                   onChange={(e) => setItem(i, { precio_unitario: e.target.value.replace(/\D/g, '') })} placeholder="precio $" />
                 {items.length > 1 && (
-                  <button type="button" className={s.btnGhost} style={{ padding: '8px 10px', borderRadius: 10 }}
+                  <button type="button" className={s.btnGhost} style={{ padding: '8px 10px', borderRadius: 'var(--r-sm)' }}
                     onClick={() => setItems((a) => a.filter((_, idx) => idx !== i))}>✕</button>
                 )}
               </div>

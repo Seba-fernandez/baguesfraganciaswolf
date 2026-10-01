@@ -180,8 +180,9 @@ for (const [slug, porLinea] of Object.entries(fuentes)) {
         : await componerEscena(buf, f.foco, f.zoom);
       fs.mkdirSync(path.dirname(destino), { recursive: true });
       fs.writeFileSync(destino, salida);
-      // Las variantes viejas quedan con fecha anterior y variantes.mjs las rehace.
-      for (const w of [360, 560]) fs.rmSync(destino.replace(/\.webp$/, `-${w}w.webp`), { force: true });
+      // Las variantes (-360w, -560w) NO se borran: quedan con fecha anterior y
+      // variantes.mjs las rehace. Ese paso corre solo en cada build, asi que una
+      // foto nueva nunca llega a produccion sin sus anchos chicos.
       console.log(linea.padEnd(7), tipo.padEnd(8), slug);
     } catch (e) {
       errores.push(`${slug} (${linea}): ${e.message}`);

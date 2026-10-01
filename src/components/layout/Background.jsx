@@ -1,94 +1,15 @@
-import { motion, useReducedMotion } from 'motion/react';
 import { useTheme } from '../../contexts/ThemeContext';
 
-// Orbes de la "noche": pino + vino + dorado — misma familia que la tienda.
-const DARK_ORBS = [
-  { color: '#16382f', size: 500, x: '-15%', y: '-12%', delay: 0,   opacity: 0.6 },
-  { color: '#7a1625', size: 420, x: '85%',  y: '5%',   delay: 1.5, opacity: 0.55 },
-  { color: '#5aa88d', size: 460, x: '35%',  y: '85%',  delay: 3,   opacity: 0.4 },
-  { color: '#d8c48f', size: 380, x: '50%',  y: '40%',  delay: 4.5, opacity: 0.25 },
-];
-
-// Blobs del "día": vino + dorado sobre marfil, más suaves que en la noche.
-const LIGHT_BLOBS = [
-  { color: '#c98a3d', size: 600, x: '-15%', y: '-15%', delay: 0,   opacity: 0.35 },
-  { color: '#7a1625', size: 520, x: '85%',  y: '10%',  delay: 1.2, opacity: 0.22 },
-  { color: '#5aa88d', size: 480, x: '20%',  y: '85%',  delay: 2.4, opacity: 0.28 },
-  { color: '#d1495f', size: 420, x: '55%',  y: '40%',  delay: 3.6, opacity: 0.18 },
-  { color: '#8a6a2a', size: 380, x: '78%',  y: '70%',  delay: 4.8, opacity: 0.22 },
-];
-
 /**
- * Blob: dos capas
- * - Wrapper externo: tiene el blur estático, no se mueve. Chrome lo
- *   renderiza una vez en alta resolución y lo cachea.
- * - Hijo motion: solo cambia transform/scale. No tiene blur, solo el color.
+ * Fondo del panel: un degradé quieto, en CSS (.bg-scene en global.css).
  *
- * Resultado: blur nítido siempre, animación fluida.
+ * Antes eran cuatro orbes de color de 400-600 px, desenfocados a 80 px y
+ * animados sin parar con la librería de movimiento. Cada cuadro obligaba a
+ * recomponer el desenfoque detrás de todo el vidrio del panel: era lo que lo
+ * hacía sentir trabado en el celular. El panel es una herramienta de trabajo;
+ * el fondo no tiene que moverse.
  */
-function Blob({ color, size, x, y, delay, opacity }) {
-  const reduce = useReducedMotion();
-
-  const animate = reduce
-    ? {}
-    : {
-        x: ['0%', '8%', '-6%', '4%', '0%'],
-        y: ['0%', '-6%', '5%', '-3%', '0%'],
-        scale: [1, 1.07, 0.96, 1.04, 1],
-      };
-
-  return (
-    <div
-      className="orb-wrap"
-      style={{
-        position: 'absolute',
-        left: x,
-        top: y,
-        width: size,
-        height: size,
-        opacity,
-        // Blur EN EL WRAPPER, no en el hijo animado.
-        // Esto es lo que arregla la pixelación en Chrome desktop.
-        filter: 'blur(80px)',
-        // Forzar GPU layer dedicado para el blur
-        transform: 'translateZ(0)',
-        willChange: 'opacity',
-        pointerEvents: 'none',
-        // Aislar pintado para que Chrome no re-pinte el blur en cada frame
-        contain: 'layout paint',
-      }}
-    >
-      <motion.div
-        style={{
-          width: '100%',
-          height: '100%',
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
-          willChange: 'transform',
-        }}
-        animate={animate}
-        transition={{
-          duration: 18,
-          delay,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          times: [0, 0.25, 0.5, 0.75, 1],
-        }}
-      />
-    </div>
-  );
-}
-
 export default function Background() {
   const { theme } = useTheme();
-  const blobs = theme === 'light' ? LIGHT_BLOBS : DARK_ORBS;
-
-  return (
-    <div className={`bg-scene bg-scene--${theme}`} aria-hidden="true">
-      {blobs.map((blob, i) => (
-        <Blob key={i} {...blob} />
-      ))}
-      {theme === 'light' && <div className="coral-grain" />}
-    </div>
-  );
+  return <div className={`bg-scene bg-scene--${theme}`} aria-hidden="true" />;
 }

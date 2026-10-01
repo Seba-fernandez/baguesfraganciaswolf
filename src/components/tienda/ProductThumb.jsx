@@ -1,5 +1,5 @@
-import { FOTO_UNLOCK, FOTO_BAGUES } from '../../data/fotos';
-import { CARPETA_FOTOS, PROPORCION } from '../../config/ajustes';
+import { fotoDe } from '../../lib/fotos';
+import { PROPORCION } from '../../config/ajustes';
 import s from './ProductThumb.module.css';
 
 /**
@@ -26,20 +26,6 @@ function inicialDe(producto) {
   const base = producto?.inspirado_en || producto?.nombre || '';
   const limpio = base.replace(/[^A-Za-zÁÉÍÓÚÑáéíóúñ]/g, '');
   return (limpio.slice(0, 1) || 'B').toUpperCase();
-}
-
-export function fotoDe(producto, linea) {
-  const slug = producto?.slug;
-  if (!slug) return null;
-  const hayBagues = FOTO_BAGUES.has(slug);
-  const hayUnlock = FOTO_UNLOCK.has(slug);
-  const enUnlock = `${CARPETA_FOTOS.unlock}/${slug}.webp`;
-  const enBagues = `${CARPETA_FOTOS.bagues}/${slug}.webp`;
-  if (linea === 'bagues' && hayBagues) return enBagues;
-  if (linea === 'unlock' && hayUnlock) return enUnlock;
-  if (hayUnlock) return enUnlock;
-  if (hayBagues) return enBagues;
-  return null;
 }
 
 /**
@@ -91,3 +77,4 @@ export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.ta
     </div>
   );
 }
+

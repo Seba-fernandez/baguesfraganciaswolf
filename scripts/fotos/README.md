@@ -50,7 +50,7 @@ corresponde.
 ```
 npm run fotos:componer            arma las que faltan o cambiaron
 npm run fotos:componer -- --todo  rehace todas
-npm run fotos:variantes           los anchos chicos (360w, 560w) para celular
+npm run fotos:variantes           los anchos chicos (360w, 560w) para celular; también corre solo en cada build
 npm run fotos                     los dos anteriores
 ```
 

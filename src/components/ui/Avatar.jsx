@@ -6,7 +6,7 @@ function getInitials(name = '') {
   return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
 }
 
-export default function Avatar({ name = '', size = 44, radius = 14 }) {
+export default function Avatar({ name = '', size = 44, radius = 6 }) {
   const color = COLORS[(name.charCodeAt(0) || 0) % COLORS.length];
 
   return (

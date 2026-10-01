@@ -43,7 +43,7 @@ export default function ClientesScreen() {
           {visibles.map((c) => (
             <button key={c.id} className={s.card} onClick={() => setAbrir(c)}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <Avatar name={c.nombre} size={40} radius={12} />
+                <Avatar name={c.nombre} size={40} radius={6} />
                 <span style={{ flex: 1 }}>
                   <span className={s.cardName} style={{ display: 'block' }}>{c.nombre}</span>
                   <span className={s.cardMeta}>

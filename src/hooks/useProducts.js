@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { leerCache, guardarCache, traerConCache } from '../lib/cachePanel';
 
 // slug simple a partir del nombre: "Hawai Masculino" -> "hawai-masculino"
 export function slugify(texto) {
@@ -11,25 +12,35 @@ export function slugify(texto) {
 }
 
 const ORDEN = { column: 'orden', ascending: true };
+const CLAVE = 'products';
+
+const buscar = () =>
+  supabase
+    .from('products')
+    .select('*')
+    .order(ORDEN.column, { ascending: ORDEN.ascending })
+    .order('created_at', { ascending: true });
+
+/** La usa PanelApp para tener el catálogo listo antes de abrir la pestaña. */
+export const precargarProductos = () => traerConCache(CLAVE, buscar);
 
 export default function useProducts() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Arranca con lo que ya hay en memoria: sin "Cargando..." si ya se vio.
+  const [products, setProducts] = useState(() => leerCache(CLAVE) || []);
+  const [loading, setLoading] = useState(() => !leerCache(CLAVE));
   const [error, setError] = useState(null);
 
   const load = useCallback(async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order(ORDEN.column, { ascending: ORDEN.ascending })
-      .order('created_at', { ascending: true });
+    const { data, error } = await traerConCache(CLAVE, buscar);
     if (error) setError(error.message);
     else setProducts(data || []);
     setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // Los cambios locales (editar, pausar, borrar) también quedan en memoria.
+  useEffect(() => { if (!loading) guardarCache(CLAVE, products); }, [products, loading]);
 
   const createProduct = useCallback(async (patch) => {
     const nombre = (patch.nombre || '').trim();

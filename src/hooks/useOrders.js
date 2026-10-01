@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { normalizarTelefono } from '../lib/whatsapp';
+import { leerCache, guardarCache, traerConCache } from '../lib/cachePanel';
 
 const SELECT = `
   *,
@@ -16,23 +17,26 @@ export function proximoViernes(desde = new Date()) {
   return d.toISOString().slice(0, 10);
 }
 
+const CLAVE = 'orders';
+const buscar = () =>
+  supabase.from('orders').select(SELECT).order('created_at', { ascending: false });
+
+export const precargarPedidos = () => traerConCache(CLAVE, buscar);
+
 export default function useOrders() {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState(() => leerCache(CLAVE) || []);
+  const [loading, setLoading] = useState(() => !leerCache(CLAVE));
   const [error, setError] = useState(null);
 
   const load = useCallback(async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('orders')
-      .select(SELECT)
-      .order('created_at', { ascending: false });
+    const { data, error } = await traerConCache(CLAVE, buscar);
     if (error) setError(error.message);
     else setOrders(data || []);
     setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (!loading) guardarCache(CLAVE, orders); }, [orders, loading]);
 
   // Realtime: cuando entra un pedido de la web, refrescamos.
   useEffect(() => {

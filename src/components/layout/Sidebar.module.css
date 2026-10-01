@@ -24,7 +24,7 @@
   border-bottom: 1px solid var(--glass-border);
 }
 .mark {
-  width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: var(--r-sm); flex-shrink: 0;
   background: var(--accent-bg); border: 1px solid var(--accent-rim);
   color: var(--text-primary);
   font-family: var(--font-display); font-weight: 700; font-size: 15px;
@@ -38,7 +38,7 @@
 .nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .item {
   display: flex; align-items: center; gap: 12px;
-  padding: 11px 12px; border-radius: 12px;
+  padding: 11px 12px; border-radius: var(--r-sm);
   color: var(--text-tertiary); font-size: 14px; font-weight: 500;
   text-decoration: none;
   transition: background 0.18s, color 0.18s;
@@ -56,7 +56,7 @@
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .logout {
-  width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+  width: 32px; height: 32px; border-radius: var(--r-sm); flex-shrink: 0;
   display: grid; place-items: center; color: var(--text-tertiary);
   transition: background 0.18s, color 0.18s;
 }
@@ -65,7 +65,7 @@
 /* Salida a la tienda publica: el panel nunca es un callejon sin salida. */
 .verTienda {
   display: flex; align-items: center; gap: 10px;
-  margin: 0 12px 10px; padding: 10px 12px; border-radius: 12px;
+  margin: 0 12px 10px; padding: 10px 12px; border-radius: var(--r-md);
   font-size: 13.5px; color: var(--text-tertiary); text-decoration: none;
   border: 1px solid var(--glass-border);
   transition: color 0.2s, background 0.2s, border-color 0.2s;

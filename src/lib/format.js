@@ -8,7 +8,7 @@ export const pesos = (n) =>
   }).format(Number(n) || 0);
 
 export const fechaCorta = (iso) => {
-  if (!iso) return '—';
+  if (!iso) return 'Sin fecha';
   return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
 };
 

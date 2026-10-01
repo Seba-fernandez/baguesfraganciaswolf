@@ -33,9 +33,13 @@
 
 /* Tallas: pastillas chicas, se prenden. La linea y el nombre del frasco ya no
    van aca, van en la ficha. */
-.tallas { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+/* Los tamaños van siempre en UNA fila, repartidos en partes iguales. Con
+   wrap, los aromas de tres tamaños bajaban el tercero a otro renglón y las dos
+   tarjetas de la misma fila quedaban con el precio a distinta altura. */
+.tallas { display: flex; flex-wrap: nowrap; gap: 4px; margin-top: 8px; }
 .talla {
-  min-height: 30px; padding: 5px 9px; border-radius: var(--r-pill);
+  flex: 1 1 0; min-width: 0; text-align: center;
+  min-height: 32px; padding: 5px 4px; border-radius: var(--r-pill);
   background: none; border: 1px solid var(--line); color: var(--ink-dim);
   cursor: pointer; font-size: 0.72rem; white-space: nowrap;
   transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);

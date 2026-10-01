@@ -41,13 +41,12 @@ export default function ComoFunciona({ settings }) {
 
       <ol className={s.pasos}>
         {COMO_FUNCIONA.pasos.map((p, i) => (
-          <li key={p.n} className={`${s.paso} treveal`} style={{ transitionDelay: `${i * 90}ms` }}>
+          <li key={p.titulo} className={`${s.paso} treveal`} style={{ transitionDelay: `${i * 90}ms` }}>
             <span className={s.iconoWrap} aria-hidden="true">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 {ICONOS[p.icono]}
               </svg>
             </span>
-            <span className={`${s.numero} tnum`}>{p.n}</span>
             <h3 className={s.pasoTitulo}>{p.titulo}</h3>
             <p className={s.pasoTexto}>{p.texto}</p>
           </li>

@@ -14,7 +14,7 @@ const rango = (presentaciones = []) => {
   if (!precios.length) return 'Sin precio';
   const min = Math.min(...precios);
   const max = Math.max(...precios);
-  return min === max ? pesos(min) : `${pesos(min)} – ${pesos(max)}`;
+  return min === max ? pesos(min) : `${pesos(min)} a ${pesos(max)}`;
 };
 
 const GridIcon = () => (

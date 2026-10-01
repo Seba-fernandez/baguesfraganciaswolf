@@ -33,10 +33,12 @@ export const authHelpers = {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Vuelve a la raíz (es la URL que ya está en la allowlist de Supabase;
-        // agregar /panel ahí requeriría tocar la config del proyecto). App.jsx
-        // detecta el ?code= en "/" y manda al admin a /panel apenas resuelve.
-        redirectTo: `${window.location.origin}/`,
+        // Pide volver directo al panel. Si /panel no está en la lista de
+        // direcciones permitidas de Supabase, Supabase usa su "Site URL"; en
+        // ese caso se cae en la raíz (o en el dominio viejo, que redirige al
+        // nuevo) y el script de index.html desvía la vuelta a /panel con el
+        // token intacto. Las dos rutas terminan en el panel con sesión.
+        redirectTo: `${window.location.origin}/panel`,
         queryParams: { prompt: 'select_account' },
       },
     })

@@ -101,3 +101,15 @@ export function nombrePropioDe(presentacion, titulo = '') {
 export function lineaLabel(presentacion) {
   return presentacion?.linea === 'unlock' ? 'Unlock' : 'Bagues';
 }
+
+/**
+ * De que linea es un tamano, en una sola frase, para el carrito y el mensaje
+ * de WhatsApp: "Unlock" o "Bagues, caja Arizona". La clienta busca por el
+ * nombre del perfume original; el nombre de la caja solo se agrega cuando
+ * existe y es distinto, que es lo que figura en el envase que va a recibir.
+ */
+export function detalleLinea(presentacion, titulo = '') {
+  const linea = lineaLabel(presentacion);
+  const propio = nombrePropioDe(presentacion, titulo);
+  return propio ? `${linea}, caja ${propio}` : linea;
+}

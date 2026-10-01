@@ -29,7 +29,7 @@ export const INICIO = {
   corona: 'Grupo Wolf',
   aval: 'Casa Bagués · Córdoba',
 
-  titulo: ['El perfume que ya', 'conoce, al precio', 'que todavía no.'],
+  titulo: ['El perfume que ya', 'conocés, al precio', 'que todavía no.'],
   // Una sola linea. Los datos duros (cuantos, desde cuanto) van en la fila de
   // abajo, que se lee de un vistazo.
   bajada: 'El mismo aroma que ya te gusta, hecho por la casa Bagués, a precio de reventa directa. Acá en Córdoba, por WhatsApp.',
@@ -63,7 +63,6 @@ export const DESTACADOS = {
  * familiar (lo arrancó el papá); Bagués es la casa que fabrica los frascos.
  */
 export const NOSOTROS = {
-  eyebrow: 'Quiénes somos',
   titulo: 'El mismo perfume, sin la vidriera cara.',
   parrafos: [
     'Somos Grupo Wolf, un emprendimiento familiar de Córdoba. Lo arrancó mi viejo y hoy lo seguimos entre la familia, con una idea sencilla: acercarte los perfumes que todo el mundo quiere, de una persona a otra, sin el local caro que después terminás pagando vos.',
@@ -99,6 +98,9 @@ export const TARJETA = {
 
 export const FICHA = {
   agregar: 'Agregar al pedido',
+  // Debajo del nombre. La línea de cada tamaño (Unlock o Bagues) se aclara en
+  // las opciones de presentación, que es donde se elige.
+  inspirado: 'Versión inspirada en el perfume original.',
   sinCiclo: 'Este aroma no está disponible en este ciclo.',
   aviso:
     'Trabajo por encargo: el pedido me llega por WhatsApp y te confirmo stock y tiempos. ' +
@@ -108,9 +110,9 @@ export const FICHA = {
 export const COMO_FUNCIONA = {
   titulo: 'Cómo funciona',
   pasos: [
-    { n: '01', icono: 'bolsa', titulo: 'Armás el pedido', texto: 'Elegís aromas y tamaño. No se paga nada acá.' },
-    { n: '02', icono: 'chat', titulo: 'Te escribo', texto: 'Te confirmo stock, total y tiempos por WhatsApp.' },
-    { n: '03', icono: 'caja', titulo: 'Lo retirás', texto: 'Llega los viernes. Coordinamos en Córdoba.' },
+    { icono: 'bolsa', titulo: 'Armás el pedido', texto: 'Elegís aromas y tamaño. No se paga nada acá.' },
+    { icono: 'chat', titulo: 'Te escribo', texto: 'Te confirmo stock, total y tiempos por WhatsApp.' },
+    { icono: 'caja', titulo: 'Lo retirás', texto: 'Llega los viernes. Coordinamos en Córdoba.' },
   ],
   cita: 'Trabajo por encargo, con catálogo propio y precio de reventa directa.',
   boton: 'Escribime por WhatsApp',

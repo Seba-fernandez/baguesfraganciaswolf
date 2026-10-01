@@ -11,30 +11,54 @@ const GoogleIcon = () => (
   </svg>
 )
 
-export default function Login({ onSwitchToRegister }) {
+// Mensajes de Supabase traducidos a lo que hay que hacer. La cuenta del panel
+// es de Google: ingresar con email y contraseña devuelve "Invalid login
+// credentials" aunque el email sea el correcto, porque esa cuenta no tiene
+// contraseña. Sin traducir, eso se leía como "el usuario no existe".
+function traducir(msg = '') {
+  const m = msg.toLowerCase()
+  if (m.includes('invalid login credentials'))
+    return 'Ese email no tiene contraseña cargada. Tu cuenta del panel entra con Google.'
+  if (m.includes('email not confirmed')) return 'Falta confirmar el email.'
+  if (m.includes('redirect') || m.includes('not allowed'))
+    return 'Supabase rechazó la vuelta al sitio. Revisá la URL del sitio en Supabase (Authentication, URL Configuration).'
+  if (m.includes('network') || m.includes('fetch')) return 'Sin conexión con la base. Probá de nuevo.'
+  return msg || 'No se pudo ingresar.'
+}
+
+// Si Google o Supabase devolvieron un error en la URL, se muestra en vez de
+// volver al formulario en silencio.
+function errorDeVuelta() {
+  if (typeof window === 'undefined') return ''
+  const p = new URLSearchParams(window.location.search + '&' + window.location.hash.replace(/^#/, ''))
+  const e = p.get('error_description') || p.get('error')
+  return e ? traducir(e.replace(/\+/g, ' ')) : ''
+}
+
+export default function Login() {
   const { signIn, signInWithGoogle } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [googleLoading, setGoogleLoading] = useState(false)
+  const [error, setError] = useState(errorDeVuelta)
+  const [conClave, setConClave] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const { error } = await signIn(email, password)
-    if (error) setError(error.message)
+    const { error } = await signIn(email.trim(), password)
+    if (error) setError(traducir(error.message))
     setLoading(false)
   }
-
-  const [googleLoading, setGoogleLoading] = useState(false)
 
   const handleGoogle = async () => {
     setError('')
     setGoogleLoading(true)
     const { error } = await signInWithGoogle()
     if (error) {
-      setError(error.message)
+      setError(traducir(error.message))
       setGoogleLoading(false)
     }
     // si no hay error, el navegador redirige a Google en este mismo instante
@@ -44,51 +68,50 @@ export default function Login({ onSwitchToRegister }) {
     <div className={s.screen}>
       <div className={`${s.card} glass`}>
         <h1 className={s.title}>Bagues Grupo Wolf</h1>
-        <p className={s.subtitle}>Panel de gestión · acceso privado</p>
-
-        <form onSubmit={handleSubmit} className={s.form}>
-          <label className={s.label}>EMAIL</label>
-          <input
-            type="email"
-            className={s.input}
-            placeholder="tu@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-          />
-
-          <label className={s.label}>CONTRASEÑA</label>
-          <input
-            type="password"
-            className={s.input}
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-          />
-
-          {error && <p className={s.error}>{error}</p>}
-
-          <button type="submit" className={`${s.btn} ${s.primary}`} disabled={loading}>
-            {loading ? 'Ingresando...' : 'Ingresar'}
-          </button>
-        </form>
-
-        <div className={s.divider}><span>o</span></div>
+        <p className={s.subtitle}>Panel de gestión, acceso privado</p>
 
         <button onClick={handleGoogle} className={`${s.btn} ${s.google}`} disabled={googleLoading}>
           <GoogleIcon />
-          {googleLoading ? 'Abriendo Google…' : 'Continuar con Google'}
+          {googleLoading ? 'Abriendo Google…' : 'Ingresar con Google'}
         </button>
 
-        <p className={s.switch}>
-          ¿No tenés cuenta?{' '}
-          <button type="button" onClick={onSwitchToRegister} className={s.link}>
-            Registrate
-          </button>
-        </p>
+        {error && <p className={s.error} role="alert">{error}</p>}
+
+        {conClave ? (
+          <form onSubmit={handleSubmit} className={s.form}>
+            <label className={s.label} htmlFor="login-email">EMAIL</label>
+            <input
+              id="login-email"
+              type="email"
+              className={s.input}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
+
+            <label className={s.label} htmlFor="login-clave">CONTRASEÑA</label>
+            <input
+              id="login-clave"
+              type="password"
+              className={s.input}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
+
+            <button type="submit" className={`${s.btn} ${s.primary}`} disabled={loading}>
+              {loading ? 'Ingresando…' : 'Ingresar'}
+            </button>
+          </form>
+        ) : (
+          <p className={s.switch}>
+            <button type="button" onClick={() => setConClave(true)} className={s.link}>
+              Ingresar con email y contraseña
+            </button>
+          </p>
+        )}
       </div>
     </div>
   )

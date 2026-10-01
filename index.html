@@ -102,9 +102,16 @@
       // tienda pública, que no lo usa para nada.
       // Acá se desvía antes de que baje una sola línea del bundle, con la query
       // intacta para que el panel la procese.
+      //
+      // Supabase puede volver de tres formas: ?code= (flujo PKCE),
+      // #access_token= (flujo implícito, el que usa supabase-js por defecto) o
+      // con un error (?error= / #error=). Si se mira solo el ?code=, la vuelta
+      // con el token en el hash se queda en la tienda y la sesión se pierde:
+      // ese era el motivo de que el panel pidiera ingresar de nuevo sin fin.
       (function () {
         var l = window.location;
-        if (l.pathname === '/' && /[?&]code=/.test(l.search)) {
+        var vuelta = /[?&](code|error)=/.test(l.search) || /(access_token|error)=/.test(l.hash);
+        if (l.pathname === '/' && vuelta) {
           l.replace('/panel' + l.search + l.hash);
         }
       })();

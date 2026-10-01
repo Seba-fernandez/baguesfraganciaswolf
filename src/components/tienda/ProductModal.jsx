@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import { GENEROS, MOMENTOS } from '../../data/constants';
-import { presentacionesActivas, presentacionPorDefecto, tieneNotas, tituloDe, nombrePropioDe, lineaLabel, hayQueAclararNombre } from '../../lib/producto';
+import { presentacionesActivas, presentacionPorDefecto, tieneNotas, tituloDe, detalleLinea } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import { FICHA } from '../../config/contenido';
 import { CANTIDAD_MAXIMA } from '../../config/ajustes';
@@ -33,7 +33,6 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
 
   const elegida = opciones.find((p) => p.ml === ml) || null;
   const titulo = tituloDe(producto);
-  const aclarar = hayQueAclararNombre(producto);
   const promo = elegida?.grupo_promo ? promos[elegida.grupo_promo] : null;
 
   function sumar() {
@@ -45,7 +44,7 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
   return (
     <>
       <div className={s.overlay} onClick={onClose} />
-      <div className={s.sheet} role="dialog" aria-modal="true" aria-label={producto.inspirado_en || producto.nombre}>
+      <div className={s.sheet} role="dialog" aria-modal="true" aria-label={titulo}>
         <button ref={cerrarRef} className={s.cerrar} onClick={onClose} aria-label="Cerrar">✕</button>
 
         <div className={s.media}>
@@ -60,11 +59,7 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
           </p>
 
           <h2 className={s.nombre}>{titulo}</h2>
-          <p className={s.inspirado}>
-            {aclarar && !String(producto.nombre).includes('*')
-              ? `Versión inspirada. En el catálogo figura como ${producto.nombre}.`
-              : 'Versión inspirada de la casa Bagués.'}
-          </p>
+          <p className={s.inspirado}>{FICHA.inspirado}</p>
 
           {producto.descripcion_larga && <p className={s.desc}>{producto.descripcion_larga}</p>}
 
@@ -97,11 +92,13 @@ export default function ProductModal({ producto, onClose, promos = {} }) {
                         aria-pressed={on}
                         onClick={() => setMl(p.ml)}
                       >
-                        <span className={`${s.opMl} tnum`}>{p.ml} ml</span>
-                        <span className={`${s.opPrecio} tnum`}>{pesos(p.precio)}</span>
-                        <span className={s.opProv}>
-                          {lineaLabel(p)}
-                          {nombrePropioDe(p, titulo) ? ` · frasco "${nombrePropioDe(p, titulo)}"` : ''}
+                        <span className={s.opIzq}>
+                          <span className={`${s.opMl} tnum`}>{p.ml} ml</span>
+                          <span className={s.opProv}>{detalleLinea(p, titulo)}</span>
+                        </span>
+                        <span className={`${s.opPrecio} tnum`}>
+                          {p.precio_anterior ? <s className={s.opAntes}>{pesos(p.precio_anterior)}</s> : null}
+                          <span>{pesos(p.precio)}</span>
                         </span>
                         {p.grupo_promo && promos[p.grupo_promo] && <span className={s.opSello}>2x1</span>}
                       </button>

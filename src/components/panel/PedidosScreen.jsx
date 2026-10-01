@@ -69,7 +69,7 @@ export default function PedidosScreen() {
                 <span className={s.columnCount}>{col.pedidos.length}</span>
               </div>
               {col.pedidos.length === 0 ? (
-                <div style={{ fontSize: 12, color: 'var(--text-quaternary)', padding: '2px 4px 4px' }}>—</div>
+                <div style={{ fontSize: 12, color: 'var(--text-quaternary)', padding: '2px 4px 4px' }}>Vacío</div>
               ) : (
                 <div className={s.list}>
                   {col.pedidos.map((o) => (

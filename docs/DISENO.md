@@ -50,7 +50,6 @@ ni el dorado clásico de perfumería.
 | `--amber-soft` | `rgba(224,112,138,.16)` | Relleno tenue de estado activo |
 | `--on-amber` | `#22110f` | Texto sobre el acento (oscuro, nunca blanco) |
 | `--gold` | `#d6a862` | Oro de arena: brillos del fondo, filetes, el aval |
-| `--tile` `--tile-2` `--tile-3` | `#ede2d2` `#e2d3bd` `#d7c4a8` | Porcelana cálida donde se apoyan los frascos |
 | `--line` / `--line-bright` | hueso al 11% / 24% | Hairlines |
 
 **Ojo con el nombre:** las variables se llaman `--amber*` por herencia de una
@@ -189,17 +188,23 @@ pantalla. Si se regenera la escena con otro piso, se tocan esos dos números.
 
 ## Las fotos de producto
 
-Vienen de los catálogos públicos de las proveedoras y son de dos clases, que se
-tratan distinto ([`clasificar-fondos.mjs`](../scripts/fotos/clasificar-fondos.mjs)
-las separa mirando esquinas y bordes):
+Vienen de las tiendas públicas de las proveedoras y del PDF del ciclo, y
+[`componer.mjs`](../scripts/fotos/componer.mjs) las deja **todas iguales**:
+3:4, llenando el cuadro entero, sin aire ni recuadro.
 
-- **Recorte o blanco de estudio** → se apoyan sobre el azulejo de **porcelana
-  cálida**, con aire alrededor (`object-fit: contain`). El tono del azulejo y el
-  color al que el script normaliza el blanco son el mismo, así que no se ve
-  recuadro.
-- **Foto con fondo propio** (mármol, luces, escena) → ocupan el cuadro entero a
-  sangre (`object-fit: cover`). Achicadas dentro del azulejo parecían una foto
-  pegada encima de otra.
+- **Recorte** (todas las cajas de Bagués, algunos frascos de Unlock) → se apoya
+  en un **estudio espresso**: la pared baja de `#2a1f17` a `#1d1510`, un halo de
+  luz en el oro de arena al 20 %, un piso con su filo de luz, sombra de contacto
+  y un reflejo tenue del frasco. Es el mismo espresso de la página, así que la
+  tarjeta no se lee como una foto pegada.
+- **Escena** (la mayoría de Unlock: luces, mármol, sombras de ventana) → se
+  recorta a 3:4 centrada en el frasco.
+
+Antes había un azulejo de porcelana clara para los recortes y escenas a sangre
+para el resto, y algunas cajas traían un beige propio que no coincidía con el
+azulejo: tres tratamientos en la misma grilla. Se descartó el azulejo claro
+porque las cajas de Bagués son blancas, rosas y grises y sobre porcelana se
+lavaban.
 
 Cuando todavía no hay foto se muestra la inicial del aroma sobre un fondo cálido.
 Una foto equivocada es peor que ninguna: sin foto no pasa nada, con la foto

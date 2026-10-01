@@ -22,7 +22,14 @@ const app = (
 // cuando hay marcado servido se hidrata sobre él en vez de volver a dibujarlo
 // desde cero. En las rutas que no se pre-generan el div viene vacío y se monta
 // normal.
-if (raiz.hasChildNodes()) {
+// El HTML pre-generado es SIEMPRE el de la portada, y Vercel lo sirve también
+// en /catalogo y /panel por la reescritura. Hidratar la portada sobre otra ruta
+// es un desajuste garantizado: React lo detecta, tira errores en consola y
+// redibuja todo igual. En cualquier ruta que no sea "/" se vacía y se monta.
+const esPortada = window.location.pathname === '/'
+if (!esPortada && raiz.hasChildNodes()) raiz.textContent = ''
+
+if (esPortada && raiz.hasChildNodes()) {
   // La hidratación espera a que el navegador haya dibujado.
   //
   // El marcado ya está completo y es navegable sin JavaScript: los dos botones

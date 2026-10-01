@@ -3,6 +3,8 @@
 // No usa API de Meta: solo genera el deep link que abre el chat con el mensaje.
 // ============================================================================
 
+import { detalleLinea } from './producto';
+
 /** Deja solo dígitos (formato internacional sin "+"). */
 export function normalizarTelefono(valor) {
   return String(valor || '').replace(/\D/g, '');
@@ -31,8 +33,10 @@ export function mensajePedidoCliente({ nombre, items, numero, total }) {
   const lineas = items.map((it) => {
     const cod = it.codigo ? `[${it.codigo}] ` : '';
     const ml = it.ml ? ` ${it.ml}ml` : '';
-    const prov = it.nombre_proveedor ? ` (${it.nombre_proveedor})` : '';
-    return `${cod}${it.nombre}${ml}${prov} x${it.cantidad}`;
+    // La linea y la caja van siempre: con el codigo alcanza para cargarlo,
+    // pero leido de corrido hay que saber sin abrir nada si es Unlock o Bagues.
+    const linea = it.linea ? ` (${detalleLinea(it, it.nombre)})` : '';
+    return `${cod}${it.nombre}${ml}${linea} x${it.cantidad}`;
   });
   const suma = typeof total === 'number'
     ? total

@@ -57,13 +57,6 @@
   --line: rgba(243, 236, 225, 0.11);
   --line-bright: rgba(243, 236, 225, 0.24);
 
-  /* Porcelana cálida de las fotos. El azulejo sobre el que se apoya cada frasco
-     y el color al que se normaliza el blanco de estudio (ver scripts/fotos):
-     tienen que ser el MISMO tono para que la foto no muestre recuadro. */
-  --tile: #ede2d2;
-  --tile-2: #e2d3bd;
-  --tile-3: #d7c4a8;
-
   /* --- Vidrio. Un solo material en tres grosores (ver "vidrio" abajo):
        clear  controles chicos: casi no desenfoca, se ve el fondo tal cual
        frost  placas con texto encima: desenfoca para que se lea

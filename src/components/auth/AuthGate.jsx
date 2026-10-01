@@ -1,7 +1,5 @@
-import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import Login from './Login'
-import Register from './Register'
 import s from './Auth.module.css'
 
 // Bypass SOLO para QA visual en desarrollo local — nunca existe en el build de
@@ -14,7 +12,6 @@ const qaBypass = import.meta.env.DEV && new URLSearchParams(window.location.sear
 
 export default function AuthGate({ children }) {
   const { user, isAdmin, loading, signOut } = useAuth()
-  const [mode, setMode] = useState('login')
 
   if (qaBypass) return children
 
@@ -27,11 +24,9 @@ export default function AuthGate({ children }) {
   }
 
   if (!user) {
-    return mode === 'login' ? (
-      <Login onSwitchToRegister={() => setMode('register')} />
-    ) : (
-      <Register onSwitchToLogin={() => setMode('login')} />
-    )
+    // Sin pantalla de registro: el panel es de una sola cuenta y cualquier
+    // alta nueva quedaba como usuario huérfano sin acceso.
+    return <Login />
   }
 
   // Logueado pero sin permiso de admin.

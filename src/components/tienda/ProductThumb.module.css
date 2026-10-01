@@ -2,26 +2,19 @@
 .wrap {
   position: relative; width: 100%; overflow: hidden;
   border-radius: var(--r-media);
-  background: var(--bg-2);
+  /* El mismo espresso del estudio de las fotos: mientras la imagen baja no
+     hay salto de color. */
+  background: #1d1510;
 }
-/* El frasco se apoya sobre una porcelana cálida: el mismo tono al que el script
-   normaliza el blanco de estudio (--tile), así el frasco flota sobre una
-   superficie iluminada, sin recuadro blanco crudo y sin recortes dentados. Un
-   viñeteo suave adentro le da profundidad de vidriera. */
-.wrap:not(.sangre):has(> .img) {
-  background:
-    radial-gradient(120% 96% at 50% 6%, rgba(255, 255, 255, 0.34) 0%, transparent 44%),
-    radial-gradient(130% 120% at 50% 120%, rgba(120, 92, 62, 0.20) 0%, transparent 58%),
-    linear-gradient(178deg, var(--tile) 0%, var(--tile-2) 66%, var(--tile-3) 100%);
-  box-shadow: inset 0 0 0 1px rgba(120, 92, 62, 0.10), inset 0 -18px 40px -28px rgba(90, 66, 42, 0.5);
+/* Todas las fotos llenan el cuadro. Las del pipeline ya vienen a 3:4, asi que
+   cover no recorta nada; solo actua sobre una foto subida a mano desde el
+   panel con otra proporcion, y ahi encuadra apenas arriba del medio, que es
+   donde suele estar el frasco. */
+.img {
+  width: 100%; height: 100%; display: block;
+  object-fit: cover; object-position: 50% 42%;
+  transition: transform var(--dur-slow) var(--ease);
 }
-/* contain para ver el frasco entero, con aire alrededor para que respire. */
-.img { width: 100%; height: 100%; object-fit: contain; display: block; padding: clamp(8px, 3%, 18px); }
-
-/* Foto con fondo propio: a sangre. Encuadre centrado apenas arriba del medio,
-   que es donde suele estar el frasco en una foto de producto. */
-.sangre { background: var(--bg-3); }
-.imgSangre { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; display: block; }
 
 /* Placeholder tipografico. Tres tonos cálidos, para que las tarjetas sin foto
    no se lean como una pared plana. */

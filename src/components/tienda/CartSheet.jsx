@@ -3,6 +3,7 @@ import { useCart } from '../../contexts/CartContext';
 import useCheckoutWeb from '../../hooks/useCheckoutWeb';
 import { pesos } from '../../lib/format';
 import { linkWhatsApp, mensajePedidoCliente, normalizarTelefono } from '../../lib/whatsapp';
+import { detalleLinea } from '../../lib/producto';
 import s from './CartSheet.module.css';
 
 export default function CartSheet({ settings, onVerPromo }) {
@@ -100,7 +101,7 @@ export default function CartSheet({ settings, onVerPromo }) {
                         <p className={s.itemNombre}>{it.nombre}</p>
                         <p className={s.itemMeta}>
                           <span className="tnum">{it.ml} ml</span>
-                          {it.nombre_proveedor ? ` · ${it.nombre_proveedor}` : ''}
+                          {` · ${detalleLinea(it, it.nombre)}`}
                           {it.grupo_promo && gruposActivos.has(it.grupo_promo) ? <span className={s.itemSello}>2x1</span> : null}
                         </p>
                         <div className={s.stepper}>

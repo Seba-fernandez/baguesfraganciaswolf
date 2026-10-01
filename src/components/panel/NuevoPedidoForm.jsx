@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { ESTADOS_PEDIDO_LISTA } from '../../data/constants';
 import { pesos } from '../../lib/format';
+import { lineaLabel } from '../../lib/producto';
 import s from './panel.module.css';
+
+// "Sauvage Unlock 100ml": la línea sale de la presentación elegida, no se
+// asume Bagués (los frascos de Unlock también se cargan desde acá).
+const snapshot = (p, pres) => `${p.nombre} ${lineaLabel(pres)}${pres?.ml ? ` ${pres.ml}ml` : ''}`;
 
 const itemVacio = { product_id: '', nombre_snapshot: '', ml: '', cantidad: 1, precio_unitario: '' };
 
@@ -25,7 +30,7 @@ export default function NuevoPedidoForm({ products, onClose, onCreate }) {
     const pres = (p.presentaciones || []).find((x) => x.activo !== false) || p.presentaciones?.[0];
     setItem(i, {
       product_id: p.id,
-      nombre_snapshot: `${p.nombre} Bagués${pres?.ml ? ` ${pres.ml}ml` : ''}`,
+      nombre_snapshot: snapshot(p, pres),
       ml: pres?.ml || '',
       precio_unitario: pres?.precio || '',
     });
@@ -35,7 +40,7 @@ export default function NuevoPedidoForm({ products, onClose, onCreate }) {
     const it = items[i];
     const p = products.find((x) => x.id === it.product_id);
     const pres = p?.presentaciones?.find((x) => String(x.ml) === String(ml));
-    const base = p ? `${p.nombre} Bagués ${ml}ml` : it.nombre_snapshot;
+    const base = p && pres ? snapshot(p, pres) : it.nombre_snapshot;
     setItem(i, { ml, precio_unitario: pres?.precio ?? it.precio_unitario, nombre_snapshot: base });
   };
 
@@ -96,7 +101,7 @@ export default function NuevoPedidoForm({ products, onClose, onCreate }) {
                 value={it.product_id}
                 onChange={(e) => elegirProducto(i, e.target.value)}
               >
-                <option value="">— Elegir del catálogo o escribir a mano —</option>
+                <option value="">Elegir del catálogo o escribir a mano</option>
                 {activos.map((p) => <option key={p.id} value={p.id}>{p.nombre}</option>)}
               </select>
 

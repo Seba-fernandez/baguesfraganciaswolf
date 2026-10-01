@@ -60,8 +60,11 @@
 .campo { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
 .opciones { display: flex; flex-direction: column; gap: 8px; }
 .opcion {
-  display: grid; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 12px;
-  min-height: 52px; padding: 11px 16px; cursor: pointer; text-align: left;
+  /* Izquierda: tamaño y de qué línea es. Derecha: precio. Dos renglones en
+     vez de cuatro columnas, para que "Bagues, caja New York Fem Heroes" entre
+     en un celular sin apretar el precio. */
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px;
+  min-height: 60px; padding: 10px 20px; cursor: pointer; text-align: left;
   background: none; border: 1px solid var(--line); border-radius: var(--r-pill);
   color: var(--ink-dim);
   transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
@@ -69,9 +72,11 @@
 .opcion:hover { border-color: var(--line-bright); color: var(--ink); }
 .opcionOn { border-color: var(--amber); background: var(--amber-soft); color: var(--ink); }
 .opcion:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
-.opMl { font-weight: 500; }
-.opPrecio { font-weight: 600; color: var(--ink); }
-.opProv { font-size: 0.72rem; color: var(--ink-faint); }
+.opIzq { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.opMl { font-weight: 600; color: var(--ink); }
+.opPrecio { font-weight: 600; color: var(--ink); display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+.opAntes { font-weight: 400; font-size: 0.74rem; color: var(--ink-faint); text-decoration-thickness: 1px; }
+.opProv { font-size: 0.74rem; color: var(--ink-dim); letter-spacing: 0.01em; }
 .opSello {
   padding: 3px 9px; border-radius: var(--r-pill);
   background: var(--amber); color: var(--on-amber); font-size: 0.62rem; font-weight: 600;

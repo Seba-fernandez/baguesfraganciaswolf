@@ -110,6 +110,11 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { min-height: 100vh; height: 100%; }
 
+/* El panel ocupa exactamente la pantalla visible y scrollea por dentro
+   (.app-main). dvh es el alto real del celular sin la barra del navegador;
+   100vh lo incluye y dejaba la página un poco más alta que la pantalla. */
+html:has(.app-shell), body:has(.app-shell) { height: 100dvh; overflow: hidden; }
+
 body {
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg-base);
@@ -130,17 +135,20 @@ input, textarea { font-family: inherit; outline: none; }
    pero ya no desenfocan lo de atrás. backdrop-filter con blur de 24-40 px (y
    encima un filtro SVG de refracción) se recalculaba en cada cuadro de scroll
    sobre un fondo animado: era la principal causa de que el panel se trabara.
-   Ahora son superficies sólidas con un filo de luz arriba. */
+   Ahora son superficies sólidas con un filo de luz arriba.
+
+   Ojo: NO llevan position. Antes tenían position: relative y le ganaban al
+   position: fixed de la barra de abajo y de las hojas (mismo peso, gana la
+   que carga después): la barra caía al final de la página y había que
+   deslizar para encontrarla. */
 
 .glass {
-  position: relative;
   background: var(--surface);
   border: 1px solid var(--glass-border);
   box-shadow: inset 0 1px 0 var(--glass-inset-top);
 }
 
 .glass-strong {
-  position: relative;
   background: var(--surface-strong);
   border: 1px solid var(--glass-border-strong);
   box-shadow: inset 0 1px 0 var(--glass-inset-top), 0 12px 32px var(--card-shadow);
@@ -173,6 +181,7 @@ input, textarea { font-family: inherit; outline: none; }
   position: relative;
   width: 100%;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -201,7 +210,8 @@ input, textarea { font-family: inherit; outline: none; }
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 16px 130px;
+  /* Abajo deja lugar para la barra fija y la franja del gesto de inicio. */
+  padding: 16px 16px calc(108px + env(safe-area-inset-bottom, 0px));
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }

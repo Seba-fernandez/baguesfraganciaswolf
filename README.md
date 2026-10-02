@@ -8,6 +8,7 @@ PDF y campañas que cambian todos los meses.
 
 | | |
 | --- | --- |
+| Contexto de trabajo para Claude Code (leer antes de tocar nada) | [`CLAUDE.md`](CLAUDE.md) |
 | Qué es esto, por qué existe y en qué estado está | [`docs/CONTEXTO.md`](docs/CONTEXTO.md) |
 | Sistema visual y kit de marca | [`docs/DISENO.md`](docs/DISENO.md) |
 | El esqueleto reutilizable en otro proyecto | [`docs/KIT.md`](docs/KIT.md) |
@@ -70,11 +71,18 @@ completo vive en su propia página (`/catalogo`) con buscador, filtros por géne
 y promoción, y paginado.
 
 Cada aroma abre una ficha con la pirámide olfativa y los tamaños de las dos
-líneas, cada uno con su código. El pedido se arma en un cajón lateral, calcula
-el 2x1 y termina en un mensaje de WhatsApp listo para enviar.
+líneas. Cada tamaño dice de qué línea es ("Unlock" o "Bagues, caja Arizona") y
+muestra el precio de lista tachado. El pedido se arma en un cajón lateral,
+calcula el 2x1 cuando el ciclo lo tiene y termina en un mensaje de WhatsApp
+listo para enviar.
+
+Los perfumes se muestran con su **nombre oficial**, que es como la gente los
+busca. El pie aclara que son versiones inspiradas.
 
 **El panel** (`/panel`) es privado: pedidos por estado, catálogo con edición
 rápida de precio y disponibilidad para la carga mensual, clientes y ajustes.
+Abre las pestañas al instante: apenas se confirma la sesión trae todo y lo deja
+en memoria.
 
 La dirección de arte, la paleta, el material de vidrio y los fondos generados
 están explicados en [`docs/DISENO.md`](docs/DISENO.md).
@@ -92,8 +100,9 @@ Son más de treinta casos.
 Si los muestro como productos separados, la clienta ve dos cosas que parecen no
 tener relación y son lo mismo en otro tamaño. Entonces la unidad del catálogo
 pasó a ser el aroma: una ficha por perfume, y los tamaños de las dos listas
-quedan adentro como opciones. El nombre que le pone cada proveedora va en letra
-chica dentro de la opción, que es el único lugar donde me sirve.
+quedan adentro como opciones. De qué línea es cada tamaño, y el nombre de la
+caja de Bagués, va en letra chica dentro de la opción, que es el único lugar
+donde me sirve.
 
 ### El código de proveedora tiene que sobrevivir hasta el final
 
@@ -104,7 +113,8 @@ Ese código viaja desde la ficha, entra al pedido, queda guardado en la base y
 sale escrito en el mensaje de WhatsApp:
 
 ```
-[10281126] L* B*MB* 50ml (Granada) x2
+[10281126] La Bomba 50ml (Bagues, caja Granada) x2
+[20282009] Invictus 100ml (Unlock) x1
 ```
 
 ### Lo que se configura no se programa
@@ -217,6 +227,32 @@ interno lo resuelve el navegador, pero el servidor buscaba un archivo físico en
 esa dirección y cortaba antes de que la aplicación arrancara. Se resolvió con
 cuatro líneas.
 
+### El panel no dejaba entrar, y no era la contraseña
+
+Al iniciar sesión con Google aparecía un error de "no existe". Eran dos cosas
+juntas. Supabase seguía devolviendo a la dirección vieja del proyecto, que
+después del cambio de nombre ya no existía. Y cuando sí volvía, traía el permiso
+en otro formato (`#access_token` en vez de `?code=`), que la tienda no reconocía:
+la sesión se perdía en la portada. Se resolvió redirigiendo el dominio viejo al
+nuevo y atajando las tres formas de vuelta. De paso, el error de contraseña
+ahora dice la verdad: la cuenta del panel es de Google y no tiene contraseña.
+
+### Las fotos se fueron todas a la vez
+
+Después de cambiar una foto, ninguna se veía. Las tarjetas piden versiones más
+chicas de cada imagen para el celular, y al regenerar las fotos esas versiones
+se borraron y no se volvieron a crear antes de publicar. El servidor contestaba
+esas direcciones con la página en vez de un error, así que nada avisaba. Ahora
+la publicación las genera siempre, y para verificar se mira si la imagen tiene
+ancho real, no si el servidor dijo que sí.
+
+### La barra del panel se iba al fondo
+
+La barra de abajo del panel tenía que quedar fija, y aparecía al final de la
+página. Otra vez prioridad de reglas: el estilo genérico de las cajas le ponía
+posición relativa y le ganaba a la posición fija de la barra. Las cajas ya no
+traen posición propia.
+
 ### Un dato de prueba llegando a la tienda
 
 Había un producto que se llamaba literalmente "456", visible para cualquiera. Se
@@ -240,29 +276,35 @@ puramente numérico no se muestra aunque exista.
 - **Borrar también es avanzar.** El aviso repetido, una regla de estilo que no
   hacía nada, y el frasco en tres dimensiones que bloqueaba la pantalla varios
   segundos y pesaba medio megabyte: los tres se fueron y el proyecto quedó mejor.
+  Lo mismo con el fondo animado del panel: era lindo y lo hacía trabar.
+- **Que el servidor diga que sí no prueba nada.** Una imagen que responde bien
+  puede no ser una imagen. Se verifica lo que ve la persona.
 
 ---
 
 ## Estado
 
-Andando en producción:
+Andando en producción, con el **ciclo 10/26** cargado (vigente hasta el 16 de
+octubre):
 
-- Catálogo del ciclo con más de cien aromas y sus tamaños, en página propia.
-- Buscador por nombre o por el perfume en el que se inspira, y filtros por
-  género y por promoción.
+- 101 aromas activos y 148 tamaños: 82 cajas Bagués de 50 ml y 66 frascos
+  Unlock entre minis y 100 ml. 33 aromas están en las dos líneas.
+- Fotos en 100 de los 101 aromas, todas con el mismo tratamiento y llenando el
+  cuadro, cada línea con su propio envase.
+- Nombres oficiales en toda la web, y la línea aclarada en cada tamaño.
+- Buscador por nombre y filtros por género, temporada y rebaja.
 - Ficha por aroma con pirámide olfativa y los tamaños de las dos listas.
-- Pedido con la cuenta del 2x1 y el aviso de "te falta uno".
-- Mensaje de WhatsApp armado con el código de proveedora de cada renglón.
-- Panel privado con pedidos, catálogo, clientes y ajustes.
+- Pedido con la cuenta del 2x1 y el aviso de "te falta uno" (este ciclo no
+  trae 2x1, así que no se muestra).
+- Mensaje de WhatsApp con el código de proveedora y la línea de cada renglón.
+- Panel privado con pedidos, catálogo con fotos, clientes y ajustes, que abre
+  cada pestaña al instante.
 - Vista previa con imagen propia cuando se pega el enlace en WhatsApp.
-- Fotos de los envases reales en 79 de los 105 aromas, bajadas y emparejadas por
-  un script propio.
 
 Pendiente:
 
-- Los 26 aromas que quedan sin foto. No están publicados en ninguna de las dos
-  webs de las proveedoras, así que hacen falta los PDF del catálogo. Mientras
-  tanto se muestra la inicial del aroma.
+- La foto de Manhattan (Bagués, tipo 212 VIP): no está publicada en la web de la
+  proveedora. Mientras tanto se muestra la inicial del aroma.
 - Llevar el vidrio a la ficha y al cajón del pedido, que todavía son paneles
   opacos.
 
@@ -292,14 +334,16 @@ La dirección raíz es la tienda. El panel está en `/panel` y pide cuenta de
 Google; solo entra el correo autorizado en la base.
 
 ```bash
-npm run fotos    # rehace las fotos de los envases cuando entra un ciclo nuevo
+npm run fotos    # arma las fotos de los envases a partir de scripts/fotos/fuentes.json
 npm run fondo    # redibuja la escena del hero y la textura de la página
 ```
 
-El pipeline de fotos son cuatro pasos y conviene correrlos de a uno: el segundo
-imprime qué foto le tocó a cada aroma y ahí se revisa antes de bajar nada. Está
-explicado en [`scripts/fotos/README.md`](scripts/fotos/README.md).
+Cada foto tiene su fuente anotada en `scripts/fotos/fuentes.json` (la tienda de
+la proveedora o un recorte del PDF del ciclo), y antes de publicar se revisan
+todas juntas con su nombre al lado. Está explicado en
+[`scripts/fotos/README.md`](scripts/fotos/README.md). Cómo se carga un ciclo
+nuevo, paso a paso, está en [`CLAUDE.md`](CLAUDE.md).
 
 ---
 
-*Última actualización: septiembre de 2026.*
+*Última actualización: 2 de octubre de 2026.*

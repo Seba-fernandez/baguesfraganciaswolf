@@ -60,24 +60,36 @@ Esa foto le gana a todas las demás. El orden de preferencia que usa la web es:
 3. Cualquiera de las dos que exista.
 4. La inicial del aroma sobre un fondo de color, si todavía no hay foto.
 
-Eso está en `src/components/tienda/ProductThumb.jsx`, en la función `fotoDe`.
+Eso está en `src/lib/fotos.js`, en la función `fotoDe`. La usan la tienda y la
+lista del catálogo del panel, así las dos muestran el mismo frasco.
 
-## Rehacer TODAS las fotos
+## Agregar o cambiar fotos del pipeline
 
-Cuando entra un ciclo con aromas nuevos. Son cuatro pasos y están documentados
-en [`scripts/fotos/README.md`](../scripts/fotos/README.md). El resumen:
+Cada foto tiene su fuente anotada en **`scripts/fotos/fuentes.json`**: una
+entrada por aroma y por línea, con la dirección en la tienda de la proveedora o
+un archivo guardado en `scripts/fotos/fuentes/` (los recortes del PDF del
+ciclo). Se agrega o cambia la entrada y se corre:
 
 ```
-npm run fotos:catalogos    baja los catálogos de las dos proveedoras y el nuestro
-npm run fotos:emparejar    decide de dónde sale cada foto e imprime la lista
-npm run fotos:traer        baja, comprime y regenera el índice
-npm run fotos:fondos       separa las que tienen fondo propio de las de porcelana
+npm run fotos:componer            arma las que faltan o cambiaron
+npm run fotos:componer -- --todo  rehace todas
+npm run fotos                     componer + los anchos chicos para celular
 ```
 
-**Conviene mirar la lista del segundo paso antes de correr el tercero.** Ahí ya
-se vio un error: había fotos que se cruzaban entre perfumes de la misma familia.
+Todas salen a 3:4 llenando el cuadro. **Antes de publicar, mirarlas todas
+juntas con su nombre al lado**: ya pasó que se cruzaran fotos entre perfumes de
+la misma familia, y las cajas de Bagués de New York, Amsterdam y Hawai tienen
+versión femenina y masculina con el mismo nombre. El detalle está en
+[`scripts/fotos/README.md`](../scripts/fotos/README.md).
 
-`npm run fotos` corre los cuatro de una.
+Los anchos chicos (`-360w`, `-560w`) los genera el build solo. **No borrarlos a
+mano**: sin ellos las tarjetas quedan vacías y el servidor no avisa.
+
+## Cargar un ciclo nuevo
+
+Precios, códigos, tamaños que entran y salen: van a la base, comparando **por
+código** contra el PDF del ciclo, nunca por nombre. El paso a paso, como se cargó
+el ciclo 10/26, está en la sección 7 de [`CLAUDE.md`](../CLAUDE.md).
 
 ## Cambiar el orden de los bloques de la página
 
@@ -104,7 +116,13 @@ Tres cosas que ya costaron caro y conviene saber:
   dos veces. Si un color no se aplica, es esto antes que cualquier otra cosa.
 - **Las reglas genéricas del vidrio van con `:where()`** para que no le ganen al
   componente. Sin eso, `position: relative` del vidrio pisaba el `position:
-  fixed` del botón de volver arriba y lo mandaba al borde de la pantalla.
+  fixed` del botón de volver arriba y lo mandaba al borde de la pantalla. En el
+  panel pasó lo mismo con la barra de abajo: por eso `.glass` y `.glass-strong`
+  de `global.css` no llevan `position`.
+
+**El panel** tiene su propio sistema en **`src/styles/global.css`**: los
+radios son `--r-xs` (4), `--r-sm` (6, botones e inputs), `--r-md` (8, tarjetas)
+y `--r-lg` (10, hojas). Cambiar uno cambia todo el panel.
 
 ## Cambiar el fondo
 

@@ -82,7 +82,6 @@ pública tiene su sistema y el panel admin conserva el suyo
 | `--amber-soft` | Relleno de estado activo | `--amber` al 16 % de opacidad |
 | `--on-amber` | Texto sobre el acento | Oscuro. **Nunca claro** |
 | `--gold` | Brillo secundario | Solo para fondo y filetes: **no es un acento de UI** |
-| `--tile` `--tile-2` `--tile-3` | Superficie donde se apoyan las fotos | Tiene que ser **el mismo tono** al que el script normaliza el fondo de las fotos |
 | `--line` / `--line-bright` | Hairlines | `--ink` al 11 % / 24 % |
 | `--danger` | Error | Un rojo que conviva con el acento |
 
@@ -325,10 +324,10 @@ texto propio ni color literal. Este es el inventario de lo que hay para elegir:
 | **Hero** | [`Hero.jsx`](../src/components/tienda/Hero.jsx) | Escena a sangre + producto parado en ella + corona + título + CTA + promos + cinta | ✅ la estructura |
 | **Destacados** | [`Destacados.jsx`](../src/components/tienda/Destacados.jsx) | Carrusel horizontal dentro de un marco `.tglass`, con flechas que vuelven al inicio al llegar al tope | ✅ tal cual |
 | **Nosotros** | [`Nosotros.jsx`](../src/components/tienda/Nosotros.jsx) | Texto editorial + firma | ✅ tal cual |
-| **Cómo funciona** | [`ComoFunciona.jsx`](../src/components/tienda/ComoFunciona.jsx) | Tres pasos numerados + cita + CTA | ✅ tal cual |
+| **Cómo funciona** | [`ComoFunciona.jsx`](../src/components/tienda/ComoFunciona.jsx) | Tres pasos con ícono + cita + CTA | ✅ tal cual |
 | **Grilla** | [`ProductGrid.jsx`](../src/components/tienda/ProductGrid.jsx) | Buscador + pastillas de filtro + grilla + paginado + vacío | ✅ la mecánica |
 | **Tarjeta** | [`ProductCard.jsx`](../src/components/tienda/ProductCard.jsx) | Foto a radio cero + cuerpo de vidrio + precio + `+` circular | ✅ tal cual |
-| **Miniatura** | [`ProductThumb.jsx`](../src/components/tienda/ProductThumb.jsx) | Resuelve qué foto va y cómo se encuadra. Placeholder con inicial | ⚠️ la lógica de dos líneas es del negocio |
+| **Miniatura** | [`ProductThumb.jsx`](../src/components/tienda/ProductThumb.jsx) | Muestra la foto a sangre en 3:4 (qué foto va lo decide `lib/fotos.js`). Placeholder con inicial | ⚠️ la lógica de dos líneas es del negocio |
 | **Ficha** | [`ProductModal.jsx`](../src/components/tienda/ProductModal.jsx) | Hoja que se abre encima, con Escape y scroll bloqueado | ✅ tal cual |
 | **Cajón** | [`CartSheet.jsx`](../src/components/tienda/CartSheet.jsx) | Carrito y cierre en **la misma hoja**, nunca una hoja que abre otra | ✅ tal cual |
 | **Volver arriba** | [`VolverArriba.jsx`](../src/components/tienda/VolverArriba.jsx) | Aparece a los 900 px, se esconde si hay hoja abierta, scroll `passive` | ✅ tal cual |
@@ -506,8 +505,7 @@ dar ≥ 4,5:1. Si se hace a ojo, falla — ya falló acá (3,9:1 cuando contra e
 daba 5,1:1).
 
 Y cambiar `theme-color` en `index.html`, que es lo que pinta la barra del
-navegador en el celular. *(En este repo quedó desactualizado: dice `#0f1512`, de
-la paleta anterior.)*
+navegador en el celular: tiene que ser el mismo `--bg`.
 
 ### Paso 2 — Las tipografías (20 min)
 
@@ -626,7 +624,6 @@ Cosas de este repo que son de **este negocio** y no del kit:
   de escritura, precios del lado del servidor); las columnas no.
 - Los nombres `--amber*` para un acento que ya no es ámbar. Renombrar a
   `--acento*`.
-- El `theme-color` de `index.html`, que quedó de una paleta anterior.
 
 ### Direcciones que ya se descartaron
 

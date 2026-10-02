@@ -6,6 +6,7 @@ explica *por qué*.
 
 | | |
 | --- | --- |
+| Contexto de trabajo para Claude Code | [`../CLAUDE.md`](../CLAUDE.md) |
 | Sistema visual y kit de marca | [`DISENO.md`](DISENO.md) |
 | Cómo está armado por dentro | [`ARQUITECTURA.md`](ARQUITECTURA.md) |
 | Qué tocar para cambiar qué | [`EDITAR.md`](EDITAR.md) |
@@ -74,11 +75,12 @@ cómo funciona. El catálogo completo está en su propia página, con buscador,
 filtros y paginado.
 
 Cada aroma abre una ficha con la pirámide olfativa y los tamaños de las dos
-líneas, cada uno con su código de proveedora. El pedido se arma en un cajón
-lateral, calcula el 2x1 y termina en un mensaje de WhatsApp listo para enviar.
+líneas, cada uno con su código de proveedora y la aclaración de qué línea es. El
+pedido se arma en un cajón lateral, calcula el 2x1 cuando el ciclo lo trae y
+termina en un mensaje de WhatsApp listo para enviar.
 
 El panel es privado: pedidos por estado, catálogo con edición rápida de precio y
-disponibilidad, clientes y ajustes.
+disponibilidad, clientes y ajustes. Abre cada pestaña al instante.
 
 ### El stack
 
@@ -108,6 +110,31 @@ ficha por perfume, y los tamaños de las dos listas quedan adentro como opciones
 Cada tamaño tiene un código con el que se carga la orden en el sistema de la
 proveedora. Un pedido sin ese código es papel mojado. Viaja desde la ficha,
 entra al pedido, queda guardado en la base y sale escrito en el WhatsApp.
+
+### Nombres oficiales, sin asteriscos
+
+El catálogo de la proveedora censura los nombres (`S*UV*GE`, `GAAD GARL VARY`)
+y la base los guardaba así. Desde el ciclo 10/26 la web y la base usan el
+**nombre oficial** del perfume: es lo que la clienta reconoce y escribe en el
+buscador. El aviso legal del pie aclara que son versiones inspiradas, y la línea
+de cada tamaño se dice adentro de la ficha ("Unlock" o "Bagues, caja Arizona").
+Para cargar un ciclo, el dato confiable es el **código**, no el nombre del PDF.
+
+### Las fotos tienen un solo tratamiento
+
+Convivían tres: recortes sobre un azulejo claro con aire alrededor, escenas a
+sangre, y cajas con un beige propio que dejaba un recuadro. Ahora un script
+(`scripts/fotos/componer.mjs`) las deja todas a 3:4 llenando el cuadro: los
+recortes sobre un estudio espresso con sombra y reflejo, las escenas recortadas.
+Cada fuente queda anotada en `scripts/fotos/fuentes.json`.
+
+### El panel es una herramienta, no una vidriera
+
+Tenía el mismo lenguaje que la tienda: orbes de color animados de fondo, vidrio
+que desenfocaba todo lo de atrás, píldoras en cada botón, tres tipografías de
+Google. Se sentía trabado y cada pestaña esperaba su descarga y sus datos. Ahora
+tiene fondo quieto, superficies sólidas, esquinas de 4 a 10 px, la misma Figtree
+de la tienda, y una memoria compartida que precarga todo al entrar.
 
 ### La seguridad está del lado del servidor
 
@@ -169,33 +196,62 @@ La parte que más enseñó. Ninguno de estos saltaba mirando la pantalla.
 - **El panel daba error y no era el programa.** Faltaba la reescritura de
   `vercel.json`: el servidor buscaba un archivo físico en `/panel`. Cuatro
   líneas.
+- **El ingreso con Google se perdía en la portada.** Supabase devolvía a la
+  dirección vieja del proyecto (que dejó de existir al renombrarlo), y cuando
+  volvía a la nueva traía el permiso como `#access_token`, mientras el desvío al
+  panel solo miraba `?code=`. Se redirigió el dominio viejo al nuevo y se
+  atajan las tres formas de vuelta.
+- **Fotos que respondían bien y no eran fotos.** Al regenerar las fotos se
+  borraron sus versiones chicas y no se rehicieron antes de publicar. Vercel
+  contesta un archivo inexistente con el HTML de la página (200), así que nada
+  avisaba. Ahora el build las genera siempre, y se verifica el ancho real de la
+  imagen en el navegador.
+- **La barra del panel al fondo de la página.** La misma trampa de prioridad que
+  el vidrio de la tienda: `.glass` traía `position: relative` y le ganaba al
+  `position: fixed` de la barra. Las superficies del panel no llevan posición.
 - **Un dato de prueba en producción.** Un producto llamado literalmente "456",
   visible para cualquiera. Se limpió el dato y quedó una defensa: un producto
   con nombre puramente numérico no se muestra aunque exista.
 
 ---
 
-## Estado al 24 de septiembre de 2026
+## Estado al 2 de octubre de 2026
 
-**Andando en producción:** catálogo del ciclo con más de cien aromas en página
-propia, buscador y filtros, ficha por aroma, pedido con la cuenta del 2x1 y el
-aviso de "te falta uno", mensaje de WhatsApp con el código de cada renglón,
-panel privado completo, vista previa con imagen propia al pegar el enlace.
+**Andando en producción:** el ciclo 10/26 (vigente hasta el 16 de octubre) con
+101 aromas activos y 148 tamaños, 33 aromas en las dos líneas, fotos en 100 de
+los 101, nombres oficiales, la línea aclarada en cada tamaño, buscador y
+filtros, pedido con la cuenta del 2x1 (este ciclo no trae promo), mensaje de
+WhatsApp con código y línea de cada renglón, panel privado instantáneo, vista
+previa con imagen propia al pegar el enlace.
+
+**Cargado el 1 de octubre:** el ciclo 10/26. Bagués cambió todos los precios
+(masculinos $22.499, femeninos $16.499, árabes $19.599 y $24.599, con el precio
+de lista tachado); entraron Niza (tipo Irresistible) y Madison (tipo Daisy
+Wild); salieron I Love Love, Bad Boy Cobalt, Good Girl Blush y la caja de
+Moschino Toy 2. Los precios de Unlock ya coincidían código por código. Antes de
+tocar nada se copió el catálogo a `respaldo.products_20261001_pre_c10`.
+
+**Publicado el 1 de octubre:** el arreglo del ingreso al panel, las fotos
+unificadas, los nombres oficiales, la auditoría de diseño de la tienda (voseo en
+el hero, un rótulo y una numeración de pasos de más, tamaños en una sola fila,
+grilla que divide a doce) y el panel instantáneo con esquinas más rectas.
+
+**Pendiente:** la foto de Manhattan (Bagués, tipo 212 VIP), que no está en la
+web de la proveedora. Llevar el vidrio a la ficha y al cajón del pedido. Sacar la
+dependencia `motion`, que ya no se usa.
+
+### Antes: estado al 24 de septiembre de 2026
 
 **Publicado el 22 de septiembre:** el rediseño completo del sistema visual
-—paleta Ámbar Noir, hero editorial sobre la escena de dunas, el material de
-vidrio con lente real, los fondos generados por script— más `DISENO.md`,
+(paleta Ámbar Noir, hero editorial sobre la escena de dunas, el material de
+vidrio con lente real, los fondos generados por script) más `DISENO.md`,
 `ARQUITECTURA.md`, `KIT.md` y este documento.
 
 **Publicado el 24 de septiembre:** el trabajo de rendimiento (ver la sección
 siguiente) y el arreglo del carrusel de destacados, que en el celular se comía
 el gesto de bajar: tenía `overflow-x: auto` sin declarar el eje vertical, y por
-la regla del spec —si un eje deja de ser `visible`, el otro pasa a `auto`— la
+la regla del spec (si un eje deja de ser `visible`, el otro pasa a `auto`) la
 pista quedaba scrolleable también en vertical y atrapaba el dedo.
-
-**Pendiente de producto:** 26 aromas sin foto (no están publicados en las webs
-de las proveedoras; hacen falta los PDF). Llevar el vidrio a la ficha y al cajón
-del pedido, que todavía son paneles opacos.
 
 ---
 

@@ -16,7 +16,24 @@ Una sola aplicación React con dos zonas que comparten la misma base de datos:
 | **Panel** | `/panel` | Una sola cuenta de Google, la del dueño |
 
 Se cargan por separado (`React.lazy`), así que quien entra a comprar no descarga
-el código del panel.
+el código del panel. Adentro del panel, en cambio, las cuatro pantallas viajan
+juntas en el mismo chunk: cambiar de pestaña no descarga nada.
+
+### El ingreso al panel
+
+Solo con Google, sin registro. `signInWithOAuth` pide volver a `/panel`; si
+Supabase no tiene esa dirección permitida vuelve a la raíz, y un script de
+`index.html` (que corre antes del bundle) desvía a `/panel` las tres formas de
+vuelta: `?code=`, `#access_token=` y el error. `AuthGate` deja pasar solo al
+email que también valida `es_admin()` en la base.
+
+### Los datos del panel
+
+`src/lib/cachePanel.js` guarda en memoria lo que ya se trajo. Apenas `AuthGate`
+confirma la sesión, `PanelApp` precarga pedidos, catálogo, clientes y ajustes en
+paralelo. Cada pantalla se dibuja con lo que hay en memoria y se actualiza de
+fondo; los cambios locales (editar, pausar) también quedan guardados. Al cerrar
+sesión se vacía.
 
 La web de la proveedora —donde se cargan las órdenes— queda **afuera del
 sistema**: no hay integración ni scraping. Esta app organiza el lado de acá.
@@ -27,7 +44,7 @@ sistema**: no hay integración ni scraping. Esta app organiza el lado de acá.
 
 | Tabla | Qué guarda | Detalle que importa |
 | --- | --- | --- |
-| `products` | El catálogo, una fila por aroma | Los tamaños viven en `presentaciones` (JSON): mililitros, precio, código de proveedor, línea y grupo de promoción |
+| `products` | El catálogo, una fila por aroma | `nombre` e `inspirado_en` guardan el nombre oficial. Los tamaños viven en `presentaciones` (JSON): mililitros, precio, precio de lista, código de proveedor, línea, nombre de la caja y grupo de promoción |
 | `customers` | Clientes | Teléfono único y normalizado (`549351…`) |
 | `orders` | Pedidos | Número correlativo, estado, pago, seña, canal (web o manual) y notas de la conversación |
 | `order_items` | Renglones del pedido | Guarda `nombre_snapshot` y el precio del momento: si mañana cambia el precio, el pedido viejo no se reescribe |
@@ -105,7 +122,7 @@ src/
   entry-server.jsx  solo para el build: dibuja la portada como HTML
 scripts/
   fondo/        genera la escena del hero, la textura, y las rasteriza a WebP
-  fotos/        el pipeline de imágenes, en cinco pasos
+  fotos/        el pipeline de imágenes: componer.mjs arma todas desde fuentes.json
   prerender.mjs pega la portada dibujada y el CSS dentro de dist/index.html
 supabase/
   migrations/   el esquema, las políticas y la función de pedido
@@ -132,9 +149,11 @@ calcula reglas de negocio.** Si una cuenta da mal, el error está en `lib/`.
 | --- | --- |
 | `lib/promos.js` | La cuenta del 2x1 por grupos |
 | `lib/whatsapp.js` | El armado del mensaje con los códigos |
-| `lib/producto.js` | Qué presentaciones se publican y cómo se titula un aroma |
+| `lib/producto.js` | Qué presentaciones se publican, cómo se titula un aroma y cómo se dice su línea (`detalleLinea`) |
 | `lib/vidrioLiquido.js` | La lente del vidrio (ver [`DISENO.md`](DISENO.md)) |
 | `lib/apiTienda.js` | La lectura del catálogo y el envío del pedido, sin supabase-js |
+| `lib/fotos.js` | Qué foto le toca a cada aroma según la línea (tienda y panel) |
+| `lib/cachePanel.js` | La memoria compartida y la precarga del panel |
 | `hooks/useDatosTienda.js` | Los datos de la tienda pública, en un pedido por tabla |
 | `hooks/useReveal.js` | Las apariciones al hacer scroll |
 

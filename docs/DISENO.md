@@ -6,7 +6,8 @@ Fuente de verdad del diseño de la **tienda pública**. Los tokens viven en
 [`scripts/fondo/generar-duna.mjs`](../scripts/fondo/generar-duna.mjs).
 
 El panel de administración tiene su propio sistema, más sobrio, en
-[`src/styles/global.css`](../src/styles/global.css). Lo de acá no lo toca.
+[`src/styles/global.css`](../src/styles/global.css). Está resumido al final, en
+[El panel](#el-panel); lo demás de este documento no lo toca.
 
 ---
 
@@ -247,10 +248,17 @@ el ícono es chico.
   acento sólido y tiene que leerse de lejos.
 - **Botón claro** — la misma píldora en cristal transparente. Acción secundaria.
 - **Tarjeta de aroma** — foto arriba a radio cero, cuerpo de vidrio: nombre en
-  Cormorant, "versión inspirada", pastillas de tamaño y el pie con el precio y
-  el `+` circular. Dos por fila desde el celular.
-- **Ficha del aroma** — se abre encima: foto, pirámide olfativa, los tamaños de
-  las dos líneas con su código y el aviso de encargo.
+  Cormorant, "versión inspirada", pastillas de tamaño (siempre en una sola fila,
+  repartidas en partes iguales, así los precios de una fila quedan alineados) y
+  el pie con el precio y el `+` circular. La grilla va de a 2, 3 y 4 columnas:
+  números que dividen a 12, los aromas por página, para que ninguna página
+  termine con una fila suelta.
+- **Ficha del aroma** — se abre encima: foto, pirámide olfativa y los tamaños de
+  las dos líneas. Cada tamaño es una fila: a la izquierda los mililitros y su
+  línea ("Unlock" o "Bagues, caja Arizona"), a la derecha el precio con el de
+  lista tachado arriba. Abajo, el aviso de encargo.
+- **Nombres** — siempre el nombre oficial del perfume, que es como lo busca la
+  clienta. La línea y la caja se dicen en el tamaño, nunca en el título.
 - **Cajón del pedido** — carrito y cierre en la misma hoja, nunca una hoja que
   abre otra hoja.
 - **Barra de filtros** — placa de vidrio con buscador y pastillas. Las pastillas
@@ -258,6 +266,26 @@ el ícono es chico.
   hay que descubrir arrastrando es un filtro que no se usa.
 - **Radios:** cero en fotos y multimedia, píldora en botones y pastillas, 24-26
   px en placas.
+
+---
+
+## El panel
+
+Es una herramienta de trabajo que se usa desde el celular, no una vidriera. Por
+eso no comparte el lenguaje de la tienda: se priorizó que sea instantáneo y que
+entre más en pantalla.
+
+| Decisión | Por qué |
+| --- | --- |
+| **Superficies sólidas** (`--surface`, `--surface-strong`) | El vidrio con `backdrop-filter` y refracción SVG se recalculaba en cada cuadro de scroll y trababa el celular. `.glass` y `.glass-strong` conservan el nombre, pero no desenfocan |
+| **Fondo quieto**, un degradé en CSS | Antes eran cuatro orbes de 400 a 600 px desenfocados y animados sin parar |
+| **Esquinas de 4 a 10 px**: `--r-xs` 4, `--r-sm` 6 (botones, inputs, pastillas), `--r-md` 8 (tarjetas, filas), `--r-lg` 10 (hojas, barra de abajo) | Se lee más ordenado que las píldoras y los 16 a 28 px de antes. Círculos solo en puntos de estado |
+| **Figtree**, la misma de la tienda, alojada en el proyecto | Antes pedía tres familias a Google con un `@import` que frenaba la carga |
+| **Barra de abajo fija y centrada**, a 12 px del borde más `env(safe-area-inset-bottom)` | Queda por encima de la franja del gesto de inicio del celular, y el panel mide `100dvh` para que la página no se mueva |
+| **Las superficies no llevan `position`** | Con `position: relative` le ganaban al `position: fixed` de la barra y la mandaban al final de la página |
+
+El tema claro y el oscuro siguen disponibles desde Ajustes. Los colores de los
+estados de pedido viven en `src/data/constants.js`.
 
 ---
 

@@ -277,9 +277,9 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
 - **Ajustes de Supabase que hace Sebas a mano** (Authentication): URL del sitio
   `https://baguesfraganciaswolf.vercel.app` con `/panel` en las redirecciones;
   "Allow new users to sign up" apagado; proveedor Email apagado; Captcha
-  apagado (no protege nada acá y sin configurar rompe el ingreso). Registro y
-  Email quedaron apagados el 2/10/2026. La URL del sitio es crítica desde que
-  se borró el dominio viejo: si apunta ahí, el ingreso con Google se rompe.
+  apagado (no protege nada acá y sin configurar rompe el ingreso). Todo hecho el
+  2/10/2026. Si se cambia el dominio, la URL del sitio es lo primero: si apunta a
+  un dominio que no existe, el ingreso con Google se rompe.
 - **`Hawai Masculino`** quedó inactivo (era un producto cargado a mano, sin
   código; lo reemplaza Hawai Masc tipo Le Male Elixir). Se puede borrar.
 - **La dependencia `motion`** ya no se usa en ningún archivo: se puede sacar de

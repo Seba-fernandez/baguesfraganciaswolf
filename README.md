@@ -235,8 +235,9 @@ juntas. Supabase seguía devolviendo a la dirección vieja del proyecto, que
 después del cambio de nombre ya no existía. Y cuando sí volvía, traía el permiso
 en otro formato (`#access_token` en vez de `?code=`), que la tienda no reconocía:
 la sesión se perdía en la portada. Se resolvió redirigiendo el dominio viejo al
-nuevo y atajando las tres formas de vuelta. De paso, el error de contraseña
-ahora dice la verdad: la cuenta del panel es de Google y no tiene contraseña.
+nuevo y atajando las tres formas de vuelta. De paso, el panel dejó de ofrecer
+email y contraseña: la cuenta del panel es de Google y no tiene contraseña, así
+que esa opción solo confundía y no existe ninguna clave que se pueda filtrar.
 
 ### Las fotos se fueron todas a la vez
 

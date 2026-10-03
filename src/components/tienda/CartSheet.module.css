@@ -134,3 +134,7 @@
 @keyframes up { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .overlay, .sheet { animation: none; } }
+
+/* La aclaración de para qué se usan los datos: chica, debajo de los campos y
+   antes del botón, que es donde se lee antes de confirmar. */
+.privacidad { font-size: 0.78rem; line-height: 1.45; color: var(--ink-faint); margin: 2px 0 14px; }

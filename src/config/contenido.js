@@ -92,6 +92,15 @@ export const CATALOGO = {
   },
 };
 
+/**
+ * El paso donde la clienta deja su nombre y su WhatsApp. La ley de datos
+ * personales (25.326) pide decir para qué se usan los datos que se piden, y
+ * en el lugar donde se piden.
+ */
+export const PEDIDO = {
+  privacidad: 'Tu nombre y tu WhatsApp los uso solo para coordinar este pedido.',
+};
+
 export const TARJETA = {
   inspirado: 'versión inspirada',
 };

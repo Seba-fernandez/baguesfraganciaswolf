@@ -4,6 +4,7 @@ import useCheckoutWeb from '../../hooks/useCheckoutWeb';
 import { pesos } from '../../lib/format';
 import { linkWhatsApp, mensajePedidoCliente, normalizarTelefono } from '../../lib/whatsapp';
 import { detalleLinea } from '../../lib/producto';
+import { PEDIDO } from '../../config/contenido';
 import s from './CartSheet.module.css';
 
 export default function CartSheet({ settings, onVerPromo }) {
@@ -174,6 +175,8 @@ export default function CartSheet({ settings, onVerPromo }) {
               <label className="tlabel" htmlFor="co-tel">Tu WhatsApp</label>
               <input id="co-tel" className={s.input} inputMode="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="351 555 1234" autoComplete="tel" />
             </div>
+
+            <p className={s.privacidad}>{PEDIDO.privacidad}</p>
 
             {formErr && <p className={s.err}>{formErr}</p>}
 

@@ -21,7 +21,7 @@ juntas en el mismo chunk: cambiar de pestaña no descarga nada.
 
 ### El ingreso al panel
 
-Solo con Google, sin registro. `signInWithOAuth` pide volver a `/panel`; si
+Solo con Google, sin registro ni email y contraseña. `signInWithOAuth` pide volver a `/panel`; si
 Supabase no tiene esa dirección permitida vuelve a la raíz, y un script de
 `index.html` (que corre antes del bundle) desvía a `/panel` las tres formas de
 vuelta: `?code=`, `#access_token=` y el error. `AuthGate` deja pasar solo al

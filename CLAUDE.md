@@ -66,7 +66,7 @@ src/
     tienda/       la web pública
     panel/        el panel; PanelApp.jsx es la puerta y monta todo lo suyo
     layout/       estructura del panel (barra de abajo, lateral, encabezado)
-    auth/         ingreso al panel (solo Login, sin registro)
+    auth/         ingreso al panel: solo Google, sin registro ni contraseña
     ui/           piezas sueltas del panel
   hooks/          datos (useProducts, useOrders...) y comportamiento (useReveal)
   lib/            reglas de negocio sin JSX
@@ -225,6 +225,10 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
   `:where()`. En el panel, `.glass` traía `position: relative` y le ganaba al
   `position: fixed` de la barra de abajo: se iba al final de la página. Las
   superficies del panel **no llevan `position`**.
+- **El panel entra solo con Google.** No hay registro ni email y contraseña:
+  la cuenta de Sebas no tiene contraseña, y así no hay ninguna que se filtre.
+  En Supabase conviene tener apagados el registro de usuarios nuevos y el
+  proveedor Email.
 - **El ingreso con Google vuelve con `#access_token`**, no solo con `?code=`. El
   script de `index.html` manda a `/panel` las tres formas de vuelta (incluido el
   error). `redirectTo` pide `/panel`. Si Supabase no lo tiene en su lista,
@@ -271,9 +275,11 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
 - **Foto de Manhattan (Bagués, 212 VIP).** Está solo en el PDF general del
   ciclo. Sebas puede subirla desde el panel, o se agrega a `fuentes.json` con
   `archivo` y se corre `npm run fotos`.
-- **URL del sitio en Supabase** (Authentication, URL Configuration): tiene que
-  ser `https://baguesfraganciaswolf.vercel.app`, con `/panel` en la lista de
-  redirecciones. Confirmar con Sebas si ya lo cambió.
+- **Ajustes de Supabase que hace Sebas a mano** (Authentication): URL del sitio
+  `https://baguesfraganciaswolf.vercel.app` con `/panel` en las redirecciones;
+  "Allow new users to sign up" apagado; proveedor Email apagado; Captcha
+  apagado (no protege nada acá y sin configurar rompe el ingreso). Confirmar con
+  él cuáles ya están.
 - **`Hawai Masculino`** quedó inactivo (era un producto cargado a mano, sin
   código; lo reemplaza Hawai Masc tipo Le Male Elixir). Se puede borrar.
 - **La dependencia `motion`** ya no se usa en ningún archivo: se puede sacar de

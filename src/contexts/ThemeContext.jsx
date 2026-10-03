@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext({ theme: 'dark', toggle: () => {} });
 
-const STORAGE_KEY = 'vajilla-crm-theme';
+const STORAGE_KEY = 'bagues-panel-tema';
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {

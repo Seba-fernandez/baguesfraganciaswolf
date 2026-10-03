@@ -178,12 +178,16 @@ peso por cinco vale para un JPEG de foto, no para una escena de degradados.)
 
 El grano de la **página** sigue en CSS, y solo de 768 px para arriba.
 
-**El frasco del hero** está parado sobre el piso de la duna, con su sombra de
-contacto y el sol de contraluz atrás. No hay caja ni azulejo: el frasco está
-**en** la escena. La posición no es a ojo: el dibujo mide 1600×1000, el piso
-está en `y = 840` y el frasco en `x = 74%`, así que el CSS lo ancla con unidades
-de contenedor —`max(10cqw, 16cqh)` desde abajo— y queda exacto en cualquier
-pantalla. Si se regenera la escena con otro piso, se tocan esos dos números.
+**Los frascos del hero** son el grupo del ciclo, recortado sobre transparente y
+parado sobre el piso de la duna, con su sombra de contacto y el sol de
+contraluz atrás. No hay caja ni azulejo: los frascos están **en** la escena. La
+altura no es a ojo: el dibujo mide 1600×1000 y el piso está en `y = 840`, así
+que el CSS lo ancla con unidades de contenedor —`max(10cqw, 16cqh)` desde
+abajo— y queda exacto en cualquier pantalla. Como el grupo es apaisado, en
+horizontal se centra en `66cqw`, un poco a la derecha del foco de la escena
+(`x = 74%`). Si se regenera la escena con otro piso, se toca ese número. La
+fuente en alta está en `scripts/fondo/fuentes/frascos-grupo.png` y
+`npm run fondo` saca los dos anchos (760 y 460).
 
 ---
 
@@ -223,10 +227,10 @@ cambiada la clienta pide un perfume que no es.
 - **Entrada del hero** coreografiada en CSS (`@keyframes` + `animation-delay`;
   antes lo hacía GSAP, que costaba 49 kB comprimidos en la portada): la corona,
   los versos del titular
-  subiendo desde atrás de su renglón, la bajada, los botones, y el frasco con su
+  subiendo desde atrás de su renglón, la bajada, los botones, y los frascos con su
   sombra apareciendo desde abajo.
 - **Parallax** de la escena solo en escritorio, con `animation-timeline` nativa:
-  la arena baja más lento que el frasco. No ejecuta JavaScript en ningún cuadro.
+  la arena baja más lento que los frascos. No ejecuta JavaScript en ningún cuadro.
 - **Hover del vidrio:** el cristal se aclara, el filo se enciende y el reflejo se
   corre, como si la luz resbalara por la cara. **No crece**: un vidrio no se infla.
 - **Reveals** al hacer scroll con `IntersectionObserver`, con un

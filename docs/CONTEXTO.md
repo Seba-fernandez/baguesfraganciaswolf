@@ -68,8 +68,8 @@ parte del diseño, no letra chica escondida.
 | **Tienda** | `/` y `/catalogo` | Cualquiera. Sin cuenta, sin registro |
 | **Panel** | `/panel` | Una sola cuenta de Google, la del dueño |
 
-La tienda abre con la escena de dunas, el frasco parado sobre la arena con su
-sombra de contacto, la promoción del ciclo en barras de cristal, la cinta de
+La tienda abre con la escena de dunas, los frascos del ciclo parados sobre la
+arena con su sombra de contacto, la promoción del ciclo en barras de cristal, la cinta de
 nombres reconocibles, una selección curada, quiénes somos y los tres pasos de
 cómo funciona. El catálogo completo está en su propia página, con buscador,
 filtros y paginado.

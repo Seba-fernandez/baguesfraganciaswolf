@@ -64,11 +64,11 @@ trabajar así es parte del oficio, y prefiero decirlo antes que disimularlo.
 ## Qué hay en la web
 
 **La tienda** (`/`) abre con una escena de dunas al atardecer, dibujada por un
-script, con el frasco parado sobre la arena y su sombra de contacto. Abajo, la
+script, con los frascos del ciclo parados sobre la arena y su sombra de contacto. Abajo, la
 promoción del ciclo en barras de cristal, la cinta de nombres reconocibles, una
 selección curada, quiénes somos y los tres pasos de cómo funciona. El catálogo
-completo vive en su propia página (`/catalogo`) con buscador, filtros por género
-y promoción, y paginado.
+completo vive en su propia página (`/catalogo`) con buscador, filtros por género,
+temporada, rebaja y promoción del ciclo, y paginado.
 
 Cada aroma abre una ficha con la pirámide olfativa y los tamaños de las dos
 líneas. Cada tamaño dice de qué línea es ("Unlock" o "Bagues, caja Arizona") y
@@ -119,7 +119,8 @@ sale escrito en el mensaje de WhatsApp:
 
 ### Lo que se configura no se programa
 
-El 2x1 del ciclo está guardado en la base, no escrito adentro del programa.
+La promoción del ciclo (el 2x1, cuando hay) está guardada en la base, no escrita
+adentro del programa.
 Cuando cambia el ciclo, cambio el dato y la web se acomoda sola. Lo mismo con
 los textos: cada frase visible está en `src/config/contenido.js` y los números
 que uno alguna vez quiere mover, en `src/config/ajustes.js`. Los componentes no
@@ -292,7 +293,8 @@ octubre):
 - Fotos en 100 de los 101 aromas, todas con el mismo tratamiento y llenando el
   cuadro, cada línea con su propio envase.
 - Nombres oficiales en toda la web, y la línea aclarada en cada tamaño.
-- Buscador por nombre y filtros por género, temporada y rebaja.
+- Buscador por nombre y filtros por género, temporada y rebaja (y por promoción
+  cuando el ciclo la trae).
 - Ficha por aroma con pirámide olfativa y los tamaños de las dos listas.
 - Pedido con la cuenta del 2x1 y el aviso de "te falta uno" (este ciclo no
   trae 2x1, así que no se muestra).

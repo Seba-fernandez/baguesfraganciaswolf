@@ -13,14 +13,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 // Helpers de auth
 export const authHelpers = {
-  signUp: async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-    return { data, error }
-  },
-
   signIn: async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,

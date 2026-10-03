@@ -6,9 +6,9 @@ import s from './Hero.module.css';
 
 /**
  * Hero editorial sobre un escenario: dunas de arena al atardecer (public/hero/
- * duna.svg, lo genera scripts/fondo/generar-duna.mjs) a sangre, y el frasco
- * parado sobre el piso de la duna con su sombra de contacto. Nada de caja ni
- * azulejo: el frasco está EN la escena.
+ * duna.svg, lo genera scripts/fondo/generar-duna.mjs) a sangre, y el grupo de
+ * frascos del ciclo parado sobre el piso de la duna con su sombra de contacto.
+ * Nada de caja ni azulejo: los frascos están EN la escena.
  *
  *  - La corona: Wolf como firma, Casa Bagués como aval. Presencia sin explicar.
  *  - El título grande, la bajada y la fila de datos duros, sobre un velo que
@@ -48,7 +48,7 @@ export default function Hero({
       <div className={s.escena} data-hero="escena" aria-hidden="true" />
       <div className={s.velo} aria-hidden="true" />
 
-      {/* El frasco (fondo transparente) sobre el piso de la duna, con su sombra
+      {/* Los frascos (fondo transparente) sobre el piso de la duna, con su sombra
           de contacto. Imagen decorativa para el lector de pantalla. */}
       <div className={s.banda}>
         <div className={s.showcase} aria-hidden="true">

@@ -321,7 +321,7 @@ texto propio ni color literal. Este es el inventario de lo que hay para elegir:
 | --- | --- | --- | --- |
 | **Cáscara** | [`TiendaLayout.jsx`](../src/components/tienda/TiendaLayout.jsx) | Encabezado + `.tfondo` + main + pie + legal. Monta la lente | ✅ tal cual |
 | **Datos** | [`TiendaShell.jsx`](../src/components/tienda/TiendaShell.jsx) | Carga productos y ajustes una vez y los reparte por `Outlet` | ✅ el patrón |
-| **Hero** | [`Hero.jsx`](../src/components/tienda/Hero.jsx) | Escena a sangre + producto parado en ella + corona + título + CTA + promos + cinta | ✅ la estructura |
+| **Hero** | [`Hero.jsx`](../src/components/tienda/Hero.jsx) | Escena a sangre + producto (uno o un grupo) parado en ella + corona + título + CTA + promos + cinta | ✅ la estructura |
 | **Destacados** | [`Destacados.jsx`](../src/components/tienda/Destacados.jsx) | Carrusel horizontal dentro de un marco `.tglass`, con flechas que vuelven al inicio al llegar al tope | ✅ tal cual |
 | **Nosotros** | [`Nosotros.jsx`](../src/components/tienda/Nosotros.jsx) | Texto editorial + firma | ✅ tal cual |
 | **Cómo funciona** | [`ComoFunciona.jsx`](../src/components/tienda/ComoFunciona.jsx) | Tres pasos con ícono + cita + CTA | ✅ tal cual |
@@ -342,11 +342,16 @@ está en `y = 840` y el foco en `x = 74%`. De ahí sale, medido en la caja con
 
 ```css
 bottom: calc(max(10cqw, 16cqh) - 6px);              /* el piso */
-left:   calc(50cqw + max(24cqw, 38.4cqh));          /* el foco */
+left:   calc(50cqw + max(24cqw, 38.4cqh));          /* el foco, para un frasco solo */
 ```
 
 Si se regenera la escena con otro piso o otro foco, **se tocan esos dos
 números** y nada más. No hay JavaScript midiendo nada.
+
+Con un grupo de frascos apaisado, como el actual, el piso sigue calculado igual
+pero el ancho manda: `left: 66cqw` con `translateX(-50%)` y
+`width: min(58cqw, 640px)`, para que el grupo quede un poco a la derecha del foco
+y no se coma el título.
 
 **2. Los reveals sobreviven al contenido dinámico.**
 

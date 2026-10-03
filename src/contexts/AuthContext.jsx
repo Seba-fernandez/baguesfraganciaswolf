@@ -49,7 +49,6 @@ export function AuthProvider({ children }) {
     user,
     loading,
     isAdmin,
-    signUp: authHelpers.signUp,
     signIn: authHelpers.signIn,
     signInWithGoogle: authHelpers.signInWithGoogle,
     signOut: async () => { vaciarCache(); return authHelpers.signOut() },

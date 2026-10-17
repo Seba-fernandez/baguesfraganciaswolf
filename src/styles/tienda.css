@@ -158,6 +158,10 @@
 .tienda a { color: inherit; text-decoration: none; }
 .tienda button { font-family: inherit; }
 
+/* Foco visible de teclado en toda la tienda: 2 px en el acento. Va con :where
+   para que cualquier componente con su propio contorno lo pueda cambiar. */
+:where(.tienda) :focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
 /* Cita de perfumista: la italica de Fraunces, con su contraste alto. */
 .tquote {
   font-family: var(--f-quote);

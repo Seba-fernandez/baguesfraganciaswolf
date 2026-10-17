@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
+import useDialogo from '../../hooks/useDialogo';
 import { GENEROS, MOMENTOS } from '../../data/constants';
 import { presentacionesActivas, presentacionPorDefecto, tieneNotas, tituloDe, detalleLinea } from '../../lib/producto';
 import { pesos } from '../../lib/format';
@@ -13,23 +14,20 @@ import s from './ProductModal.module.css';
  * opciones: la de Bagues y la de Unlock del mismo perfume, con el nombre que
  * le pone cada proveedora en letra chica.
  */
-export default function ProductModal({ producto, onClose, promos = {} }) {
+export default function ProductModal({ producto, onClose, promos = {}, disparador = null }) {
   const { addItem } = useCart();
   const opciones = presentacionesActivas(producto);
   const [ml, setMl] = useState(() => presentacionPorDefecto(producto)?.ml ?? null);
   const [cant, setCant] = useState(1);
   const cerrarRef = useRef(null);
 
+  // Foco adentro al abrir, Escape cierra y al cerrar vuelve a la tarjeta.
+  useDialogo({ abierto: true, onCerrar: onClose, refInicial: cerrarRef, disparador });
+
   useEffect(() => {
-    const onKey = (e) => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
-    cerrarRef.current?.focus();
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
+    return () => { document.body.style.overflow = ''; };
+  }, []);
 
   const elegida = opciones.find((p) => p.ml === ml) || null;
   const titulo = tituloDe(producto);

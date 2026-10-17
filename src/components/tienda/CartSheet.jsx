@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import useCheckoutWeb from '../../hooks/useCheckoutWeb';
+import useDialogo from '../../hooks/useDialogo';
 import { pesos } from '../../lib/format';
 import { linkWhatsApp, mensajePedidoCliente, normalizarTelefono } from '../../lib/whatsapp';
 import { detalleLinea } from '../../lib/producto';
 import { PEDIDO } from '../../config/contenido';
 import s from './CartSheet.module.css';
 
-export default function CartSheet({ settings, onVerPromo }) {
+export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
   const { items, removeItem, setCantidad, clear, total, totalLista, ahorro, grupos, open, setOpen } = useCart();
   const { enviarPedido, loading, error } = useCheckoutWeb();
   const [paso, setPaso] = useState('carrito');
@@ -15,6 +16,11 @@ export default function CartSheet({ settings, onVerPromo }) {
   const [telefono, setTelefono] = useState('');
   const [formErr, setFormErr] = useState(null);
   const [numeroPedido, setNumeroPedido] = useState(null);
+  const hoja = useRef(null);
+
+  // Foco adentro al abrir, Escape cierra y al cerrar vuelve a quien lo abrió
+  // (o al botón del pedido, si quien lo abrió era la ficha que ya se cerró).
+  useDialogo({ abierto: open, onCerrar: () => setOpen(false), refInicial: hoja, refRespaldo });
 
   // El cajon se queda montado mientras se anima la salida, si no se cortaria de
   // golpe al cerrar. `cerrando` dispara la animacion de salida; al terminar se
@@ -38,7 +44,9 @@ export default function CartSheet({ settings, onVerPromo }) {
     return () => clearTimeout(t);
   }, [open, montado]);
 
-  if (!montado) return null;
+  // Con `open` ya se dibuja, sin esperar al efecto que marca `montado`: asi la
+  // hoja existe en el mismo commit y el foco tiene a donde entrar.
+  if (!montado && !open) return null;
 
   function cerrar() {
     setOpen(false);
@@ -75,6 +83,8 @@ export default function CartSheet({ settings, onVerPromo }) {
     <>
       <div className={`${s.overlay} ${cerrando ? s.overlaySale : ''}`} onClick={cerrar} />
       <div
+        ref={hoja}
+        tabIndex={-1}
         className={`${s.sheet} ${cerrando ? s.sale : ''}`}
         role="dialog"
         aria-modal="true"

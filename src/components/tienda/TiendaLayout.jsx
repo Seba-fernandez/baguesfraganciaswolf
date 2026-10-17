@@ -18,10 +18,17 @@ const CartIcon = () => (
   </svg>
 );
 
-export default function TiendaLayout({ children, settings, onVerPromo }) {
+export default function TiendaLayout({ children, ficha = null, settings, onVerPromo }) {
   const { count, open, setOpen } = useCart();
   const raiz = useRef(null);
+  const botonPedido = useRef(null);
   const [pedidoUsado, setPedidoUsado] = useState(false);
+
+  // Con la ficha o el cajón abiertos, el resto de la página queda inert: no se
+  // puede tocar, Tab no se escapa del diálogo y el lector de pantalla no lee lo
+  // de atrás. React 18 no conoce el atributo, por eso va como texto vacío.
+  const hayDialogo = open || Boolean(ficha);
+  const inert = hayDialogo ? '' : undefined;
 
   // Lente de vidrio liquido en el canto de cada superficie de vidrio (solo
   // Chromium de escritorio; ver src/lib/vidrioLiquido.js).
@@ -44,7 +51,7 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
     <div className="tienda" ref={raiz}>
       <div className="tfondo" aria-hidden="true" />
 
-      <header className={s.bar}>
+      <header className={s.bar} inert={inert}>
         <Link to="/" className={s.marca}>
           {MARCA.nombre} <span className={s.marcaWolf}>{MARCA.complemento}</span>
         </Link>
@@ -53,6 +60,7 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
           <a href="/#como">{CABECERA.como}</a>
         </nav>
         <button
+          ref={botonPedido}
           className={`${s.carrito} tglass-clear`}
           onClick={() => setOpen(true)}
           aria-label={`${CABECERA.verPedido} (${count} ${count === 1 ? 'ítem' : 'ítems'})`}
@@ -62,9 +70,9 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
         </button>
       </header>
 
-      <main id="inicio">{children}</main>
+      <main id="inicio" inert={inert}>{children}</main>
 
-      <footer className={s.footer}>
+      <footer className={s.footer} inert={inert}>
         <div className={`tw ${s.fcols}`}>
           <div className={s.fcol}>
             <h4 className="tlabel">{PIE.tienda}</h4>
@@ -101,11 +109,13 @@ export default function TiendaLayout({ children, settings, onVerPromo }) {
         </div>
       </footer>
 
-      <VolverArriba oculto={open} />
+      <VolverArriba oculto={hayDialogo} />
+
+      {ficha}
 
       {pedidoUsado && (
         <Suspense fallback={null}>
-          <CartSheet settings={settings} onVerPromo={onVerPromo} />
+          <CartSheet settings={settings} onVerPromo={onVerPromo} refRespaldo={botonPedido} />
         </Suspense>
       )}
     </div>

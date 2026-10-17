@@ -38,6 +38,7 @@
    tarjetas de la misma fila quedaban con el precio a distinta altura. */
 .tallas { display: flex; flex-wrap: nowrap; gap: 4px; margin-top: 8px; }
 .talla {
+  position: relative;
   flex: 1 1 0; min-width: 0; text-align: center;
   min-height: 32px; padding: 5px 4px; border-radius: var(--r-pill);
   background: none; border: 1px solid var(--line); color: var(--ink-dim);
@@ -47,6 +48,10 @@
 .talla:hover { border-color: var(--line-bright); color: var(--ink); }
 .tallaOn { border-color: var(--amber); color: var(--ink); background: var(--amber-soft); }
 .talla:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+/* La pastilla se ve de 32 px de alto, pero el toque cubre 44: el ::after la
+   agranda 6 px arriba y abajo, sobre el aire que ya hay alrededor (7 desde
+   adentro del borde de 1 px). */
+.talla::after { content: ''; position: absolute; inset: -7px -1px; }
 
 /* Pie: precio a la izquierda, boton "+" a la derecha. El boton no ocupa toda
    la fila, asi la tarjeta respira. */
@@ -70,7 +75,7 @@
    el JSX). Aca solo se lo achica a un circulo; el doble selector le gana al
    padding y al alto minimo de .tbtn. */
 .add.add {
-  flex-shrink: 0; width: 42px; height: 42px; min-height: 0; padding: 0;
+  flex-shrink: 0; width: 44px; height: 44px; min-height: 0; padding: 0;
   border-radius: 50%;
 }
 .add:active { transform: scale(0.92); }

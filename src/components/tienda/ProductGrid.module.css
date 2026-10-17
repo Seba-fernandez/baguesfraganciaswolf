@@ -43,6 +43,7 @@
 }
 
 .chip {
+  position: relative;
   flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px;
   min-height: 40px; padding: 8px 15px; border-radius: var(--r-pill);
   font-size: 0.82rem; font-weight: 500; white-space: nowrap;
@@ -51,6 +52,9 @@
 }
 .chip:hover { color: var(--ink); border-color: var(--line-bright); }
 .chip:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+/* 40 px a la vista, 44 al dedo: entre renglones hay 7 px de aire. El ::after
+   se mide desde adentro del borde (1 px), por eso son 3 y no 2. */
+.chip::after { content: ''; position: absolute; inset: -3px -1px; }
 
 /* Prendida: se ve prendida de lejos, no solo por un cambio de tono. */
 .chipOn { background: var(--amber); border-color: var(--amber); color: var(--on-amber); font-weight: 600; }
@@ -123,3 +127,4 @@
 .vacio { padding: 48px 0 64px; max-width: 44ch; }
 .vacioTitulo { font-family: var(--f-display); font-size: 1.5rem; color: var(--ink); }
 .vacioTexto { margin: 12px 0 22px; color: var(--ink-dim); font-size: 0.95rem; }
+

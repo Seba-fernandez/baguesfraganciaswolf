@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import useDatosTienda from '../../hooks/useDatosTienda';
 import { CartProvider } from '../../contexts/CartContext';
@@ -18,6 +18,11 @@ const ProductModal = lazy(() => import('./ProductModal'));
  * el carrito, y los reparte a las dos páginas (inicio y catálogo) por el
  * contexto del Outlet. La ficha del producto vive acá, adentro de .tienda, para
  * que se abra igual desde cualquiera de las dos.
+ *
+ * La ficha NO va adentro de <main>: TiendaLayout la dibuja al lado del cajón.
+ * <main> arma su propio contexto de apilamiento (z-index: 1) y el pie, que es
+ * hermano y viene después, se pintaba encima de la ficha aunque ella tuviera
+ * z-index 101: el toque en "Agregar al pedido" le llegaba a un enlace del pie.
  */
 /*
  * La vuelta del ingreso con Google ya NO se resuelve acá. Google redirige a la
@@ -59,7 +64,14 @@ export default function TiendaShell() {
     return dest.find((p) => fotoDe(p)) || dest[0] || null;
   }, [products]);
 
-  const abrir = (producto) => setAbierto(producto);
+  // Quien abrio la ficha (la tarjeta), para devolverle el foco al cerrar. Se
+  // anota al tocarla: cuando la ficha termina de cargar, la tarjeta ya quedo
+  // detras de `inert` y perdio el foco.
+  const disparador = useRef(null);
+  const abrir = (producto) => {
+    disparador.current = document.activeElement;
+    setAbierto(producto);
+  };
   const cerrar = () => setAbierto(null);
 
   // Ver una promo lleva al catálogo con ese filtro puesto (antes hacía scroll en
@@ -78,13 +90,16 @@ export default function TiendaShell() {
 
   return (
     <CartProvider promosCiclo={settings?.promos_ciclo}>
-      <TiendaLayout settings={settings} onVerPromo={verPromo}>
-        <Outlet context={ctx} />
-        {abierto && (
+      <TiendaLayout
+        settings={settings}
+        onVerPromo={verPromo}
+        ficha={abierto && (
           <Suspense fallback={null}>
-            <ProductModal producto={abierto} onClose={cerrar} promos={promos} />
+            <ProductModal producto={abierto} onClose={cerrar} promos={promos} disparador={disparador.current} />
           </Suspense>
         )}
+      >
+        <Outlet context={ctx} />
       </TiendaLayout>
     </CartProvider>
   );

@@ -14,3 +14,7 @@ scripts/fotos/datos/
 # Borradores de trabajo. Los scripts que sirven viven en scripts/
 .tmp/
 dist-ssr
+
+# Salida del banco de pruebas (cambia en cada corrida; la linea de base si se versiona)
+scripts/qa/resultado.json
+__pycache__/

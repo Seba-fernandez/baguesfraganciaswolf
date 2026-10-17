@@ -215,6 +215,17 @@ La parte que más enseñó. Ninguno de estos saltaba mirando la pantalla.
 
 ---
 
+## Estado al 16 de octubre de 2026
+
+**Publicada la etapa 1 de la auditoría de octubre:** la ficha ya no queda
+tapada por el pie, `/catalogo` tiene su propia cáscara (CLS de 0,92 a 0),
+buscador tolerante con salida a WhatsApp cuando no encuentra, enlace real a
+WhatsApp al final del pedido, el bloque "Antes de pedir" con pago, seña, envío
+y plazo, la seña y el envío gratis en el cajón, una sola voz en primera
+persona, foco y áreas táctiles accesibles, y el pie sin el enlace al panel. Hay
+un banco de pruebas que mide cada hallazgo (`scripts/qa/`). Registro completo,
+mediciones y pendientes en [`QA.md`](QA.md).
+
 ## Estado al 2 de octubre de 2026
 
 **Andando en producción:** el ciclo 10/26 (vigente hasta el 16 de octubre) con

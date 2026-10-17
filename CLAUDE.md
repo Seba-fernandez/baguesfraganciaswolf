@@ -4,7 +4,8 @@ Contexto de trabajo para Claude Code en este repo. Se lee entero antes de tocar
 nada. El porqué del proyecto está en [`docs/CONTEXTO.md`](docs/CONTEXTO.md); acá
 está lo que hace falta para trabajar bien desde el primer cambio.
 
-*Última actualización: 2 de octubre de 2026, después de cargar el ciclo 10/26.*
+*Última actualización: 16 de octubre de 2026, después de la etapa 1 de la auditoría
+(registro en [`docs/QA.md`](docs/QA.md)).*
 
 ---
 
@@ -254,13 +255,40 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
   espejado va en una pasada aparte.
 - **El conector de Drive baja hasta 10 MB**; para más, leer el texto.
 - **Una corrida de Lighthouse varía 4 o 5 puntos:** mirar la mediana de cinco.
+- **El pie se pintaba encima de la ficha.** `.tienda > main` y el pie tienen
+  `z-index: 1` y cada uno arma su contexto de apilamiento: lo que va adentro de
+  `<main>` nunca le gana al pie, aunque tenga z-index 101. Los diálogos (ficha,
+  cajón) van fuera de `<main>`, como hermanos, y con un diálogo abierto el
+  resto queda `inert`.
+- **`content-visibility: auto` esconde errores en las pruebas.** Lo que está
+  fuera de pantalla no se pinta ni recibe toques, y `innerText` lo deja afuera.
+  Para probar superposiciones hay que traer la sección a la vista.
+- **`inert` le saca el foco a lo que queda adentro.** Si un diálogo es `lazy`,
+  cuando se dibuja la página ya está inert y no se sabe quién lo abrió: el
+  disparador se anota al tocar (ver `useDialogo` y `TiendaShell`).
+- **El `::after` que agranda un área táctil se mide desde adentro del borde.**
+  Una pastilla de 40 px con borde de 1 px necesita `inset: -3px`, no `-2px`.
+- **`naturalWidth` con `srcset` viene dividido por la densidad**: el archivo de
+  560 px puede decir 179. Para saber los píxeles reales, cargar el archivo sin
+  `srcset`.
+- **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
+  de las fuentes del sistema con hinting. Para comparar anchos como en un
+  teléfono, `--font-render-hinting=none`.
 
 ## 11. Antes de dar algo por hecho
 
 ```bash
 npm run build   # tiene que terminar sin errores (incluye variantes y prerender)
 npm run dev     # y mirarlo
+node scripts/qa/servir.mjs &                                  # dist/ como Vercel
+python3 scripts/qa/recorrido.py --url http://localhost:4173   # sin FALLA nuevos
+node scripts/qa/busqueda.test.mjs                             # si se tocó el buscador
 ```
+
+**El banco de pruebas es obligatorio antes de publicar** (cómo y qué mide, en
+[`docs/QA.md`](docs/QA.md)): ningún chequeo que pasaba puede pasar a FALLA.
+Después de publicar se corre contra producción, con `--lh 5` si el cambio
+puede mover el rendimiento. Si producción queda peor, `git revert` y publicar.
 
 Compilar no alcanza. Verificar en el navegador real, a **390 px** y a **1440 px**:
 
@@ -294,6 +322,12 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
 - **El respaldo** `respaldo.products_20261001_pre_c10` se puede borrar cuando el
   ciclo esté confirmado.
 - Llevar el vidrio a la ficha y al cajón del pedido (pendiente de diseño viejo).
+- **La aclaración del pie dice "retiro los viernes"** (`settings.aclaracion_pedido`).
+  El plazo real varía con el cierre del ciclo: Sebas la cambia desde Ajustes.
+- **De la etapa 1 de la auditoría** quedaron: página 404 (choca con la
+  reescritura de Vercel), el LCP de `/catalogo` (primera fila de fotos en
+  `lazy`) y el salto arriba al abrir la ficha en Chromium móvil. Detalle en
+  [`docs/QA.md`](docs/QA.md#pendientes), junto con lo que va en la etapa 2.
 
 ## 13. Documentación del repo
 
@@ -304,6 +338,7 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
 | [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) | Cómo está armado por dentro |
 | [`docs/EDITAR.md`](docs/EDITAR.md) | Qué tocar para cambiar qué |
 | [`docs/DISENO.md`](docs/DISENO.md) | Sistema visual de la tienda y del panel |
+| [`docs/QA.md`](docs/QA.md) | Registro de errores y cómo correr el banco de pruebas |
 | [`docs/KIT.md`](docs/KIT.md) | El esqueleto reutilizable en otro proyecto |
 | [`scripts/fotos/README.md`](scripts/fotos/README.md) | El pipeline de fotos |
 

@@ -339,9 +339,20 @@ el ícono es chico.
   pinta encima), con el resto de la página `inert`, el foco adentro y Escape
   para cerrar. Foco de teclado: 2 px en el acento. Área táctil de 44 px aunque
   el control se vea más chico (con `::after`, medido desde adentro del borde).
-- **Barra de filtros** — placa de vidrio con buscador y pastillas. Las pastillas
-  bajan de línea en vez de esconderse en una tira que se corta: un filtro que
-  hay que descubrir arrastrando es un filtro que no se usa.
+- **Barra de filtros** — placa de vidrio con buscador y dos renglones con
+  rótulo: **Para** (Él, Ella, Todos; un unisex está en los dos) con **Minis**
+  al lado si hay tamaños de 30 ml o menos, y **Familia** (Frescos y cítricos,
+  Florales, Dulces y gourmand, Amaderados, Ámbar y especiados; la regla está
+  en `lib/familias.js`). En el celular el rótulo va arriba de sus pastillas;
+  desde 900 px, a la izquierda. Los filtros viven en la dirección
+  (`?para=el&familia=amaderados&minis=1`): se comparten y sobreviven al
+  "atrás". **Rebajados** aparece solo si cubre el 80 % del catálogo o menos (en
+  C10 son 97 de 101: no filtraba nada). La **estación** (Verano, Invierno)
+  salió: "Verano" dejaba afuera los 42 aromas de "todo el año", y "Frescos y
+  cítricos" contesta mejor qué usar con calor; el momento sigue en la frase de
+  la ficha. El acento, solo en la pastilla activa. Las pastillas bajan de línea
+  en vez de esconderse en una tira que se corta: un filtro que hay que
+  descubrir arrastrando es un filtro que no se usa.
 - **Radios:** cero en fotos y multimedia, píldora en botones y pastillas, 24-26
   px en placas.
 

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { GENEROS } from '../../data/constants';
+import { useSearchParams } from 'react-router-dom';
 import { esPublicable, gruposPromoDe } from '../../lib/producto';
+import { FAMILIAS } from '../../lib/familias';
+import { conFiltro, esRebajado, leerFiltros, pasaFiltros, rebajadosAporta, tieneMinis } from '../../lib/filtros';
 import { coincide, indexar, prepararConsulta } from '../../lib/busqueda';
 import { linkWhatsApp } from '../../lib/whatsapp';
 import { CATALOGO, LEGAL, conDatos } from '../../config/contenido';
@@ -29,13 +31,14 @@ function Esqueleto() {
 }
 
 /** Filtros como pastillas que se prenden y apagan tocando la misma. */
-function Pastilla({ activa, onClick, children, tono = '' }) {
+function Pastilla({ activa, onClick, children, tono = '', qa }) {
   return (
     <button
       type="button"
       className={`${s.chip} ${tono} ${activa ? s.chipOn : ''}`}
       onClick={onClick}
       aria-pressed={activa}
+      data-qa={qa}
     >
       {activa && <span className={s.tilde} aria-hidden="true">✓</span>}
       {children}
@@ -46,8 +49,13 @@ function Pastilla({ activa, onClick, children, tono = '' }) {
 export default function ProductGrid({
   products, onOpen, onElegir, abiertoId, promos = {}, promoActiva, setPromoActiva, whatsapp = '', cargando = false,
 }) {
-  const [genero, setGenero] = useState(null);   // null = sin filtrar
-  const [momento, setMomento] = useState(null);
+  // Para, Familia y Minis viven en la direccion (lib/filtros.js): se pueden
+  // compartir y sobreviven a abrir una ficha y volver "atras". Se cambian con
+  // replace, para no llenar el historial de filtros.
+  const [params, setParams] = useSearchParams();
+  const filtros = leerFiltros(params);
+  const { para, familia, minis } = filtros;
+  const poner = (clave, valor) => setParams((prev) => conFiltro(prev, clave, valor), { replace: true });
   const [rebaja, setRebaja] = useState(false);
   const [q, setQ] = useState('');
   const [pagina, setPagina] = useState(0);
@@ -64,13 +72,17 @@ export default function ProductGrid({
   const visibles = useMemo(() => {
     const consulta = prepararConsulta(q);
     return publicables.filter((p) => {
-      if (genero && p.genero !== genero) return false;
-      if (momento && p.momento !== momento) return false;
+      if (!pasaFiltros(p, { para, familia, minis })) return false;
       if (promoActiva && !gruposPromoDe(p).includes(promoActiva)) return false;
-      if (rebaja && !(p.presentaciones || []).some((x) => x.precio_anterior)) return false;
+      if (rebaja && !esRebajado(p)) return false;
       return coincide(indices.get(p.id), consulta);
     });
-  }, [publicables, indices, genero, momento, rebaja, q, promoActiva]);
+  }, [publicables, indices, para, familia, minis, rebaja, q, promoActiva]);
+
+  // "Rebajados" se ve solo si filtra algo (si cubre mas del 80 % no sirve) y
+  // "Minis" solo si hay tamanos chicos en el ciclo.
+  const conRebajados = useMemo(() => rebajadosAporta(publicables), [publicables]);
+  const hayMinis = useMemo(() => publicables.some(tieneMinis), [publicables]);
 
   // Sin resultados: abajo del mensaje, los que mas salen, para no dejar a la
   // clienta frente a una pantalla vacia.
@@ -86,10 +98,13 @@ export default function ProductGrid({
 
   // Cambiar un filtro siempre devuelve a la primera pagina: si no, la clienta
   // filtra y le queda una pantalla vacia porque seguia parada en la pagina 4.
-  useEffect(() => { setPagina(0); }, [genero, momento, rebaja, q, promoActiva]);
+  useEffect(() => { setPagina(0); }, [para, familia, minis, rebaja, q, promoActiva]);
 
-  const activos = [genero, momento, promoActiva].filter(Boolean).length + (rebaja ? 1 : 0);
-  const limpiar = () => { setGenero(null); setMomento(null); setRebaja(false); setPromoActiva(null); setQ(''); };
+  const activos = [para, familia, promoActiva].filter(Boolean).length + (minis ? 1 : 0) + (rebaja ? 1 : 0);
+  const limpiar = () => {
+    setParams((prev) => ['para', 'familia', 'minis'].reduce((n, k) => conFiltro(n, k, null), prev), { replace: true });
+    setRebaja(false); setPromoActiva(null); setQ('');
+  };
 
   function irA(n) {
     setPagina(n);
@@ -125,38 +140,58 @@ export default function ProductGrid({
           aria-label={CATALOGO.buscarEtiqueta}
         />
 
-        <div className={`${s.chips} tscroll-x`} role="group" aria-label="Filtrar el catálogo">
-          {Object.values(GENEROS).map((g) => (
-            <Pastilla key={g.id} activa={genero === g.id} onClick={() => setGenero(genero === g.id ? null : g.id)}>
-              {g.label}
-            </Pastilla>
-          ))}
-
-          <span className={s.corte} aria-hidden="true" />
-
-          {Object.values(promos).map((p) => (
-            <Pastilla
-              key={p.grupo}
-              tono={s.chipPromo}
-              activa={promoActiva === p.grupo}
-              onClick={() => setPromoActiva(promoActiva === p.grupo ? null : p.grupo)}
-            >
-              {p.grupo === 'arabe' ? CATALOGO.filtros.promoArabe : CATALOGO.filtros.promoDisenador}
-            </Pastilla>
-          ))}
-
-          <Pastilla tono={s.chipPromo} activa={rebaja} onClick={() => setRebaja(!rebaja)}>
-            {CATALOGO.filtros.rebajados}
-          </Pastilla>
-
-          <span className={s.corte} aria-hidden="true" />
-
-          <Pastilla activa={momento === 'verano'} onClick={() => setMomento(momento === 'verano' ? null : 'verano')}>
-            {CATALOGO.filtros.verano}
-          </Pastilla>
-          <Pastilla activa={momento === 'invierno'} onClick={() => setMomento(momento === 'invierno' ? null : 'invierno')}>
-            {CATALOGO.filtros.invierno}
-          </Pastilla>
+        {/* Dos renglones con rotulo: a quien y que familia. Las pastillas bajan
+            de linea, nunca una tira que se corta (DISENO.md). El acento solo en
+            la activa. La estacion (verano, invierno) salio de aca: "Verano"
+            dejaba afuera los 42 de "todo el año", y "Frescos y citricos"
+            contesta mejor la pregunta de que usar con calor. */}
+        <div className={s.filtros}>
+          <div className={s.renglon}>
+            <span className={s.rotulo} id="filtro-para">{CATALOGO.filtros.para}</span>
+            <div className={s.flujo}>
+            <div className={s.chips} role="group" aria-labelledby="filtro-para" data-qa="filtro-para">
+              <Pastilla activa={para === 'el'} onClick={() => poner('para', para === 'el' ? null : 'el')}>{CATALOGO.filtros.el}</Pastilla>
+              <Pastilla activa={para === 'ella'} onClick={() => poner('para', para === 'ella' ? null : 'ella')}>{CATALOGO.filtros.ella}</Pastilla>
+              <Pastilla activa={!para} onClick={() => poner('para', null)}>{CATALOGO.filtros.todos}</Pastilla>
+            </div>
+            {hayMinis && (
+              <>
+                <span className={s.corte} aria-hidden="true" />
+                <Pastilla qa="filtro-minis" activa={minis} onClick={() => poner('minis', !minis)}>{CATALOGO.filtros.minis}</Pastilla>
+              </>
+            )}
+            </div>
+          </div>
+          <div className={s.renglon}>
+            <span className={s.rotulo} id="filtro-familia">{CATALOGO.filtros.familia}</span>
+            <div className={s.chips} role="group" aria-labelledby="filtro-familia" data-qa="filtro-familia">
+              {FAMILIAS.map((f) => (
+                <Pastilla key={f.id} activa={familia === f.id} onClick={() => poner('familia', familia === f.id ? null : f.id)}>
+                  {f.nombre}
+                </Pastilla>
+              ))}
+            </div>
+          </div>
+          {(Object.keys(promos).length > 0 || conRebajados) && (
+            <div className={s.renglon}>
+              <span className={s.rotulo}>{CATALOGO.filtros.ademas}</span>
+              <div className={s.chips}>
+                {Object.values(promos).map((p) => (
+                  <Pastilla
+                    key={p.grupo}
+                    tono={s.chipPromo}
+                    activa={promoActiva === p.grupo}
+                    onClick={() => setPromoActiva(promoActiva === p.grupo ? null : p.grupo)}
+                  >
+                    {p.grupo === 'arabe' ? CATALOGO.filtros.promoArabe : CATALOGO.filtros.promoDisenador}
+                  </Pastilla>
+                ))}
+                {conRebajados && (
+                  <Pastilla activa={rebaja} onClick={() => setRebaja(!rebaja)}>{CATALOGO.filtros.rebajados}</Pastilla>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className={s.resumen}>

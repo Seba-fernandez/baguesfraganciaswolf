@@ -64,6 +64,22 @@
 .chipPromo { border-color: var(--amber-deep); color: var(--amber); }
 .chipPromo.chipOn { color: var(--on-amber); }
 
+/* Los filtros en renglones con rotulo ("Para", "Familia"). El rotulo va en
+   una columna fija y las pastillas bajan de linea en la otra. */
+.filtros { display: flex; flex-direction: column; gap: 12px; flex: 1; min-width: 0; }
+@media (min-width: 900px) { .filtros { gap: 8px; } }
+/* En el celular el rotulo va arriba: con columna propia las pastillas quedaban
+   en 244 px y la familia ocupaba cinco renglones. */
+.renglon { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
+.rotulo { font-size: 0.78rem; color: var(--ink-faint); }
+@media (min-width: 900px) {
+  .renglon { grid-template-columns: 62px minmax(0, 1fr); align-items: start; gap: 8px; }
+  .rotulo { line-height: 40px; }
+}
+.flujo { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; min-width: 0; }
+.renglon > .chips { flex: none; }
+.flujo > .chips { flex: none; }
+
 /* Separadores entre familias de filtros: se leen como grupos sin titulos. */
 /* En una sola linea el separador es una barra vertical; cuando las pastillas
    bajan de linea, una barra suelta al principio de un renglon queda huerfana,
@@ -73,6 +89,8 @@
   background: var(--line-bright); margin-inline: 3px;
 }
 @media (max-width: 1099px) { .corte { display: none; } }
+/* Entre "Todos" y "Minis" el corte queda siempre: estan en el mismo renglon. */
+.flujo > .corte { display: block; }
 
 .resumen { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .conteo { font-size: 0.78rem; color: var(--ink-faint); white-space: nowrap; }

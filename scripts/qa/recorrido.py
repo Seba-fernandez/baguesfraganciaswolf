@@ -809,7 +809,9 @@ def e3_a1(browser, base):
 
     ctx, page = nuevo(browser, MOVIL)
     page.goto(base + f"/?aroma={slug}", wait_until="load")
-    ok = esperar_ficha(page, 20000)
+    # La portada hidrata despues de `load` y del pedido a la base: con el CDN
+    # en frio, justo despues de un deploy, tarda.
+    ok = esperar_ficha(page, 30000)
     chk("E3-A1 portada", "conversion", "media", "/?aroma=<slug> abre la ficha encima de la portada",
         ok, f"ficha abierta: {ok}")
     ctx.close()

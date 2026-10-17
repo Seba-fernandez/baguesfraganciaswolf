@@ -89,10 +89,17 @@ export const CATALOGO = {
   vacioWhatsapp: 'Preguntame por WhatsApp',
   vacioMensaje: 'Hola! Busco {busqueda}, ¿lo conseguís?',
   vacioDestacados: 'Los que más salen',
+  // Los nombres de las cinco familias están en src/lib/familias.js, junto con
+  // la regla que reparte cada aroma.
   filtros: {
+    para: 'Para',
+    el: 'Él',
+    ella: 'Ella',
+    todos: 'Todos',
+    minis: 'Minis',
+    familia: 'Familia',
+    ademas: 'Además',
     rebajados: 'Rebajados',
-    verano: 'Verano',
-    invierno: 'Invierno',
     promoArabe: '2x1 árabes',
     promoDisenador: '2x1 diseñador',
   },

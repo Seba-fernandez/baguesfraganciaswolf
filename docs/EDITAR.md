@@ -52,6 +52,17 @@ aclaración chica del pie ("Venta particular...") no está en el código: es
 pensarlo.** Está redactado para dejar en claro que la web no vende originales ni
 representa a las marcas que nombra.
 
+## Cambiar las familias del filtro
+
+Las cinco familias del catálogo (Frescos y cítricos, Florales, Dulces y
+gourmand, Amaderados, Ámbar y especiados) salen de `familia_olfativa`, que en la
+base es texto libre. La regla que reparte cada aroma, con los nombres de las
+familias, está en **`src/lib/familias.js`**: una tabla de palabras ("fougère" va
+a frescos, "chipre" a amaderados) y la regla de las notas golosas para Dulces.
+Un aroma sin familia cargada cae en "Otros" y no aparece en ningún filtro de
+familia: se arregla cargándole la familia desde el panel. Los rótulos "Para",
+"Familia" y las pastillas Él, Ella, Todos y Minis están en `CATALOGO.filtros`.
+
 ## Cambiar un número
 
 En **`src/config/ajustes.js`**: cuántos aromas por página, cuántos destacados

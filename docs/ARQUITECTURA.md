@@ -199,7 +199,10 @@ que hace falta para que una dirección interna como `/panel` no devuelva error a
 entrar directo: la aplicación es una sola página y el recorrido lo resuelve el
 navegador. `/catalogo` tiene una regla propia, antes de la general, que sirve su
 cáscara pre-generada (encabezado, filtros y tarjetas de espera) en vez de la
-portada.
+portada. Esa cáscara precarga (`modulepreload`) el chunk del catálogo y los
+chunks que él importa, para que bajen en paralelo con el principal; y la
+primera fila de la grilla pide sus fotos sin `lazy`, la primera con
+`fetchpriority="high"`: es el LCP de la página.
 
 ---
 

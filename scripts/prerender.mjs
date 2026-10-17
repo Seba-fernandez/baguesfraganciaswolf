@@ -186,8 +186,16 @@ catalogo = catalogo.replace(linkCss[0], `<style>${cssTodo}</style>`);
 
 // El chunk del catalogo baja en paralelo con el principal (main.jsx lo espera
 // antes de montar). Y sin las precargas del hero: aca no hay hero.
+// Tambien los chunks que el del catalogo importa (familias, whatsapp...):
+// sin esto se pedian recien cuando corria el JS, un viaje de red mas en el
+// camino de la primera foto.
+const codigoCatalogo = fs.readFileSync(path.join(DIST, 'assets', jsCatalogo), 'utf8');
+const depsCatalogo = [...new Set([...codigoCatalogo.matchAll(/from\s*"\.\/([\w.-]+\.js)"/g)].map((m) => m[1]))]
+  .filter((f) => !/^index-/.test(f));
+const precargas = [jsCatalogo, ...depsCatalogo]
+  .map((f) => `  <link rel="modulepreload" crossorigin href="/assets/${f}" />`).join('\n');
 catalogo = catalogo
-  .replace('</head>', `  <link rel="modulepreload" crossorigin href="/assets/${jsCatalogo}" />\n  </head>`)
+  .replace('</head>', `${precargas}\n  </head>`)
   .replace(/\n\s*<link rel="preload" href="\/hero\/[^>]*>/g, '');
 
 // Direccion propia: canonical, og:url y titulo.

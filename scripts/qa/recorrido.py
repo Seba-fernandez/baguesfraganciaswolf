@@ -208,8 +208,13 @@ def abrir_con_pie_detras(page):
     page.wait_for_timeout(400)
     n = page.locator("article").count()
     abrir_ficha(page, n - 1)
-    page.evaluate("""() => { const f = document.querySelector('footer');
-        scrollTo(0, f.getBoundingClientRect().top + scrollY - 120); }""")
+    # Desde la etapa 3A el body queda fijo con la ficha abierta (conserva la
+    # posicion): scrollTo no mueve nada y hay que correr el body.
+    page.evaluate("""() => { const f = document.querySelector('footer'); const b = document.body;
+        if (getComputedStyle(b).position === 'fixed') {
+          const actual = -parseFloat(b.style.top || '0');
+          b.style.top = `-${f.getBoundingClientRect().top + actual - 120}px`;
+        } else scrollTo(0, f.getBoundingClientRect().top + scrollY - 120); }""")
     page.wait_for_timeout(500)
     return page.evaluate("() => { const f = document.querySelector('footer'); return f ? Math.round(f.getBoundingClientRect().top) : null; }")
 
@@ -1219,8 +1224,10 @@ def e3_a9(browser, base):
     page.evaluate("() => scrollTo(0, 900)")
     page.wait_for_timeout(500)
     y0 = page.evaluate("() => scrollY")
-    idx = page.evaluate("""() => [...document.querySelectorAll('article')].findIndex(a => { const r = a.getBoundingClientRect(); return r.top > 80 && r.bottom < innerHeight; })""")
-    page.locator("article").nth(max(idx, 0)).locator("button").first.click()
+    idx = page.evaluate("""() => [...document.querySelectorAll('article')].findIndex(a => { const r = a.getBoundingClientRect(); return r.top > 80 && r.top < innerHeight - 300; })""")
+    # Con el dedo, como en el celular (un clic de mouse deja el hover puesto).
+    caja = page.locator("article").nth(max(idx, 0)).locator("button").first.bounding_box()
+    page.touchscreen.tap(caja["x"] + caja["width"] / 2, caja["y"] + 40)
     abre = esperar_ficha(page) or page.locator("[role=dialog]").count() > 0
     page.wait_for_timeout(300)
     # Lo que se ve detras de la ficha: si el documento salto, la tarjeta ya no esta donde estaba.

@@ -17,8 +17,10 @@ import s from './ProductCard.module.css';
  * Los tamanos ya no van como pastillas (en el celular se apretaban y dejaban
  * tarjetas de alturas distintas). Con un solo tamano, el + agrega directo; con
  * mas, abre la hoja de tamanos (onElegir), en el celular y en escritorio.
+ *
+ * `prioridad`: la primera fila del catalogo baja su foto sin esperar (LCP).
  */
-export default function ProductCard({ producto, onOpen, onElegir, promos = {} }) {
+export default function ProductCard({ producto, onOpen, onElegir, promos = {}, prioridad = 0 }) {
   const { addItem, ultimo } = useCart();
   // Despues de agregar, el + pasa a tilde 1,2 s: confirma sin abrir nada.
   // Vale venga de donde venga el agregado (el +, la hoja o la ficha).
@@ -50,7 +52,7 @@ export default function ProductCard({ producto, onOpen, onElegir, promos = {} })
         onClick={() => onOpen(producto)}
         aria-label={`Ver ${titulo}`}
       >
-        <ProductThumb producto={producto} linea={base?.linea} />
+        <ProductThumb producto={producto} linea={base?.linea} prioridad={prioridad} />
         {hayPromo && <span className={s.promoTag}>2x1</span>}
       </button>
 

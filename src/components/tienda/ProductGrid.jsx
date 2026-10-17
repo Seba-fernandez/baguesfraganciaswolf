@@ -281,13 +281,17 @@ export default function ProductGrid({
       ) : (
         <>
           <div className={s.grid}>
-            {enPantalla.map((p) => (
+            {/* La primera fila (hasta 4 columnas) baja la foto enseguida y la
+                primera con prioridad alta: es el LCP de /catalogo. Solo en la
+                primera pagina, que es la que se ve al entrar. */}
+            {enPantalla.map((p, i) => (
               <ProductCard
                 key={p.id}
                 producto={p}
                 onOpen={onOpen}
                 onElegir={onElegir}
                 promos={promos}
+                prioridad={(movil || pagActual === 0) && i < 4 ? (i === 0 ? 2 : 1) : 0}
               />
             ))}
           </div>

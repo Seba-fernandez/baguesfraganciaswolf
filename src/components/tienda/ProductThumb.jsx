@@ -51,7 +51,13 @@ function conVariantes(ruta) {
  */
 const SIZES_TARJETA = '(max-width: 767px) 46vw, (max-width: 1100px) 30vw, 310px';
 
-export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.tarjeta, linea, sizes = SIZES_TARJETA }) {
+/**
+ * `prioridad`: 0 normal (lazy); 1 la baja enseguida (eager), para la primera
+ * fila del catalogo; 2 ademas con fetchpriority alto, para la primera foto,
+ * que es la que define el LCP de /catalogo. Con lazy, el navegador esperaba a
+ * tener la grilla dibujada para recien pedirla (1,2 s de demora medidos).
+ */
+export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.tarjeta, linea, sizes = SIZES_TARJETA, prioridad = 0 }) {
   const imagen = src ?? (producto?.imagen_url || fotoDe(producto, linea));
 
   if (imagen) {
@@ -65,7 +71,8 @@ export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.ta
           src={imagen}
           {...(srcSet ? { srcSet, sizes } : {})}
           alt={alt || producto?.inspirado_en || ''}
-          loading="lazy"
+          loading={prioridad ? 'eager' : 'lazy'}
+          {...(prioridad > 1 ? { fetchpriority: 'high' } : {})}
           decoding="async"
           className={s.img}
         />

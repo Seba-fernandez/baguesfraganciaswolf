@@ -46,7 +46,12 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
         <button ref={cerrarRef} className={s.cerrar} onClick={onClose} aria-label="Cerrar">✕</button>
 
         <div className={s.media}>
-          <ProductThumb producto={producto} ratio="3 / 4" linea={elegida?.linea} />
+          <ProductThumb
+            producto={producto}
+            ratio="3 / 4"
+            linea={elegida?.linea}
+            sizes="(max-width: 767px) 92vw, 380px"
+          />
         </div>
 
         <div className={s.info}>

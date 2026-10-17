@@ -38,10 +38,20 @@ function inicialDe(producto) {
 function conVariantes(ruta) {
   if (!ruta || !ruta.startsWith('/perfumes/')) return null;
   const base = ruta.replace(/\.webp$/, '');
-  return `${base}-360w.webp 360w, ${base}-560w.webp 560w, ${ruta} 800w`;
+  // El original sale de componer.mjs a 900 x 1200. Decia 800w: el navegador
+  // creia que era mas chico de lo que es.
+  return `${base}-360w.webp 360w, ${base}-560w.webp 560w, ${ruta} 900w`;
 }
 
-export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.tarjeta, linea }) {
+/**
+ * Ancho al que se muestra la foto en una tarjeta del catalogo: dos por fila
+ * en el celular, tres hasta 1100 px y despues una tarjeta de ~305 px.
+ * La ficha pasa el suyo: ahi la foto ocupa casi todo el ancho del celular, y
+ * con el de la tarjeta bajaba el archivo de 560 px estirado casi al doble.
+ */
+const SIZES_TARJETA = '(max-width: 767px) 46vw, (max-width: 1100px) 30vw, 310px';
+
+export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.tarjeta, linea, sizes = SIZES_TARJETA }) {
   const imagen = src ?? (producto?.imagen_url || fotoDe(producto, linea));
 
   if (imagen) {
@@ -53,11 +63,7 @@ export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.ta
       <div className={s.wrap} style={{ aspectRatio: ratio }}>
         <img
           src={imagen}
-          {...(srcSet ? {
-            srcSet,
-            // Dos por fila en el celular, tarjeta de ~250 px en escritorio.
-            sizes: '(max-width: 767px) 46vw, 250px',
-          } : {})}
+          {...(srcSet ? { srcSet, sizes } : {})}
           alt={alt || producto?.inspirado_en || ''}
           loading="lazy"
           decoding="async"

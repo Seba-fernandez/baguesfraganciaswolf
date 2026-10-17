@@ -63,7 +63,7 @@ export default function Destacados({ products, onOpen }) {
                   onClick={() => onOpen(p)}
                 >
                   <span className={s.media}>
-                    <ProductThumb producto={p} ratio={PROPORCION.destacado} />
+                    <ProductThumb producto={p} ratio={PROPORCION.destacado} sizes="(max-width: 767px) 46vw, 250px" />
                   </span>
                   <span className={s.info}>
                     <span className={s.nombre}>{tituloDe(p)}</span>

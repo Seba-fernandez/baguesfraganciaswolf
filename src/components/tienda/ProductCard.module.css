@@ -23,7 +23,9 @@
 .body { padding: 12px 12px 14px; display: flex; flex-direction: column; gap: 5px; flex: 1; }
 
 .titulo {
-  font-family: var(--f-display); font-size: 1rem; line-height: 1.15;
+  /* Cormorant 600: la cara que ya viaja en la primera carga. La 400 llega
+     recien despues del evento load, y el cambio de letra movia la tarjeta. */
+  font-family: var(--f-display); font-weight: 600; font-size: 1rem; line-height: 1.15;
   color: var(--ink); background: none; border: 0; padding: 0; text-align: left;
   cursor: pointer; letter-spacing: 0.01em;
 }

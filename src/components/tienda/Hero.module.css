@@ -265,6 +265,14 @@
 .ctaFlecha { display: inline-flex; font-size: 1.05em; transition: transform var(--dur) var(--ease); }
 .acciones :global(.tbtn):hover .ctaFlecha { transform: translateX(4px); }
 
+/* El número de aromas tiene su lugar reservado (tres cifras) hasta que
+   contesta la base; mientras tanto, una raya tenue en vez de un número viejo. */
+.metaNum { display: inline-block; min-width: 3ch; text-align: right; }
+.metaNum:empty::before {
+  content: ''; display: inline-block; width: 3ch; height: 0.7em;
+  border-radius: 2px; background: var(--line-bright);
+}
+
 /* Fila de datos duros: dos números que anclan el valor de un vistazo. */
 .meta {
   margin-top: 26px; display: flex; flex-wrap: wrap; align-items: center;

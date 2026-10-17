@@ -34,6 +34,3 @@ export const CARPETA_FOTOS = {
   unlock: '/perfumes',
   bagues: '/perfumes/bagues',
 };
-
-/** Cuantos aromas anuncia el inicio mientras la base todavia no contesto. */
-export const AROMAS_APROX = 104;

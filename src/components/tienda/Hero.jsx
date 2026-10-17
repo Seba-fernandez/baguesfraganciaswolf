@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { INICIO, conDatos } from '../../config/contenido';
-import { AROMAS_APROX } from '../../config/ajustes';
 import { pesos } from '../../lib/format';
 import Flecha from './Flecha';
 import s from './Hero.module.css';
@@ -34,7 +33,10 @@ export default function Hero({
   totalAromas, desde, nombresAromas = [], heroProducto = null,
 }) {
   const lista = Object.values(promos);
-  const aromas = totalAromas || AROMAS_APROX;
+  // El numero de aromas llega con la base. Hasta entonces (y en el HTML
+  // pre-generado) su lugar queda reservado y vacio: antes salia un 104 escrito
+  // a mano que despues cambiaba al numero real.
+  const [antesAromas, despuesAromas] = INICIO.metaAromas.split('{n}');
 
   return (
     <section className={s.hero} id="inicio-hero">
@@ -104,7 +106,9 @@ export default function Hero({
           </div>
 
           <div className={s.meta} data-hero="meta">
-            <span className={`${s.metaDato} tnum`}>{conDatos(INICIO.metaAromas, { n: aromas })}</span>
+            <span className={`${s.metaDato} tnum`}>
+              {antesAromas}<span className={s.metaNum}>{totalAromas || ''}</span>{despuesAromas}
+            </span>
             {desde ? (
               <span className={`${s.metaDato} tnum`}>{conDatos(INICIO.metaDesde, { desde: pesos(desde) })}</span>
             ) : null}

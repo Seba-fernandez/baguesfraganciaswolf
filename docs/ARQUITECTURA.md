@@ -153,6 +153,7 @@ calcula reglas de negocio.** Si una cuenta da mal, el error está en `lib/`.
 | `lib/vidrioLiquido.js` | La lente del vidrio (ver [`DISENO.md`](DISENO.md)) |
 | `lib/apiTienda.js` | La lectura del catálogo y el envío del pedido, sin supabase-js |
 | `lib/fotos.js` | Qué foto le toca a cada aroma según la línea (tienda y panel) |
+| `lib/busqueda.js` | El buscador del catálogo: indexa título, familia, notas, cajas y género, sin tildes ni vocal de género, con un error de tipeo. Pruebas: `node scripts/qa/busqueda.test.mjs` |
 | `lib/cachePanel.js` | La memoria compartida y la precarga del panel |
 | `hooks/useDatosTienda.js` | Los datos de la tienda pública, en un pedido por tabla |
 | `hooks/useReveal.js` | Las apariciones al hacer scroll |

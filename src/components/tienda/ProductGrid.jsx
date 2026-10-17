@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { GENEROS } from '../../data/constants';
-import { esPublicable, gruposPromoDe, tituloDe } from '../../lib/producto';
+import { esPublicable, gruposPromoDe } from '../../lib/producto';
+import { coincide, indexar, prepararConsulta } from '../../lib/busqueda';
+import { linkWhatsApp } from '../../lib/whatsapp';
 import { CATALOGO, LEGAL, conDatos } from '../../config/contenido';
-import { POR_PAGINA } from '../../config/ajustes';
+import { DESTACADOS_MAXIMO, POR_PAGINA } from '../../config/ajustes';
 import ProductCard from './ProductCard';
 import s from './ProductGrid.module.css';
-
-function normalizar(t) {
-  return String(t || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
-}
 
 /** Filtros como pastillas que se prenden y apagan tocando la misma. */
 function Pastilla({ activa, onClick, children, tono = '' }) {
@@ -25,7 +23,9 @@ function Pastilla({ activa, onClick, children, tono = '' }) {
   );
 }
 
-export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, promoActiva, setPromoActiva }) {
+export default function ProductGrid({
+  products, onOpen, abiertoId, promos = {}, promoActiva, setPromoActiva, whatsapp = '',
+}) {
   const [genero, setGenero] = useState(null);   // null = sin filtrar
   const [momento, setMomento] = useState(null);
   const [rebaja, setRebaja] = useState(false);
@@ -38,18 +38,27 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
     [products]
   );
 
+  // El indice de busqueda se arma una vez por catalogo, no en cada tecla.
+  const indices = useMemo(() => new Map(publicables.map((p) => [p.id, indexar(p)])), [publicables]);
+
   const visibles = useMemo(() => {
-    const termino = normalizar(q).trim();
+    const consulta = prepararConsulta(q);
     return publicables.filter((p) => {
       if (genero && p.genero !== genero) return false;
       if (momento && p.momento !== momento) return false;
       if (promoActiva && !gruposPromoDe(p).includes(promoActiva)) return false;
       if (rebaja && !(p.presentaciones || []).some((x) => x.precio_anterior)) return false;
-      if (!termino) return true;
-      const heno = normalizar(`${tituloDe(p)} ${p.nombre} ${p.familia_olfativa}`);
-      return heno.includes(termino);
+      return coincide(indices.get(p.id), consulta);
     });
-  }, [publicables, genero, momento, rebaja, q, promoActiva]);
+  }, [publicables, indices, genero, momento, rebaja, q, promoActiva]);
+
+  // Sin resultados: abajo del mensaje, los que mas salen, para no dejar a la
+  // clienta frente a una pantalla vacia.
+  const destacados = useMemo(
+    () => publicables.filter((p) => p.destacado).slice(0, Math.min(DESTACADOS_MAXIMO, 4)),
+    [publicables]
+  );
+  const buscado = q.trim();
 
   const paginas = Math.max(1, Math.ceil(visibles.length / POR_PAGINA));
   const pagActual = Math.min(pagina, paginas - 1);
@@ -138,7 +147,31 @@ export default function ProductGrid({ products, onOpen, abiertoId, promos = {}, 
         <div className={s.vacio}>
           <p className={s.vacioTitulo}>{CATALOGO.vacioTitulo}</p>
           <p className={s.vacioTexto}>{CATALOGO.vacioTexto}</p>
-          <button type="button" className="tbtn ghost" onClick={limpiar}>{CATALOGO.vacioBoton}</button>
+          <div className={s.vacioAcciones}>
+            {/* Lo principal es no perder a quien ya sabe lo que quiere: el
+                WhatsApp sale con lo que busco escrito. */}
+            {buscado && whatsapp && (
+              <a
+                className="tbtn"
+                href={linkWhatsApp(whatsapp, conDatos(CATALOGO.vacioMensaje, { busqueda: buscado }))}
+                target="_blank"
+                rel="noopener"
+              >
+                {CATALOGO.vacioWhatsapp}
+              </a>
+            )}
+            <button type="button" className="tbtn ghost" onClick={limpiar}>{CATALOGO.vacioBoton}</button>
+          </div>
+          {destacados.length > 0 && (
+            <div className={s.vacioDestacados}>
+              <h3 className={s.vacioSubtitulo}>{CATALOGO.vacioDestacados}</h3>
+              <div className={s.grid}>
+                {destacados.map((p) => (
+                  <ProductCard key={p.id} producto={p} onOpen={onOpen} promos={promos} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <>

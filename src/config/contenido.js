@@ -74,7 +74,7 @@ export const NOSOTROS = {
 
 export const CATALOGO = {
   titulo: 'El catálogo',
-  bajada: '{aromas} aromas del ciclo. Buscá por el perfume en el que se inspira.',
+  bajada: '{aromas} aromas del ciclo. Buscá por el perfume que conocés, una nota o el nombre de la caja.',
   placeholderBusqueda: 'Buscar: Sauvage, Le Male, amaderado...',
   buscarEtiqueta: 'Buscar aroma',
   quitarFiltros: 'Quitar filtros',
@@ -83,6 +83,11 @@ export const CATALOGO = {
     'El catálogo cambia todos los meses. Si lo buscabas puntualmente, escribime y te ' +
     'digo si entra en el próximo.',
   vacioBoton: 'Ver todo el catálogo',
+  // Botón principal cuando la búsqueda no encuentra nada: abre WhatsApp con
+  // este mensaje. {busqueda} es lo que escribió la clienta.
+  vacioWhatsapp: 'Preguntame por WhatsApp',
+  vacioMensaje: 'Hola! Busco {busqueda}, ¿lo conseguís?',
+  vacioDestacados: 'Los que más salen',
   filtros: {
     rebajados: 'Rebajados',
     verano: 'Verano',

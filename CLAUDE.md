@@ -70,6 +70,7 @@ src/
   hooks/          datos (useProducts, useOrders...) y comportamiento (useReveal)
   lib/            reglas de negocio sin JSX
     apiTienda.js    lectura de la tienda con fetch, SIN supabase-js
+    busqueda.js     el buscador del catálogo (tolerante; pruebas en scripts/qa)
     cachePanel.js   memoria compartida del panel
     fotos.js        qué foto le toca a cada aroma (tienda y panel)
     producto.js     presentaciones, título, línea de cada tamaño

@@ -9,7 +9,7 @@ import ProductGrid from './ProductGrid';
  */
 export default function CatalogoScreen() {
   const {
-    products, loading, promos,
+    products, loading, promos, settings,
     abrir, abiertoId, promoActiva, setPromoActiva,
   } = useOutletContext();
 
@@ -19,6 +19,7 @@ export default function CatalogoScreen() {
 
   return (
     <ProductGrid
+      whatsapp={settings?.whatsapp_owner}
       products={products}
       onOpen={abrir}
       abiertoId={abiertoId}

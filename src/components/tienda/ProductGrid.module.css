@@ -124,7 +124,13 @@
 .numeros { display: flex; align-items: center; gap: 6px; }
 .puntos { color: var(--ink-faint); padding: 0 2px; }
 
-.vacio { padding: 48px 0 64px; max-width: 44ch; }
+.vacio { padding: 48px 0 64px; }
+.vacioTitulo, .vacioTexto { max-width: 44ch; }
 .vacioTitulo { font-family: var(--f-display); font-size: 1.5rem; color: var(--ink); }
 .vacioTexto { margin: 12px 0 22px; color: var(--ink-dim); font-size: 0.95rem; }
+
+/* Sin resultados: el WhatsApp con lo buscado primero, despues volver a todo. */
+.vacioAcciones { display: flex; flex-wrap: wrap; gap: 12px; }
+.vacioDestacados { margin-top: 48px; max-width: none; }
+.vacioSubtitulo { font-size: 1.3rem; margin-bottom: 16px; }
 

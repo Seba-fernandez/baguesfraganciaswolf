@@ -290,6 +290,11 @@ el ícono es chico.
   grilla las estira y el pie se apoya abajo). La grilla va de a 2, 3 y 4
   columnas: números que dividen a 12, los aromas por página, para que ninguna
   página termine con una fila suelta.
+- **Catálogo en el celular** — sin paginador: "Ver 12 más (quedan 76)" en
+  vidrio claro a todo el ancho agrega abajo, con la cantidad en la dirección
+  (`?ver=24`, replace) para que "atrás" vuelva al mismo lugar (la altura se
+  guarda por entrada del historial). Sin scroll infinito: el pie con el aviso
+  legal tiene que seguir alcanzable. En escritorio, el paginador de siempre.
 - **"Si te gusta este, mirá también"** — en la ficha, antes del aviso de
   encargo: tres miniaturas 3:4 con el nombre en Cormorant 600 y la razón en
   `--ink-faint` ("comparte: vainilla, ámbar"; si no comparten notas, "también

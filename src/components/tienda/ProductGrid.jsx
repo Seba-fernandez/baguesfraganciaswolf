@@ -5,6 +5,7 @@ import { FAMILIAS } from '../../lib/familias';
 import { conFiltro, esRebajado, leerFiltros, pasaFiltros, rebajadosAporta, tieneMinis } from '../../lib/filtros';
 import { coincide, indexar, prepararConsulta } from '../../lib/busqueda';
 import { linkWhatsApp } from '../../lib/whatsapp';
+import useMedia from '../../hooks/useMedia';
 import { CATALOGO, LEGAL, conDatos } from '../../config/contenido';
 import { DESTACADOS_MAXIMO, POR_PAGINA } from '../../config/ajustes';
 import ProductCard from './ProductCard';
@@ -92,13 +93,45 @@ export default function ProductGrid({
   );
   const buscado = q.trim();
 
+  // Celular: en vez de nueve paginas de 12, un "Ver 12 más" que agrega abajo.
+  // Cuantos se ven va en la direccion (?ver=24, con replace) para que "atras"
+  // vuelva al mismo lugar. Sin scroll infinito: el pie con el aviso legal
+  // tiene que seguir alcanzable. Escritorio: el paginador de siempre.
+  const movil = useMedia('(max-width: 767px)');
+  const ver = Math.max(POR_PAGINA, Number(params.get('ver')) || POR_PAGINA);
   const paginas = Math.max(1, Math.ceil(visibles.length / POR_PAGINA));
   const pagActual = Math.min(pagina, paginas - 1);
-  const enPantalla = visibles.slice(pagActual * POR_PAGINA, (pagActual + 1) * POR_PAGINA);
+  const enPantalla = movil
+    ? visibles.slice(0, ver)
+    : visibles.slice(pagActual * POR_PAGINA, (pagActual + 1) * POR_PAGINA);
+  const quedan = Math.max(0, visibles.length - enPantalla.length);
 
-  // Cambiar un filtro siempre devuelve a la primera pagina: si no, la clienta
-  // filtra y le queda una pantalla vacia porque seguia parada en la pagina 4.
-  useEffect(() => { setPagina(0); }, [para, familia, minis, rebaja, q, promoActiva]);
+  // Al tocar "Ver mas", el foco pasa a la primera tarjeta nueva (sin mover la
+  // pantalla): con teclado o lector se sigue desde ahi, no desde el boton.
+  const enfocar = useRef(null);
+  function verMas() {
+    enfocar.current = enPantalla.length;
+    setParams((prev) => conFiltro(prev, 'ver', enPantalla.length + POR_PAGINA), { replace: true });
+  }
+  useEffect(() => {
+    if (enfocar.current === null) return;
+    const tarjeta = document.querySelectorAll('#catalogo article')[enfocar.current];
+    enfocar.current = null;
+    tarjeta?.querySelector('button')?.focus({ preventScroll: true });
+  }, [enPantalla.length]);
+
+  // Cambiar un filtro siempre devuelve a la primera pagina (y a los primeros
+  // 12 en el celular): si no, la clienta filtra y le queda una pantalla vacia
+  // porque seguia parada en la pagina 4. La primera vez no: si se llega con
+  // ?ver=24 (volviendo "atras"), se respeta.
+  const claveFiltros = [para, familia, minis, rebaja, q, promoActiva].join('|');
+  const filtrosPrevios = useRef(claveFiltros);
+  useEffect(() => {
+    if (filtrosPrevios.current === claveFiltros) return;
+    filtrosPrevios.current = claveFiltros;
+    setPagina(0);
+    setParams((prev) => conFiltro(prev, 'ver', null), { replace: true });
+  }, [claveFiltros]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activos = [para, familia, promoActiva].filter(Boolean).length + (minis ? 1 : 0) + (rebaja ? 1 : 0);
   const limpiar = () => {
@@ -199,7 +232,7 @@ export default function ProductGrid({
             {cargando ? CATALOGO.cargando : (
               <>
                 {visibles.length} {visibles.length === 1 ? 'aroma' : 'aromas'}
-                {paginas > 1 ? ` · página ${pagActual + 1} de ${paginas}` : ''}
+                {!movil && paginas > 1 ? ` · página ${pagActual + 1} de ${paginas}` : ''}
               </>
             )}
           </span>
@@ -259,7 +292,15 @@ export default function ProductGrid({
             ))}
           </div>
 
-          {paginas > 1 && (
+          {movil && quedan > 0 && (
+            <div className={s.verMasCaja}>
+              <button type="button" className={`tbtn clear ${s.verMas}`} onClick={verMas} data-qa="ver-mas">
+                {conDatos(CATALOGO.verMas, { n: Math.min(POR_PAGINA, quedan), quedan })}
+              </button>
+            </div>
+          )}
+
+          {!movil && paginas > 1 && (
             <nav className={s.paginador} aria-label="Páginas del catálogo">
               <button
                 type="button"

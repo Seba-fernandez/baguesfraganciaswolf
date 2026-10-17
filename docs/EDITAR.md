@@ -66,7 +66,8 @@ familia: se arregla cargándole la familia desde el panel. Los rótulos "Para",
 
 ## Cambiar un número
 
-En **`src/config/ajustes.js`**: cuántos aromas por página, cuántos destacados
+En **`src/config/ajustes.js`**: cuántos aromas por página (también cuántos
+agrega "Ver más" en el celular), cuántos destacados
 entran, desde cuánto el envío es gratis (`ENVIO_GRATIS_DESDE`, en pesos: lo usan
 el bloque "Antes de pedir" y la barra del cajón), el tope de unidades por pedido, a qué altura aparece el botón de volver
 arriba, la proporción del recuadro de las fotos y en qué carpeta viven.

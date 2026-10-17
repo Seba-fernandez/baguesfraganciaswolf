@@ -119,6 +119,10 @@
 }
 @media (min-width: 1100px) { .grid { gap: 20px; } }
 
+/* "Ver 12 más (quedan 76)": el vidrio claro, a todo el ancho de la grilla. */
+.verMasCaja { display: flex; justify-content: center; margin-top: 28px; }
+.verMas { width: 100%; max-width: 420px; }
+
 /* Paginado: doce aromas por pantalla en vez de ciento cuatro de corrido.
    Cambia el contenido sin recargar la pagina. */
 .paginador {

@@ -89,6 +89,9 @@ export const CATALOGO = {
   vacioWhatsapp: 'Preguntame por WhatsApp',
   vacioMensaje: 'Hola! Busco {busqueda}, ¿lo conseguís?',
   vacioDestacados: 'Los que más salen',
+  // En el celular, en vez del paginador. {n} cuántos agrega, {quedan} cuántos
+  // faltan ver.
+  verMas: 'Ver {n} más (quedan {quedan})',
   // Los nombres de las cinco familias están en src/lib/familias.js, junto con
   // la regla que reparte cada aroma.
   filtros: {

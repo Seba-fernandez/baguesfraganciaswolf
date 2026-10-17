@@ -174,3 +174,14 @@ export function piramideDe(producto) {
     .map(([etapa, texto]) => ({ etapa, notas: separarNotas(texto) }))
     .filter((f) => f.notas.length);
 }
+
+/**
+ * Cuanto se ahorra en un tamano contra el precio de lista de la proveedora.
+ * Solo si hay precio de lista y es mayor: nunca un numero inventado ni
+ * negativo. Las dos cifras salen de la base (precio_anterior y precio).
+ */
+export function ahorroDe(presentacion) {
+  const lista = Number(presentacion?.precio_anterior) || 0;
+  const precio = Number(presentacion?.precio) || 0;
+  return lista > precio && precio > 0 ? lista - precio : 0;
+}

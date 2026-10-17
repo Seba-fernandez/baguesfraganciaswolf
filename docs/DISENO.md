@@ -292,8 +292,12 @@ el ícono es chico.
   sin borde. La barra de agregar ("50 ml · $ 22.499 · − 1 + · Agregar") va
   última y pegada abajo con `sticky`, sobre la franja del gesto de inicio. Cada
   tamaño es una fila: a la izquierda los mililitros y su línea ("Unlock" o
-  "Bagues, caja Arizona"), a la derecha el precio con el de lista tachado
-  arriba. En escritorio se conserva el orden que ya andaba (descripción y
+  "Bagues, caja Arizona") y debajo "Código 10282038" en `--ink-faint`; a la
+  derecha el precio con el de lista tachado arriba y "Ahorrás $ X" abajo
+  (`ahorroDe`: lista menos precio, solo si hay rebaja). Al pie de los tamaños,
+  una línea dice para qué es el código y enlaza a la tienda de la línea elegida
+  (bagues.com.ar o unlock.com.ar). No dice que el código se busca ahí: no es su
+  SKU, se verificó. En escritorio se conserva el orden que ya andaba (descripción y
   pirámide antes de los tamaños, todo en 900 px) con `order`, la foto queda
   quieta a la izquierda y la barra va después de los tamaños, también sticky.
 - **Nombres** — siempre el nombre oficial del perfume, que es como lo busca la

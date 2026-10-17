@@ -140,6 +140,17 @@ export const FICHA = {
   agregarCorto: 'Agregar',
   agregarResto: ' al pedido',
   tamano: 'Tamaño',
+  // Debajo de cada tamaño: el código con el que cargo el pedido en la
+  // proveedora y cuánto se ahorra contra su precio de lista ({monto} en pesos).
+  codigo: 'Código',
+  ahorras: 'Ahorrás {monto}',
+  // Al pie de los tamaños, según la línea elegida. Ojo: el código NO se puede
+  // buscar en esas tiendas (no es su SKU, verificado el 17/10/2026); por eso
+  // la frase dice para qué sirve y manda a conocer la marca, nada más.
+  verificar: {
+    bagues: { texto: 'El código es el del catálogo de Bagués: con ese número cargo tu pedido. Mirá la casa en ', sitio: 'bagues.com.ar', url: 'https://bagues.com.ar' },
+    unlock: { texto: 'El código es el del catálogo de Unlock: con ese número cargo tu pedido. Mirá la marca en ', sitio: 'unlock.com.ar', url: 'https://unlock.com.ar' },
+  },
   // Arriba del nombre, chico. Unisex no lleva "para".
   para: { masculino: 'Para él', femenino: 'Para ella', unisex: 'Unisex' },
   // Debajo del nombre. La línea de cada tamaño (Unlock o Bagues) se aclara en

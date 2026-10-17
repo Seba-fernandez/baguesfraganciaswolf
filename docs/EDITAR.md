@@ -26,7 +26,7 @@ Están agrupados por dónde aparecen:
 | `DESTACADOS` | la fila de los que más salen |
 | `CATALOGO` | título, buscador, filtros y el mensaje de cuando no hay resultados |
 | `TARJETA` | la aclaración de "versión inspirada" |
-| `FICHA` | la ventana que se abre al tocar un aroma |
+| `FICHA` | la ventana que se abre al tocar un aroma: "Para él/ella", tamaño, código, "Ahorrás", la línea de la proveedora, "Copiar link" y el botón de agregar |
 | `COMO_FUNCIONA` | los tres pasos y la frase de cierre |
 | `ANTES_DE_PEDIR` | el bloque de la portada con el pago, la seña, el envío, Córdoba y cuándo llega |
 | `PEDIDO` | los textos del cajón: botones, campos, la línea de la seña, la barra de envío gratis y la pantalla final |

@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import useDialogo from '../../hooks/useDialogo';
 import {
-  presentacionesActivas, presentacionPorDefecto, tituloDe, detalleLinea, fraseDe, piramideDe,
+  presentacionesActivas, presentacionPorDefecto, tituloDe, detalleLinea, fraseDe, piramideDe, ahorroDe,
 } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import { copiarTexto, linkDeAroma } from '../../lib/compartir';
-import { FICHA } from '../../config/contenido';
+import { FICHA, conDatos } from '../../config/contenido';
 import { CANTIDAD_MAXIMA } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
 import s from './ProductModal.module.css';
@@ -126,10 +126,14 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
                       <span className={s.opIzq}>
                         <span className={`${s.opMl} tnum`}>{p.ml} ml</span>
                         <span className={s.opProv}>{detalleLinea(p, titulo)}</span>
+                        {p.codigo && <span className={`${s.opCodigo} tnum`} data-qa="codigo">{FICHA.codigo} {p.codigo}</span>}
                       </span>
                       <span className={`${s.opPrecio} tnum`}>
-                        {p.precio_anterior ? <s className={s.opAntes}>{pesos(p.precio_anterior)}</s> : null}
+                        {ahorroDe(p) > 0 && <s className={s.opAntes}>{pesos(p.precio_anterior)}</s>}
                         <span data-qa="precio">{pesos(p.precio)}</span>
+                        {ahorroDe(p) > 0 && (
+                          <span className={s.opAhorro} data-qa="ahorro">{conDatos(FICHA.ahorras, { monto: pesos(ahorroDe(p)) })}</span>
+                        )}
                       </span>
                       {p.grupo_promo && promos[p.grupo_promo] && <span className={s.opSello}>2x1</span>}
                     </button>
@@ -139,6 +143,15 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
             </div>
           ) : (
             <p className={s.desc}>{FICHA.sinCiclo}</p>
+          )}
+
+          {elegida && FICHA.verificar[elegida.linea] && (
+            <p className={s.verificar} data-qa="verificar">
+              {FICHA.verificar[elegida.linea].texto}
+              <a href={FICHA.verificar[elegida.linea].url} target="_blank" rel="noopener noreferrer">
+                {FICHA.verificar[elegida.linea].sitio}
+              </a>.
+            </p>
           )}
 
           {promo && (

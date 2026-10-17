@@ -103,7 +103,7 @@
      vez de cuatro columnas, para que "Bagues, caja New York Fem Heroes" entre
      en un celular sin apretar el precio. */
   display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px;
-  min-height: 60px; padding: 10px 20px; cursor: pointer; text-align: left;
+  min-height: 60px; padding: 10px 22px; cursor: pointer; text-align: left;
   background: none; border: 1px solid var(--line); border-radius: var(--r-pill);
   color: var(--ink-dim);
   transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
@@ -116,6 +116,15 @@
 .opPrecio { font-weight: 600; color: var(--ink); display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
 .opAntes { font-weight: 400; font-size: 0.74rem; color: var(--ink-faint); text-decoration-thickness: 1px; }
 .opProv { font-size: 0.74rem; color: var(--ink-dim); letter-spacing: 0.01em; }
+/* El codigo de la proveedora, a la vista: es el dato mas solido de la tienda y
+   el mismo que viaja al WhatsApp. Chico y en cifras tabulares. */
+.opCodigo { font-size: 0.72rem; color: var(--ink-faint); margin-top: 1px; }
+/* "Ahorras $ X": precio de lista menos precio, las dos cifras de la base. Sin
+   acento (es un dato, no una accion). */
+.opAhorro { font-weight: 500; font-size: 0.72rem; color: var(--ink-dim); margin-top: 2px; }
+.verificar { font-size: 0.78rem; line-height: 1.55; color: var(--ink-faint); margin-top: -2px; }
+.verificar a { color: var(--ink-dim); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--line-bright); }
+.verificar a:hover { color: var(--ink); }
 .opSello {
   padding: 3px 9px; border-radius: var(--r-pill);
   background: var(--amber); color: var(--on-amber); font-size: 0.62rem; font-weight: 600;
@@ -172,7 +181,7 @@
   .media > div { position: sticky; top: 30px; height: auto; width: 100%; }
   .info { padding: 34px 32px 30px; }
   .para { order: 1; } .nombre { order: 2; } .frase { order: 3; } .inspirado { order: 4; }
-  .desc { order: 5; } .piramide { order: 6; } .campo { order: 7; } .promoNota { order: 8; }
+  .desc { order: 5; } .piramide { order: 6; } .campo { order: 7; } .verificar { order: 8; } .promoNota { order: 8; }
   .barra { order: 9; margin: 4px 0 0; padding: 12px 0; box-shadow: 0 -14px 20px -16px rgba(10, 5, 3, 0.8); }
   .aviso { order: 20; }
   .agregarResto { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }

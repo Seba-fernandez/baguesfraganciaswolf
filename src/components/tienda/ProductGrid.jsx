@@ -6,6 +6,7 @@ import { linkWhatsApp } from '../../lib/whatsapp';
 import { CATALOGO, LEGAL, conDatos } from '../../config/contenido';
 import { DESTACADOS_MAXIMO, POR_PAGINA } from '../../config/ajustes';
 import ProductCard from './ProductCard';
+import Flecha from './Flecha';
 import s from './ProductGrid.module.css';
 
 /**
@@ -231,7 +232,7 @@ export default function ProductGrid({
                 disabled={pagActual === 0}
                 aria-label="Página anterior"
               >
-                ←
+                <Flecha atras />
               </button>
 
               <div className={s.numeros}>
@@ -266,7 +267,7 @@ export default function ProductGrid({
                 disabled={pagActual === paginas - 1}
                 aria-label="Página siguiente"
               >
-                →
+                <Flecha />
               </button>
             </nav>
           )}

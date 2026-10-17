@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { INICIO, conDatos } from '../../config/contenido';
 import { AROMAS_APROX } from '../../config/ajustes';
 import { pesos } from '../../lib/format';
+import Flecha from './Flecha';
 import s from './Hero.module.css';
 
 /**
@@ -97,7 +98,7 @@ export default function Hero({
           <div className={s.acciones}>
             <Link to="/catalogo" className="tbtn" data-hero="cta">
               <span>{INICIO.verCatalogo}</span>
-              <span className={s.ctaFlecha} aria-hidden="true">→</span>
+              <span className={s.ctaFlecha} aria-hidden="true"><Flecha /></span>
             </Link>
             <a href="#como" className="tbtn clear" data-hero="cta">{INICIO.verComo}</a>
           </div>
@@ -127,7 +128,7 @@ export default function Hero({
                   {p.detalle} · {pesos(p.precio_par)} {INICIO.porPar}
                 </span>
               </span>
-              <span className={s.promoFlecha} aria-hidden="true">→</span>
+              <span className={s.promoFlecha} aria-hidden="true"><Flecha /></span>
             </button>
           ))}
         </div>

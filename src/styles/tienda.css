@@ -33,6 +33,24 @@
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/figtree-400.woff2') format('woff2'); }
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/figtree-600.woff2') format('woff2'); }
 
+/* Respaldo con las medidas de Figtree. Mientras Figtree no llega (la 600 tarda
+   casi un segundo mas que la 400) el texto se dibuja con Arial, y los botones
+   del hero cambiaban 25 px de ancho al llegar la fuente. Con size-adjust y los
+   override, Arial ocupa lo mismo que Figtree y el cambio no mueve nada.
+
+   Los numeros salen de medir en Chromium la misma frase con Figtree y con
+   Arial (Liberation Sans tiene las mismas medidas que Arial y es la que hay en
+   Linux): size-adjust es la razon de anchos y los override son los de Figtree
+   (95 % y 25 %) divididos por ese factor. La negrita de Arial es mas ancha que
+   Figtree 600, por eso lleva su propio ajuste, medido sobre los textos de los
+   botones (que es donde se usa la 600): con una frase larga daba 94,4 % y los
+   botones seguian corriendose 5 px. Android no tiene Arial: ahi va Roboto,
+   medido igual. Sin preload de fuentes a proposito (ver index.html). */
+@font-face { font-family: 'Figtree Respaldo'; font-weight: 400; src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('LiberationSans'); size-adjust: 99.86%; ascent-override: 95.13%; descent-override: 25.04%; line-gap-override: 0%; }
+@font-face { font-family: 'Figtree Respaldo'; font-weight: 600; src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('LiberationSans-Bold'); size-adjust: 95.78%; ascent-override: 99.19%; descent-override: 26.1%; line-gap-override: 0%; }
+@font-face { font-family: 'Figtree Respaldo Android'; font-weight: 400; src: local('Roboto'), local('Roboto-Regular'); size-adjust: 100.82%; ascent-override: 94.23%; descent-override: 24.8%; line-gap-override: 0%; }
+@font-face { font-family: 'Figtree Respaldo Android'; font-weight: 600; src: local('Roboto Bold'), local('Roboto-Bold'); size-adjust: 101.99%; ascent-override: 93.15%; descent-override: 24.51%; line-gap-override: 0%; }
+
 .tienda {
   /* --- Paleta Ámbar Noir. Base cálida (espresso), acento rosa-vino, y un
      dorado de arena para los brillos: el archetipo "luxury fragrance"
@@ -112,7 +130,7 @@
      de las sans genericas. Va en peso medio-alto en los titulos, si no el trazo
      fino se afina de mas. Su italica cubre las citas. */
   --f-display: 'Cormorant', 'Iowan Old Style', ui-serif, Georgia, serif;
-  --f-body: 'Figtree', system-ui, -apple-system, sans-serif;
+  --f-body: 'Figtree', 'Figtree Respaldo', 'Figtree Respaldo Android', system-ui, -apple-system, sans-serif;
   --f-quote: 'Cormorant', Georgia, serif;
 
   position: relative;

@@ -81,6 +81,13 @@ filtra la visita a un tercero.
 | Display | **Cormorant** 400/500/600 + itálica | Títulos, nombres de perfume, citas. Es una didone de contraste altísimo: romántica, con cara de aviso de perfume |
 | Cuerpo | **Figtree** 400/500/600 | Texto corrido, interfaz, datos |
 
+Mientras Figtree no llega, el texto se dibuja con **Figtree Respaldo**: Arial
+(o Roboto en Android) con `size-adjust` y `ascent/descent-override` medidos para
+ocupar lo mismo que Figtree, así los botones no cambian de ancho al llegar la
+fuente. Si se cambia la tipografía, hay que volver a medir esos números (cómo,
+en el comentario de `tienda.css`). Las flechas de los botones son SVG
+(`Flecha.jsx`): el carácter "→" no está en el subconjunto de Figtree.
+
 Cormorant es de trazo fino: en título pide peso 600, si no se afina de más. Los
 datos (precios, mililitros, códigos) van en Figtree con `tabular-nums` —clase
 `.tnum`— para que las cifras no bailen al cambiar de página.

@@ -262,7 +262,7 @@
       rgba(38, 18, 10, 0.28);
   }
 }
-.ctaFlecha { transition: transform var(--dur) var(--ease); }
+.ctaFlecha { display: inline-flex; font-size: 1.05em; transition: transform var(--dur) var(--ease); }
 .acciones :global(.tbtn):hover .ctaFlecha { transform: translateX(4px); }
 
 /* Fila de datos duros: dos números que anclan el valor de un vistazo. */
@@ -298,7 +298,7 @@
 .promoTexto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .promoTitulo { font-size: 0.96rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 8px rgba(40, 16, 8, 0.55); }
 .promoDetalle { font-size: 0.82rem; color: var(--ink); opacity: 0.86; text-shadow: 0 1px 8px rgba(40, 16, 8, 0.55); }
-.promoFlecha { margin-left: auto; color: var(--ink); font-size: 1.1rem; transition: transform var(--dur) var(--ease); }
+.promoFlecha { display: inline-flex; margin-left: auto; color: var(--ink); font-size: 1.1rem; transition: transform var(--dur) var(--ease); }
 .promos .promo:hover .promoFlecha { transform: translateX(3px); }
 
 /* ---------- cinta de nombres ---------- */

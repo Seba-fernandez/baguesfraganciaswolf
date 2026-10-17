@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { DESTINOS, INDICE } from './comun.mjs';
+import { limpiarFilo } from './pixeles.mjs';
 
 /**
  * Arma la foto final de cada frasco, toda del mismo tamano y con el mismo
@@ -19,7 +20,8 @@ import { DESTINOS, INDICE } from './comun.mjs';
  * ocupan el cuadro entero:
  *
  *  - RECORTE (fondo transparente: todos los de Bagues, algunos de Unlock): se
- *    recorta al contenido, se apoya sobre un piso de estudio oscuro con su
+ *    limpia el filo (el blanco del fondo de la proveedora que queda en el
+ *    contorno), se recorta al contenido, se apoya sobre un piso de estudio oscuro con su
  *    sombra de contacto y un reflejo tenue, y se centra. Siempre al mismo
  *    tamano relativo, asi la grilla tiene ritmo.
  *  - ESCENA (foto con fondo propio): se recorta a 3:4 centrada en el frasco.
@@ -103,9 +105,16 @@ async function esRecorte(buf) {
   return transparentes / (info.width * info.height) > 0.06;
 }
 
+/** FOTO-2: limpia el filo del recorte (ver pixeles.mjs) antes de apoyarlo. */
+async function limpio(buf) {
+  const { data, info } = await sharp(buf).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const img = limpiarFilo({ data, width: info.width, height: info.height });
+  return sharp(img.data, { raw: { width: img.width, height: img.height, channels: 4 } }).png().toBuffer();
+}
+
 async function componerRecorte(buf, ampliacionMax = AMPLIACION_MAX) {
   // Recorte al contenido visible: el alfa decide, no el color.
-  const recortado = await sharp(buf).ensureAlpha().trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 8 }).png().toBuffer();
+  const recortado = await sharp(await limpio(buf)).ensureAlpha().trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 8 }).png().toBuffer();
   const meta = await sharp(recortado).metadata();
 
   const altoMax = ALTO * 0.70;

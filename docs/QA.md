@@ -76,6 +76,24 @@ producción después de publicar los bloques 3.1 y 3.2 (commit `0e6b566`).
 | REG-1 | bloqueante | alta | Regresión: el código de proveedor en el WhatsApp, la suma del cajón y la escena del hero | Pedido de dos aromas con la base simulada | `REG-1 codigo`, `REG-1 suma`, `REG-1 portada` | PASA | PASA | ninguno |
 | RENDIMIENTO | rendimiento | alta | Lighthouse mobile, mediana de 5 | `--lh 5` | `RENDIMIENTO /`, `RENDIMIENTO /catalogo` | `/` 97; `/catalogo` 76, CLS 0,924 | `/` 99; `/catalogo` 88, CLS 0 | varios |
 
+### Etapa 2: fotos de producto (17 de octubre de 2026)
+
+Base: producción el 17/10/2026 antes de tocar las fotos (commit `503578d`).
+Las hojas de contacto de antes y de después, y los antes y después, están en la
+carpeta de la auditoría (fuera del repo).
+
+| ID | Categoría | Sev. | Qué pasaba | Cómo se reproduce | Chequeo | Base | Final | Commit |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| FOTO-2 | visual | media | Filo blanco de 1 a 2 px y alfa sin borde suave en los recortes (Doha, Abu Dabi, 212 Heroes) | Mirar una caja al 300 % sobre el espresso | Hoja de contacto (`FOTO-2` en el banco dice NO APLICA, ver abajo) | filo blanco en 3 cajas, 1 Unlock | limpio en los 90 recortes | ver commit FOTO-2 |
+
+**Por qué FOTO-2 no se mide en el banco.** Sobre la foto final, un filo blanco
+y el canto real de un objeto (el borde dorado de una caja, la luz en el borde
+de un vidrio) tienen el mismo perfil: una línea clara de 1 o 2 px entre el
+fondo y el objeto. Un detector armado así, probado sobre las 133 fotos, marcaba
+7 cajas ya limpias y seguía marcando Doha después de limpiarla. Un chequeo que
+falla sin error no sirve. Se controla en la hoja de contacto y al 300 % en los
+casos testigo; `componer.mjs` limpia el filo de todo recorte sin excepción.
+
 ### Lighthouse mobile en producción (cinco corridas, Lighthouse 13.5)
 
 | Página | Antes | Mediana | Después | Mediana |

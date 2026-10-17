@@ -19,6 +19,20 @@ fondo beige propio que dejaba un recuadro visible) y se leía desprolijo.
 El tipo lo detecta solo (más de 6 % del cuadro transparente es recorte). Se
 puede forzar con `"tipo"`.
 
+### El filo de los recortes (FOTO-2)
+
+Muchos PNG de las proveedoras traen en el contorno 1 o 2 px del blanco del fondo
+donde se recortaron, y algunos (Doha, Abu Dabi) un alfa binario, sin borde
+suave. Sobre el espresso eso se ve como un filo blanco y escalonado: la firma de
+un recorte hecho a las apuradas. Antes de apoyar cualquier recorte,
+`limpiarFilo` (en [`pixeles.mjs`](pixeles.mjs), JavaScript sin dependencias):
+
+1. reemplaza el color de los 2 px del borde por el de unos px más adentro;
+2. come 1 px del alfa;
+3. suaviza el alfa (gaussiano de 0,7 px), así deja de escalonar.
+
+Corre solo, en todos los recortes. No hay nada que configurar.
+
 ## De dónde sale cada una: `fuentes.json`
 
 Es la única lista, y se lee a ojo. Una entrada por aroma y por línea:

@@ -134,6 +134,8 @@
 
 .listo { padding: 12px 0; }
 .listo h2 { font-size: 1.5rem; margin-bottom: 12px; }
+.listo .ayuda { margin-bottom: 18px; }
+.listoCerrar { margin-top: 10px; }
 /* El cajón recibe el foco al abrirse (para que el teclado y el lector de
    pantalla entren); el contorno lo llevan sus controles, no la hoja entera. */
 .sheet:focus { outline: none; }

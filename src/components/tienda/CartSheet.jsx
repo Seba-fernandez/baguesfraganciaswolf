@@ -16,6 +16,7 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
   const [telefono, setTelefono] = useState('');
   const [formErr, setFormErr] = useState(null);
   const [numeroPedido, setNumeroPedido] = useState(null);
+  const [linkPedido, setLinkPedido] = useState(null);
   const hoja = useRef(null);
 
   // Foco adentro al abrir, Escape cierra y al cerrar vuelve a quien lo abrió
@@ -54,18 +55,21 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
 
   async function confirmar() {
     setFormErr(null);
-    if (!nombre.trim()) { setFormErr('Poné tu nombre completo'); return; }
-    if (normalizarTelefono(telefono).length < 8) { setFormErr('Poné un WhatsApp válido'); return; }
+    if (!nombre.trim()) { setFormErr(PEDIDO.faltaNombre); return; }
+    if (normalizarTelefono(telefono).length < 8) { setFormErr(PEDIDO.faltaTelefono); return; }
 
     const { data, error: err } = await enviarPedido({ nombre, telefono, items });
-    if (err) { setFormErr(error || 'No se pudo enviar. Probá de nuevo.'); return; }
+    if (err) { setFormErr(error || PEDIDO.errorEnvio); return; }
 
     setNumeroPedido(data?.numero ?? null);
     // El mensaje lleva el codigo de cada presentacion y el total YA con promo.
     const msg = mensajePedidoCliente({ nombre, numero: data?.numero, items, total });
-    if (settings?.whatsapp_owner) {
-      window.open(linkWhatsApp(settings.whatsapp_owner, msg), '_blank', 'noopener');
-    }
+    const link = settings?.whatsapp_owner ? linkWhatsApp(settings.whatsapp_owner, msg) : null;
+    setLinkPedido(link);
+    // Se intenta abrir solo, pero no se depende de eso: despues de esperar a
+    // la base, Safari y el navegador de Instagram ya no dejan abrir ventanas.
+    // La pantalla final tiene el enlace de verdad.
+    if (link) window.open(link, '_blank', 'noopener');
     clear();
     setPaso('listo');
   }
@@ -161,7 +165,7 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
                 </div>
 
                 <button type="button" className="tbtn wide" onClick={() => setPaso('datos')}>
-                  Hacer el pedido
+                  {PEDIDO.seguir}
                 </button>
               </>
             )}
@@ -175,14 +179,14 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
               <h2>Tus datos</h2>
               <button className={s.cerrar} onClick={cerrar} aria-label="Cerrar">✕</button>
             </div>
-            <p className={s.ayuda}>Con esto guardo tu pedido y te abro WhatsApp para confirmar.</p>
+            <p className={s.ayuda}>{PEDIDO.ayudaDatos}</p>
 
             <div className={s.campo}>
-              <label className="tlabel" htmlFor="co-nombre">Nombre completo</label>
+              <label className="tlabel" htmlFor="co-nombre">{PEDIDO.nombre}</label>
               <input id="co-nombre" className={s.input} value={nombre} onChange={(e) => setNombre(e.target.value)} autoComplete="name" />
             </div>
             <div className={s.campo}>
-              <label className="tlabel" htmlFor="co-tel">Tu WhatsApp</label>
+              <label className="tlabel" htmlFor="co-tel">{PEDIDO.telefono}</label>
               <input id="co-tel" className={s.input} inputMode="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="351 555 1234" autoComplete="tel" />
             </div>
 
@@ -191,7 +195,7 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
             {formErr && <p className={s.err}>{formErr}</p>}
 
             <button type="button" className="tbtn wide" onClick={confirmar} disabled={loading}>
-              {loading ? 'Enviando…' : 'Confirmar pedido'}
+              {loading ? PEDIDO.enviando : PEDIDO.enviar}
             </button>
           </>
         )}
@@ -199,11 +203,15 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
         {paso === 'listo' && (
           <div className={s.listo}>
             <h2>{numeroPedido ? `Pedido #${numeroPedido} recibido` : 'Pedido recibido'}</h2>
-            <p className={s.ayuda}>
-              Te abrimos WhatsApp para confirmar. Si no se abrió, escribinos directo: el pedido ya
-              está guardado.
-            </p>
-            <button type="button" className="tbtn wide" onClick={cerrar}>Listo</button>
+            <p className={s.ayuda}>{linkPedido ? PEDIDO.listo : PEDIDO.listoSinLink}</p>
+            {/* Un enlace de verdad, no window.open: funciona siempre, aunque el
+                navegador haya bloqueado la ventana que se intentó abrir sola. */}
+            {linkPedido && (
+              <a className="tbtn wide" href={linkPedido} target="_blank" rel="noopener">
+                {PEDIDO.abrirWhatsapp}
+              </a>
+            )}
+            <button type="button" className={`tbtn ghost wide ${s.listoCerrar}`} onClick={cerrar}>{PEDIDO.cerrar}</button>
           </div>
         )}
       </div>

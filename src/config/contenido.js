@@ -104,6 +104,22 @@ export const CATALOGO = {
  */
 export const PEDIDO = {
   privacidad: 'Tu nombre y tu WhatsApp los uso solo para coordinar este pedido.',
+  // Los dos botones dicen lo que va a pasar: que el pedido sigue por WhatsApp.
+  seguir: 'Seguir por WhatsApp',
+  ayudaDatos: 'Con esto guardo tu pedido y te abro WhatsApp para confirmar.',
+  nombre: 'Tu nombre',
+  telefono: 'Tu WhatsApp',
+  enviar: 'Enviar pedido por WhatsApp',
+  enviando: 'Enviando…',
+  faltaNombre: 'Poné tu nombre',
+  faltaTelefono: 'Poné un WhatsApp válido',
+  errorEnvio: 'No se pudo enviar. Probá de nuevo.',
+  errorBase: 'No pude registrar el pedido. Probá de nuevo o escribime directo por WhatsApp.',
+  // Pantalla final. El botón es un enlace real a WhatsApp con el pedido escrito.
+  listo: 'Te abrí WhatsApp con el pedido escrito. Si no se abrió, tocá el botón: el pedido ya está guardado.',
+  listoSinLink: 'El pedido ya está guardado. Escribime por WhatsApp y lo confirmamos.',
+  abrirWhatsapp: 'Abrir WhatsApp con mi pedido',
+  cerrar: 'Listo',
 };
 
 export const TARJETA = {

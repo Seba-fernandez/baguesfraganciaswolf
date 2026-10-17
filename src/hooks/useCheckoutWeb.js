@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { crearPedidoWeb } from '../lib/apiTienda';
+import { PEDIDO } from '../config/contenido';
 
 /**
  * Checkout público: llama a la función crear_pedido_web() (SECURITY DEFINER).
@@ -21,7 +22,7 @@ export default function useCheckoutWeb() {
       const data = await crearPedidoWeb({ nombre, telefono, items });
       return { data };
     } catch (e) {
-      setError('No pudimos registrar el pedido. Probá de nuevo o escribinos directo.');
+      setError(PEDIDO.errorBase);
       return { error: e };
     } finally {
       setLoading(false);

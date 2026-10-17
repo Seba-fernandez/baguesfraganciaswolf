@@ -84,6 +84,7 @@ carpeta de la auditoría (fuera del repo).
 
 | ID | Categoría | Sev. | Qué pasaba | Cómo se reproduce | Chequeo | Base | Final | Commit |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| FOTO-1 | visual | alta | Las cajas en el estudio espresso y 43 escenas de Unlock en azul eléctrico, celeste, gris y rojo: la grilla parecía un marketplace de dos proveedores | Abrir `/catalogo` y mirar las páginas 1 y 2 | `FOTO-1` (esquinas de arriba de las 24 fotos en el rango espresso) | FALLA (20/24) | PASA (24/24) | ver commit FOTO-1 |
 | FOTO-2 | visual | media | Filo blanco de 1 a 2 px y alfa sin borde suave en los recortes (Doha, Abu Dabi, 212 Heroes) | Mirar una caja al 300 % sobre el espresso | Hoja de contacto (`FOTO-2` en el banco dice NO APLICA, ver abajo) | filo blanco en 3 cajas, 1 Unlock | limpio en los 90 recortes | ver commit FOTO-2 |
 | FOTO-3 | visual | media | Cinco recortes de Unlock traían una elipse gris horneada: sobre el espresso, un disco flotando encima de nuestra sombra. La sombra era una mancha y el reflejo, al 16 %, un espejo | Mirar One Million Lucky o Invictus Victory | Hoja de contacto | 5 podios, sombra de una capa | 0 podios, sombra en dos capas, reflejo 9 % | ver commit FOTO-3 |
 
@@ -94,6 +95,14 @@ fondo y el objeto. Un detector armado así, probado sobre las 133 fotos, marcaba
 7 cajas ya limpias y seguía marcando Doha después de limpiarla. Un chequeo que
 falla sin error no sirve. Se controla en la hoja de contacto y al 300 % en los
 casos testigo; `componer.mjs` limpia el filo de todo recorte sin excepción.
+
+**Cómo mide FOTO-1.** Baja la foto de cada una de las 24 tarjetas de las páginas
+1 y 2 (escritorio) y promedia dos cuadrados del 6 % del ancho en las esquinas de
+arriba. Pasa si cae en el estudio: luma hasta 72, rojo ≥ verde ≥ azul (cálido)
+y rojo menos azul hasta 48 (poco saturado). Calibrado sobre las 133 fotos:
+antes quedaban afuera las 34 escenas de fondo frío o claro y ninguna caja;
+después, ninguna. Necesita Pillow (`pip install pillow`). Una foto subida a
+mano desde el panel puede hacerlo fallar: es a propósito, para que se vea.
 
 ### Lighthouse mobile en producción (cinco corridas, Lighthouse 13.5)
 

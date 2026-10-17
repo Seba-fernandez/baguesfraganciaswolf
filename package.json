@@ -14,7 +14,9 @@
     "fondo:duna": "node scripts/fondo/generar-duna.mjs",
     "fondo:webp": "node scripts/fondo/rasterizar.mjs",
     "fotos:variantes": "node scripts/fotos/variantes.mjs",
-    "fotos:componer": "node scripts/fotos/componer.mjs"
+    "fotos:componer": "node scripts/fotos/componer.mjs",
+    "fotos:mascaras": "python3 scripts/fotos/mascaras.py",
+    "fotos:contacto": "node scripts/fotos/contacto.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.0",

@@ -150,3 +150,111 @@ export function sacarPodio(img, { franja = 0.16, umbral = 235 } = {}) {
   }
   return { data: out, width, height };
 }
+
+/**
+ * Se queda con la mancha mas grande de la mascara (el frasco) y descarta las
+ * sueltas (un reflejo, un brillo del fondo). `corte` (0 a 1, del alto) borra
+ * todo lo que esta debajo: para el reflejo de piso que viene en la foto.
+ */
+export function limpiarMascara(mascara, width, height, { corte } = {}) {
+  const n = width * height;
+  const etiqueta = new Int32Array(n);
+  const cola = new Int32Array(n);
+  let mejor = 0;
+  let mejorTam = 0;
+  let actual = 0;
+  for (let s = 0; s < n; s++) {
+    if (etiqueta[s] || mascara[s] < 128) continue;
+    actual++;
+    let fin = 0;
+    cola[fin++] = s;
+    etiqueta[s] = actual;
+    for (let ini = 0; ini < fin; ini++) {
+      const i = cola[ini];
+      const x = i % width;
+      const vecinos = [i - width, i + width, x > 0 ? i - 1 : -1, x < width - 1 ? i + 1 : -1];
+      for (const j of vecinos) {
+        if (j < 0 || j >= n || etiqueta[j] || mascara[j] < 128) continue;
+        etiqueta[j] = actual;
+        cola[fin++] = j;
+      }
+    }
+    if (fin > mejorTam) { mejorTam = fin; mejor = actual; }
+  }
+  // Zona permitida: la mancha mayor, agrandada unos px para no cortar su borde suave.
+  const enMancha = new Uint8Array(n);
+  for (let i = 0; i < n; i++) enMancha[i] = etiqueta[i] === mejor ? 1 : 0;
+  const { dist } = propagar(enMancha, width, height, 6);
+  const out = new Uint8Array(n);
+  const yCorte = corte ? Math.round(height * corte) : height;
+  for (let i = 0; i < n; i++) {
+    const y = Math.floor(i / width);
+    out[i] = dist[i] <= 6 && y < yCorte ? mascara[i] : 0;
+  }
+  return out;
+}
+
+/** Caja del contenido de una mascara (valores > umbral). */
+export function cajaDe(mascara, width, height, umbral = 128) {
+  let x0 = width, y0 = height, x1 = -1, y1 = -1;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (mascara[y * width + x] <= umbral) continue;
+      if (x < x0) x0 = x;
+      if (x > x1) x1 = x;
+      if (y < y0) y0 = y;
+      if (y > y1) y1 = y;
+    }
+  }
+  return { x0, y0, x1, y1, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+}
+
+/**
+ * La rampa espresso: de la sombra de la pagina al cuero claro. Un fondo de
+ * escena se pasa por aca segun su luminosidad: conserva sus luces y sombras
+ * (el vidrio sigue leyendose como vidrio) pero en la paleta de la tienda.
+ */
+const RAMPA = [
+  [0, [16, 12, 9]],
+  [0.5, [44, 33, 25]],
+  [0.85, [84, 65, 49]],
+  [1, [112, 89, 68]],
+];
+function rampa(t) {
+  for (let k = 1; k < RAMPA.length; k++) {
+    const [t0, c0] = RAMPA[k - 1];
+    const [t1, c1] = RAMPA[k];
+    if (t <= t1) {
+      const f = (t - t0) / (t1 - t0);
+      return [c0[0] + (c1[0] - c0[0]) * f, c0[1] + (c1[1] - c0[1]) * f, c0[2] + (c1[2] - c0[2]) * f];
+    }
+  }
+  return RAMPA[RAMPA.length - 1][1];
+}
+
+/**
+ * FOTO-1, tratamiento "espresso": el frasco queda intacto y el fondo pasa a la
+ * rampa. La mascara se ACHICA un poco antes de mezclar (agrandarla deja una
+ * aureola del color viejo alrededor del vidrio) y se suaviza el paso.
+ */
+export function llevarAEspresso(img, mascara) {
+  const { data, width, height } = img;
+  const n = width * height;
+  let m = new Float32Array(n);
+  for (let i = 0; i < n; i++) m[i] = mascara[i] / 255;
+  m = erosionar(m, width, height, Math.max(1, Math.round(width * 0.002)));
+  m = desenfocar(m, width, height, Math.max(0.7, width * 0.0015));
+  const out = Buffer.alloc(n * 4);
+  for (let i = 0; i < n; i++) {
+    const r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2];
+    const L = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    const t = Math.pow(Math.min(1, Math.max(0, (L - 0.04) / 0.92)), 1.15);
+    const f = rampa(t);
+    const k = m[i];
+    out[i * 4] = Math.round(r * k + f[0] * (1 - k));
+    out[i * 4 + 1] = Math.round(g * k + f[1] * (1 - k));
+    out[i * 4 + 2] = Math.round(b * k + f[2] * (1 - k));
+    out[i * 4 + 3] = 255;
+  }
+  return { data: out, width, height };
+}

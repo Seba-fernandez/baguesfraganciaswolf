@@ -85,7 +85,8 @@
       "foco": {
         "x": 0.5,
         "y": 0.55
-      }
+      },
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/BGINEF50_1_683d9eb5-186f-4987-8101-febb75434cdd.png",
@@ -305,7 +306,8 @@
   "unlock-212-heroes-fem": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/2_2_h_ro_s_fem_80ml_dfdeefbd-a661-4dfe-ad30-96d48cb34d7f.webp",
-      "origen": "unlock.com.ar 2*2 H*RO*S FEM"
+      "origen": "unlock.com.ar 2*2 H*RO*S FEM",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/NYHeroesFem_2025_1000.png",
@@ -315,7 +317,8 @@
   "unlock-212-heroes-hom": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/2_2_h_ro_s_hom_80ml_815332a2-d2f2-470f-8c66-a02b8775220c.webp",
-      "origen": "unlock.com.ar 2*2 H*RO*S HOM"
+      "origen": "unlock.com.ar 2*2 H*RO*S HOM",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Productos_0009_New_York.png",
@@ -325,7 +328,8 @@
   "unlock-212-vip-rose": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/2_2_v_p_r_se_80ml_3a02a55c-4112-489c-bf83-a592f6a399e4.webp",
-      "origen": "unlock.com.ar 2*2 V*P R*SE"
+      "origen": "unlock.com.ar 2*2 V*P R*SE",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Foto-Producto-08Ago2025-B_0005_Manhatan-Rose.png",
@@ -335,7 +339,9 @@
   "unlock-acqua-di-gio": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/10.png",
-      "origen": "unlock.com.ar ACQ*A DI G*O"
+      "origen": "unlock.com.ar ACQ*A DI G*O",
+      "tratamiento": "estudio",
+      "corte": 0.8
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/FotoProducto-Dic2025_0011_Amalfi.png",
@@ -345,7 +351,8 @@
   "unlock-ange-ou-demon": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/UNLOCK_PRODUCTOS-149.jpg",
-      "origen": "unlock.com.ar ANG* *U D*M*N MINI"
+      "origen": "unlock.com.ar ANG* *U D*M*N MINI",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Foto-Producto-08Ago2025-B_0017_Angers.png",
@@ -355,7 +362,9 @@
   "unlock-armani-my-way": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/04.png",
-      "origen": "unlock.com.ar ARM*NI MY W*Y"
+      "origen": "unlock.com.ar ARM*NI MY W*Y",
+      "tratamiento": "estudio",
+      "corte": 0.715
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Foto_Producto_08Ago2025_0003_Mumbai.png",
@@ -365,13 +374,16 @@
   "unlock-armani-si": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/06.png",
-      "origen": "unlock.com.ar ARM*NI S*"
+      "origen": "unlock.com.ar ARM*NI S*",
+      "tratamiento": "estudio",
+      "corte": 0.795
     }
   },
   "unlock-bad-boy": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/b_d_b_y_100ml_5ff1600f-ce05-4e72-b50f-599cccd2fb0c.webp",
-      "origen": "unlock.com.ar B*D B*Y MINI"
+      "origen": "unlock.com.ar B*D B*Y MINI",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Productos_0013_Detroit.png",
@@ -381,7 +393,8 @@
   "unlock-black-opium": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/17.png",
-      "origen": "unlock.com.ar BL*CK OP**M"
+      "origen": "unlock.com.ar BL*CK OP**M",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/BBANGF50_1_6bd23fef-130d-4c03-817c-3e80bd14656e.png",
@@ -391,13 +404,15 @@
   "unlock-bulgari-omnia-indian-garnet": {
     "unlock": {
       "archivo": "scripts/fotos/fuentes/unlock-bulgari-omnia-indian-garnet.png",
-      "origen": "Catálogo Unlock C10 (PDF)"
+      "origen": "Catálogo Unlock C10 (PDF)",
+      "tratamiento": "estudio"
     }
   },
   "unlock-chloe": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/ChatGPTImage7may2026_16_16_48.png",
-      "origen": "unlock.com.ar CHL*E"
+      "origen": "unlock.com.ar CHL*E",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/BVEROF50_1_2e038e6c-a4d6-46cd-91bd-6fc826ede1f3.png",
@@ -407,7 +422,10 @@
   "unlock-creed-aventus": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/Creed_8cb6bfef-7903-4868-ace0-3910b9cde143.png",
-      "origen": "unlock.com.ar CR**D AV*NT*S MINI"
+      "origen": "unlock.com.ar CR**D AV*NT*S MINI",
+      "tratamiento": "espresso",
+      "corte": 0.89,
+      "ampliacionMax": 1.5
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Brooklyn.png",
@@ -417,7 +435,8 @@
   "unlock-divine": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/BAGUES_17092026-73.jpg",
-      "origen": "unlock.com.ar D*V*NE"
+      "origen": "unlock.com.ar D*V*NE",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/FotoProducto_0009_Hollywood_2025_frasco_frente_transparente_montaje_3.png",
@@ -427,7 +446,8 @@
   "unlock-erba-pura": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/DSC09949_1_20026262-2913-45be-9ae4-8ff783cad880.jpg",
-      "origen": "unlock.com.ar ERB* P*RA"
+      "origen": "unlock.com.ar ERB* P*RA",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/BMARRA50_1_37c35336-afea-433b-bd45-0f91f78c33aa.png",
@@ -437,7 +457,8 @@
   "unlock-good-girl": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/g_d_g_rl_90ml_c3f71fc7-7613-4528-ae4a-a39963093df9.webp",
-      "origen": "unlock.com.ar G**D G*RL"
+      "origen": "unlock.com.ar G**D G*RL",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/BCHTTF50_1_bf447f8f-44c9-4c24-a94d-7d4d33590cbb.png",
@@ -447,13 +468,16 @@
   "unlock-good-girl-very-very": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/ChatGPTImage7may2026_16_20_13_c29ad861-44af-4978-9f4d-fc1c47976aa2.png",
-      "origen": "unlock.com.ar G**D G*RL V*RY"
+      "origen": "unlock.com.ar G**D G*RL V*RY",
+      "tratamiento": "estudio",
+      "corte": 0.79
     }
   },
   "unlock-halloween-fem": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/hallow_n_fem_90ml_-_3_b9aa6238-eaef-4366-9df9-ffc1ad5078d1.webp",
-      "origen": "unlock.com.ar HALLOW**N FEM"
+      "origen": "unlock.com.ar HALLOW**N FEM",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Productos_0014_Brujas.png",
@@ -476,7 +500,8 @@
   "unlock-idole": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/id_le_75ml_-_2_3699e8c7-d536-43e7-b313-3aa3aa249684.webp",
-      "origen": "unlock.com.ar ID*LE"
+      "origen": "unlock.com.ar ID*LE",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/FotoProducto_0005_Reine_2025_frasco_frente_transparente_montaje.png",
@@ -486,7 +511,8 @@
   "unlock-invictus": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/inv_tus_100ml_c3a6ac1a-2771-45f6-87ee-8207c0716754.webp",
-      "origen": "unlock.com.ar INV**TUS"
+      "origen": "unlock.com.ar INV**TUS",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/BSPRTM50_1_ed3f100f-1ee5-4b44-9cd4-139f79871e3e.png",
@@ -507,7 +533,9 @@
   "unlock-jadore": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/ChatGPTImage7may2026_16_00_03.png",
-      "origen": "unlock.com.ar J´AD*RE MINI"
+      "origen": "unlock.com.ar J´AD*RE MINI",
+      "tratamiento": "estudio",
+      "corte": 0.765
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Foto-Producto-08Ago2025-B_0005_Mykonos_2025_frasco_frente_transparente_montaje_1.png",
@@ -517,13 +545,17 @@
   "unlock-kenzo-amour": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/14.png",
-      "origen": "unlock.com.ar K*NZO AM**R"
+      "origen": "unlock.com.ar K*NZO AM**R",
+      "tratamiento": "estudio",
+      "corte": 0.885
     }
   },
   "unlock-kenzo-flower": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/05.png",
-      "origen": "unlock.com.ar K*NZO FL*W*R"
+      "origen": "unlock.com.ar K*NZO FL*W*R",
+      "tratamiento": "estudio",
+      "corte": 0.87
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Productos_0007_Tokio_Flower.png",
@@ -533,7 +565,8 @@
   "unlock-kenzo-homme": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/21.png",
-      "origen": "unlock.com.ar K*NZO H*MME"
+      "origen": "unlock.com.ar K*NZO H*MME",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Productos_0006_Tokio.png",
@@ -553,7 +586,8 @@
   "unlock-la-vie-est-belle": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/la_vi___st_b_le_90ml_c5e2624b-5db2-4b4b-a053-fc2cd49f9e3c.webp",
-      "origen": "unlock.com.ar LA VI* *ST B**LE"
+      "origen": "unlock.com.ar LA VI* *ST B**LE",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Foto_Producto_08Ago2025_0002_Paris.png",
@@ -563,13 +597,16 @@
   "unlock-lady-million": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/l_dy_m_ll_on_75ml_290a65b4-4e4d-49f4-b812-0f1a8386c195.webp",
-      "origen": "unlock.com.ar L*DY M*LL*ON"
+      "origen": "unlock.com.ar L*DY M*LL*ON",
+      "tratamiento": "espresso",
+      "ampliacionMax": 1.4
     }
   },
   "unlock-le-beau": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/Perfume_escultural_turquesa_sobre_marmol.png",
-      "origen": "unlock.com.ar L* BE*U"
+      "origen": "unlock.com.ar L* BE*U",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/FotoProducto_0004_Santorini_2025_frasco_frente_transparente_montaje_2.png",
@@ -579,7 +616,8 @@
   "unlock-le-male": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/LeMale_14e8176b-1b3b-44b1-9602-b59f50db56ff.png",
-      "origen": "unlock.com.ar L* M*LE"
+      "origen": "unlock.com.ar L* M*LE",
+      "tratamiento": "estudio"
     }
   },
   "unlock-leau-dissey-fem": {
@@ -592,7 +630,8 @@
   "unlock-leau-dissey-hom": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/08.png",
-      "origen": "unlock.com.ar L'E*U D'*ISS*Y HOM"
+      "origen": "unlock.com.ar L'E*U D'*ISS*Y HOM",
+      "tratamiento": "estudio"
     }
   },
   "unlock-moschino-toy-2": {
@@ -605,13 +644,17 @@
   "unlock-nina-ricci-nina": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/n_na_r_cc__n_na_90ml_-_2_d6164e98-5eb1-4efd-a45c-20afadfc679f.webp",
-      "origen": "unlock.com.ar N*NA R*CC* N*NA"
+      "origen": "unlock.com.ar N*NA R*CC* N*NA",
+      "tratamiento": "estudio",
+      "corte": 0.855
     }
   },
   "unlock-olympea": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/ol_mp_a_80ml_57fceea5-74be-4420-b1eb-274aaeb277e5.webp",
-      "origen": "unlock.com.ar OL*MP*A"
+      "origen": "unlock.com.ar OL*MP*A",
+      "tratamiento": "espresso",
+      "ampliacionMax": 1.0
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/0015_Atenas.png",
@@ -621,7 +664,8 @@
   "unlock-one-million": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/on__m_ll_on_100ml_06ff846f-aca6-447f-ae18-3a819f3b5a8d.webp",
-      "origen": "unlock.com.ar ON* M*LL*ON MINI"
+      "origen": "unlock.com.ar ON* M*LL*ON MINI",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Productos_0012_Las_Vegas.png",
@@ -638,7 +682,8 @@
   "unlock-polo-blue": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/POLO_BLUE2048.png",
-      "origen": "unlock.com.ar P*L* BL*E MINI"
+      "origen": "unlock.com.ar P*L* BL*E MINI",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Transparente_0003_Monaco.png",
@@ -655,7 +700,8 @@
   "unlock-pure-xs-fem": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/pur___s_fem_90ml_-_3_14e8deb2-9d2f-46f3-84cc-58618650ffc7.webp",
-      "origen": "unlock.com.ar PUR* *S FEM"
+      "origen": "unlock.com.ar PUR* *S FEM",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Productos_0016_Amsterdan.png",
@@ -665,7 +711,9 @@
   "unlock-pure-xs-hom": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/pur___s_hom_95ml_aa3cdae2-2470-4a47-876d-796f54576e1d.webp",
-      "origen": "unlock.com.ar PUR* *S HOM"
+      "origen": "unlock.com.ar PUR* *S HOM",
+      "tratamiento": "estudio",
+      "corte": 0.75
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/FotoProducto_0020_Amsterdam_mas_2025_frasco_frente_transparente_montaje_1.png",
@@ -675,7 +723,8 @@
   "unlock-rabanne-fame": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/r_b_nne_f_me_80ml_-_2_3a98d756-598b-443c-ade2-ca16aaa22a32.webp",
-      "origen": "unlock.com.ar R*B*NNE F*ME"
+      "origen": "unlock.com.ar R*B*NNE F*ME",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Foto-Producto-08Ago2025-B_0002_Shangai_frasco_frente_transparente_montaje_1.png",
@@ -696,13 +745,15 @@
   "unlock-rabanne-phantom-black": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/15_9e5e2ce1-ba35-4dc4-a4af-6f5431d90102.png",
-      "origen": "unlock.com.ar R*B*NNE PH*NTOM BL*CK"
+      "origen": "unlock.com.ar R*B*NNE PH*NTOM BL*CK",
+      "tratamiento": "estudio"
     }
   },
   "unlock-sauvage-hom": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/s_uv_ge_100ml_-_2_53495742-f2dc-4cbe-81b1-64af8e35b0ad.webp",
-      "origen": "unlock.com.ar S*UV*GE"
+      "origen": "unlock.com.ar S*UV*GE",
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Foto_Producto_08Ago2025_0012_Arizona.png",
@@ -712,25 +763,31 @@
   "unlock-scandal-fem": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/sc_nd_l_fem_100ml_95f42b4b-352f-4373-9824-e2a0dc8c2237.webp",
-      "origen": "unlock.com.ar SC*ND*L FEM"
+      "origen": "unlock.com.ar SC*ND*L FEM",
+      "tratamiento": "estudio"
     }
   },
   "unlock-scandal-hom": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/18.png",
-      "origen": "unlock.com.ar SC*ND*L HOM"
+      "origen": "unlock.com.ar SC*ND*L HOM",
+      "tratamiento": "espresso",
+      "corte": 0.775
     }
   },
   "unlock-scandal-intense-fem": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/12.png",
-      "origen": "unlock.com.ar SC*ND*L INT*NSE FEM"
+      "origen": "unlock.com.ar SC*ND*L INT*NSE FEM",
+      "tratamiento": "estudio",
+      "corte": 0.7
     }
   },
   "unlock-tom-ford-oud-wood": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/20.png",
-      "origen": "unlock.com.ar T*M F*RD O*D W**D"
+      "origen": "unlock.com.ar T*M F*RD O*D W**D",
+      "tratamiento": "estudio"
     }
   },
   "unlock-ysl-hom": {
@@ -741,7 +798,8 @@
       "foco": {
         "x": 0.49,
         "y": 0.62
-      }
+      },
+      "tratamiento": "estudio"
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/York-transp.png",

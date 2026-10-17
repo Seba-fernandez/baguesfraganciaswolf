@@ -201,19 +201,32 @@ fuente en alta está en `scripts/fondo/fuentes/frascos-grupo.png` y
 ## Las fotos de producto
 
 Vienen de las tiendas públicas de las proveedoras y del PDF del ciclo, y
-[`componer.mjs`](../scripts/fotos/componer.mjs) las deja **todas iguales**:
-3:4, llenando el cuadro entero, sin aire ni recuadro.
+[`componer.mjs`](../scripts/fotos/componer.mjs) las deja **todas en el mismo
+cuarto**: 3:4, llenando el cuadro entero, sin aire ni recuadro, el frasco a
+~70 % del alto y apoyado en la misma línea de piso.
 
 - **Recorte** (todas las cajas de Bagués, algunos frascos de Unlock) → se apoya
   en un **estudio espresso**: la pared baja de `#2a1f17` a `#1d1510`, un halo de
   luz en el oro de arena al 20 %, un piso con su filo de luz, una sombra en dos
   capas (contacto fino y penumbra floja) y un reflejo al 9 % del frasco. Todo
-  apoya en la misma línea de piso; si la foto trae su propio podio, se saca. Es el mismo espresso de la página, así que la
-  tarjeta no se lee como una foto pegada. Antes de apoyarlo se le limpia el filo
-  (el blanco que traen del fondo de la proveedora): un filo claro sobre fondo
-  oscuro es lo primero que delata un recorte barato.
-- **Escena** (la mayoría de Unlock: luces, mármol, sombras de ventana) → se
-  recorta a 3:4 centrada en el frasco.
+  apoya en la misma línea de piso; si la foto trae su propio podio, se saca.
+  Antes de apoyarlo se le limpia el filo (el blanco que traen del fondo de la
+  proveedora): un filo claro sobre fondo oscuro es lo primero que delata un
+  recorte barato. Es el mismo espresso de la página, así que la tarjeta no se
+  lee como una foto pegada.
+- **Estudio** (la mayoría de las escenas de Unlock: frascos opacos o de color) →
+  se recorta el frasco de su escena y entra al mismo estudio que las cajas.
+- **Espresso** (vidrio transparente sobre fondo claro: Scandal pour Homme,
+  Creed; o un frasco que no se para solo: Olympéa, Lady Million) → el frasco
+  queda como vino y solo el fondo pasa a una rampa espresso que conserva sus
+  luces. Mismo encuadre y mismo piso, hasta donde da la foto.
+
+**Por qué un solo cuarto.** Con las escenas de Unlock en azul eléctrico, celeste
+y petróleo al lado de las cajas en espresso, el ojo leía cada cambio de luz
+como otro proveedor: un marketplace, no una casa. Las marcas que tampoco
+fotografían cada perfume (Oakcha, Boy Smells) resuelven igual: un fondo, un
+ángulo, una luz para todo el catálogo. El color lo ponen el frasco y el jugo,
+no el fondo.
 
 Antes había un azulejo de porcelana clara para los recortes y escenas a sangre
 para el resto, y algunas cajas traían un beige propio que no coincidía con el

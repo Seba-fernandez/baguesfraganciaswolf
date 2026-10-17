@@ -523,6 +523,64 @@ def foto5(browser, base):
         not rotas and total > 0, f"{total - len(rotas)}/{total} cargadas" + (f"; rotas: {rotas[:3]}" if rotas else ""))
 
 
+def espresso(rgb):
+    """El fondo de una foto cae en el estudio espresso: oscuro, calido y poco
+    saturado. Medido sobre las 133 fotos de octubre de 2026: las escenas viejas
+    (azul, celeste, gris, rojo) quedan todas afuera; el estudio, todo adentro."""
+    r, g, b = rgb
+    luma = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    return luma <= 72 and r >= g - 2 and g >= b - 2 and r - b <= 48
+
+
+def foto1(browser, base):
+    try:
+        from PIL import Image
+        import io
+    except ImportError:
+        chk("FOTO-1", "visual", "alta", "Todas las fotos del catalogo en el estudio espresso", None, "falta Pillow (pip install pillow)")
+        return
+    ctx, page = nuevo(browser, ESCRITORIO)
+    page.goto(base + "/catalogo", wait_until="domcontentloaded")
+    esperar_catalogo(page)
+    fuentes = []
+    for pagina in (1, 2):
+        if pagina == 2:
+            page.click("button[aria-label='Página siguiente']")
+            page.wait_for_timeout(900)
+        page.evaluate("""async () => { for (let y = 0; y < document.documentElement.scrollHeight; y += 400) { scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } }""")
+        page.wait_for_timeout(800)
+        fuentes += page.evaluate("() => [...document.querySelectorAll('article')].map(a => { const i = a.querySelector('img'); return i ? (i.currentSrc || i.src) : null; })")
+    fuera, sin_foto = [], 0
+    for src in fuentes:
+        if not src:
+            sin_foto += 1
+            continue
+        im = Image.open(io.BytesIO(page.request.get(src).body())).convert("RGB")
+        w, h = im.size
+        lado = max(4, int(w * 0.06))
+        for x0 in (int(w * 0.02), w - int(w * 0.02) - lado):
+            y0 = int(h * 0.02)
+            px = list(im.crop((x0, y0, x0 + lado, y0 + lado)).getdata())
+            media = tuple(sum(c[k] for c in px) / len(px) for k in range(3))
+            if not espresso(media):
+                fuera.append(f"{src.rsplit('/', 1)[-1]} {tuple(round(v) for v in media)}")
+                break
+    ctx.close()
+    medidas = len(fuentes) - sin_foto
+    chk("FOTO-1", "visual", "alta", "Paginas 1 y 2 del catalogo: el fondo de cada foto (esquinas de arriba) es espresso",
+        not fuera and medidas >= 20,
+        f"{medidas - len(fuera)}/{medidas} en espresso ({len(fuentes)} tarjetas, {sin_foto} sin foto)"
+        + (f"; fuera: {fuera[:4]}" if fuera else ""))
+    # FOTO-2 (filos blancos) no se puede medir de forma confiable sobre la foto
+    # final: el canto dorado de una caja o el brillo del borde de un vidrio tienen
+    # el mismo perfil que un filo blanco. Probado en octubre de 2026 sobre las 133
+    # fotos: el detector marcaba 7 cajas ya limpias. Se controla en la hoja de
+    # contacto (npm run fotos:contacto) y en componer.mjs, que limpia el filo de
+    # todo recorte.
+    chk("FOTO-2", "visual", "media", "Filos blancos en los recortes (se controla en la hoja de contacto)", None,
+        "no medible en la foto final: ver docs/QA.md")
+
+
 def ux17(browser, base):
     ctx, page = nuevo(browser, MOVIL)
     html = page.request.get(base + "/").text()
@@ -689,7 +747,7 @@ def main():
     pasos = [
         (["UX-1"], ux1), (["UX-2"], ux2), (["UX-3", "UX-4"], ux3_ux4),
         (["UX-7", "REG-1", "CONFIANZA-1", "CONTENIDO-1"], flujo_pedido),
-        (["UX-15"], ux15), (["UX-10"], ux10), (["FOTO-5"], foto5), (["UX-17"], ux17), (["UX-14"], ux14),
+        (["UX-15"], ux15), (["UX-10"], ux10), (["FOTO-5"], foto5), (["FOTO-1", "FOTO-2"], foto1), (["UX-17"], ux17), (["UX-14"], ux14),
         (["CONFIANZA-1", "CONTENIDO-1", "PANEL-1", "REG-1"], contenido),
     ]
     global SIN_HINTING

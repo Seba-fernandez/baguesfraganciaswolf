@@ -172,19 +172,34 @@ borrar cuando el ciclo esté confirmado.
    JSON entero a mano. Los aromas nuevos van con `insert` y su pirámide.
 6. **Revisar el `Type`** de cada caja contra `inspirado_en`: en C10, Doha pasó de
    "Sublime" a Eden Juicy Apple.
-7. **Fotos** de lo nuevo (sección 8).
+7. **Fotos** de lo nuevo (sección 8): las de Unlock con su `"tratamiento"`, y
+   la hoja de contacto antes de publicar.
 8. Ajustar `settings.ciclo_nombre`, `ciclo_hasta` y `promos_ciclo`.
 
 ## 8. Fotos
 
-Todas salen a **900 × 1200 (3:4) y llenan el cuadro**, en la tarjeta y en la
-ficha. Lo arma `scripts/fotos/componer.mjs` a partir de
-`scripts/fotos/fuentes.json` (detalle en [`scripts/fotos/README.md`](scripts/fotos/README.md)).
+Todas salen a **900 × 1200 (3:4), llenan el cuadro y viven en el mismo estudio
+espresso**, en la tarjeta y en la ficha. Lo arma `scripts/fotos/componer.mjs` a
+partir de `scripts/fotos/fuentes.json` (detalle en [`scripts/fotos/README.md`](scripts/fotos/README.md)).
+Cada entrada tiene un `"tratamiento"`:
 
-- **Recorte** (fondo transparente): todas las cajas de Bagués y algunos frascos
-  de Unlock. Se apoyan en un estudio espresso con sombra y reflejo.
-- **Escena** (foto con fondo propio, la mayoría de Unlock): se recorta a 3:4.
-  `foco`, `zoom` y `ampliacionMax` ajustan casos puntuales.
+- **`recorte`** (fondo transparente, se detecta solo): todas las cajas de Bagués
+  y algunos frascos de Unlock. Se le limpia el filo, se saca el podio si
+  `"podio": true`, y se apoya en el estudio con sombra en dos capas y reflejo.
+- **`estudio`** (escena de Unlock con frasco opaco o de color): la máscara del
+  frasco lo recorta y entra al estudio como un recorte.
+- **`espresso`** (vidrio transparente sobre fondo claro): el frasco intacto y
+  solo el fondo llevado a la rampa espresso.
+- `corte` borra el reflejo de piso que trae la foto; `ampliacionMax` achica un
+  frasco ancho.
+- **Las máscaras se calculan una vez** con rembg (Python) y quedan versionadas en
+  `scripts/fotos/datos/mascaras/`. `componer.mjs` llama solo a `mascaras.py` si
+  falta alguna. **El build de Vercel no usa Python**: solo corre `variantes.mjs`
+  y las fotos compuestas van commiteadas.
+- **Foto nueva de Unlock en un ciclo nuevo:** entrada con `url` y
+  `"tratamiento": "estudio"` (o `espresso` si es vidrio claro sobre fondo claro),
+  `npm run fotos:componer`, `npm run fotos:contacto`, mirarla, ajustar `corte`
+  si quedó un reflejo. Unos minutos por foto; las cajas de Bagués entran solas.
 - Fuentes: `bagues.com.ar` (PNG transparentes), `unlock.com.ar`, y los recortes
   del PDF del ciclo guardados en `scripts/fotos/fuentes/` cuando no hay otra.
 - **Las cajas de Bagués se emparejan por el nombre de la caja.** Cuidado con New
@@ -192,10 +207,16 @@ ficha. Lo arma `scripts/fotos/componer.mjs` a partir de
   nombre y la tienda los distingue en el título.
 - `npm run build` corre `variantes.mjs` primero: genera los anchos `-360w` y
   `-560w` que piden las tarjetas. **No borrar variantes a mano.**
-- **Antes de publicar, mirar todas juntas con su nombre al lado.** Una foto
+- **Antes de publicar, `npm run fotos:contacto`** y mirar la hoja entera: cada
+  foto con su archivo, el nombre de la base y su caja o tamaños. Una foto
   equivocada es peor que ninguna.
-- Estado C10: 100 de 101 aromas con foto, cada línea con su propio frasco.
-  Falta **Manhattan (Bagués, tipo 212 VIP)**: no está en la web de Bagués.
+- Estado C10 (17/10/2026): 100 de 101 aromas con foto, cada línea con su
+  propio frasco, las 133 en el mismo estudio (90 recortes, 39 `estudio`, 4
+  `espresso`). Falta **Manhattan (Bagués, tipo 212 VIP)**: no está en la web de
+  Bagués.
+- **No tocar** con este pipeline el grupo de frascos del hero
+  (`scripts/fondo/fuentes/frascos-grupo.png`), la escena ni `og.jpg`: esperan
+  fotos propias de Sebas.
 
 ## 9. Diseño
 

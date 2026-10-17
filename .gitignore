@@ -8,8 +8,12 @@ dist
 .agents/skills/
 .agents/.tmp/
 
-# Descargados crudos del pipeline de fotos: se vuelven a bajar con npm run fotos
-scripts/fotos/datos/
+# Descargados crudos del pipeline de fotos: se vuelven a bajar con npm run fotos.
+# Las mascaras (se calculan con rembg, que no corre en Vercel) y los avisos de
+# resolucion SI se versionan.
+scripts/fotos/datos/*
+!scripts/fotos/datos/mascaras/
+!scripts/fotos/datos/avisos.json
 
 # Borradores de trabajo. Los scripts que sirven viven en scripts/
 .tmp/

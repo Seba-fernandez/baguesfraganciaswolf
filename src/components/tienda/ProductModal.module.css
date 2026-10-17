@@ -59,30 +59,44 @@
   font-family: inherit; font-size: 0.8rem;
 }
 
-/* La foto centrada sobre un fondo oscuro con luz suave. En escritorio ocupa el
-   alto de la columna, con el frasco recortado flotando; en mobile va arriba,
-   en formato retrato. */
+/* La foto. En el celular se contiene al 46 % del alto (46dvh): antes ocupaba
+   el ancho entero (520 px de alto a 390) y el precio quedaba a 1042 px, fuera
+   de la primera pantalla. A los costados, la misma pared del estudio de las
+   fotos (#2a1f17 a #1d1510), asi la foto no se lee como un recorte pegado. */
 .media {
   display: flex; align-items: center; justify-content: center;
-  background: var(--bg-2);
-  padding: clamp(14px, 2.5vw, 30px);
+  background: linear-gradient(180deg, #2a1f17 0%, #1d1510 100%);
 }
-@media (min-width: 820px) { .media { height: 100%; } }
+.media > div { height: 46vh; height: 46dvh; width: auto; max-width: 100%; }
 
-.info { padding: 26px 24px 30px; display: flex; flex-direction: column; gap: 12px; }
-.meta { font-size: 0.7rem; letter-spacing: 0.16em; color: var(--ink-faint); }
-.nombre { font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
-.inspirado { color: var(--amber); font-size: 0.98rem; margin-top: -6px; }
+/* Orden para decidir (celular): para, nombre, frase, tamanos, piramide,
+   descripcion, aviso y la barra de agregar pegada abajo. */
+.info { padding: 22px 20px 0; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.para { font-size: 0.78rem; color: var(--ink-faint); letter-spacing: 0.02em; }
+.nombre { font-size: clamp(1.9rem, 3.4vw, 2.4rem); margin-top: -4px; }
+/* La frase sale de familia y momento (lib/producto.js, fraseDe). Cormorant
+   italica: es la voz de aviso de perfume, no un dato. */
+.frase {
+  font-family: var(--f-quote); font-style: italic; font-weight: 500;
+  font-size: 1.22rem; line-height: 1.25; color: var(--ink-dim); margin-top: -6px;
+}
+/* El aviso ya no va en el acento: el rosa-vino queda para lo que se toca. */
+.inspirado { font-size: 0.78rem; color: var(--ink-faint); margin-top: -2px; }
 .desc { color: var(--ink-dim); font-size: 0.95rem; }
 
-.piramide { border-top: 1px solid var(--line); margin-top: 6px; }
-.nota {
-  display: grid; grid-template-columns: 92px 1fr; gap: 14px;
-  padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 0.9rem;
+/* Piramide: tres filas, cada nota una pastilla plana. Se escanea en un
+   segundo; el parrafo de antes se leia como letra chica. */
+.piramide { display: flex; flex-direction: column; gap: 12px; padding-top: 16px; margin-top: 4px; border-top: 1px solid var(--line); }
+.nota { display: grid; grid-template-columns: 74px 1fr; gap: 10px; align-items: baseline; }
+.notaEtapa { font-size: 0.78rem; color: var(--ink-faint); }
+.pastillas { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
+.pastilla {
+  padding: 5px 11px; border-radius: var(--r-pill);
+  background: var(--bg-3); color: var(--ink-dim);
+  font-size: 0.82rem; line-height: 1.3;
 }
-.notaEtapa { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
 
-.campo { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.campo { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
 .opciones { display: flex; flex-direction: column; gap: 8px; }
 .opcion {
   /* Izquierda: tamaño y de qué línea es. Derecha: precio. Dos renglones en
@@ -109,16 +123,60 @@
 
 .promoNota { font-size: 0.86rem; color: var(--amber); }
 
-.fila { display: flex; align-items: center; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
-.stepper { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-3); border-radius: var(--r-pill); padding: 5px; }
+.aviso { font-size: 0.8rem; line-height: 1.65; color: var(--ink-faint); margin-top: 4px; }
+
+/* La barra de agregar. Va ultima en el marcado y pegada abajo con sticky:
+   mientras se baja la hoja queda a la vista ("50 ml · $ 22.499 · Agregar"),
+   y al llegar al final se apoya en su lugar. Ocupa el ancho de la hoja y
+   respeta la franja del gesto de inicio del celular. */
+.barra {
+  position: sticky; bottom: 0; z-index: 4;
+  display: flex; align-items: center; gap: 10px;
+  margin: 6px -20px 0;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: var(--bg-2);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -18px 26px -18px rgba(10, 5, 3, 0.85);
+}
+.resumen { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; margin-right: auto; }
+.resumenMl { font-size: 0.76rem; color: var(--ink-faint); }
+.resumenPrecio { font-size: 1.06rem; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.stepper { display: inline-flex; align-items: center; gap: 2px; background: var(--bg-3); border-radius: var(--r-pill); padding: 2px; flex-shrink: 0; }
 .stepper button {
-  width: 44px; height: 44px; border-radius: 50%; border: 0;
+  position: relative;
+  width: 40px; height: 40px; border-radius: 50%; border: 0;
   background: none; color: var(--ink-dim); font-size: 1.15rem; cursor: pointer;
 }
+/* Se ve de 40 px; el dedo tiene 44 (el ::after cubre el aire de alrededor). */
+.stepper button::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; }
 .stepper button:hover { color: var(--ink); background: var(--bg); }
-.stepper span { min-width: 26px; text-align: center; }
+.stepper span { min-width: 22px; text-align: center; font-size: 0.92rem; }
+.agregar { flex-shrink: 0; padding-inline: 22px; }
+/* " al pedido": en el celular no entra al lado del precio y la cantidad. Se
+   esconde a la vista pero no del lector de pantalla, que lee "Agregar al
+   pedido" (el nombre accesible contiene lo que se ve). */
+.agregarResto {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
 
-.aviso { font-size: 0.8rem; line-height: 1.65; color: var(--ink-faint); margin-top: 4px; }
+/* Escritorio: dos columnas, como antes. La foto queda quieta a la izquierda
+   mientras se baja la columna de texto, y se conserva el orden que ya andaba
+   (descripcion y piramide antes de los tamanos). La barra va justo despues de
+   los tamanos y tambien es sticky: si la ficha es mas alta que la pantalla,
+   el boton no queda abajo del pliegue. */
+@media (min-width: 820px) {
+  /* La columna entera lleva la pared del estudio; la foto se queda quieta
+     arriba mientras se baja el texto. */
+  .media { align-items: flex-start; padding: 30px; }
+  .media > div { position: sticky; top: 30px; height: auto; width: 100%; }
+  .info { padding: 34px 32px 30px; }
+  .para { order: 1; } .nombre { order: 2; } .frase { order: 3; } .inspirado { order: 4; }
+  .desc { order: 5; } .piramide { order: 6; } .campo { order: 7; } .promoNota { order: 8; }
+  .barra { order: 9; margin: 4px 0 0; padding: 12px 0; box-shadow: 0 -14px 20px -16px rgba(10, 5, 3, 0.8); }
+  .aviso { order: 20; }
+  .agregarResto { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
+}
 
 @keyframes up { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }

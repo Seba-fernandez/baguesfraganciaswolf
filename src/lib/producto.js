@@ -113,3 +113,64 @@ export function detalleLinea(presentacion, titulo = '') {
   const propio = nombrePropioDe(presentacion, titulo);
   return propio ? `${linea}, caja ${propio}` : linea;
 }
+
+// ---------------------------------------------------------------------------
+// La ficha, ordenada para decidir (etapa 3A).
+// ---------------------------------------------------------------------------
+
+/** Sin tildes y en minuscula, para comparar palabras de la familia. */
+const plano = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+
+/**
+ * Cada palabra de `familia_olfativa` (texto libre de la base) en un adjetivo
+ * que se entiende sin saber de perfumeria. Solo traduce lo que la base ya
+ * dice: si la familia es "Aromatica fougere", la frase dice "Aromatico". No se
+ * agrega nada que la base no diga.
+ */
+const ADJETIVO = {
+  floral: ['Floral'], floriental: ['Floral', 'Oriental'], frutal: ['Frutal'],
+  oriental: ['Oriental'], ambar: ['Ambarado'], ambarada: ['Ambarado'], ambarado: ['Ambarado'],
+  amaderada: ['Amaderado'], amaderado: ['Amaderado'], especiada: ['Especiado'],
+  almizcle: ['Almizclado'], almizclada: ['Almizclado'], aromatica: ['Aromático'],
+  fougere: ['Aromático'], acuatica: ['Acuático'], citrica: ['Cítrico'], fresca: ['Fresco'],
+  gourmand: ['Dulce'], chipre: ['Chipre'],
+};
+
+/** El momento del año, dicho como se dice. */
+const MOMENTO_FRASE = { verano: 'Para el calor', invierno: 'Para el frío', todo: 'Todo el año' };
+
+/**
+ * Frase corta de la ficha, en Cormorant italica: "Aromático. Todo el año."
+ * Sale de familia_olfativa (hasta dos adjetivos) y momento. Sin datos, null:
+ * la ficha no la muestra.
+ */
+export function fraseDe(producto) {
+  const adjetivos = [];
+  for (const palabra of plano(producto?.familia_olfativa).split(/[^a-z]+/)) {
+    for (const a of ADJETIVO[palabra] || []) if (!adjetivos.includes(a)) adjetivos.push(a);
+  }
+  const partes = adjetivos.slice(0, 2);
+  const momento = MOMENTO_FRASE[producto?.momento];
+  if (momento) partes.push(momento);
+  return partes.length ? `${partes.join('. ')}.` : null;
+}
+
+/** Las notas de un renglon de la piramide ("Bergamota, limon") como lista. */
+export function separarNotas(texto) {
+  return String(texto || '')
+    .split(',')
+    .map((n) => n.trim())
+    .filter(Boolean)
+    .map((n) => n.charAt(0).toUpperCase() + n.slice(1));
+}
+
+/** La piramide en tres filas, solo las que tienen notas. */
+export function piramideDe(producto) {
+  return [
+    ['Salida', producto?.nota_salida],
+    ['Corazón', producto?.nota_corazon],
+    ['Fondo', producto?.nota_fondo],
+  ]
+    .map(([etapa, texto]) => ({ etapa, notas: separarNotas(texto) }))
+    .filter((f) => f.notas.length);
+}

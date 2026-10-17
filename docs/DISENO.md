@@ -280,10 +280,22 @@ el ícono es chico.
   el pie con el precio y el `+` circular. La grilla va de a 2, 3 y 4 columnas:
   números que dividen a 12, los aromas por página, para que ninguna página
   termine con una fila suelta.
-- **Ficha del aroma** — se abre encima: foto, pirámide olfativa y los tamaños de
-  las dos líneas. Cada tamaño es una fila: a la izquierda los mililitros y su
-  línea ("Unlock" o "Bagues, caja Arizona"), a la derecha el precio con el de
-  lista tachado arriba. Abajo, el aviso de encargo.
+- **Ficha del aroma** — se abre encima y tiene su link (`?aroma=<slug>`, con
+  "Copiar link" arriba a la izquierda de la foto). En el celular va ordenada
+  para decidir: foto contenida a 46dvh (a los costados, la pared del estudio),
+  "Para él / Para ella / Unisex" chico, el nombre, una frase en Cormorant
+  itálica armada desde la familia y el momento ("Aromático. Todo el año.",
+  `fraseDe` en `lib/producto.js`: solo traduce lo que dice la base), "Versión
+  inspirada en el perfume original." en `--ink-faint` (ya no en el acento), los
+  tamaños, y recién después la pirámide y la descripción. La pirámide son tres
+  filas (Salida, Corazón, Fondo) con cada nota en una pastilla plana `--bg-3`,
+  sin borde. La barra de agregar ("50 ml · $ 22.499 · − 1 + · Agregar") va
+  última y pegada abajo con `sticky`, sobre la franja del gesto de inicio. Cada
+  tamaño es una fila: a la izquierda los mililitros y su línea ("Unlock" o
+  "Bagues, caja Arizona"), a la derecha el precio con el de lista tachado
+  arriba. En escritorio se conserva el orden que ya andaba (descripción y
+  pirámide antes de los tamaños, todo en 900 px) con `order`, la foto queda
+  quieta a la izquierda y la barra va después de los tamaños, también sticky.
 - **Nombres** — siempre el nombre oficial del perfume, que es como lo busca la
   clienta. La línea y la caja se dicen en el tamaño, nunca en el título.
 - **Cajón del pedido** — carrito y cierre en la misma hoja, nunca una hoja que

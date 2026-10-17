@@ -135,6 +135,13 @@ export const TARJETA = {
 
 export const FICHA = {
   agregar: 'Agregar al pedido',
+  // El botón de la barra fija. En el celular se ve "Agregar" (no entra más al
+  // lado del precio y la cantidad); el lector de pantalla lee la frase entera.
+  agregarCorto: 'Agregar',
+  agregarResto: ' al pedido',
+  tamano: 'Tamaño',
+  // Arriba del nombre, chico. Unisex no lleva "para".
+  para: { masculino: 'Para él', femenino: 'Para ella', unisex: 'Unisex' },
   // Debajo del nombre. La línea de cada tamaño (Unlock o Bagues) se aclara en
   // las opciones de presentación, que es donde se elige.
   inspirado: 'Versión inspirada en el perfume original.',

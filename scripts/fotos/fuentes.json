@@ -469,7 +469,8 @@
   "unlock-herrera-for-women": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/Herrerafem.png",
-      "origen": "unlock.com.ar H*RR*RA F*R WOMEN"
+      "origen": "unlock.com.ar H*RR*RA F*R WOMEN",
+      "podio": true
     }
   },
   "unlock-idole": {
@@ -495,7 +496,8 @@
   "unlock-invictus-victory": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/UNLOCKInvictusVictory.png",
-      "origen": "unlock.com.ar INV**TUS V*CT*RY"
+      "origen": "unlock.com.ar INV**TUS V*CT*RY",
+      "podio": true
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/FotoProducto_0013_Esparta_Victory_2025_frasco_frente_transparente_montaje_1.png",
@@ -583,7 +585,8 @@
   "unlock-leau-dissey-fem": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/UNLOCKl_dissey.png",
-      "origen": "unlock.com.ar L'E*U D'ISS*Y FEM"
+      "origen": "unlock.com.ar L'E*U D'ISS*Y FEM",
+      "podio": true
     }
   },
   "unlock-leau-dissey-hom": {
@@ -595,7 +598,8 @@
   "unlock-moschino-toy-2": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/UNLOCKMoschino.png",
-      "origen": "unlock.com.ar M*SCHIN* T*Y 2"
+      "origen": "unlock.com.ar M*SCHIN* T*Y 2",
+      "podio": true
     }
   },
   "unlock-nina-ricci-nina": {
@@ -627,7 +631,8 @@
   "unlock-one-million-lucky": {
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/UNLOCKOneMillionLucky.png",
-      "origen": "unlock.com.ar ON* M*LL*ON L*CKY"
+      "origen": "unlock.com.ar ON* M*LL*ON L*CKY",
+      "podio": true
     }
   },
   "unlock-polo-blue": {

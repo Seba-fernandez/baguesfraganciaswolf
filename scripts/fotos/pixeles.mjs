@@ -123,3 +123,30 @@ export function limpiarFilo(img, { banda = 2, erosion = 1, sigma = 0.7 } = {}) {
   for (let i = 0; i < n; i++) out[i * 4 + 3] = Math.max(0, Math.min(255, Math.round(alfa[i])));
   return { data: out, width, height };
 }
+
+/**
+ * FOTO-3. Saca el podio o la elipse de piso que algunas fotos de Unlock traen
+ * horneada: en la franja de abajo del objeto (por defecto el 16 %), todo lo que
+ * no es opaco del todo se vuelve transparente. El frasco es opaco; el podio es
+ * una sombra semitransparente.
+ */
+export function sacarPodio(img, { franja = 0.16, umbral = 235 } = {}) {
+  const { data, width, height } = img;
+  let y0 = height;
+  let y1 = -1;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[(y * width + x) * 4 + 3] > 8) { if (y < y0) y0 = y; y1 = y; break; }
+    }
+  }
+  if (y1 < 0) return img;
+  const corte = Math.round(y1 - (y1 - y0) * franja);
+  const out = Buffer.from(data);
+  for (let y = corte; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const i = (y * width + x) * 4 + 3;
+      if (out[i] < umbral) out[i] = 0;
+    }
+  }
+  return { data: out, width, height };
+}

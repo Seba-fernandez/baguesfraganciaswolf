@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { DESTINOS, INDICE } from './comun.mjs';
-import { limpiarFilo } from './pixeles.mjs';
+import { limpiarFilo, sacarPodio } from './pixeles.mjs';
 
 /**
  * Arma la foto final de cada frasco, toda del mismo tamano y con el mismo
@@ -21,8 +21,9 @@ import { limpiarFilo } from './pixeles.mjs';
  *
  *  - RECORTE (fondo transparente: todos los de Bagues, algunos de Unlock): se
  *    limpia el filo (el blanco del fondo de la proveedora que queda en el
- *    contorno), se recorta al contenido, se apoya sobre un piso de estudio oscuro con su
- *    sombra de contacto y un reflejo tenue, y se centra. Siempre al mismo
+ *    contorno), se le saca el podio si lo trae horneado ("podio": true), se
+ *    recorta al contenido y se apoya sobre un piso de estudio oscuro con su
+ *    sombra en dos capas y un reflejo tenue, y se centra. Siempre al mismo
  *    tamano relativo, asi la grilla tiene ritmo.
  *  - ESCENA (foto con fondo propio): se recorta a 3:4 centrada en el frasco.
  *    El punto de foco se puede ajustar por foto con "foco": { "x": 0.5 }.
@@ -75,13 +76,18 @@ function fondoSvg() {
 </svg>`);
 }
 
+/**
+ * FOTO-3. Sombra en dos capas: un contacto fino y oscuro justo donde apoya, y
+ * una penumbra ancha y floja. La de antes era una sola mancha que se leia como
+ * un disco debajo del frasco.
+ */
 function sombraSvg(ancho) {
-  const rx = Math.round(ancho * 0.56);
-  const ry = Math.max(10, Math.round(ancho * 0.07));
   const cy = Math.round(ALTO * PISO);
-  return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${ANCHO}" height="${ALTO}">
-  <defs><filter id="b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${Math.round(ry * 0.9)}"/></filter></defs>
-  <ellipse cx="${ANCHO / 2}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#000" fill-opacity="0.62" filter="url(#b)"/>
+  return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${ANCHO}" height="${ALTO}"><defs>
+  <filter id="a" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+  <filter id="b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${Math.round(ancho * 0.06)}"/></filter></defs>
+  <ellipse cx="${ANCHO / 2}" cy="${cy + 4}" rx="${Math.round(ancho * 0.66)}" ry="${Math.round(ancho * 0.09)}" fill="#000" fill-opacity="0.45" filter="url(#b)"/>
+  <ellipse cx="${ANCHO / 2}" cy="${cy}" rx="${Math.round(ancho * 0.49)}" ry="5" fill="#000" fill-opacity="0.85" filter="url(#a)"/>
 </svg>`);
 }
 
@@ -105,16 +111,21 @@ async function esRecorte(buf) {
   return transparentes / (info.width * info.height) > 0.06;
 }
 
-/** FOTO-2: limpia el filo del recorte (ver pixeles.mjs) antes de apoyarlo. */
-async function limpio(buf) {
+/**
+ * Prepara el recorte (ver pixeles.mjs): saca el podio horneado si "podio" esta
+ * en fuentes.json (FOTO-3) y limpia el filo (FOTO-2).
+ */
+async function limpio(buf, podio) {
   const { data, info } = await sharp(buf).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  const img = limpiarFilo({ data, width: info.width, height: info.height });
+  let img = { data, width: info.width, height: info.height };
+  if (podio) img = sacarPodio(img, typeof podio === 'object' ? podio : {});
+  img = limpiarFilo(img);
   return sharp(img.data, { raw: { width: img.width, height: img.height, channels: 4 } }).png().toBuffer();
 }
 
-async function componerRecorte(buf, ampliacionMax = AMPLIACION_MAX) {
+async function componerRecorte(buf, ampliacionMax = AMPLIACION_MAX, podio = false) {
   // Recorte al contenido visible: el alfa decide, no el color.
-  const recortado = await sharp(await limpio(buf)).ensureAlpha().trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 8 }).png().toBuffer();
+  const recortado = await sharp(await limpio(buf, podio)).ensureAlpha().trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 8 }).png().toBuffer();
   const meta = await sharp(recortado).metadata();
 
   const altoMax = ALTO * 0.70;
@@ -128,11 +139,12 @@ async function componerRecorte(buf, ampliacionMax = AMPLIACION_MAX) {
   const x = Math.round((ANCHO - w) / 2);
   const y = Math.round(ALTO * PISO - h);
 
-  // Reflejo: el frasco espejado, muy tenue y desvanecido hacia abajo.
+  // Reflejo: el frasco espejado, muy tenue (FOTO-3: 0,09; antes 0,16) y
+  // desvanecido hacia abajo.
   const altoReflejo = Math.min(Math.round(h * 0.28), ALTO - Math.round(ALTO * PISO));
   const degrade = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${altoReflejo}">
     <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fff" stop-opacity="0.16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0" stop-color="#fff" stop-opacity="0.09"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
     </linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>`);
   // sharp aplica extract antes que flip sin importar el orden de las llamadas,
   // asi que el espejado se hace en una pasada aparte.
@@ -185,7 +197,7 @@ for (const [slug, porLinea] of Object.entries(fuentes)) {
       const buf = await bajar(f, slug, linea);
       const tipo = f.tipo || ((await esRecorte(buf)) ? 'recorte' : 'escena');
       const salida = tipo === 'recorte'
-        ? await componerRecorte(buf, f.ampliacionMax)
+        ? await componerRecorte(buf, f.ampliacionMax, f.podio)
         : await componerEscena(buf, f.foco, f.zoom);
       fs.mkdirSync(path.dirname(destino), { recursive: true });
       fs.writeFileSync(destino, salida);

@@ -206,8 +206,9 @@ Vienen de las tiendas públicas de las proveedoras y del PDF del ciclo, y
 
 - **Recorte** (todas las cajas de Bagués, algunos frascos de Unlock) → se apoya
   en un **estudio espresso**: la pared baja de `#2a1f17` a `#1d1510`, un halo de
-  luz en el oro de arena al 20 %, un piso con su filo de luz, sombra de contacto
-  y un reflejo tenue del frasco. Es el mismo espresso de la página, así que la
+  luz en el oro de arena al 20 %, un piso con su filo de luz, una sombra en dos
+  capas (contacto fino y penumbra floja) y un reflejo al 9 % del frasco. Todo
+  apoya en la misma línea de piso; si la foto trae su propio podio, se saca. Es el mismo espresso de la página, así que la
   tarjeta no se lee como una foto pegada. Antes de apoyarlo se le limpia el filo
   (el blanco que traen del fondo de la proveedora): un filo claro sobre fondo
   oscuro es lo primero que delata un recorte barato.

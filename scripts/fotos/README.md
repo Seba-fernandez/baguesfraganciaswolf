@@ -33,6 +33,19 @@ un recorte hecho a las apuradas. Antes de apoyar cualquier recorte,
 
 Corre solo, en todos los recortes. No hay nada que configurar.
 
+### Podio, sombra y reflejo (FOTO-3)
+
+Algunos frascos de Unlock vienen con una elipse gris horneada debajo (un podio o
+la sombra de su propio estudio). Sobre el espresso queda un disco flotando
+encima de nuestra sombra: dos pisos. Con `"podio": true` en la entrada,
+`sacarPodio` vuelve transparente todo lo que no es opaco del todo en el 16 %
+inferior del objeto (el frasco es opaco; el podio no). Hoy lo llevan One Million
+Lucky, Invictus Victory, Carolina Herrera for Women, L'Eau d'Issey y Toy 2.
+
+Todos los recortes apoyan en la misma línea de piso con una sombra en dos capas
+(un contacto fino y oscuro y una penumbra ancha y floja) y un reflejo al 9 %
+(antes 16 %, se leía como un espejo).
+
 ## De dónde sale cada una: `fuentes.json`
 
 Es la única lista, y se lee a ojo. Una entrada por aroma y por línea:
@@ -50,8 +63,9 @@ Es la única lista, y se lee a ojo. Una entrada por aroma y por línea:
 - `archivo`: foto guardada en `fuentes/`, para las que no están en ninguna
   tienda y salieron del PDF del ciclo.
 - Ajustes opcionales: `foco` (`{ "x": 0.5, "y": 0.6 }`, dónde está el frasco en
-  una escena), `zoom` (acercarse cuando el frasco quedó chico en la escena) y
-  `ampliacionMax` (dejar agrandar más una fuente chica; por defecto 2,6×).
+  una escena), `zoom` (acercarse cuando el frasco quedó chico en la escena),
+  `ampliacionMax` (dejar agrandar más una fuente chica; por defecto 2,6×) y
+  `podio` (sacar la elipse de piso que trae horneada un recorte).
 
 **Los frascos de Bagués se emparejan por el nombre de la caja** (Arizona,
 Granada), que es único y figura en la presentación como `nombre_proveedor`. Ojo

@@ -85,6 +85,7 @@ carpeta de la auditoría (fuera del repo).
 | ID | Categoría | Sev. | Qué pasaba | Cómo se reproduce | Chequeo | Base | Final | Commit |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | FOTO-2 | visual | media | Filo blanco de 1 a 2 px y alfa sin borde suave en los recortes (Doha, Abu Dabi, 212 Heroes) | Mirar una caja al 300 % sobre el espresso | Hoja de contacto (`FOTO-2` en el banco dice NO APLICA, ver abajo) | filo blanco en 3 cajas, 1 Unlock | limpio en los 90 recortes | ver commit FOTO-2 |
+| FOTO-3 | visual | media | Cinco recortes de Unlock traían una elipse gris horneada: sobre el espresso, un disco flotando encima de nuestra sombra. La sombra era una mancha y el reflejo, al 16 %, un espejo | Mirar One Million Lucky o Invictus Victory | Hoja de contacto | 5 podios, sombra de una capa | 0 podios, sombra en dos capas, reflejo 9 % | ver commit FOTO-3 |
 
 **Por qué FOTO-2 no se mide en el banco.** Sobre la foto final, un filo blanco
 y el canto real de un objeto (el borde dorado de una caja, la luz en el borde

@@ -91,10 +91,6 @@ export default function TiendaLayout({ children, ficha = null, settings, onVerPr
               <a href={`https://instagram.com/${settings.instagram_user}`} target="_blank" rel="noopener">Instagram</a>
             )}
           </div>
-          <div className={s.fcol}>
-            <h4 className="tlabel">{PIE.gestion}</h4>
-            <a href="/panel">{PIE.panel}</a>
-          </div>
           <p className={s.copy}>
             © {new Date().getFullYear()} {MARCA.nombre} {MARCA.complemento}<br />
             {settings?.aclaracion_pedido || PIE.aclaracionPorDefecto}

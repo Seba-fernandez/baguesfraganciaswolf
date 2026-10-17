@@ -202,9 +202,7 @@ export const LEGAL = {
 export const PIE = {
   tienda: 'Tienda',
   contacto: 'Contacto',
-  gestion: 'Gestión',
   catalogoPdf: 'Catálogo en PDF',
-  panel: 'Panel',
   aclaracionPorDefecto: 'Venta particular en Córdoba',
 };
 

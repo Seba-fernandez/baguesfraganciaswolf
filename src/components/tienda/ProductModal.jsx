@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import useDialogo from '../../hooks/useDialogo';
+import useBloqueoScroll from '../../hooks/useBloqueoScroll';
 import {
   presentacionesActivas, presentacionPorDefecto, tituloDe, detalleLinea, fraseDe, piramideDe, ahorroDe,
 } from '../../lib/producto';
@@ -57,10 +58,7 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
   // Foco adentro al abrir, Escape cierra y al cerrar vuelve a la tarjeta.
   useDialogo({ abierto: true, onCerrar: onClose, refInicial: cerrarRef, disparador });
 
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
-  }, []);
+  useBloqueoScroll();
 
   const elegida = opciones.find((p) => p.ml === ml) || null;
   const titulo = tituloDe(producto);

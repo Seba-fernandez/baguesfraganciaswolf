@@ -1,17 +1,37 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import useDatosTienda from '../../hooks/useDatosTienda';
-import { CartProvider } from '../../contexts/CartContext';
+import { CartProvider, useCart } from '../../contexts/CartContext';
 import { indexarPromos } from '../../lib/promos';
 import { esPublicable, presentacionPorDefecto, tituloDe } from '../../lib/producto';
 import { lazy, Suspense } from 'react';
 import TiendaLayout from './TiendaLayout';
 import { fotoDe } from '../../lib/fotos';
 
+/** La hoja de tamanos con el carrito: agrega el tamano elegido y se cierra. */
+function HojaConCarrito({ producto, onClose, ...resto }) {
+  const { addItem } = useCart();
+  return (
+    <HojaTamanos
+      producto={producto}
+      onClose={onClose}
+      onAgregar={(presentacion) => { addItem(producto, presentacion, 1); onClose(); }}
+      {...resto}
+    />
+  );
+}
+
 // La ficha se carga cuando se abre una, no antes. Se lleva con ella su CSS, que
 // si no viaja embebido en el HTML de la portada y el navegador lo cruza contra
 // todos los elementos antes del primer dibujado, para una hoja que no se ve.
 const ProductModal = lazy(() => import('./ProductModal'));
+// La hoja de tamanos tambien se carga al abrirse por primera vez.
+const HojaTamanos = lazy(() => import('./HojaTamanos'));
+
+// Marca de esta carga de la pagina. La hoja de tamanos se abre con una entrada
+// propia en el historial (asi "atras" la cierra), y el estado de esa entrada
+// sobrevive a recargar: sin esta marca, recargar la reabriria sola.
+const SESION = Math.random().toString(36).slice(2);
 
 /**
  * Cáscara de la tienda pública. Carga una sola vez los productos, los ajustes y
@@ -115,6 +135,27 @@ export default function TiendaShell() {
     else setParams(conAroma(null), { replace: true, state: location.state });
   }, [location.state, navigate, setParams]);
 
+  // La hoja de tamanos: mismo criterio que la ficha (una entrada en el
+  // historial, "atras" la cierra), pero en el estado de la entrada y no en la
+  // direccion: no es algo para compartir.
+  const disparadorHoja = useRef(null);
+  const slugHoja = location.state?.sesion === SESION ? location.state?.hoja : null;
+  const hojaProducto = useMemo(
+    () => (slugHoja && products.find((p) => p.slug === slugHoja)) || null,
+    [slugHoja, products]
+  );
+  const elegirTamano = useCallback((producto) => {
+    disparadorHoja.current = document.activeElement;
+    navigate({ pathname: location.pathname, search: location.search }, { state: { hoja: producto.slug, sesion: SESION } });
+  }, [location.pathname, location.search, navigate]);
+  const cerrarHoja = useCallback(() => navigate(-1), [navigate]);
+  // De la hoja a la ficha: se reemplaza la entrada de la hoja por la de la
+  // ficha, asi cerrar la ficha vuelve directo al catalogo.
+  const hojaAFicha = useCallback(() => {
+    if (!hojaProducto) return;
+    setParams(conAroma(hojaProducto.slug), { replace: true, state: { ficha: true } });
+  }, [hojaProducto, setParams]);
+
   // Ver una promo lleva al catálogo con ese filtro puesto (antes hacía scroll en
   // la misma página; ahora el catálogo es una página aparte).
   const verPromo = (grupo) => {
@@ -125,7 +166,7 @@ export default function TiendaShell() {
   const ctx = {
     products, loading, settings, promos,
     totalAromas, desde, nombresAromas, heroProducto,
-    abrir, abiertoId: abierto?.id ?? null,
+    abrir, elegirTamano, abiertoId: abierto?.id ?? null,
     promoActiva, setPromoActiva, verPromo,
   };
 
@@ -134,6 +175,17 @@ export default function TiendaShell() {
       <TiendaLayout
         settings={settings}
         onVerPromo={verPromo}
+        hoja={hojaProducto && !abierto && (
+          <Suspense fallback={null}>
+            <HojaConCarrito
+              producto={hojaProducto}
+              onClose={cerrarHoja}
+              onVerFicha={hojaAFicha}
+              promos={promos}
+              disparador={disparadorHoja.current}
+            />
+          </Suspense>
+        )}
         ficha={abierto && (
           <Suspense fallback={null}>
             <ProductModal

@@ -25,7 +25,8 @@ Están agrupados por dónde aparecen:
 | `INICIO` | el título grande, la bajada y los dos botones |
 | `DESTACADOS` | la fila de los que más salen |
 | `CATALOGO` | título, buscador, filtros y el mensaje de cuando no hay resultados |
-| `TARJETA` | la aclaración de "versión inspirada" |
+| `TARJETA` | el pie de la tarjeta ("3 tamaños · desde") y el nombre del `+` para el lector de pantalla |
+| `HOJA_TAMANOS` | la hoja chica que abre el `+` cuando el aroma tiene más de un tamaño |
 | `FICHA` | la ventana que se abre al tocar un aroma: "Para él/ella", tamaño, código, "Ahorrás", la línea de la proveedora, "Copiar link" y el botón de agregar |
 | `COMO_FUNCIONA` | los tres pasos y la frase de cierre |
 | `ANTES_DE_PEDIR` | el bloque de la portada con el pago, la seña, el envío, Córdoba y cuándo llega |

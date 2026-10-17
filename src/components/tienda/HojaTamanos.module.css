@@ -1,0 +1,68 @@
+/* La misma superficie que el cajon del pedido: fondo solido --bg-2 (sin
+   backdrop-filter, que trababa el celular), canto de luz arriba y caida. */
+.overlay { position: fixed; inset: 0; z-index: 100; background: rgba(12, 7, 4, 0.66); animation: fade 0.2s ease both; }
+
+.hoja {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
+  max-height: 86dvh; overflow-y: auto; overscroll-behavior: contain;
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
+  border-radius: 16px 16px 0 0;
+  background: var(--bg-2);
+  box-shadow: 0 -24px 60px -20px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: sube 0.3s var(--ease) both;
+}
+/* Escritorio: placa chica centrada. Centrada con margin auto y no con
+   transform, que lo usa la animacion de entrada. */
+@media (min-width: 768px) {
+  .hoja {
+    inset: 0; margin: auto; width: 420px; height: fit-content; max-height: 80vh;
+    border-radius: 16px; padding: 22px;
+  }
+}
+@keyframes sube { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .overlay, .hoja { animation: none; } }
+
+.head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.headTexto { min-width: 0; padding-top: 2px; }
+.eyebrow { font-size: 0.78rem; color: var(--ink-faint); }
+.nombre { font-size: 1.6rem; margin-top: 2px; }
+.cerrar {
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--bg-3); border: 0; color: var(--ink); cursor: pointer;
+}
+.cerrar:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+.filas { display: flex; flex-direction: column; gap: 8px; }
+/* Filas grandes, como las de la ficha: ml y linea a la izquierda, precio a
+   la derecha. Se elige tocando la fila; el boton de abajo agrega. */
+.fila {
+  position: relative;
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px;
+  min-height: 62px; padding: 10px 22px; text-align: left; cursor: pointer;
+  background: none; border: 1px solid var(--line); border-radius: var(--r-pill);
+  color: var(--ink-dim);
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.fila:hover { border-color: var(--line-bright); }
+.filaOn { border-color: var(--amber); background: var(--amber-soft); color: var(--ink); }
+.fila:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.izq { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ml { font-weight: 600; color: var(--ink); }
+.linea { font-size: 0.76rem; color: var(--ink-dim); }
+.der { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+.antes { font-size: 0.74rem; color: var(--ink-faint); }
+.precio { font-weight: 600; color: var(--ink); }
+.sello {
+  padding: 3px 9px; border-radius: var(--r-pill);
+  background: var(--amber); color: var(--on-amber); font-size: 0.62rem; font-weight: 600;
+}
+
+.verFicha {
+  align-self: center; min-height: 44px; padding: 0 12px;
+  background: none; border: 0; cursor: pointer;
+  color: var(--ink-dim); font-size: 0.84rem;
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-bright);
+}
+.verFicha:hover { color: var(--ink); }

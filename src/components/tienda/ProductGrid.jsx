@@ -44,7 +44,7 @@ function Pastilla({ activa, onClick, children, tono = '' }) {
 }
 
 export default function ProductGrid({
-  products, onOpen, abiertoId, promos = {}, promoActiva, setPromoActiva, whatsapp = '', cargando = false,
+  products, onOpen, onElegir, abiertoId, promos = {}, promoActiva, setPromoActiva, whatsapp = '', cargando = false,
 }) {
   const [genero, setGenero] = useState(null);   // null = sin filtrar
   const [momento, setMomento] = useState(null);
@@ -204,7 +204,7 @@ export default function ProductGrid({
               <h3 className={s.vacioSubtitulo}>{CATALOGO.vacioDestacados}</h3>
               <div className={s.grid}>
                 {destacados.map((p) => (
-                  <ProductCard key={p.id} producto={p} onOpen={onOpen} promos={promos} />
+                  <ProductCard key={p.id} producto={p} onOpen={onOpen} onElegir={onElegir} promos={promos} />
                 ))}
               </div>
             </div>
@@ -218,6 +218,7 @@ export default function ProductGrid({
                 key={p.id}
                 producto={p}
                 onOpen={onOpen}
+                onElegir={onElegir}
                 promos={promos}
               />
             ))}

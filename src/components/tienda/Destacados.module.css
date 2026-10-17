@@ -73,7 +73,10 @@
 .item:hover .media { opacity: 0.92; }
 
 .info { display: flex; flex-direction: column; gap: 3px; padding-top: 12px; }
-.nombre { font-family: var(--f-display); font-size: 1.16rem; color: var(--ink); line-height: 1.25; }
+/* Cormorant 600, igual que el nombre de la tarjeta del catalogo: un solo peso
+   para el nombre del aroma en toda la tienda, y la cara que ya viaja en la
+   primera carga (la 400 llega despues del evento load). */
+.nombre { font-family: var(--f-display); font-weight: 600; font-size: 1.16rem; color: var(--ink); line-height: 1.25; }
 .item:hover .nombre { color: var(--amber); }
 .casa { font-size: 0.76rem; letter-spacing: 0.1em; color: var(--ink-faint); }
 .precio { font-size: 0.86rem; color: var(--ink-dim); margin-top: 4px; }

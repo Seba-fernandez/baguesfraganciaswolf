@@ -10,7 +10,7 @@ import ProductGrid from './ProductGrid';
 export default function CatalogoScreen() {
   const {
     products, loading, promos, settings,
-    abrir, abiertoId, promoActiva, setPromoActiva,
+    abrir, elegirTamano, abiertoId, promoActiva, setPromoActiva,
   } = useOutletContext();
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -24,6 +24,7 @@ export default function CatalogoScreen() {
       whatsapp={settings?.whatsapp_owner}
       products={products}
       onOpen={abrir}
+      onElegir={elegirTamano}
       abiertoId={abiertoId}
       promos={promos}
       promoActiva={promoActiva}

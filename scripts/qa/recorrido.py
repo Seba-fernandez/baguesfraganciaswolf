@@ -332,10 +332,21 @@ def agregar_desde_catalogo(page, indice):
       return Number((p?.innerText || '').replace(/\\D/g, ''));
     }""", indice)
     boton = page.locator("article").nth(indice).locator("button[aria-label^='Agregar']")
+    cajon = "[role=dialog][aria-label='Tu pedido']"
     for intento in range(2):
         boton.click()
         try:
-            page.wait_for_selector("[role=dialog][aria-label='Tu pedido']", timeout=8000)
+            # Desde la etapa 3A: un aroma con varios tamanos abre la hoja (se
+            # agrega el que viene elegido, el mas barato, que es el precio de
+            # la tarjeta) y desde el segundo agregado el cajon no se abre solo:
+            # sube la barra con "Ver pedido".
+            page.wait_for_selector(f"{cajon}, [role=dialog][data-dialogo=tamanos], [data-qa=aviso-agregado] button", timeout=8000)
+            if page.locator("[role=dialog][data-dialogo=tamanos]").count():
+                page.locator("[data-qa=agregar-hoja]").click()
+                page.wait_for_selector(f"{cajon}, [data-qa=aviso-agregado] button", timeout=8000)
+            if not page.locator(cajon).count():
+                page.locator("[data-qa=aviso-agregado] button").first.click()
+            page.wait_for_selector(cajon, timeout=8000)
             break
         except Exception:
             if intento:
@@ -472,7 +483,10 @@ def ux15(browser, base):
     esperar_catalogo(page)
     med = []
     med += area_tactil(page, "[class*=chips] button", "filtro")
-    med += area_tactil(page, "article [role=group] button", "talla tarjeta")
+    # Las pastillas de talla salieron de la tarjeta en la etapa 3A (las filas de
+    # la hoja de tamanos se miden en E3-A4 tactil): se miden solo si estan.
+    if page.locator("article [role=group] button").count():
+        med += area_tactil(page, "article [role=group] button", "talla tarjeta")
     med += area_tactil(page, "article button[aria-label^='Agregar']", "+ tarjeta")
     abrir_ficha(page, 0)
     med += area_tactil(page, "[role=dialog] button[aria-label='Cerrar']", "cerrar ficha")
@@ -917,19 +931,24 @@ def e3_a4(browser, base):
     filas = {p["slug"]: p for p in activos(datos)}
     t = page.evaluate("""() => { const a = [...document.querySelectorAll('article')];
       return { pastillas: a.reduce((n, x) => n + x.querySelectorAll('[role=group] button').length, 0),
-               inspirado: a.filter(x => /versi[oó]n inspirada/i.test(x.innerText)).length,
-               notas: a.filter(x => (x.querySelector('[data-qa=notas]')?.innerText || '').trim()).length,
+               inspirado: a.filter(x => /versi[oó]n inspirada/i.test(x.textContent)).length,
+               notas: a.filter(x => (x.querySelector('[data-qa=notas]')?.textContent || '').trim()).length,
+               vacias: a.filter(x => !(x.querySelector('[data-qa=notas]')?.textContent || '').trim()).map(x => x.querySelector('[class*=titulo]')?.textContent.trim()),
                total: a.length,
                peso: getComputedStyle(a[0].querySelector('[class*=titulo]')).fontWeight,
                fam: getComputedStyle(a[0].querySelector('[class*=titulo]')).fontFamily,
                aviso: !!document.querySelector('[class*=aviso]') && /referencia olfativa/.test(document.querySelector('[class*=aviso]').innerText) }; }""")
+    # Sin notas ni familia en la base no hay linea que mostrar: esas no cuentan.
+    con_datos = {(p.get("inspirado_en") or p.get("nombre")) for p in filas.values()
+                 if p.get("nota_salida") or p.get("nota_corazon") or p.get("nota_fondo") or p.get("familia_olfativa")}
+    faltan = [v for v in t["vacias"] if v in con_datos]
     chk("E3-A4 tarjeta", "visual", "alta", "Tarjeta a 390: sin pastillas ni 'version inspirada', nombre Cormorant 600 y linea de notas",
-        t["pastillas"] == 0 and t["inspirado"] == 0 and t["notas"] == t["total"] and t["peso"] == "600" and "ormorant" in t["fam"],
+        t["pastillas"] == 0 and t["inspirado"] == 0 and t["notas"] > 0 and not faltan and t["peso"] == "600" and "ormorant" in t["fam"],
         f"pastillas {t['pastillas']}; 'version inspirada' en {t['inspirado']} tarjetas; notas en {t['notas']}/{t['total']}; nombre {t['fam'][:10]} {t['peso']}")
     chk("E3-A4 aviso", "confianza", "alta", "El aviso de la cabecera del catalogo sigue a la vista",
         t["aviso"], f"aviso corto con 'referencia olfativa': {t['aviso']}")
     # Un aroma de varios tamanos en la primera pagina.
-    idx = page.evaluate("""() => [...document.querySelectorAll('article')].findIndex(a => /tamaños/.test(a.innerText))""")
+    idx = page.evaluate("""() => [...document.querySelectorAll('article')].findIndex(a => /tamaños/.test(a.textContent))""")
     hoja = dict(abre=False, filas=0, esc=False, atras=False, fugas=-1)
     if idx >= 0:
         mas = page.locator("article").nth(idx).locator("button[aria-label^='Agregar']")
@@ -977,7 +996,7 @@ def e3_a4(browser, base):
     # Un solo tamano: el + agrega directo, sin hoja.
     ctx, page, _ = catalogo_con_datos(browser, MOVIL)
     page.evaluate("() => { localStorage.clear(); sessionStorage.clear(); }")
-    idx1 = page.evaluate("""() => [...document.querySelectorAll('article')].findIndex(a => !/tamaños/.test(a.innerText))""")
+    idx1 = page.evaluate("""() => [...document.querySelectorAll('article')].findIndex(a => !/tamaños/.test(a.textContent))""")
     directo = False
     if idx1 >= 0:
         page.locator("article").nth(idx1).locator("button[aria-label^='Agregar']").click()
@@ -1004,7 +1023,8 @@ def e3_a4(browser, base):
     ctx, page = nuevo(browser, MOVIL)
     page.goto(base + "/", wait_until="load")
     try:
-        page.wait_for_selector("[class*=Destacados] [class*=nombre], section [class*=nombre]", timeout=20000)
+        # Los destacados llegan despues de hidratar y de que conteste la base.
+        page.wait_for_function("() => [...document.querySelectorAll('section [class*=nombre]')].some(e => getComputedStyle(e).fontFamily.includes('ormorant'))", timeout=25000)
         peso = page.evaluate("""() => { const n = [...document.querySelectorAll('[class*=nombre]')].find(e => e.closest('section') && getComputedStyle(e).fontFamily.includes('ormorant'));
             return n ? getComputedStyle(n).fontWeight : null; }""")
     except Exception:

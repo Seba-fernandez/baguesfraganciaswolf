@@ -31,29 +31,14 @@
 }
 .titulo:hover { color: var(--amber); }
 
-.inspirado { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
-
-/* Tallas: pastillas chicas, se prenden. La linea y el nombre del frasco ya no
-   van aca, van en la ficha. */
-/* Los tamaños van siempre en UNA fila, repartidos en partes iguales. Con
-   wrap, los aromas de tres tamaños bajaban el tercero a otro renglón y las dos
-   tarjetas de la misma fila quedaban con el precio a distinta altura. */
-.tallas { display: flex; flex-wrap: nowrap; gap: 4px; margin-top: 8px; }
-.talla {
-  position: relative;
-  flex: 1 1 0; min-width: 0; text-align: center;
-  min-height: 32px; padding: 5px 4px; border-radius: var(--r-pill);
-  background: none; border: 1px solid var(--line); color: var(--ink-dim);
-  cursor: pointer; font-size: 0.72rem; white-space: nowrap;
-  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+/* Dos o tres notas en minuscula (notasCortas en lib/producto.js). Hasta dos
+   renglones: la grilla estira todas las tarjetas de una fila al alto de la mas
+   alta y el pie se apoya abajo (margin-top: auto), asi los precios quedan
+   alineados aunque un aroma tenga notas mas largas. */
+.notas {
+  font-size: 0.8rem; line-height: 1.4; color: var(--ink-dim);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.talla:hover { border-color: var(--line-bright); color: var(--ink); }
-.tallaOn { border-color: var(--amber); color: var(--ink); background: var(--amber-soft); }
-.talla:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
-/* La pastilla se ve de 32 px de alto, pero el toque cubre 44: el ::after la
-   agranda 6 px arriba y abajo, sobre el aire que ya hay alrededor (7 desde
-   adentro del borde de 1 px). */
-.talla::after { content: ''; position: absolute; inset: -7px -1px; }
 
 /* Pie: precio a la izquierda, boton "+" a la derecha. El boton no ocupa toda
    la fila, asi la tarjeta respira. */
@@ -62,14 +47,13 @@
   gap: 8px; margin-top: auto; padding-top: 12px;
   border-top: 1px solid var(--line-bright);
 }
-/* En la tarjeta angosta, el precio de antes va ARRIBA del actual, no al lado:
-   asi el tachado no empuja el precio real contra el boton. En pantalla ancha
-   vuelven a la misma linea, que se lee mejor cuando hay lugar. */
-.precioWrap { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 0; min-width: 0; line-height: 1.1; }
-.antes { color: var(--ink-faint); text-decoration: line-through; font-size: 0.68rem; }
+/* Un solo precio: el mas barato del aroma. Arriba, chico, que tamano es
+   ("50 ml") o cuantos hay ("3 tamaños · desde"). El tachado y el ahorro van
+   en la ficha, donde se decide. */
+.precioWrap { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; line-height: 1.1; }
+.pieMeta { font-size: 0.72rem; color: var(--ink-faint); white-space: nowrap; }
 .precio { font-weight: 700; color: var(--ink); font-size: 1.08rem; line-height: 1; }
 @media (min-width: 560px) {
-  .precioWrap { flex-direction: row; align-items: baseline; gap: 7px; }
   .precio { font-size: 1.14rem; }
 }
 
@@ -87,5 +71,5 @@
 @media (min-width: 560px) {
   .body { padding: 16px 16px 18px; }
   .titulo { font-size: 1.12rem; }
-  .inspirado { font-size: 0.74rem; }
+  .notas { font-size: 0.84rem; }
 }

@@ -185,3 +185,33 @@ export function ahorroDe(presentacion) {
   const precio = Number(presentacion?.precio) || 0;
   return lista > precio && precio > 0 ? lista - precio : 0;
 }
+
+/**
+ * Una nota en su forma corta para la tarjeta: "Bergamota de Reggio" queda
+ * "bergamota" (el "de" con nombre propio es procedencia, no la nota), pero
+ * "Flor de loto" y "Madera de cedro" quedan enteras.
+ */
+function notaCorta(nota) {
+  return nota.replace(/\s+de\s+[A-ZÁÉÍÓÚÑ].*$/u, '').trim().toLowerCase();
+}
+
+/**
+ * Dos o tres notas para la tarjeta, en minuscula: "bergamota, pimienta y
+ * ambroxan". Una de cada capa de la piramide (salida, corazon, fondo) y, si
+ * falta alguna, la que sigue. Sin notas cargadas, la familia en minuscula
+ * ("floral oriental"): tambien es dato real. Sin nada, ''.
+ */
+export function notasCortas(producto, maximo = 3) {
+  const capas = [producto?.nota_salida, producto?.nota_corazon, producto?.nota_fondo]
+    .map((t) => separarNotas(t).map(notaCorta));
+  const elegidas = [];
+  for (let ronda = 0; elegidas.length < maximo && capas.some((c) => c.length > ronda); ronda++) {
+    for (const capa of capas) {
+      const n = capa[ronda];
+      if (n && !elegidas.includes(n) && elegidas.length < maximo) elegidas.push(n);
+    }
+  }
+  if (!elegidas.length) return (producto?.familia_olfativa || '').trim().toLowerCase();
+  if (elegidas.length === 1) return elegidas[0];
+  return `${elegidas.slice(0, -1).join(', ')} y ${elegidas[elegidas.length - 1]}`;
+}

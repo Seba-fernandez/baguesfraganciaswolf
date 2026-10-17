@@ -130,7 +130,21 @@ export const PEDIDO = {
 };
 
 export const TARJETA = {
-  inspirado: 'versión inspirada',
+  // Pie de la tarjeta. Con un solo tamaño se dice cuál; con más, cuántos.
+  desde: 'desde',
+  tamanos: '{n} tamaños',
+  agregar: 'Agregar {nombre} al pedido',
+};
+
+/**
+ * La hoja chica que abre el + de una tarjeta con más de un tamaño.
+ * {ml} es el tamaño elegido.
+ */
+export const HOJA_TAMANOS = {
+  titulo: 'Elegí el tamaño',
+  etiqueta: 'Elegir tamaño de {nombre}',
+  agregar: 'Agregar {ml} ml',
+  verFicha: 'Ver la ficha completa',
 };
 
 export const FICHA = {

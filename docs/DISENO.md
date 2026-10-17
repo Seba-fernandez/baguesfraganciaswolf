@@ -275,11 +275,25 @@ el ícono es chico.
   acento sólido y tiene que leerse de lejos.
 - **Botón claro** — la misma píldora en cristal transparente. Acción secundaria.
 - **Tarjeta de aroma** — foto arriba a radio cero, cuerpo de vidrio: nombre en
-  Cormorant, "versión inspirada", pastillas de tamaño (siempre en una sola fila,
-  repartidas en partes iguales, así los precios de una fila quedan alineados) y
-  el pie con el precio y el `+` circular. La grilla va de a 2, 3 y 4 columnas:
-  números que dividen a 12, los aromas por página, para que ninguna página
-  termine con una fila suelta.
+  Cormorant 600 (el mismo peso en los destacados de la portada), una línea en
+  minúscula `--ink-dim` con dos o tres notas ("bergamota, pimienta y
+  ambroxan", `notasCortas`; sin notas, la familia) y el pie con un solo precio
+  y el `+` circular. Arriba del precio, chico: "50 ml" si hay un tamaño, "3
+  tamaños · desde" si hay más. **Sin pastillas de tamaño y sin "versión
+  inspirada"** (desde la etapa 3A, autorizado por el dueño): en el celular las
+  pastillas se apretaban y dejaban tarjetas de alturas distintas, y el aviso se
+  dice una vez en la cabecera del catálogo y en la ficha. Con un tamaño el `+`
+  agrega directo; con más, abre la **hoja de tamaños**: en el celular sube
+  desde abajo, en escritorio es una placa chica centrada (se eligió el mismo
+  patrón en las dos para que la tarjeta diga lo mismo en todas partes y el
+  precio sea siempre "desde"). Las tarjetas de una fila miden lo mismo (la
+  grilla las estira y el pie se apoya abajo). La grilla va de a 2, 3 y 4
+  columnas: números que dividen a 12, los aromas por página, para que ninguna
+  página termine con una fila suelta.
+- **Hoja de tamaños** — la misma superficie sólida que el cajón (`--bg-2`), un
+  diálogo como la ficha (fuera de `<main>`, foco adentro, Escape y "atrás" la
+  cierran). Cada tamaño es una fila grande (ml, línea, precio con el de lista
+  tachado); abajo, "Agregar 50 ml" y "Ver la ficha completa".
 - **Ficha del aroma** — se abre encima y tiene su link (`?aroma=<slug>`, con
   "Copiar link" arriba a la izquierda de la foto). En el celular va ordenada
   para decidir: foto contenida a 46dvh (a los costados, la pared del estudio),

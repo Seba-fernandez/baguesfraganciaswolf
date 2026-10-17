@@ -290,6 +290,13 @@ el ícono es chico.
   grilla las estira y el pie se apoya abajo). La grilla va de a 2, 3 y 4
   columnas: números que dividen a 12, los aromas por página, para que ninguna
   página termine con una fila suelta.
+- **"Si te gusta este, mirá también"** — en la ficha, antes del aviso de
+  encargo: tres miniaturas 3:4 con el nombre en Cormorant 600 y la razón en
+  `--ink-faint` ("comparte: vainilla, ámbar"; si no comparten notas, "también
+  amaderado" o "también para él"). Las calcula `lib/parecidos.js`: mismo género
+  o unisex, misma familia, más notas en común, y desempatan los destacados y el
+  orden del panel. Tocar una cambia la ficha y el `?aroma=` (reemplaza la
+  entrada: "atrás" sigue cerrando la ficha).
 - **Hoja de tamaños** — la misma superficie sólida que el cajón (`--bg-2`), un
   diálogo como la ficha (fuera de `<main>`, foco adentro, Escape y "atrás" la
   cierran). Cada tamaño es una fila grande (ml, línea, precio con el de lista

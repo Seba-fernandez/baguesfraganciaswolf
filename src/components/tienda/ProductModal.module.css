@@ -132,6 +132,20 @@
 
 .promoNota { font-size: 0.86rem; color: var(--amber); }
 
+/* "Si te gusta este": tres miniaturas 3:4 con el nombre y la razon a la
+   vista. Tocar una cambia la ficha (y el ?aroma=). */
+.parecidos { display: flex; flex-direction: column; gap: 12px; padding-top: 18px; margin-top: 6px; border-top: 1px solid var(--line); }
+.parecidosTitulo { font-size: 1.2rem; }
+.parecidosFila { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.parecido {
+  display: flex; flex-direction: column; gap: 6px; min-width: 0;
+  background: none; border: 0; padding: 0; text-align: left; cursor: pointer; color: inherit;
+}
+.parecido:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.parecidoNombre { font-family: var(--f-display); font-weight: 600; font-size: 0.98rem; line-height: 1.15; color: var(--ink); }
+.parecido:hover .parecidoNombre { color: var(--amber); }
+.parecidoRazon { font-size: 0.72rem; line-height: 1.35; color: var(--ink-faint); }
+
 .aviso { font-size: 0.8rem; line-height: 1.65; color: var(--ink-faint); margin-top: 4px; }
 
 /* La barra de agregar. Va ultima en el marcado y pegada abajo con sticky:
@@ -183,6 +197,7 @@
   .para { order: 1; } .nombre { order: 2; } .frase { order: 3; } .inspirado { order: 4; }
   .desc { order: 5; } .piramide { order: 6; } .campo { order: 7; } .verificar { order: 8; } .promoNota { order: 8; }
   .barra { order: 9; margin: 4px 0 0; padding: 12px 0; box-shadow: 0 -14px 20px -16px rgba(10, 5, 3, 0.8); }
+  .parecidos { order: 19; }
   .aviso { order: 20; }
   .agregarResto { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
 }

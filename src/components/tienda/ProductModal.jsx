@@ -7,7 +7,8 @@ import {
 } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import { copiarTexto, linkDeAroma } from '../../lib/compartir';
-import { FICHA, conDatos } from '../../config/contenido';
+import { parecidos } from '../../lib/parecidos';
+import { FICHA, PARECIDOS, conDatos } from '../../config/contenido';
 import { CANTIDAD_MAXIMA } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
 import s from './ProductModal.module.css';
@@ -24,7 +25,7 @@ import s from './ProductModal.module.css';
  * baja y se apoya en su lugar al llegar al final. En escritorio se conserva el
  * orden que ya andaba (entra entera en 900 px), con `order` en el CSS.
  */
-export default function ProductModal({ producto, onClose, promos = {}, disparador = null }) {
+export default function ProductModal({ producto, onClose, promos = {}, disparador = null, todos = [], onAbrir }) {
   const { addItem } = useCart();
   const opciones = presentacionesActivas(producto);
   const [ml, setMl] = useState(() => presentacionPorDefecto(producto)?.ml ?? null);
@@ -65,6 +66,12 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
   const promo = elegida?.grupo_promo ? promos[elegida.grupo_promo] : null;
   const frase = fraseDe(producto);
   const piramide = piramideDe(producto);
+  const sugeridos = parecidos(producto, todos, 3);
+
+  /** La razon de cada sugerencia, a la vista. */
+  const razon = (r) => (r.comparte.length
+    ? conDatos(PARECIDOS.comparte, { notas: r.comparte.join(', ') })
+    : conDatos(PARECIDOS.tambien, { algo: r.familia || PARECIDOS.para[r.producto.genero] || '' }));
 
   function sumar() {
     if (!elegida) return;
@@ -172,6 +179,21 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
           )}
 
           {producto.descripcion_larga && <p className={s.desc}>{producto.descripcion_larga}</p>}
+
+          {onAbrir && sugeridos.length > 0 && (
+            <section className={s.parecidos} aria-labelledby="parecidos-titulo">
+              <h3 id="parecidos-titulo" className={s.parecidosTitulo}>{PARECIDOS.titulo}</h3>
+              <div className={s.parecidosFila}>
+                {sugeridos.map((r) => (
+                  <button key={r.producto.id} type="button" className={s.parecido} onClick={() => onAbrir(r.producto)} data-qa="parecido">
+                    <ProductThumb producto={r.producto} ratio="3 / 4" sizes="(max-width: 767px) 30vw, 130px" />
+                    <span className={s.parecidoNombre}>{tituloDe(r.producto)}</span>
+                    <span className={s.parecidoRazon}>{razon(r)}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
 
           <p className={s.aviso}>{FICHA.aviso}</p>
 

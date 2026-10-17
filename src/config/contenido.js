@@ -144,6 +144,18 @@ export const TARJETA = {
 };
 
 /**
+ * "Si te gusta este, mirá también", en la ficha. La razón queda a la vista:
+ * {notas} son las notas que comparten; si no comparten ninguna, la familia o
+ * para quién es ({algo}).
+ */
+export const PARECIDOS = {
+  titulo: 'Si te gusta este, mirá también',
+  comparte: 'comparte: {notas}',
+  tambien: 'también {algo}',
+  para: { masculino: 'para él', femenino: 'para ella', unisex: 'unisex' },
+};
+
+/**
  * La hoja chica que abre el + de una tarjeta con más de un tamaño.
  * {ml} es el tamaño elegido.
  */

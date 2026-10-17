@@ -193,6 +193,8 @@ export default function TiendaShell() {
               onClose={cerrar}
               promos={promos}
               disparador={disparador.current}
+              todos={products}
+              onAbrir={abrir}
             />
           </Suspense>
         )}

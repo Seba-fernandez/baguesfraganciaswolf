@@ -5,8 +5,8 @@
 // filtro se pueda compartir y sobreviva a abrir una ficha y volver "atras".
 // ============================================================================
 
-import { familiaDe, FAMILIAS } from './familias';
-import { presentacionesActivas, ahorroDe } from './producto';
+import { familiaDe, FAMILIAS } from './familias.js';
+import { presentacionesActivas, ahorroDe } from './producto.js';
 
 /** "Para": a quien. Un unisex aparece para el y para ella. */
 export const PARA = {

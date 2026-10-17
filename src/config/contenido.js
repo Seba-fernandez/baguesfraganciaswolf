@@ -66,7 +66,7 @@ export const NOSOTROS = {
   titulo: 'El mismo perfume, sin la vidriera cara.',
   parrafos: [
     'Somos Grupo Wolf, un emprendimiento familiar de Córdoba. Lo arrancó mi viejo y hoy lo seguimos entre la familia, con una idea sencilla: acercarte los perfumes que todo el mundo quiere, de una persona a otra, sin el local caro que después terminás pagando vos.',
-    'Cada frasco lo fabrica y lo rotula la casa Bagués. Es el mismo aroma que probás en la perfumería del shopping, pero a precio de reventa directa. Vos reconocés el perfume, nosotros te sacamos el sobreprecio de la marca de arriba.',
+    'Cada frasco lo fabrica y lo rotula la casa Bagués. Es el mismo aroma que probás en la perfumería del shopping, pero a precio de reventa directa. Vos reconocés el perfume, yo te saco el sobreprecio de la marca de arriba.',
     'Nada de comprar a ciegas. Me escribís por WhatsApp, te cuento qué hay y qué está por llegar, y te lo mando por correo o, si sos de Córdoba capital, lo retirás o te lo llevo. Si algo no te cierra, lo hablamos tranquilos.',
   ],
   firma: 'Sebastián, de Grupo Wolf',
@@ -185,7 +185,7 @@ export const LEGAL = {
   titulo: 'Aviso',
   parrafos: [
     'Este sitio es de exhibición. No procesa pagos ni concreta ventas: el pedido se ' +
-      'deriva a una conversación de WhatsApp con un asesor, donde se confirman ' +
+      'deriva a una conversación de WhatsApp conmigo, donde se confirman ' +
       'disponibilidad, precio final y entrega.',
     'Todos los productos ofrecidos son fragancias de la casa Bagués, elaboradas y ' +
       'rotuladas por esa firma, y se comercializan como versiones inspiradas. Las marcas ' +

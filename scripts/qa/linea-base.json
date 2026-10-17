@@ -1,0 +1,300 @@
+{
+ "url": "https://baguesfraganciaswolf.vercel.app",
+ "fecha": "2026-10-17 01:27",
+ "chequeos": [
+  {
+   "id": "UX-1 390",
+   "categoria": "bloqueante",
+   "severidad": "alta",
+   "descripcion": "El toque en 'Agregar al pedido' llega al boton (390 px)",
+   "resultado": "FALLA",
+   "detalle": "con busqueda (pie a 120 px): P. \"Este sitio es de exhibición. N\" (pie); ultima pagina (pie a 120 px): P. \"Este sitio es de exhibición. N\" (pie)"
+  },
+  {
+   "id": "UX-1 1440",
+   "categoria": "bloqueante",
+   "severidad": "alta",
+   "descripcion": "El toque en 'Agregar al pedido' llega al boton (1440 px)",
+   "resultado": "FALLA",
+   "detalle": "con busqueda (pie a 413 px): P. \"Todos los productos ofrecidos \" (pie); ultima pagina (pie a 413 px): P. \"Todos los productos ofrecidos \" (pie)"
+  },
+  {
+   "id": "UX-2 CLS",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "Carga en frio de /catalogo: CLS < 0,1",
+   "resultado": "FALLA",
+   "detalle": "CLS 0.832 (1 corrimientos)"
+  },
+  {
+   "id": "UX-2 primer",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "En frio /catalogo no muestra la portada ni el pie con el aviso antes del catalogo",
+   "resultado": "FALLA",
+   "detalle": "portada vista: True; pie visible antes de las tarjetas: True; 229 cuadros"
+  },
+  {
+   "id": "UX-2 canonical",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "El canonical de /catalogo apunta a /catalogo",
+   "resultado": "FALLA",
+   "detalle": "canonical servido: https://baguesfraganciaswolf.vercel.app/"
+  },
+  {
+   "id": "UX-3",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "La busqueda encuentra lo que la gente escribe (11 terminos > 0)",
+   "resultado": "FALLA",
+   "detalle": "sauvage=1, savage=0, good gril=0, amaderado=0, amaderada=30, vainilla=0, hombre=0, mujer=0, arizona=0, esparta=0, 212 vip=4"
+  },
+  {
+   "id": "UX-4",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "Sin resultados: enlace a WhatsApp con lo buscado",
+   "resultado": "FALLA",
+   "detalle": "no hay enlace wa.me con el termino"
+  },
+  {
+   "id": "UX-7 enlace",
+   "categoria": "bloqueante",
+   "severidad": "alta",
+   "descripcion": "Pantalla final con <a> real a WhatsApp (sin depender de window.open)",
+   "resultado": "FALLA",
+   "detalle": "enlace: None ; window.open intentado 1 vez/veces"
+  },
+  {
+   "id": "UX-7 textos",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "Los botones del cajon anticipan WhatsApp",
+   "resultado": "FALLA",
+   "detalle": "paso 1: 'Hacer el pedido'; paso 2: 'Confirmar pedido'"
+  },
+  {
+   "id": "REG-1 codigo",
+   "categoria": "bloqueante",
+   "severidad": "alta",
+   "descripcion": "El codigo de proveedor llega al mensaje de WhatsApp",
+   "resultado": "PASA",
+   "detalle": "codigos en el mensaje: ['20282028', '10282074']; existen en la base: True"
+  },
+  {
+   "id": "REG-1 suma",
+   "categoria": "bloqueante",
+   "severidad": "alta",
+   "descripcion": "El cajon suma bien dos productos",
+   "resultado": "PASA",
+   "detalle": "39699 + 22499 = 62198; cajon dice 62198"
+  },
+  {
+   "id": "CONFIANZA-1 cajon",
+   "categoria": "confianza",
+   "severidad": "alta",
+   "descripcion": "El cajon dice seña, medios de pago, envio gratis y que no se paga aca",
+   "resultado": "FALLA",
+   "detalle": "falta: seña 50 %, transferencia o efectivo, envio gratis, no pagas nada aca"
+  },
+  {
+   "id": "UX-15 foco",
+   "categoria": "accesibilidad",
+   "severidad": "media",
+   "descripcion": "Ficha y cajon: el foco entra, no se escapa con 15 Tabs, Escape cierra y vuelve al disparador",
+   "resultado": "FALLA",
+   "detalle": "ficha: entra True, fugas 11/15, vuelve False; cajon: entra False, fugas 15/15, cierra y vuelve False"
+  },
+  {
+   "id": "UX-15 contorno",
+   "categoria": "accesibilidad",
+   "severidad": "media",
+   "descripcion": "Foco visible con contorno de 2 px o mas en la ficha",
+   "resultado": "FALLA",
+   "detalle": "4 elementos medidos; flacos: Restar, Sumar"
+  },
+  {
+   "id": "UX-15 tactil",
+   "categoria": "accesibilidad",
+   "severidad": "media",
+   "descripcion": "Areas tactiles de 44x44 en pastillas, +/-, cerrar (medido con elementFromPoint)",
+   "resultado": "FALLA",
+   "detalle": "chicas: filtro 91x40; filtro 89x40; filtro 70x40; talla tarjeta 47x32; + tarjeta 42x42; cerrar ficha 42x42; +/- ficha 42x42; cerrar cajon 38x38; +/- cajon 38x38"
+  },
+  {
+   "id": "UX-10",
+   "categoria": "visual",
+   "severidad": "media",
+   "descripcion": "El nombre de la tarjeta del catalogo usa Cormorant",
+   "resultado": "FALLA",
+   "detalle": "font-family: Figtree, system-ui, -apple-system, sans-serif"
+  },
+  {
+   "id": "FOTO-5 ficha",
+   "categoria": "visual",
+   "severidad": "alta",
+   "descripcion": "La ficha a 390 px dpr 3 baja la foto grande (no -560w) y alcanza 2x",
+   "resultado": "FALLA",
+   "detalle": "unlock-leau-dissey-hom-560w.webp natural 560 px para 362 px mostrados (1.55x)"
+  },
+  {
+   "id": "FOTO-5 cargan",
+   "categoria": "visual",
+   "severidad": "alta",
+   "descripcion": "Todas las imagenes del catalogo cargan (naturalWidth > 0)",
+   "resultado": "PASA",
+   "detalle": "12/12 cargadas"
+  },
+  {
+   "id": "UX-17",
+   "categoria": "contenido",
+   "severidad": "baja",
+   "descripcion": "El numero de aromas del HTML servido es el mismo que despues de hidratar",
+   "resultado": "FALLA",
+   "detalle": "servido: 104; despues de hidratar: 100"
+  },
+  {
+   "id": "UX-14",
+   "categoria": "visual",
+   "severidad": "baja",
+   "descripcion": "Los botones del hero no cambian de ancho al llegar la fuente y la flecha no es texto",
+   "resultado": "FALLA",
+   "detalle": "ancho antes [218, 193] despues [194, 172] (dif 24.6 px, fuentes loading); flecha como texto: True"
+  },
+  {
+   "id": "CONFIANZA-1 portada",
+   "categoria": "confianza",
+   "severidad": "alta",
+   "descripcion": "La portada dice pago, seña, envio, Cordoba y plazo",
+   "resultado": "FALLA",
+   "detalle": "falta: seña 50 %, transferencia o efectivo, todo el pais, gratis desde $ 60.000, fecha por WhatsApp"
+  },
+  {
+   "id": "CONTENIDO-1",
+   "categoria": "contenido",
+   "severidad": "media",
+   "descripcion": "Sin 'retiro'/'llega los viernes' a la vez, sin voz plural y sin guiones largos visibles",
+   "resultado": "FALLA",
+   "detalle": "contradiccion: True; plural: ['escribinos', 'nosotros', 'te abrimos', 'un asesor']; guiones largos: 0; aviso, 'los viernes' sigue en: ['Me escribís por WhatsApp, te cuento qué hay y qué está por llegar, y l', 'Llega los viernes', 'Pedidos de fin de semana, retiro los viernes', 'Pedidos de fin de semana, retiro los viernes', 'Retiro los viernes en Córdoba']"
+  },
+  {
+   "id": "PANEL-1",
+   "categoria": "contenido",
+   "severidad": "baja",
+   "descripcion": "El pie publico no enlaza al panel y /panel sigue cargando el ingreso",
+   "resultado": "FALLA",
+   "detalle": "enlaces a panel en el pie: 1; /panel muestra 'Ingresar con Google': True"
+  },
+  {
+   "id": "REG-1 portada",
+   "categoria": "visual",
+   "severidad": "alta",
+   "descripcion": "La portada sigue mostrando la escena del hero y los frascos",
+   "resultado": "PASA",
+   "detalle": "fondo: aswolf.vercel.app/hero/duna-movil.webp\"); frascos naturalWidth 460"
+  },
+  {
+   "id": "RENDIMIENTO /",
+   "categoria": "rendimiento",
+   "severidad": "media",
+   "descripcion": "Lighthouse mobile de la portada (mediana) >= 90",
+   "resultado": "PASA",
+   "detalle": "mediana 97 (base None); [96, 97, 97, 98, 97]; LCP 2525 ms"
+  },
+  {
+   "id": "RENDIMIENTO /catalogo",
+   "categoria": "rendimiento",
+   "severidad": "alta",
+   "descripcion": "Lighthouse mobile de /catalogo (mediana) >= 80 con CLS < 0,1",
+   "resultado": "FALLA",
+   "detalle": "mediana 76 (base None); [76, 75, 76, 76, 76]; CLS 0.924"
+  }
+ ],
+ "lighthouse": {
+  "/": {
+   "corridas": [
+    {
+     "score": 96,
+     "lcp": 2422,
+     "cls": 0.0,
+     "fcp": 907,
+     "tbt": 159
+    },
+    {
+     "score": 97,
+     "lcp": 2525,
+     "cls": 0.0,
+     "fcp": 912,
+     "tbt": 12
+    },
+    {
+     "score": 97,
+     "lcp": 2554,
+     "cls": 0.0,
+     "fcp": 929,
+     "tbt": 2
+    },
+    {
+     "score": 98,
+     "lcp": 2467,
+     "cls": 0.0,
+     "fcp": 966,
+     "tbt": 30
+    },
+    {
+     "score": 97,
+     "lcp": 2580,
+     "cls": 0.0,
+     "fcp": 944,
+     "tbt": 36
+    }
+   ],
+   "mediana": 97,
+   "cls_mediana": 0.0,
+   "lcp_mediana": 2525
+  },
+  "/catalogo": {
+   "corridas": [
+    {
+     "score": 76,
+     "lcp": 1691,
+     "cls": 0.924,
+     "fcp": 933,
+     "tbt": 49
+    },
+    {
+     "score": 75,
+     "lcp": 2192,
+     "cls": 0.924,
+     "fcp": 1031,
+     "tbt": 44
+    },
+    {
+     "score": 76,
+     "lcp": 1177,
+     "cls": 0.85,
+     "fcp": 951,
+     "tbt": 28
+    },
+    {
+     "score": 76,
+     "lcp": 1588,
+     "cls": 0.924,
+     "fcp": 878,
+     "tbt": 18
+    },
+    {
+     "score": 76,
+     "lcp": 1636,
+     "cls": 0.85,
+     "fcp": 918,
+     "tbt": 36
+    }
+   ],
+   "mediana": 76,
+   "cls_mediana": 0.924,
+   "lcp_mediana": 1636
+  }
+ }
+}

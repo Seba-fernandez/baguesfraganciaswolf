@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import { presentacionesActivas, presentacionPorDefecto, tituloDe, notasCortas } from '../../lib/producto';
 import { pesos } from '../../lib/format';
@@ -18,7 +19,16 @@ import s from './ProductCard.module.css';
  * mas, abre la hoja de tamanos (onElegir), en el celular y en escritorio.
  */
 export default function ProductCard({ producto, onOpen, onElegir, promos = {} }) {
-  const { addItem } = useCart();
+  const { addItem, ultimo } = useCart();
+  // Despues de agregar, el + pasa a tilde 1,2 s: confirma sin abrir nada.
+  // Vale venga de donde venga el agregado (el +, la hoja o la ficha).
+  const [hecho, setHecho] = useState(false);
+  useEffect(() => {
+    if (!ultimo || ultimo.productId !== producto.id || Date.now() - ultimo.t > 1000) return undefined;
+    setHecho(true);
+    const t = setTimeout(() => setHecho(false), 1200);
+    return () => clearTimeout(t);
+  }, [ultimo, producto.id]);
   const opciones = presentacionesActivas(producto);
   const base = presentacionPorDefecto(producto);
   const titulo = tituloDe(producto);
@@ -66,9 +76,13 @@ export default function ProductCard({ producto, onOpen, onElegir, promos = {} })
             disabled={!base}
             aria-label={conDatos(TARJETA.agregar, { nombre: titulo })}
             aria-haspopup={varios ? 'dialog' : undefined}
+            data-estado={hecho ? 'hecho' : ''}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+            <svg className={s.icoMas} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
               <path d="M12 5v14M5 12h14" />
+            </svg>
+            <svg className={s.icoHecho} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
             </svg>
           </button>
         </div>

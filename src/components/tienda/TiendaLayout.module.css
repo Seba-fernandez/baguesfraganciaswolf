@@ -53,6 +53,10 @@
   border-radius: var(--r-pill); background: var(--amber); color: var(--on-amber);
   font-size: 10.5px; font-weight: 600; display: grid; place-items: center;
 }
+/* Un pulso chico al sumar: crece y vuelve, sin rebote. Con movimiento
+   reducido la regla general de tienda.css lo deja en 1 ms. */
+.pulso { animation: pulso 420ms var(--ease); }
+@keyframes pulso { 0% { transform: scale(1); } 35% { transform: scale(1.28); } 100% { transform: scale(1); } }
 
 .footer { border-top: 1px solid var(--line); padding-block: 52px 60px; margin-top: 40px; }
 .fcols { display: grid; gap: 32px; grid-template-columns: 1fr; }

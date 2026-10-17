@@ -7,6 +7,7 @@ import { useCart } from '../../contexts/CartContext';
 // entrar. Una vez cargado se queda montado, así la animación de cierre corre.
 const CartSheet = lazy(() => import('./CartSheet'));
 import VolverArriba from './VolverArriba';
+import AvisoAgregado from './AvisoAgregado';
 import { MARCA, CABECERA, LEGAL, PIE } from '../../config/contenido';
 import '../../styles/tienda.css';
 import s from './TiendaLayout.module.css';
@@ -19,7 +20,8 @@ const CartIcon = () => (
 );
 
 export default function TiendaLayout({ children, ficha = null, hoja = null, settings, onVerPromo }) {
-  const { count, open, setOpen } = useCart();
+  const { count, open, setOpen, ultimo } = useCart();
+  const [avisoVisible, setAvisoVisible] = useState(false);
   const raiz = useRef(null);
   const botonPedido = useRef(null);
   const [pedidoUsado, setPedidoUsado] = useState(false);
@@ -66,7 +68,10 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
           aria-label={`${CABECERA.verPedido} (${count} ${count === 1 ? 'ítem' : 'ítems'})`}
         >
           <CartIcon />
-          {count > 0 && <span className={`${s.badge} tnum`}>{count}</span>}
+          {/* La key cambia en cada agregado: reinicia el pulso del numero. */}
+          {count > 0 && (
+            <span key={ultimo?.t ?? 0} className={`${s.badge} ${ultimo ? s.pulso : ''} tnum`}>{count}</span>
+          )}
         </button>
       </header>
 
@@ -105,7 +110,8 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
         </div>
       </footer>
 
-      <VolverArriba oculto={hayDialogo} />
+      <VolverArriba oculto={hayDialogo || avisoVisible} />
+      <AvisoAgregado onVisible={setAvisoVisible} />
 
       {ficha}
       {hoja}

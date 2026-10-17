@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { calcularCarrito } from '../lib/promos';
-import { tituloDe } from '../lib/producto';
+import { tituloDe, detalleLinea } from '../lib/producto';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'bgw-carrito-v2'; // v2: el item ahora lleva codigo y grupo_promo
@@ -12,6 +12,19 @@ const STORAGE_KEY = 'bgw-carrito-v2'; // v2: el item ahora lleva codigo y grupo_
 //         nombre_proveedor, grupo_promo, precio, cantidad, imagen_url }
 const keyOf = (productId, ml) => `${productId}::${ml ?? ''}`;
 
+// El cajon se abre solo en el PRIMER agregado de la sesion: ahi la clienta ve
+// que el pedido existe y donde vive. Desde el segundo, abrirlo cada vez tapaba
+// el 85 % de la pantalla y obligaba a cerrarlo para seguir mirando: en su
+// lugar sube una barra chica con "Ver pedido". Se recuerda por pestana
+// (sessionStorage), asi recargar no lo vuelve a abrir.
+const CAJON_VISTO = 'bgw-cajon-visto';
+function cajonYaVisto() {
+  try { return sessionStorage.getItem(CAJON_VISTO) === '1'; } catch { return false; }
+}
+function marcarCajonVisto() {
+  try { sessionStorage.setItem(CAJON_VISTO, '1'); } catch { /* sin almacenamiento: se abre siempre */ }
+}
+
 export function CartProvider({ children, promosCiclo = [] }) {
   // Arranca SIEMPRE vacío y el carrito guardado se lee en un efecto, no en el
   // inicializador. La portada se pre-genera como HTML en el build, y ahí no
@@ -21,6 +34,9 @@ export function CartProvider({ children, promosCiclo = [] }) {
   // encabezado). Con las dos partes arrancando en vacío, coinciden.
   const [items, setItems] = useState([]);
   const [open, setOpen] = useState(false);
+  // El ultimo agregado: lo usan la tarjeta (el + pasa a tilde) y la barra de
+  // "agregado" de TiendaLayout. `t` cambia en cada agregado, aunque sea el mismo.
+  const [ultimo, setUltimo] = useState(null);
   const cargado = useRef(false);
 
   useEffect(() => {
@@ -61,7 +77,20 @@ export function CartProvider({ children, promosCiclo = [] }) {
         imagen_url: producto.imagen_url || '',
       }];
     });
-    setOpen(true);
+    const abreCajon = !cajonYaVisto();
+    if (abreCajon) {
+      marcarCajonVisto();
+      setOpen(true);
+    }
+    const nombre = tituloDe(producto);
+    setUltimo({
+      productId: producto.id,
+      nombre,
+      ml: presentacion.ml ?? null,
+      detalle: detalleLinea(presentacion, nombre),
+      abrioCajon: abreCajon,
+      t: Date.now(),
+    });
   }, []);
 
   const removeItem = useCallback((key) => setItems((prev) => prev.filter((it) => it.key !== key)), []);
@@ -87,7 +116,7 @@ export function CartProvider({ children, promosCiclo = [] }) {
   const value = {
     items, addItem, removeItem, setCantidad, clear,
     total: cuenta.total, totalLista, ahorro: cuenta.ahorroTotal, grupos: cuenta.grupos,
-    count, open, setOpen,
+    count, open, setOpen, ultimo,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

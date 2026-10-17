@@ -246,6 +246,16 @@ export const PIE = {
 export const VOLVER_ARRIBA = 'Volver arriba';
 
 /**
+ * La barra que sube al agregar un aroma, desde el segundo agregado de la
+ * sesión (el primero abre el cajón). {n} es la cantidad de unidades.
+ * "Agregado" lo lee solo el lector de pantalla; a la vista va una tilde.
+ */
+export const AVISO_AGREGADO = {
+  agregado: 'Agregado:',
+  verPedido: 'Ver pedido ({n})',
+};
+
+/**
  * Mete datos en un texto: conDatos(CATALOGO.bajada, { aromas: 104 }).
  * Si falta una clave deja el {hueco} a la vista, en vez de escribirle
  * "undefined" a la clienta.

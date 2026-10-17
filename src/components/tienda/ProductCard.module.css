@@ -65,6 +65,12 @@
   border-radius: 50%;
 }
 .add:active { transform: scale(0.92); }
+/* El + y la tilde estan los dos; se cruzan con opacity y transform (nada que
+   recalcule el layout), en la curva del sistema y sin rebote. */
+.add svg { transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease); }
+.add .icoHecho { position: absolute; inset: 0; margin: auto; opacity: 0; transform: scale(0.6); }
+.add[data-estado='hecho'] .icoMas { opacity: 0; transform: rotate(90deg) scale(0.6); }
+.add[data-estado='hecho'] .icoHecho { opacity: 1; transform: none; }
 .add:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* En pantallas mas anchas la tarjeta tiene aire de sobra: agranda un toque. */

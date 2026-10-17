@@ -1045,12 +1045,12 @@ def e3_a5(browser, base):
         if page.locator(cajon).count():
             cerrar_cajon(page)
         page.locator("article").nth(i).locator("button[aria-label^='Agregar']").click()
-        try:
-            page.wait_for_selector(HOJA, timeout=1500)
+        # La hoja (si el aroma tiene varios tamanos) aparece enseguida; no se
+        # espera de mas: la tilde dura 1,2 s.
+        page.wait_for_timeout(350)
+        if page.locator(HOJA).count():
             page.locator(f"{HOJA} [data-qa=agregar-hoja]").click()
-        except Exception:
-            pass
-        page.wait_for_timeout(250)
+        page.wait_for_timeout(150)
 
     mas(0)
     page.wait_for_timeout(500)

@@ -1,0 +1,38 @@
+/* Barra de "agregado". La misma superficie solida de la ficha y el cajon, con
+   un filete de luz arriba. Sube desde abajo sin rebote (solo transform y
+   opacity, --ease del sistema) y respeta la franja del gesto de inicio. Con
+   prefers-reduced-motion la regla general de tienda.css baja las transiciones
+   a 1 ms: aparece sin moverse. */
+.aviso {
+  position: fixed; z-index: 90;
+  left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
+  max-width: 520px; margin-inline: auto;
+  display: flex; align-items: center; gap: 10px;
+  min-height: 60px; padding: 8px 8px 8px 16px;
+  border-radius: 14px;
+  background: var(--bg-3);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility 0s linear var(--dur);
+}
+.visible {
+  opacity: 1; transform: none; pointer-events: auto; visibility: visible;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility 0s;
+}
+.tilde { flex-shrink: 0; color: var(--ink-dim); }
+.texto {
+  flex: 1; min-width: 0; font-size: 0.84rem; line-height: 1.3; color: var(--ink-dim);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.nombre { font-weight: 600; color: var(--ink); }
+.oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* "Ver pedido (2)": la accion, por eso en el acento (texto oscuro encima). */
+.ver {
+  flex-shrink: 0; min-height: 44px; padding: 0 16px; border-radius: var(--r-pill);
+  border: 0; cursor: pointer; white-space: nowrap;
+  background: var(--amber); color: var(--on-amber);
+  font-size: 0.84rem; font-weight: 600;
+}
+.ver:hover { background: #e8809a; }
+.ver:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (min-width: 900px) { .aviso { bottom: 24px; } }

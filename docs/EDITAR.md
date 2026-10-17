@@ -31,6 +31,7 @@ Están agrupados por dónde aparecen:
 | `COMO_FUNCIONA` | los tres pasos y la frase de cierre |
 | `ANTES_DE_PEDIR` | el bloque de la portada con el pago, la seña, el envío, Córdoba y cuándo llega |
 | `PEDIDO` | los textos del cajón: botones, campos, la línea de la seña, la barra de envío gratis y la pantalla final |
+| `AVISO_AGREGADO` | la barra que sube al agregar desde el segundo aroma ("Ver pedido (2)") |
 | `LEGAL` | el aviso corto del catálogo y los tres párrafos del pie |
 | `PIE` | los títulos de las columnas de abajo |
 

@@ -316,6 +316,17 @@ el ícono es chico.
   quieta a la izquierda y la barra va después de los tamaños, también sticky.
 - **Nombres** — siempre el nombre oficial del perfume, que es como lo busca la
   clienta. La línea y la caja se dicen en el tamaño, nunca en el título.
+- **Agregar sin perder el lugar** — el cajón se abre solo en el **primer**
+  agregado de la sesión (`sessionStorage`, en `CartContext`). Desde el segundo,
+  el `+` de la tarjeta pasa a tilde 1,2 s (opacity y transform, sin rebote) y
+  sube una barra abajo, sobre la franja del gesto de inicio: "Sauvage 50 ml ·
+  Bagues, caja Arizona · Ver pedido (2)", con `role="status"`. Se va a los 4 s
+  o al tocar "Ver pedido", que es lo único en el acento. El número del carrito
+  hace un pulso chico. Con movimiento reducido, nada se mueve. Se descartó la
+  transición de la foto de la tarjeta a la ficha con View Transitions: la ficha
+  se carga aparte (lazy) y React dibuja asincrónico, así que la foto nueva
+  podía no estar al sacar la captura; un cuadro roto en un teléfono de gama
+  media es peor que la entrada actual.
 - **Cajón del pedido** — carrito y cierre en la misma hoja, nunca una hoja que
   abre otra hoja. Arriba del total, la seña y una barra fina de envío gratis
   (lo único en acento); abajo, "No pagás nada acá". La pantalla final tiene un

@@ -15,10 +15,12 @@ export default function CatalogoScreen() {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  if (loading) return null;
-
+  // Mientras la base no contesta se dibuja la misma pagina con tarjetas de
+  // espera, no un hueco: antes el pie (con el aviso legal) subia hasta arriba
+  // y despues bajaba de golpe al llegar los aromas.
   return (
     <ProductGrid
+      cargando={loading}
       whatsapp={settings?.whatsapp_owner}
       products={products}
       onOpen={abrir}

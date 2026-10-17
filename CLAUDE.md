@@ -82,7 +82,8 @@ src/
 scripts/
   fotos/          componer.mjs + fuentes.json: el pipeline de fotos
   fondo/          dibuja la escena del hero y la textura
-  prerender.mjs   pega la portada dibujada en dist/index.html
+  prerender.mjs   pega la portada en dist/index.html y la cáscara de /catalogo
+                  en dist/catalogo/index.html
 supabase/migrations/  esquema, RLS y la función de pedido
 ```
 
@@ -234,7 +235,12 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
   error). `redirectTo` pide `/panel`. Si Supabase no lo tiene en su lista,
   vuelve a la Site URL y el script igual lo resuelve.
 - **La portada pre-generada se sirve en toda ruta** por la reescritura de
-  Vercel. `main.jsx` solo hidrata en `/`; en otra ruta vacía el `#root` y monta.
+  Vercel, salvo `/catalogo`, que tiene su propia cáscara (`dist/catalogo/`,
+  regla aparte en `vercel.json`, antes de la general). `main.jsx` solo hidrata
+  en `/`; en `/catalogo` monta encima de la cáscara sin vaciarla (espera el
+  chunk del catálogo, ver `precargarCatalogo` en `App.jsx`); en otra ruta vacía
+  el `#root` y monta. `vite preview` no lee `vercel.json` y contesta
+  `/catalogo` con la portada: para probar en local, `node scripts/qa/servir.mjs`.
 - **Fotos sin variantes = tarjetas vacías.** Vercel contesta un archivo que no
   existe con el HTML (200, `text/html`): no hay 404 que avise. Para verificar,
   mirar `naturalWidth` de las imágenes, no el código de respuesta.

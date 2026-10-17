@@ -8,6 +8,25 @@ import { DESTACADOS_MAXIMO, POR_PAGINA } from '../../config/ajustes';
 import ProductCard from './ProductCard';
 import s from './ProductGrid.module.css';
 
+/**
+ * Tarjeta de espera, mientras la base no contesto. Mismo cuadro 3:4 y mas o
+ * menos el mismo alto que una tarjeta de verdad, asi la grilla no salta cuando
+ * llegan los aromas. Es tambien lo que trae el HTML pre-generado de /catalogo
+ * (scripts/prerender.mjs).
+ */
+function Esqueleto() {
+  return (
+    <div className={s.esqueleto} aria-hidden="true">
+      <span className={s.esqFoto} />
+      <span className={s.esqCuerpo}>
+        <span className={s.esqLinea} />
+        <span className={`${s.esqLinea} ${s.esqCorta}`} />
+        <span className={s.esqPie} />
+      </span>
+    </div>
+  );
+}
+
 /** Filtros como pastillas que se prenden y apagan tocando la misma. */
 function Pastilla({ activa, onClick, children, tono = '' }) {
   return (
@@ -24,7 +43,7 @@ function Pastilla({ activa, onClick, children, tono = '' }) {
 }
 
 export default function ProductGrid({
-  products, onOpen, abiertoId, promos = {}, promoActiva, setPromoActiva, whatsapp = '',
+  products, onOpen, abiertoId, promos = {}, promoActiva, setPromoActiva, whatsapp = '', cargando = false,
 }) {
   const [genero, setGenero] = useState(null);   // null = sin filtrar
   const [momento, setMomento] = useState(null);
@@ -80,7 +99,16 @@ export default function ProductGrid({
     <section className={`tw ${s.section}`} id="catalogo">
       <header className={s.head} ref={tope}>
         <h2 className={s.titulo}>{CATALOGO.titulo}</h2>
-        <p className={s.bajada}>{conDatos(CATALOGO.bajada, { aromas: publicables.length })}</p>
+        {/* Mientras carga, el numero de aromas tiene su lugar reservado (vacio):
+            un numero inventado en el HTML pre-generado despues cambia. */}
+        <p className={s.bajada}>
+          {CATALOGO.bajada.split('{aromas}').map((parte, i) => (
+            <span key={i}>
+              {i > 0 && <span className={`${s.cifra} tnum`}>{cargando ? '' : publicables.length}</span>}
+              {parte}
+            </span>
+          ))}
+        </p>
         <p className={s.aviso}>{LEGAL.corto}</p>
       </header>
 
@@ -132,8 +160,12 @@ export default function ProductGrid({
 
         <div className={s.resumen}>
           <span className={`${s.conteo} tnum`} aria-live="polite">
-            {visibles.length} {visibles.length === 1 ? 'aroma' : 'aromas'}
-            {paginas > 1 ? ` · página ${pagActual + 1} de ${paginas}` : ''}
+            {cargando ? CATALOGO.cargando : (
+              <>
+                {visibles.length} {visibles.length === 1 ? 'aroma' : 'aromas'}
+                {paginas > 1 ? ` · página ${pagActual + 1} de ${paginas}` : ''}
+              </>
+            )}
           </span>
           {activos > 0 && (
             <button type="button" className={s.limpiar} onClick={limpiar}>
@@ -143,7 +175,11 @@ export default function ProductGrid({
         </div>
       </div>
 
-      {visibles.length === 0 ? (
+      {cargando ? (
+        <div className={s.grid} aria-busy="true">
+          {Array.from({ length: POR_PAGINA }, (_, i) => <Esqueleto key={i} />)}
+        </div>
+      ) : visibles.length === 0 ? (
         <div className={s.vacio}>
           <p className={s.vacioTitulo}>{CATALOGO.vacioTitulo}</p>
           <p className={s.vacioTexto}>{CATALOGO.vacioTexto}</p>

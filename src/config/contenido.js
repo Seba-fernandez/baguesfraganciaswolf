@@ -75,6 +75,7 @@ export const NOSOTROS = {
 export const CATALOGO = {
   titulo: 'El catálogo',
   bajada: '{aromas} aromas del ciclo. Buscá por el perfume que conocés, una nota o el nombre de la caja.',
+  cargando: 'Cargando el catálogo…',
   placeholderBusqueda: 'Buscar: Sauvage, Le Male, amaderado...',
   buscarEtiqueta: 'Buscar aroma',
   quitarFiltros: 'Quitar filtros',

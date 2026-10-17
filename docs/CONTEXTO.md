@@ -381,5 +381,7 @@ Queda anotado para no repetirlo. Está también en los comentarios del código:
 - El bundle inicial son 76,5 kB comprimidos y casi todo es React + React Router.
   Bajarlo de ahí implica cambiar de biblioteca, que no se hizo: el panel maneja
   pedidos y plata, y una incompatibilidad sutil ahí es peor que dos puntos.
-- `/catalogo` no se pre-genera: su contenido sale de la base, así que el HTML
-  pre-generado sería la cáscara vacía.
+- `/catalogo` se pre-genera como cáscara (octubre 2026): encabezado, filtros y
+  tarjetas de espera, sin aromas. Se había descartado por ser "una cáscara
+  vacía", pero sin ella el link del catálogo mostraba primero la portada y el
+  pie con el aviso legal, con un CLS de 0,9. Ver `docs/QA.md`.

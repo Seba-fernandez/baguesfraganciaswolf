@@ -123,7 +123,8 @@ src/
 scripts/
   fondo/        genera la escena del hero, la textura, y las rasteriza a WebP
   fotos/        el pipeline de imágenes: componer.mjs arma todas desde fuentes.json
-  prerender.mjs pega la portada dibujada y el CSS dentro de dist/index.html
+  prerender.mjs pega la portada dibujada y el CSS dentro de dist/index.html,
+                y arma la cáscara de /catalogo en dist/catalogo/index.html
 supabase/
   migrations/   el esquema, las políticas y la función de pedido
 public/         fotos, fuentes, escena del hero, íconos y los archivos de raíz
@@ -152,8 +153,8 @@ calcula reglas de negocio.** Si una cuenta da mal, el error está en `lib/`.
 | `lib/producto.js` | Qué presentaciones se publican, cómo se titula un aroma y cómo se dice su línea (`detalleLinea`) |
 | `lib/vidrioLiquido.js` | La lente del vidrio (ver [`DISENO.md`](DISENO.md)) |
 | `lib/apiTienda.js` | La lectura del catálogo y el envío del pedido, sin supabase-js |
-| `lib/fotos.js` | Qué foto le toca a cada aroma según la línea (tienda y panel) |
 | `lib/busqueda.js` | El buscador del catálogo: indexa título, familia, notas, cajas y género, sin tildes ni vocal de género, con un error de tipeo. Pruebas: `node scripts/qa/busqueda.test.mjs` |
+| `lib/fotos.js` | Qué foto le toca a cada aroma según la línea (tienda y panel) |
 | `lib/cachePanel.js` | La memoria compartida y la precarga del panel |
 | `hooks/useDatosTienda.js` | Los datos de la tienda pública, en un pedido por tabla |
 | `hooks/useReveal.js` | Las apariciones al hacer scroll |
@@ -184,9 +185,11 @@ Son las claves públicas, las mismas con las que la web lee el catálogo. **El
 repositorio es público: no va ninguna clave secreta en ningún archivo.**
 
 Vercel publica solo desde la rama principal. `vercel.json` tiene la reescritura
-que hace falta para que una dirección interna como `/catalogo` o `/panel` no
-devuelva error al entrar directo: la aplicación es una sola página y el recorrido
-lo resuelve el navegador.
+que hace falta para que una dirección interna como `/panel` no devuelva error al
+entrar directo: la aplicación es una sola página y el recorrido lo resuelve el
+navegador. `/catalogo` tiene una regla propia, antes de la general, que sirve su
+cáscara pre-generada (encabezado, filtros y tarjetas de espera) en vez de la
+portada.
 
 ---
 

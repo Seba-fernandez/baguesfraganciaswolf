@@ -129,8 +129,30 @@
 .vacioTitulo { font-family: var(--f-display); font-size: 1.5rem; color: var(--ink); }
 .vacioTexto { margin: 12px 0 22px; color: var(--ink-dim); font-size: 0.95rem; }
 
+/* El numero de aromas de la bajada. Tiene su lugar reservado (tres cifras)
+   para que la frase no se corra cuando llega; mientras tanto, una raya tenue. */
+.cifra { display: inline-block; min-width: 3ch; text-align: right; }
+.cifra:empty::before {
+  content: ''; display: inline-block; width: 3ch; height: 0.7em;
+  border-radius: 2px; background: var(--line-bright);
+}
+
 /* Sin resultados: el WhatsApp con lo buscado primero, despues volver a todo. */
 .vacioAcciones { display: flex; flex-wrap: wrap; gap: 12px; }
 .vacioDestacados { margin-top: 48px; max-width: none; }
 .vacioSubtitulo { font-size: 1.3rem; margin-bottom: 16px; }
 
+/* Tarjeta de espera: el mismo cuadro 3:4 y un cuerpo del alto de una tarjeta
+   real, sin brillo animado (no hay nada que mirar ahi, solo lugar reservado). */
+.esqueleto {
+  display: flex; flex-direction: column;
+  border-radius: 12px; overflow: hidden;
+  background: rgba(38, 26, 19, 0.62);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.esqFoto { display: block; aspect-ratio: 3 / 4; background: var(--bg-2); }
+.esqCuerpo { display: flex; flex-direction: column; gap: 9px; padding: 14px 12px 14px; min-height: 142px; }
+.esqLinea { display: block; height: 12px; width: 78%; border-radius: 2px; background: var(--line); }
+.esqCorta { width: 46%; height: 8px; }
+.esqPie { display: block; margin-top: auto; height: 44px; border-top: 1px solid var(--line-bright); }
+@media (min-width: 560px) { .esqCuerpo { padding: 16px; min-height: 160px; } }

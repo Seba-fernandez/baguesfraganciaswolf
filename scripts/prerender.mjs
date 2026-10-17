@@ -29,7 +29,9 @@ if (!fs.existsSync(ENTRADA)) {
 const { render } = await import(pathToFileURL(ENTRADA).href);
 
 let html = fs.readFileSync(PLANTILLA, 'utf8');
-const marcado = render('/');
+// La plantilla limpia, antes de pegarle la portada: de aca sale /catalogo.
+const plantillaLimpia = html;
+const marcado = await render('/');
 
 if (!marcado || marcado.length < 500) {
   console.error('  el prerender salio vacio o demasiado corto; se aborta para no publicar un HTML roto');
@@ -148,12 +150,68 @@ const kb = (n) => `${(n / 1024).toFixed(1)} kB`;
 console.log(`  portada pre-generada: ${kb(marcado.length)} de marcado en dist/index.html`);
 
 /**
- * El catalogo (/catalogo) NO se pre-genera: su contenido es el catalogo entero
- * salido de la base, asi que el HTML pre-generado seria la cascara vacia y no
- * adelantaria nada. Vercel le sirve el mismo index.html por la reescritura y se
- * dibuja en el navegador, como antes.
+ * La cascara de /catalogo, en dist/catalogo/index.html.
  *
- * Ojo: esa reescritura ahora manda tambien la portada pre-generada a cualquier
- * ruta desconocida. Es lo que ya pasaba, y el enrutador del navegador corrige
- * apenas arranca.
+ * Antes /catalogo recibia el HTML de la portada (la reescritura de Vercel
+ * manda index.html a toda ruta): en frio se veia el sello del hero, despues el
+ * pie con el aviso legal subido hasta arriba, y recien ahi el catalogo. CLS de
+ * 0,9 y el link que se manda por WhatsApp se veia roto.
+ *
+ * Ahora tiene su propio HTML: encabezado, titulo, filtros y doce tarjetas de
+ * espera en 3:4, dibujados por la misma app con los datos en vacio (el mismo
+ * estado con el que arranca el navegador). No depende del ciclo: los aromas
+ * los trae el navegador, como siempre. vercel.json sirve este archivo en
+ * /catalogo y main.jsx monta encima sin vaciarlo.
+ */
+const marcadoCatalogo = await render('/catalogo');
+if (!marcadoCatalogo.includes('aria-busy')) {
+  console.error('  la cascara de /catalogo salio sin las tarjetas de espera; se aborta');
+  process.exit(1);
+}
+let catalogo = plantillaLimpia.replace(ANCLA, `<div id="root" data-ruta="/catalogo">${marcadoCatalogo}</div>`);
+
+// El CSS de la tienda y el del chunk del catalogo, embebidos los dos: sin el
+// segundo, la grilla y las tarjetas de espera se dibujarian sin estilo.
+const assets = fs.readdirSync(path.join(DIST, 'assets'));
+const cssCatalogo = assets.find((f) => /^CatalogoScreen-.*\.css$/.test(f));
+const jsCatalogo = assets.find((f) => /^CatalogoScreen-.*\.js$/.test(f));
+if (!linkCss || !cssCatalogo || !jsCatalogo) {
+  console.error('  falta el CSS principal o el chunk del catalogo en dist/assets');
+  process.exit(1);
+}
+const cssTodo =
+  fs.readFileSync(path.join(DIST, linkCss[1]), 'utf8') +
+  fs.readFileSync(path.join(DIST, 'assets', cssCatalogo), 'utf8');
+catalogo = catalogo.replace(linkCss[0], `<style>${cssTodo}</style>`);
+
+// El chunk del catalogo baja en paralelo con el principal (main.jsx lo espera
+// antes de montar). Y sin las precargas del hero: aca no hay hero.
+catalogo = catalogo
+  .replace('</head>', `  <link rel="modulepreload" crossorigin href="/assets/${jsCatalogo}" />\n  </head>`)
+  .replace(/\n\s*<link rel="preload" href="\/hero\/[^>]*>/g, '');
+
+// Direccion propia: canonical, og:url y titulo.
+const SITIO = 'https://baguesfraganciaswolf.vercel.app';
+const cambios = [
+  [`<link rel="canonical" href="${SITIO}/" />`, `<link rel="canonical" href="${SITIO}/catalogo" />`],
+  [`<meta property="og:url" content="${SITIO}/" />`, `<meta property="og:url" content="${SITIO}/catalogo" />`],
+  [/<title>[^<]*<\/title>/, '<title>Catálogo · Bagues Grupo Wolf</title>'],
+];
+for (const [de, a] of cambios) {
+  const antes = catalogo;
+  catalogo = catalogo.replace(de, a);
+  if (antes === catalogo) {
+    console.error(`  no se encontro ${de} en la plantilla; se aborta para no publicar un canonical equivocado`);
+    process.exit(1);
+  }
+}
+
+fs.mkdirSync(path.join(DIST, 'catalogo'), { recursive: true });
+fs.writeFileSync(path.join(DIST, 'catalogo', 'index.html'), catalogo);
+console.log(`  cascara de /catalogo: ${kb(marcadoCatalogo.length)} de marcado en dist/catalogo/index.html`);
+
+/**
+ * Ojo: la reescritura de Vercel manda la portada pre-generada a cualquier ruta
+ * que no sea /catalogo (incluido /panel). main.jsx la vacia y monta lo que
+ * corresponde.
  */

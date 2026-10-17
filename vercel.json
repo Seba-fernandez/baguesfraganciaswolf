@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/catalogo", "destination": "/catalogo/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

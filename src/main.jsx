@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import App from './App.jsx'
+import App, { precargarCatalogo } from './App.jsx'
 
 // Ni ThemeProvider ni AuthProvider ni global.css viven acá: son del panel y se
 // montan adentro de components/panel/PanelApp.jsx. El reset mínimo que necesita
@@ -26,8 +26,15 @@ const app = (
 // en /catalogo y /panel por la reescritura. Hidratar la portada sobre otra ruta
 // es un desajuste garantizado: React lo detecta, tira errores en consola y
 // redibuja todo igual. En cualquier ruta que no sea "/" se vacía y se monta.
-const esPortada = window.location.pathname === '/'
-if (!esPortada && raiz.hasChildNodes()) raiz.textContent = ''
+//
+// /catalogo tiene su propio HTML pre-generado (la cáscara con tarjetas de
+// espera, ver scripts/prerender.mjs), marcado con data-ruta. Ese no se vacía:
+// createRoot lo reemplaza recién en su primer commit, que dibuja lo mismo, así
+// no hay un cuadro en blanco ni el pie subiendo hasta arriba.
+const ruta = window.location.pathname.replace(/\/+$/, '') || '/'
+const esPortada = ruta === '/'
+const servida = raiz.dataset.ruta || '/'
+if (!esPortada && raiz.hasChildNodes() && servida !== ruta) raiz.textContent = ''
 
 if (esPortada && raiz.hasChildNodes()) {
   // La hidratación espera a que el navegador haya dibujado.
@@ -51,6 +58,11 @@ if (esPortada && raiz.hasChildNodes()) {
   }
   if (document.readyState === 'complete') hidratar()
   else window.addEventListener('load', hidratar, { once: true })
+} else if (ruta === '/catalogo') {
+  // El chunk del catálogo antes de montar: así el primer dibujado es la misma
+  // cáscara que ya está en pantalla y no el fallback vacío (ver App.jsx).
+  const montar = () => createRoot(raiz).render(app)
+  precargarCatalogo().then(montar, montar)
 } else {
   createRoot(raiz).render(app)
 }

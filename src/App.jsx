@@ -10,7 +10,20 @@ import HomeScreen from './components/tienda/HomeScreen';
 //
 // El catálogo sí es lazy: es otra página, se llega con un clic y para entonces
 // ya está el resto.
-const CatalogoScreen = lazy(() => import('./components/tienda/CatalogoScreen'));
+//
+// Pero se puede precargar. Cuando se entra directo a /catalogo, el HTML ya trae
+// la cáscara del catálogo (scripts/prerender.mjs) y main.jsx espera este chunk
+// antes de montar: si React arrancara sin él, el primer dibujado sería el
+// fallback vacío y el pie con el aviso legal subiría hasta arriba de la
+// pantalla. Con el módulo ya en memoria, el lazy lo entrega en el mismo render
+// (un `then` que contesta en el acto, que React resuelve sin suspender). El
+// render del build usa lo mismo para dibujar la cáscara.
+let moduloCatalogo = null;
+export const precargarCatalogo = () =>
+  import('./components/tienda/CatalogoScreen').then((m) => (moduloCatalogo = m));
+const CatalogoScreen = lazy(() =>
+  moduloCatalogo ? { then: (listo) => listo(moduloCatalogo) } : precargarCatalogo()
+);
 
 // El panel entero en un chunk aparte (contextos, sesión, base de datos,
 // global.css). La tienda nunca lo descarga. Ver components/panel/PanelApp.jsx.

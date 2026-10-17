@@ -3,7 +3,7 @@ import { renderToString } from 'react-dom/server';
 // En React Router 7 ya no existe el subcamino /server: StaticRouter se exporta
 // desde el paquete principal.
 import { StaticRouter } from 'react-router-dom';
-import App from './App.jsx';
+import App, { precargarCatalogo } from './App.jsx';
 
 /**
  * Entrada de servidor: existe solo para el build.
@@ -22,8 +22,13 @@ import App from './App.jsx';
  * Lo que depende de la base (el catálogo, los destacados, las promos) sale
  * vacío del build y se completa al hidratar, que es exactamente el estado
  * inicial que tiene el cliente en su primer dibujado: por eso coinciden.
+ *
+ * /catalogo también se dibuja acá, pero como cáscara: encabezado, título,
+ * filtros y tarjetas de espera, que es lo que el navegador muestra mientras la
+ * base contesta. Para eso el chunk del catálogo se precarga antes de dibujar.
  */
-export function render(url = '/') {
+export async function render(url = '/') {
+  if (url === '/catalogo') await precargarCatalogo();
   return renderToString(
     <StrictMode>
       <StaticRouter location={url}>

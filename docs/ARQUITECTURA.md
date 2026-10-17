@@ -131,6 +131,16 @@ public/         fotos, fuentes, escena del hero, íconos y los archivos de raíz
                 (robots.txt, sitemap.xml, llms.txt, .well-known/)
 ```
 
+### La ficha vive en la dirección
+
+La ficha de un aroma se abre con `?aroma=<slug>` (`TiendaShell.jsx`). Abrirla
+suma una entrada al historial, así el gesto de "atrás" del celular la cierra en
+vez de sacar a la clienta de la tienda; cerrarla con la ✕ deshace esa entrada.
+Si se entró directo con el link, cerrar saca el parámetro sin dejar historial.
+Un slug que no existe se ignora y se borra de la dirección. El link que copia el
+botón "Copiar link" apunta siempre a `/catalogo?aroma=<slug>`
+(`lib/compartir.js`), que tiene su propia cáscara y carga rápido.
+
 ### La frontera entre la tienda y el panel
 
 Es la división que más pesa, y no es estética: **la tienda pública no carga

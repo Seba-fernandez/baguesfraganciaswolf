@@ -47,6 +47,7 @@ INEXISTENTE = "zzzz perfume inexistente"
 
 RESULTADOS = []
 SOLO = None
+BASE = ""
 
 
 def quiere(cid):
@@ -680,6 +681,546 @@ def contenido(browser, base):
             "duna" in escena["fondo"] and escena["frasco"] > 0, f"fondo: {escena['fondo'][-40:]}; frascos naturalWidth {escena['frasco']}")
 
 
+# ---------------------------------------------------------------------------
+# Etapa 3A (17/10/2026): link por perfume, ficha, tarjeta, agregar sin perder
+# el lugar, familias, parecidos, "Ver mas" y los pendientes tecnicos.
+#
+# Contrato con la pagina (atributos que estos chequeos buscan):
+#   ficha            [role=dialog][data-dialogo=ficha]
+#   hoja de tamanos  [role=dialog][data-dialogo=tamanos], filas [data-qa=fila-tamano]
+#   ficha            [data-qa=frase], [data-qa=piramide] [data-qa=nota],
+#                    [data-qa=codigo], [data-qa=ahorro], [data-qa=verificar] a,
+#                    [data-qa=agregar-ficha], [data-qa=parecido]
+#   tarjeta          [data-qa=notas], + con data-estado
+#   aviso            [data-qa=aviso-agregado] (role=status)
+#   filtros          [data-qa=filtro-para], [data-qa=filtro-familia], [data-qa=filtro-minis]
+#   ver mas          [data-qa=ver-mas]
+# ---------------------------------------------------------------------------
+
+FICHA = "[role=dialog][data-dialogo=ficha]"
+HOJA = "[role=dialog][data-dialogo=tamanos]"
+
+
+def catalogo_con_datos(browser, op, ruta="/catalogo", esperar=True):
+    """Abre una pagina y guarda las filas de products que manda la base."""
+    ctx, page = nuevo(browser, op)
+    datos = {}
+
+    def guardar(resp):
+        if "/rest/v1/products" in resp.url and resp.request.method == "GET":
+            try:
+                datos["filas"] = resp.json()
+            except Exception:
+                pass
+    page.on("response", guardar)
+    page.goto(BASE + ruta, wait_until="domcontentloaded")
+    if esperar:
+        esperar_catalogo(page)
+    return ctx, page, datos
+
+
+def activos(datos):
+    return [p for p in datos.get("filas", []) if p.get("activo") and p.get("presentaciones")]
+
+
+def pres_activas(p):
+    return sorted([x for x in (p.get("presentaciones") or []) if x.get("activo", True) is not False and x.get("ml")],
+                  key=lambda x: x["ml"])
+
+
+def ficha_abierta(page):
+    return page.locator(FICHA).count() > 0
+
+
+def esperar_ficha(page, timeout=12000):
+    try:
+        page.wait_for_selector(FICHA, timeout=timeout)
+        page.wait_for_timeout(500)
+        return True
+    except Exception:
+        return False
+
+
+def slug_de_url(url):
+    q = urllib.parse.urlparse(url).query
+    return urllib.parse.parse_qs(q).get("aroma", [None])[0]
+
+
+def e3_a1(browser, base):
+    ctx, page, datos = catalogo_con_datos(browser, MOVIL)
+    page.locator("article").first.locator("button").first.click()
+    abre = esperar_ficha(page)
+    url_ficha = page.url
+    slug = slug_de_url(url_ficha)
+    titulo = page.evaluate(f"() => document.querySelector('{FICHA}')?.getAttribute('aria-label') || ''") if abre else ""
+    page.go_back()
+    page.wait_for_timeout(900)
+    cerro = not ficha_abierta(page) and not page.locator("[role=dialog]").count()
+    ruta = urllib.parse.urlparse(page.url).path
+    arts = page.locator("article").count()
+    chk("E3-A1 atras", "conversion", "alta",
+        "Abrir la ficha pone ?aroma= en la direccion y 'atras' la cierra quedandose en /catalogo",
+        abre and bool(slug) and cerro and ruta.rstrip("/") == "/catalogo" and arts > 0,
+        f"ficha abierta: {abre}; url: {url_ficha.replace(base, '')}; despues de atras: {page.url.replace(base, '')}, dialogo cerrado {cerro}, {arts} tarjetas")
+    if not slug:
+        # Produccion vieja: se toma un slug real de la base para probar la entrada directa.
+        filas = activos(datos)
+        slug = filas[0]["slug"] if filas else "unlock-sauvage-hom"
+        titulo = (filas[0].get("inspirado_en") or filas[0].get("nombre")) if filas else "Sauvage"
+    ctx.close()
+
+    ctx, page, _ = catalogo_con_datos(browser, MOVIL, f"/catalogo?aroma={slug}")
+    ok = esperar_ficha(page)
+    visto = page.evaluate(f"() => document.querySelector('{FICHA}')?.getAttribute('aria-label') || ''") if ok else ""
+    # Cerrar una ficha a la que se entro por link no puede sacar de la tienda.
+    if ok:
+        page.locator(f"{FICHA} button[aria-label='Cerrar']").click()
+        page.wait_for_timeout(700)
+    queda = urllib.parse.urlparse(page.url).path.rstrip("/") == "/catalogo" and not ficha_abierta(page)
+    chk("E3-A1 link", "conversion", "alta", "Entrar a /catalogo?aroma=<slug> abre esa ficha y cerrarla deja en /catalogo",
+        ok and visto == titulo and queda, f"/catalogo?aroma={slug}: ficha {visto or 'no abre'} (esperado {titulo}); al cerrar: {page.url.replace(base, '')}")
+    ctx.close()
+
+    ctx, page = nuevo(browser, MOVIL)
+    errores = []
+    page.on("pageerror", lambda e: errores.append(str(e)[:80]))
+    page.goto(base + "/catalogo?aroma=no-existe-este-aroma", wait_until="domcontentloaded")
+    esperar_catalogo(page)
+    page.wait_for_timeout(800)
+    sin = not page.locator("[role=dialog]").count()
+    chk("E3-A1 inexistente", "conversion", "media", "Un ?aroma= que no existe se ignora: catalogo normal, sin ficha ni errores",
+        sin and not errores and page.locator("article").count() > 0,
+        f"dialogo: {not sin}; errores JS: {errores or 'ninguno'}; url final: {page.url.replace(base, '')}")
+    ctx.close()
+
+    ctx, page = nuevo(browser, MOVIL)
+    page.goto(base + f"/?aroma={slug}", wait_until="load")
+    ok = esperar_ficha(page, 20000)
+    chk("E3-A1 portada", "conversion", "media", "/?aroma=<slug> abre la ficha encima de la portada",
+        ok, f"ficha abierta: {ok}")
+    ctx.close()
+
+    ctx, page = nuevo(browser, ESCRITORIO)
+    ctx.grant_permissions(["clipboard-read", "clipboard-write"], origin=base)
+    page.goto(base + f"/catalogo?aroma={slug}", wait_until="domcontentloaded")
+    copiado, boton = "", False
+    if esperar_ficha(page, 20000):
+        b = page.locator(f"{FICHA} button:has-text('Copiar link')")
+        boton = b.count() > 0
+        if boton:
+            b.first.click()
+            page.wait_for_timeout(500)
+            copiado = page.evaluate("() => navigator.clipboard.readText().catch(() => '')")
+    chk("E3-A1 copiar", "conversion", "media", "La ficha tiene 'Copiar link' y copia /catalogo?aroma=<slug>",
+        boton and copiado.endswith(f"/catalogo?aroma={slug}"), f"boton: {boton}; copiado: {copiado or 'nada'}")
+    ctx.close()
+
+
+def e3_a2_a3(browser, base):
+    ctx, page, datos = catalogo_con_datos(browser, MOVIL)
+    filas = {p["slug"]: p for p in activos(datos)}
+    # Un aroma con piramide, familia y dos tamanos (Sauvage, si esta).
+    elegido = filas.get("unlock-sauvage-hom") or next(
+        (p for p in filas.values() if p.get("nota_salida") and len(pres_activas(p)) > 1), None)
+    ctx.close()
+    if not elegido:
+        chk("E3-A2", "error", "-", "No hay un aroma con notas y dos tamanos para probar la ficha", False, "")
+        return
+    slug = elegido["slug"]
+    ctx, page = nuevo(browser, MOVIL)
+    page.goto(base + f"/catalogo?aroma={slug}", wait_until="domcontentloaded")
+    if not esperar_ficha(page, 20000):
+        # Produccion vieja: se abre tocando la tarjeta del buscador.
+        esperar_catalogo(page)
+        buscar(page, elegido.get("inspirado_en") or elegido["nombre"])
+        abrir_ficha(page, 0)
+    dlg = FICHA if page.locator(FICHA).count() else "[role=dialog]"
+    m = page.evaluate("""(dlg) => {
+      const d = document.querySelector(dlg);
+      const vh = innerHeight;
+      const vis = (el) => { if (!el) return false; const r = el.getBoundingClientRect();
+        if (!(r.width > 0 && r.top >= 0 && r.bottom <= vh)) return false;
+        const e = document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(r.height / 2, 10));
+        return !!e && (e === el || el.contains(e) || e.contains(el)); };
+      const filas = [...d.querySelectorAll('[aria-label="Elegir presentación"] button')];
+      const precio = filas[0] && (filas[0].querySelector('[data-qa=precio]') || filas[0]);
+      const boton = d.querySelector('[data-qa=agregar-ficha]') || [...d.querySelectorAll('button')].find(b => /agregar al pedido/i.test(b.textContent));
+      const foto = d.querySelector('img');
+      const piramide = d.querySelector('[data-qa=piramide]') || d.querySelector('[class*=piramide]');
+      const ins = [...d.querySelectorAll('p, span')].find(e => e.textContent.trim() === 'Versión inspirada en el perfume original.');
+      return {
+        precio: vis(precio), boton: vis(boton),
+        foto: foto ? Math.round(foto.getBoundingClientRect().height) : 0, vh,
+        filaAntes: !!(filas[0] && piramide) && filas[0].getBoundingClientRect().top < piramide.getBoundingClientRect().top,
+        notas: d.querySelectorAll('[data-qa=piramide] [data-qa=nota]').length,
+        etapas: [...d.querySelectorAll('[data-qa=piramide] [data-qa=etapa]')].map(e => e.textContent.trim()),
+        frase: (d.querySelector('[data-qa=frase]')?.textContent || '').trim(),
+        insColor: ins ? getComputedStyle(ins).color : null,
+      };
+    }""", dlg)
+    chk("E3-A2 primer", "conversion", "alta", "Ficha a 390x844: precio y boton de agregar en el primer pantallazo, sin bajar",
+        m["precio"] and m["boton"], f"precio a la vista: {m['precio']}; boton a la vista y tocable: {m['boton']}")
+    chk("E3-A2 orden", "conversion", "media", "Ficha a 390: foto <= 46% del alto y los tamanos antes de la piramide",
+        m["foto"] <= m["vh"] * 0.46 + 1 and m["filaAntes"], f"foto {m['foto']} px de {m['vh']} ({m['foto'] / max(m['vh'], 1):.0%}); tamanos antes de la piramide: {m['filaAntes']}")
+    esperadas = sum(len([n for n in (elegido.get(k) or '').split(',') if n.strip()]) for k in ("nota_salida", "nota_corazon", "nota_fondo"))
+    chk("E3-A2 notas", "visual", "media", "La piramide va en tres filas (Salida, Corazon, Fondo) con una pastilla por nota",
+        m["etapas"] == ["Salida", "Corazón", "Fondo"] and m["notas"] == esperadas,
+        f"filas: {m['etapas'] or 'ninguna'}; pastillas {m['notas']} de {esperadas} notas")
+    momento = {"verano": "Para el calor.", "invierno": "Para el frío.", "todo": "Todo el año."}.get(elegido.get("momento"), "")
+    chk("E3-A2 frase", "contenido", "media", "Frase corta desde familia y momento (sin inventar)",
+        bool(m["frase"]) and (not momento or m["frase"].endswith(momento)),
+        f"frase: '{m['frase'] or 'ninguna'}' (familia '{elegido.get('familia_olfativa')}', momento '{elegido.get('momento')}')")
+    acento = "rgb(224, 112, 138)"
+    chk("E3-A2 aviso", "visual", "baja", "'Versión inspirada en el perfume original.' sigue y ya no va en el acento",
+        m["insColor"] is not None and m["insColor"] != acento, f"color: {m['insColor']}")
+    # La barra queda a la vista al bajar la hoja.
+    barra = page.evaluate("""(dlg) => { const d = document.querySelector(dlg);
+      const b = d.querySelector('[data-qa=agregar-ficha]') || [...d.querySelectorAll('button')].find(x => /agregar al pedido/i.test(x.textContent));
+      const res = [];
+      for (const f of [0.5, 1]) { d.scrollTop = (d.scrollHeight - d.clientHeight) * f;
+        const r = b.getBoundingClientRect(); res.push(r.top >= 0 && r.bottom <= innerHeight); }
+      d.scrollTop = 0; return res; }""", dlg)
+    chk("E3-A2 barra", "conversion", "media", "El boton de agregar queda fijo abajo mientras se baja la ficha (390)",
+        all(barra), f"a la vista a mitad y al final de la hoja: {barra}")
+
+    # A3: codigo y ahorro de cada tamano, contra la base.
+    filas_dom = page.evaluate("""(dlg) => [...document.querySelectorAll(dlg + ' [aria-label="Elegir presentación"] button')].map(b => ({
+        txt: b.innerText, codigo: (b.querySelector('[data-qa=codigo]')?.innerText || ''),
+        ahorro: (b.querySelector('[data-qa=ahorro]')?.innerText || '') }))""", dlg)
+    pres = pres_activas(elegido)
+    cods, aho = [], []
+    for fila, p in zip(filas_dom, pres):
+        cod = re.sub(r"\D", "", fila["codigo"])
+        cods.append(cod == str(p.get("codigo")) and "Código" in fila["codigo"])
+        dif = (p.get("precio_anterior") or 0) - p["precio"]
+        valor = int(re.sub(r"\D", "", fila["ahorro"]) or 0)
+        aho.append(valor == dif if dif > 0 else not fila["ahorro"])
+    chk("E3-A3 codigo", "confianza", "alta", "Cada tamano de la ficha muestra 'Codigo NNNNNNNN' igual al de la base",
+        len(filas_dom) == len(pres) and all(cods),
+        f"{sum(cods)}/{len(pres)} codigos; base: {[p.get('codigo') for p in pres]}; ficha: {[f['codigo'] for f in filas_dom]}")
+    chk("E3-A3 ahorro", "confianza", "alta", "'Ahorras $ X' = precio de lista - precio, solo si hay rebaja",
+        len(filas_dom) == len(pres) and all(aho),
+        f"base: {[(p.get('precio_anterior') or 0) - p['precio'] for p in pres]}; ficha: {[f['ahorro'] for f in filas_dom]}")
+    ver = page.evaluate("""(dlg) => { const v = document.querySelector(dlg + ' [data-qa=verificar]');
+        const filas = [...document.querySelectorAll(dlg + ' [aria-label="Elegir presentación"] button')];
+        const on = filas.find(b => b.getAttribute('aria-pressed') === 'true');
+        return { txt: v ? v.innerText : '', href: v?.querySelector('a')?.getAttribute('href') || '', linea: on ? on.innerText : '' }; }""", dlg)
+    sitio = "unlock.com.ar" if "Unlock" in ver["linea"] else "bagues.com.ar"
+    chk("E3-A3 verificar", "confianza", "media", "Linea de la proveedora con link a la portada de su tienda, segun la linea elegida",
+        sitio in ver["txt"] and ver["href"].rstrip("/") == f"https://{sitio}",
+        f"linea elegida: {ver['linea'].splitlines()[1] if ver['linea'].count(chr(10)) else ver['linea'][:30]}; texto: '{ver['txt'][:90]}'; href {ver['href']}")
+    ctx.close()
+
+
+def e3_a4(browser, base):
+    ctx, page, datos = catalogo_con_datos(browser, MOVIL)
+    filas = {p["slug"]: p for p in activos(datos)}
+    t = page.evaluate("""() => { const a = [...document.querySelectorAll('article')];
+      return { pastillas: a.reduce((n, x) => n + x.querySelectorAll('[role=group] button').length, 0),
+               inspirado: a.filter(x => /versi[oó]n inspirada/i.test(x.innerText)).length,
+               notas: a.filter(x => (x.querySelector('[data-qa=notas]')?.innerText || '').trim()).length,
+               total: a.length,
+               peso: getComputedStyle(a[0].querySelector('[class*=titulo]')).fontWeight,
+               fam: getComputedStyle(a[0].querySelector('[class*=titulo]')).fontFamily,
+               aviso: !!document.querySelector('[class*=aviso]') && /referencia olfativa/.test(document.querySelector('[class*=aviso]').innerText) }; }""")
+    chk("E3-A4 tarjeta", "visual", "alta", "Tarjeta a 390: sin pastillas ni 'version inspirada', nombre Cormorant 600 y linea de notas",
+        t["pastillas"] == 0 and t["inspirado"] == 0 and t["notas"] == t["total"] and t["peso"] == "600" and "ormorant" in t["fam"],
+        f"pastillas {t['pastillas']}; 'version inspirada' en {t['inspirado']} tarjetas; notas en {t['notas']}/{t['total']}; nombre {t['fam'][:10]} {t['peso']}")
+    chk("E3-A4 aviso", "confianza", "alta", "El aviso de la cabecera del catalogo sigue a la vista",
+        t["aviso"], f"aviso corto con 'referencia olfativa': {t['aviso']}")
+    # Un aroma de varios tamanos en la primera pagina.
+    idx = page.evaluate("""() => [...document.querySelectorAll('article')].findIndex(a => /tamaños/.test(a.innerText))""")
+    hoja = dict(abre=False, filas=0, esc=False, atras=False, fugas=-1)
+    if idx >= 0:
+        mas = page.locator("article").nth(idx).locator("button[aria-label^='Agregar']")
+        mas.click()
+        try:
+            page.wait_for_selector(HOJA, timeout=6000)
+            hoja["abre"] = True
+        except Exception:
+            pass
+        if hoja["abre"]:
+            page.wait_for_timeout(400)
+            hoja["filas"] = page.locator(f"{HOJA} [data-qa=fila-tamano]").count()
+            fugas = 0
+            for _ in range(8):
+                page.keyboard.press("Tab")
+                if not page.evaluate(f"() => !!document.activeElement.closest('{HOJA}')"):
+                    fugas += 1
+            hoja["fugas"] = fugas
+            page.keyboard.press("Escape")
+            page.wait_for_timeout(500)
+            hoja["esc"] = not page.locator(HOJA).count()
+            mas.click()
+            page.wait_for_selector(HOJA, timeout=6000)
+            page.wait_for_timeout(300)
+            page.go_back()
+            page.wait_for_timeout(700)
+            hoja["atras"] = not page.locator(HOJA).count() and urllib.parse.urlparse(page.url).path.rstrip("/") == "/catalogo"
+    chk("E3-A4 hoja", "conversion", "alta", "390: el + de un aroma con varios tamanos abre una hoja (foco adentro, Escape y 'atras' la cierran)",
+        hoja["abre"] and hoja["filas"] >= 2 and hoja["fugas"] == 0 and hoja["esc"] and hoja["atras"],
+        f"tarjeta {idx}; abre {hoja['abre']}; filas {hoja['filas']}; fugas {hoja['fugas']}/8; Escape {hoja['esc']}; atras {hoja['atras']}")
+    tact = area_tactil(page, "article button[aria-label^='Agregar']", "+ tarjeta")
+    if idx >= 0:
+        page.locator("article").nth(idx).locator("button[aria-label^='Agregar']").click()
+        try:
+            page.wait_for_selector(HOJA, timeout=4000)
+            tact += area_tactil(page, f"{HOJA} [data-qa=fila-tamano]", "fila hoja")
+            tact += area_tactil(page, f"{HOJA} button[aria-label='Cerrar']", "cerrar hoja")
+        except Exception:
+            tact.append(dict(nombre="fila hoja", falta=True))
+    chicos = [f"{m['nombre']} {m.get('w')}x{m.get('h')}" for m in tact if m.get("falta") or m["fallan"]]
+    chk("E3-A4 tactil", "accesibilidad", "media", "+ de la tarjeta y filas de la hoja con 44x44 reales",
+        not chicos, "chicas: " + "; ".join(dict.fromkeys(chicos)) if chicos else f"{len(tact)} controles")
+    ctx.close()
+
+    # Un solo tamano: el + agrega directo, sin hoja.
+    ctx, page, _ = catalogo_con_datos(browser, MOVIL)
+    page.evaluate("() => { localStorage.clear(); sessionStorage.clear(); }")
+    idx1 = page.evaluate("""() => [...document.querySelectorAll('article')].findIndex(a => !/tamaños/.test(a.innerText))""")
+    directo = False
+    if idx1 >= 0:
+        page.locator("article").nth(idx1).locator("button[aria-label^='Agregar']").click()
+        page.wait_for_timeout(900)
+        directo = not page.locator(HOJA).count() and (
+            page.locator("[role=dialog][aria-label='Tu pedido']").count() > 0 or page.locator("[data-qa=aviso-agregado]").count() > 0)
+    chk("E3-A4 directo", "conversion", "media", "Con un solo tamano, el + agrega directo (sin hoja)",
+        directo, f"tarjeta {idx1}: agrego sin hoja {directo}")
+    ctx.close()
+
+    alturas = {}
+    for nombre, op, cols in (("390", MOVIL, 2), ("1440", ESCRITORIO, 4)):
+        ctx, page, _ = catalogo_con_datos(browser, op)
+        page.evaluate("""() => { const s = document.createElement('style'); s.textContent = 'article { content-visibility: visible !important; }'; document.head.appendChild(s); }""")
+        page.wait_for_timeout(300)
+        hs = page.evaluate("() => [...document.querySelectorAll('article')].map(a => Math.round(a.getBoundingClientRect().height))")
+        filas_h = [hs[i:i + cols] for i in range(0, len(hs), cols)]
+        alturas[nombre] = [max(f) - min(f) for f in filas_h if f]
+        ctx.close()
+    chk("E3-A4 altura", "visual", "media", "Las tarjetas de una misma fila tienen la misma altura (390 y 1440)",
+        all(max(v, default=0) <= 1 for v in alturas.values()),
+        "; ".join(f"{k}: diferencia maxima {max(v, default=0)} px" for k, v in alturas.items()))
+
+    ctx, page = nuevo(browser, MOVIL)
+    page.goto(base + "/", wait_until="load")
+    try:
+        page.wait_for_selector("[class*=Destacados] [class*=nombre], section [class*=nombre]", timeout=20000)
+        peso = page.evaluate("""() => { const n = [...document.querySelectorAll('[class*=nombre]')].find(e => e.closest('section') && getComputedStyle(e).fontFamily.includes('ormorant'));
+            return n ? getComputedStyle(n).fontWeight : null; }""")
+    except Exception:
+        peso = None
+    chk("E3-A4 destacados", "visual", "baja", "Los destacados de la portada usan el mismo peso de Cormorant que la tarjeta (600)",
+        peso == "600", f"peso del nombre en destacados: {peso}")
+    ctx.close()
+
+
+def e3_a5(browser, base):
+    ctx, page, _ = catalogo_con_datos(browser, MOVIL)
+    page.evaluate("() => { localStorage.clear(); sessionStorage.clear(); }")
+    page.reload(wait_until="domcontentloaded")
+    esperar_catalogo(page)
+    cajon = "[role=dialog][aria-label='Tu pedido']"
+
+    def mas(i):
+        if page.locator(cajon).count():
+            cerrar_cajon(page)
+        page.locator("article").nth(i).locator("button[aria-label^='Agregar']").click()
+        try:
+            page.wait_for_selector(HOJA, timeout=1500)
+            page.locator(f"{HOJA} [data-qa=agregar-hoja]").click()
+        except Exception:
+            pass
+        page.wait_for_timeout(250)
+
+    mas(0)
+    page.wait_for_timeout(500)
+    primero = page.locator(cajon).count() > 0
+    if primero:
+        cerrar_cajon(page)
+    mas(1)
+    estado = page.evaluate("() => document.querySelectorAll('article')[1].querySelector('button[aria-label^=\"Agregar\"]').dataset.estado || ''")
+    page.wait_for_timeout(300)
+    segundo_cajon = page.locator(cajon).count() > 0
+    aviso = page.evaluate("""() => { const a = document.querySelector('[data-qa=aviso-agregado]');
+        return a ? { txt: a.innerText, rol: a.getAttribute('role') || a.getAttribute('aria-live') || '' } : null; }""")
+    page.wait_for_timeout(1400)
+    estado_despues = page.evaluate("() => document.querySelectorAll('article')[1].querySelector('button[aria-label^=\"Agregar\"]').dataset.estado || ''")
+    page.wait_for_timeout(3300)
+    se_fue = not page.evaluate("() => { const a = document.querySelector('[data-qa=aviso-agregado]'); return !!a && getComputedStyle(a).visibility !== 'hidden' && a.innerText.trim() !== ''; }")
+    chk("E3-A5 cajon", "conversion", "alta", "El cajon se abre solo en el primer agregado; desde el segundo sube una barra que se va sola",
+        primero and not segundo_cajon and bool(aviso) and "Ver pedido (2)" in (aviso or {}).get("txt", "") and se_fue,
+        f"primero abre cajon: {primero}; segundo abre cajon: {segundo_cajon}; barra: {(aviso or {}).get('txt', 'no hay').replace(chr(10), ' | ')[:90]}; se va a los 4 s: {se_fue}")
+    chk("E3-A5 tilde", "visual", "media", "El + pasa a tilde al agregar y vuelve a + despues de 1,2 s",
+        estado == "hecho" and estado_despues != "hecho", f"al agregar: '{estado}'; a los 1,7 s: '{estado_despues}'")
+    # Ver pedido desde la barra.
+    mas(2)
+    page.wait_for_timeout(300)
+    abre = False
+    b = page.locator("[data-qa=aviso-agregado] button")
+    if b.count():
+        b.first.click()
+        try:
+            page.wait_for_selector(cajon, timeout=4000)
+            abre = True
+        except Exception:
+            pass
+    chk("E3-A5 ver", "conversion", "media", "'Ver pedido' en la barra abre el cajon",
+        abre and (aviso or {}).get("rol") in ("status", "polite"), f"abre: {abre}; anuncio: {(aviso or {}).get('rol')}")
+    ctx.close()
+
+    ctx = browser.new_context(**MOVIL, reduced_motion="reduce")
+    proteger_base(ctx)
+    page = ctx.new_page()
+    page.goto(base + "/catalogo", wait_until="domcontentloaded")
+    esperar_catalogo(page)
+    page.evaluate("() => { localStorage.clear(); sessionStorage.setItem('bgw-cajon-visto', '1'); }")
+    mas(0)
+    dur = page.evaluate("""() => { const a = document.querySelector('[data-qa=aviso-agregado]'); if (!a) return null;
+        const cs = getComputedStyle(a); return [cs.transitionDuration, cs.animationDuration].join(' '); }""")
+    quieto = dur is not None and all(float(x.rstrip("ms").rstrip("s") or 0) <= (0.001 if x.endswith("s") and not x.endswith("ms") else 1)
+                                     for x in re.findall(r"[\d.]+m?s", dur))
+    chk("E3-A5 movimiento", "accesibilidad", "baja", "Con prefers-reduced-motion la barra aparece sin movimiento",
+        quieto, f"duraciones: {dur}")
+    ctx.close()
+
+
+def e3_a6(browser, base):
+    ctx, page, datos = catalogo_con_datos(browser, MOVIL)
+    total = conteo(page)[0]
+    fams = page.evaluate("() => [...document.querySelectorAll('[data-qa=filtro-familia] button')].map(b => b.innerText.replace('✓', '').trim())")
+    cuentas = {}
+    for i, nombre in enumerate(fams):
+        page.locator("[data-qa=filtro-familia] button").nth(i).click()
+        page.wait_for_timeout(350)
+        cuentas[nombre] = (conteo(page)[0], urllib.parse.parse_qs(urllib.parse.urlparse(page.url).query).get("familia", [""])[0])
+        page.locator("[data-qa=filtro-familia] button").nth(i).click()
+        page.wait_for_timeout(250)
+    chk("E3-A6 familias", "conversion", "alta", "Cinco familias; cada una devuelve > 0 aromas y queda en la URL (?familia=)",
+        len(fams) == 5 and all(n > 0 and f for n, f in cuentas.values()),
+        "; ".join(f"{k}={n} (?familia={f})" for k, (n, f) in cuentas.items()) or "no hay filtro de familia")
+    para = page.evaluate("() => [...document.querySelectorAll('[data-qa=filtro-para] button')].map(b => b.innerText.replace('✓', '').trim())")
+    c = {}
+    for i, nombre in enumerate(para):
+        page.locator("[data-qa=filtro-para] button").nth(i).click()
+        page.wait_for_timeout(350)
+        c[nombre] = conteo(page)[0]
+    chk("E3-A6 para", "conversion", "media", "'Para': El, Ella, Todos; El + Ella cubren todo (unisex en las dos)",
+        para == ["Él", "Ella", "Todos"] and c.get("Todos") == total and c.get("Él", 0) + c.get("Ella", 0) >= total and c.get("Él", 0) < total,
+        f"pastillas {para}; cuentas {c}; total {total}")
+    filas = activos(datos)
+    rebajados = sum(1 for p in filas if any((x.get("precio_anterior") or 0) > x["precio"] for x in pres_activas(p)))
+    hay_reb = page.locator("[class*=chips] button:has-text('Rebajados'), [data-qa^=filtro] button:has-text('Rebajados')").count() > 0
+    debe = rebajados <= 0.8 * len(filas)
+    minis = page.locator("[data-qa=filtro-minis]").count() > 0
+    hay_minis = any(x["ml"] <= 30 for p in filas for x in pres_activas(p))
+    chk("E3-A6 rebajados", "conversion", "media", "'Rebajados' se oculta solo si cubre mas del 80 %; 'Minis' esta si hay tamanos <= 30 ml",
+        hay_reb == debe and minis == hay_minis,
+        f"rebajados {rebajados}/{len(filas)} -> pastilla {'a la vista' if hay_reb else 'oculta'} (debe {'verse' if debe else 'ocultarse'}); minis {minis} (hay {hay_minis})")
+    anchos = page.evaluate("() => [...document.querySelectorAll('[data-qa^=filtro-]')].map(g => g.scrollWidth - g.clientWidth)")
+    chk("E3-A6 pastillas", "visual", "baja", "Las pastillas de filtro bajan de linea, sin tira que se corta (390)",
+        bool(anchos) and max(anchos) <= 1, f"desborde por grupo: {anchos}")
+    ctx.close()
+
+    ctx, page, _ = catalogo_con_datos(browser, MOVIL, "/catalogo?familia=amaderados&para=el")
+    n = conteo(page)[0]
+    activas = page.evaluate("() => [...document.querySelectorAll('[data-qa^=filtro-] button[aria-pressed=true]')].map(b => b.innerText.replace('✓', '').trim())")
+    page.locator("article").first.locator("button").first.click()
+    abre = esperar_ficha(page)
+    page.go_back()
+    page.wait_for_timeout(800)
+    n2 = conteo(page)[0]
+    url2 = page.url.replace(base, "")
+    chk("E3-A6 url", "conversion", "media", "Entrar con ?familia=amaderados&para=el aplica los filtros y sobreviven a abrir una ficha y 'atras'",
+        0 < n < total and "Amaderados" in activas and "Él" in activas and abre and n2 == n and "familia=amaderados" in url2,
+        f"{n} de {total} aromas; activas {activas}; ficha {abre}; despues de atras {n2} en {url2}")
+    ctx.close()
+
+
+def e3_a7(browser, base):
+    ctx, page, datos = catalogo_con_datos(browser, MOVIL)
+    page.locator("article").first.locator("button").first.click()
+    ok = esperar_ficha(page)
+    p = page.evaluate(f"""() => {{ const d = document.querySelector('{FICHA}'); if (!d) return null;
+        return {{ titulo: d.getAttribute('aria-label'),
+                 items: [...d.querySelectorAll('[data-qa=parecido]')].map(b => b.innerText.replace(/\\n+/g, ' | ')) }}; }}""") if ok else None
+    cambia = False
+    if p and p["items"]:
+        page.locator(f"{FICHA} [data-qa=parecido]").first.click()
+        page.wait_for_timeout(700)
+        nuevo_t = page.evaluate(f"() => document.querySelector('{FICHA}')?.getAttribute('aria-label')")
+        cambia = nuevo_t and nuevo_t != p["titulo"] and slug_de_url(page.url) is not None and p["items"][0].startswith(nuevo_t)
+        page.go_back()
+        page.wait_for_timeout(700)
+        cambia = cambia and not page.locator("[role=dialog]").count()
+    items = (p or {}).get("items", [])
+    razones = all(("comparte:" in i or "también" in i) for i in items)
+    chk("E3-A7 parecidos", "conversion", "media", "La ficha sugiere 3 aromas con la razon a la vista, ninguno es el mismo",
+        len(items) == 3 and razones and all(not i.startswith((p or {}).get("titulo") + " |") for i in items),
+        f"{(p or {}).get('titulo')}: {items or 'ninguno'}")
+    chk("E3-A7 cambia", "conversion", "media", "Tocar un parecido cambia la ficha y el ?aroma=; 'atras' cierra la ficha",
+        bool(cambia), f"cambia: {bool(cambia)}")
+    ctx.close()
+
+
+def e3_a8(browser, base):
+    ctx, page, _ = catalogo_con_datos(browser, MOVIL)
+    total = conteo(page)[0]
+    pag = page.locator("nav[aria-label='Páginas del catálogo']").count()
+    antes = page.locator("article").count()
+    b = page.locator("[data-qa=ver-mas]")
+    txt = b.first.inner_text() if b.count() else ""
+    despues, url, tras = antes, page.url, antes
+    if b.count():
+        b.first.click()
+        page.wait_for_timeout(600)
+        despues = page.locator("article").count()
+        url = page.url
+        page.locator("article").nth(despues - 1).locator("button").first.click()
+        esperar_ficha(page)
+        page.go_back()
+        page.wait_for_timeout(800)
+        tras = page.locator("article").count()
+    esperado = f"Ver 12 más (quedan {total - 12})"
+    chk("E3-A8 ver mas", "conversion", "media", "390: sin paginador, 'Ver 12 mas (quedan N)' agrega 12 y guarda ?ver= (sobrevive a 'atras')",
+        pag == 0 and txt.strip() == esperado and despues == antes + 12 and "ver=24" in url and tras == despues,
+        f"paginador {pag}; boton '{txt.strip() or 'no hay'}' (esperado '{esperado}'); {antes} -> {despues}; url {url.replace(base, '')}; despues de ficha y atras {tras}")
+    ctx.close()
+    ctx, page, _ = catalogo_con_datos(browser, ESCRITORIO)
+    pag = page.locator("nav[aria-label='Páginas del catálogo']").count()
+    vm = page.locator("[data-qa=ver-mas]").count()
+    chk("E3-A8 escritorio", "conversion", "baja", "1440: el paginador sigue y no hay 'Ver mas'", pag == 1 and vm == 0, f"paginador {pag}; ver mas {vm}")
+    ctx.close()
+
+
+def e3_a9(browser, base):
+    ctx, page, _ = catalogo_con_datos(browser, MOVIL)
+    page.evaluate("() => scrollTo(0, 900)")
+    page.wait_for_timeout(500)
+    y0 = page.evaluate("() => scrollY")
+    idx = page.evaluate("""() => [...document.querySelectorAll('article')].findIndex(a => { const r = a.getBoundingClientRect(); return r.top > 80 && r.bottom < innerHeight; })""")
+    page.locator("article").nth(max(idx, 0)).locator("button").first.click()
+    abre = esperar_ficha(page) or page.locator("[role=dialog]").count() > 0
+    page.wait_for_timeout(300)
+    # Lo que se ve detras de la ficha: si el documento salto, la tarjeta ya no esta donde estaba.
+    detras = page.evaluate("""(i) => { const a = document.querySelectorAll('article')[i]; return a ? Math.round(a.getBoundingClientRect().top) : null; }""", max(idx, 0))
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(700)
+    y1 = page.evaluate("() => scrollY")
+    despues = page.evaluate("""(i) => { const a = document.querySelectorAll('article')[i]; return a ? Math.round(a.getBoundingClientRect().top) : null; }""", max(idx, 0))
+    chk("E3-A9 scroll", "visual", "media", "390: abrir y cerrar la ficha no mueve la pagina de atras",
+        abre and abs(y1 - y0) <= 2 and detras == despues,
+        f"scrollY {y0} -> {y1}; tarjeta a {despues} px despues, {detras} px con la ficha abierta")
+    ctx.close()
+    res = {}
+    for nombre, op, cols in (("390", MOVIL, 2), ("1440", ESCRITORIO, 4)):
+        ctx, page, _ = catalogo_con_datos(browser, op)
+        res[nombre] = page.evaluate("""(cols) => [...document.querySelectorAll('article img')].slice(0, cols).map(i => [i.loading, i.getAttribute('fetchpriority') || ''])""", cols)
+        ctx.close()
+    ok = all(all(l == "eager" for l, _ in v) and v and v[0][1] == "high" for v in res.values())
+    chk("E3-A9 lcp", "rendimiento", "media", "Primera fila del catalogo con loading=eager y la primera foto con fetchpriority=high",
+        ok, "; ".join(f"{k}: {v}" for k, v in res.items()))
+
+
 def lighthouse(base, corridas, linea_base):
     chrome = (glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome") or [None])[0]
     env = dict(os.environ, CHROME_PATH=chrome or "")
@@ -736,6 +1277,8 @@ def main():
                     help="linea de base para comparar Lighthouse (si existe)")
     a = ap.parse_args()
     base = a.url.rstrip("/")
+    global BASE
+    BASE = base
     SOLO = [s.strip() for s in a.solo.split(",") if s.strip()] or None
     linea_base = None
     if os.path.exists(a.base) and os.path.abspath(a.base) != os.path.abspath(a.salida):
@@ -749,6 +1292,8 @@ def main():
         (["UX-7", "REG-1", "CONFIANZA-1", "CONTENIDO-1"], flujo_pedido),
         (["UX-15"], ux15), (["UX-10"], ux10), (["FOTO-5"], foto5), (["FOTO-1", "FOTO-2"], foto1), (["UX-17"], ux17), (["UX-14"], ux14),
         (["CONFIANZA-1", "CONTENIDO-1", "PANEL-1", "REG-1"], contenido),
+        (["E3-A1"], e3_a1), (["E3-A2", "E3-A3"], e3_a2_a3), (["E3-A4"], e3_a4), (["E3-A5"], e3_a5),
+        (["E3-A6"], e3_a6), (["E3-A7"], e3_a7), (["E3-A8"], e3_a8), (["E3-A9"], e3_a9),
     ]
     global SIN_HINTING
     with sync_playwright() as p:

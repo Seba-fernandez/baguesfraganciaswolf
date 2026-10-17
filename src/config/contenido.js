@@ -139,6 +139,11 @@ export const FICHA = {
   // las opciones de presentación, que es donde se elige.
   inspirado: 'Versión inspirada en el perfume original.',
   sinCiclo: 'Este aroma no está disponible en este ciclo.',
+  // El link directo a la ficha, para mandar un perfume puntual por WhatsApp o
+  // Instagram. Si el navegador no deja copiar solo, queda el link a la vista.
+  copiarLink: 'Copiar link',
+  linkCopiado: 'Link copiado',
+  linkManual: 'Copialo desde acá:',
   aviso:
     'Trabajo por encargo: el pedido me llega por WhatsApp y te confirmo stock, envío y ' +
     'fecha según el cierre del ciclo.',

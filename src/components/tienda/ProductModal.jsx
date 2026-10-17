@@ -4,6 +4,7 @@ import useDialogo from '../../hooks/useDialogo';
 import { GENEROS, MOMENTOS } from '../../data/constants';
 import { presentacionesActivas, presentacionPorDefecto, tieneNotas, tituloDe, detalleLinea } from '../../lib/producto';
 import { pesos } from '../../lib/format';
+import { copiarTexto, linkDeAroma } from '../../lib/compartir';
 import { FICHA } from '../../config/contenido';
 import { CANTIDAD_MAXIMA } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
@@ -20,6 +21,17 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
   const [ml, setMl] = useState(() => presentacionPorDefecto(producto)?.ml ?? null);
   const [cant, setCant] = useState(1);
   const cerrarRef = useRef(null);
+  const copiarRef = useRef(null);
+  // '' sin tocar, 'ok' copiado, 'manual' el navegador no dejo copiar.
+  const [copia, setCopia] = useState('');
+  const link = linkDeAroma(producto.slug);
+
+  async function copiarLink() {
+    const ok = await copiarTexto(link);
+    copiarRef.current?.focus();
+    setCopia(ok ? 'ok' : 'manual');
+    if (ok) setTimeout(() => setCopia((c) => (c === 'ok' ? '' : c)), 2200);
+  }
 
   // Foco adentro al abrir, Escape cierra y al cerrar vuelve a la tarjeta.
   useDialogo({ abierto: true, onCerrar: onClose, refInicial: cerrarRef, disparador });
@@ -42,8 +54,22 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
   return (
     <>
       <div className={s.overlay} onClick={onClose} />
-      <div className={s.sheet} role="dialog" aria-modal="true" aria-label={titulo}>
+      <div className={s.sheet} role="dialog" aria-modal="true" aria-label={titulo} data-dialogo="ficha">
         <button ref={cerrarRef} className={s.cerrar} onClick={onClose} aria-label="Cerrar">✕</button>
+        <button ref={copiarRef} type="button" className={s.copiar} onClick={copiarLink}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            {copia === 'ok'
+              ? <path d="M5 12.5l4.5 4.5L19 7.5" />
+              : <><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1" /><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1" /></>}
+          </svg>
+          <span aria-live="polite">{copia === 'ok' ? FICHA.linkCopiado : FICHA.copiarLink}</span>
+        </button>
+        {copia === 'manual' && (
+          <div className={s.linkManual}>
+            <label htmlFor="ficha-link">{FICHA.linkManual}</label>
+            <input id="ficha-link" readOnly value={link} onFocus={(e) => e.target.select()} autoFocus />
+          </div>
+        )}
 
         <div className={s.media}>
           <ProductThumb

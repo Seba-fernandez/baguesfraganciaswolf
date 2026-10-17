@@ -1,0 +1,605 @@
+{
+ "url": "https://baguesfraganciaswolf.vercel.app",
+ "fecha": "2026-10-17 10:44",
+ "chequeos": [
+  {
+   "id": "UX-1 390",
+   "categoria": "bloqueante",
+   "severidad": "alta",
+   "descripcion": "El toque en 'Agregar al pedido' llega al boton (390 px)",
+   "resultado": "PASA",
+   "detalle": "con busqueda (pie a 120 px): BUTTON.tbtn \"Agregar al pedido\"; ultima pagina (pie a 120 px): BUTTON.tbtn \"Agregar al pedido\""
+  },
+  {
+   "id": "UX-1 1440",
+   "categoria": "bloqueante",
+   "severidad": "alta",
+   "descripcion": "El toque en 'Agregar al pedido' llega al boton (1440 px)",
+   "resultado": "PASA",
+   "detalle": "con busqueda (pie a 413 px): BUTTON.tbtn \"Agregar al pedido\"; ultima pagina (pie a 413 px): BUTTON.tbtn \"Agregar al pedido\""
+  },
+  {
+   "id": "UX-2 CLS",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "Carga en frio de /catalogo: CLS < 0,1",
+   "resultado": "PASA",
+   "detalle": "CLS 0.000 (2 corrimientos)"
+  },
+  {
+   "id": "UX-2 primer",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "En frio /catalogo no muestra la portada ni el pie con el aviso antes del catalogo",
+   "resultado": "PASA",
+   "detalle": "portada vista: False; pie visible antes de las tarjetas: False; 200 cuadros"
+  },
+  {
+   "id": "UX-2 canonical",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "El canonical de /catalogo apunta a /catalogo",
+   "resultado": "PASA",
+   "detalle": "canonical servido: https://baguesfraganciaswolf.vercel.app/catalogo"
+  },
+  {
+   "id": "UX-3",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "La busqueda encuentra lo que la gente escribe (11 terminos > 0)",
+   "resultado": "PASA",
+   "detalle": "sauvage=1, savage=1, good gril=2, amaderado=34, amaderada=34, vainilla=21, hombre=44, mujer=65, arizona=1, esparta=2, 212 vip=4"
+  },
+  {
+   "id": "UX-4",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "Sin resultados: enlace a WhatsApp con lo buscado",
+   "resultado": "PASA",
+   "detalle": "https://wa.me/5493512535467?text=Hola! Busco zzzz perfume inexistente, ¿lo conseguís?"
+  },
+  {
+   "id": "UX-7 enlace",
+   "categoria": "bloqueante",
+   "severidad": "alta",
+   "descripcion": "Pantalla final con <a> real a WhatsApp (sin depender de window.open)",
+   "resultado": "PASA",
+   "detalle": "enlace: A https://wa.me/5493512535467?text=Hola!%20Soy%20Prueba%20QA.%; window.open intentado 1 vez/veces"
+  },
+  {
+   "id": "UX-7 textos",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "Los botones del cajon anticipan WhatsApp",
+   "resultado": "PASA",
+   "detalle": "paso 1: 'Seguir por WhatsApp'; paso 2: 'Enviar pedido por WhatsApp'"
+  },
+  {
+   "id": "REG-1 codigo",
+   "categoria": "bloqueante",
+   "severidad": "alta",
+   "descripcion": "El codigo de proveedor llega al mensaje de WhatsApp",
+   "resultado": "PASA",
+   "detalle": "codigos en el mensaje: ['20282028', '10282074']; existen en la base: True"
+  },
+  {
+   "id": "REG-1 suma",
+   "categoria": "bloqueante",
+   "severidad": "alta",
+   "descripcion": "El cajon suma bien dos productos",
+   "resultado": "PASA",
+   "detalle": "39699 + 22499 = 62198; cajon dice 62198"
+  },
+  {
+   "id": "CONFIANZA-1 cajon",
+   "categoria": "confianza",
+   "severidad": "alta",
+   "descripcion": "El cajon dice seña, medios de pago, envio gratis y que no se paga aca",
+   "resultado": "PASA",
+   "detalle": "las cuatro lineas estan"
+  },
+  {
+   "id": "UX-15 foco",
+   "categoria": "accesibilidad",
+   "severidad": "media",
+   "descripcion": "Ficha y cajon: el foco entra, no se escapa con 15 Tabs, Escape cierra y vuelve al disparador",
+   "resultado": "PASA",
+   "detalle": "ficha: entra True, fugas 0/15, vuelve True; cajon: entra True, fugas 0/15, cierra y vuelve True"
+  },
+  {
+   "id": "UX-15 contorno",
+   "categoria": "accesibilidad",
+   "severidad": "media",
+   "descripcion": "Foco visible con contorno de 2 px o mas en la ficha",
+   "resultado": "PASA",
+   "detalle": "15 elementos medidos; flacos: ninguno"
+  },
+  {
+   "id": "UX-15 tactil",
+   "categoria": "accesibilidad",
+   "severidad": "media",
+   "descripcion": "Areas tactiles de 44x44 en pastillas, +/-, cerrar (medido con elementFromPoint)",
+   "resultado": "PASA",
+   "detalle": "16 controles con 44x44 reales"
+  },
+  {
+   "id": "UX-10",
+   "categoria": "visual",
+   "severidad": "media",
+   "descripcion": "El nombre de la tarjeta del catalogo usa Cormorant",
+   "resultado": "PASA",
+   "detalle": "font-family: Cormorant, \"Iowan Old Style\", ui-serif, Georgia, serif"
+  },
+  {
+   "id": "FOTO-5 ficha",
+   "categoria": "visual",
+   "severidad": "alta",
+   "descripcion": "La ficha a 390 px dpr 3 baja la foto grande (no -560w) y alcanza 2x",
+   "resultado": "PASA",
+   "detalle": "unlock-leau-dissey-hom.webp natural 900 px para 362 px mostrados (2.49x)"
+  },
+  {
+   "id": "FOTO-5 cargan",
+   "categoria": "visual",
+   "severidad": "alta",
+   "descripcion": "Todas las imagenes del catalogo cargan (naturalWidth > 0)",
+   "resultado": "PASA",
+   "detalle": "12/12 cargadas"
+  },
+  {
+   "id": "FOTO-1",
+   "categoria": "visual",
+   "severidad": "alta",
+   "descripcion": "Paginas 1 y 2 del catalogo: el fondo de cada foto (esquinas de arriba) es espresso",
+   "resultado": "PASA",
+   "detalle": "24/24 en espresso (24 tarjetas, 0 sin foto)"
+  },
+  {
+   "id": "FOTO-2",
+   "categoria": "visual",
+   "severidad": "media",
+   "descripcion": "Filos blancos en los recortes (se controla en la hoja de contacto)",
+   "resultado": "NO APLICA",
+   "detalle": "no medible en la foto final: ver docs/QA.md"
+  },
+  {
+   "id": "UX-17",
+   "categoria": "contenido",
+   "severidad": "baja",
+   "descripcion": "El numero de aromas del HTML servido es el mismo que despues de hidratar",
+   "resultado": "PASA",
+   "detalle": "servido: sin numero (lugar reservado); despues de hidratar: 100"
+  },
+  {
+   "id": "UX-14",
+   "categoria": "visual",
+   "severidad": "baja",
+   "descripcion": "Los botones del hero no cambian de ancho al llegar la fuente y la flecha no es texto",
+   "resultado": "PASA",
+   "detalle": "ancho antes [195, 171] despues [196, 171] (dif 1.1 px, fuentes loading); flecha como texto: False"
+  },
+  {
+   "id": "CONFIANZA-1 portada",
+   "categoria": "confianza",
+   "severidad": "alta",
+   "descripcion": "La portada dice pago, seña, envio, Cordoba y plazo",
+   "resultado": "PASA",
+   "detalle": "los cuatro datos estan"
+  },
+  {
+   "id": "CONTENIDO-1",
+   "categoria": "contenido",
+   "severidad": "media",
+   "descripcion": "Sin 'retiro'/'llega los viernes' a la vez, sin voz plural y sin guiones largos visibles",
+   "resultado": "PASA",
+   "detalle": "contradiccion: False; plural: no; guiones largos: 0; aviso, 'los viernes' sigue en: ['Pedidos de fin de semana, retiro los viernes', 'Pedidos de fin de semana, retiro los viernes']"
+  },
+  {
+   "id": "PANEL-1",
+   "categoria": "contenido",
+   "severidad": "baja",
+   "descripcion": "El pie publico no enlaza al panel y /panel sigue cargando el ingreso",
+   "resultado": "PASA",
+   "detalle": "enlaces a panel en el pie: 0; /panel muestra 'Ingresar con Google': True"
+  },
+  {
+   "id": "REG-1 portada",
+   "categoria": "visual",
+   "severidad": "alta",
+   "descripcion": "La portada sigue mostrando la escena del hero y los frascos",
+   "resultado": "PASA",
+   "detalle": "fondo: aswolf.vercel.app/hero/duna-movil.webp\"); frascos naturalWidth 460"
+  },
+  {
+   "id": "RENDIMIENTO /",
+   "categoria": "rendimiento",
+   "severidad": "media",
+   "descripcion": "Lighthouse mobile de la portada (mediana) no baja mas de 2 puntos",
+   "resultado": "FALLA",
+   "detalle": "mediana 92 (base 97); [92, 92, 90, 80, 92]; LCP 2645 ms"
+  },
+  {
+   "id": "RENDIMIENTO /catalogo",
+   "categoria": "rendimiento",
+   "severidad": "alta",
+   "descripcion": "Lighthouse mobile de /catalogo (mediana) >= 80 con CLS < 0,1",
+   "resultado": "PASA",
+   "detalle": "mediana 81 (base 76); [79, 81, 82, 82, 78]; CLS 0"
+  },
+  {
+   "id": "E3-A1 atras",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "Abrir la ficha pone ?aroma= en la direccion y 'atras' la cierra quedandose en /catalogo",
+   "resultado": "FALLA",
+   "detalle": "ficha abierta: False; url: /catalogo; despues de atras: about:blank, dialogo cerrado True, 0 tarjetas"
+  },
+  {
+   "id": "E3-A1 link",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "Entrar a /catalogo?aroma=<slug> abre esa ficha y cerrarla deja en /catalogo",
+   "resultado": "FALLA",
+   "detalle": "/catalogo?aroma=unlock-leau-dissey-hom: ficha no abre (esperado L'Eau d'Issey pour Homme); al cerrar: /catalogo?aroma=unlock-leau-dissey-hom"
+  },
+  {
+   "id": "E3-A1 inexistente",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "Un ?aroma= que no existe se ignora: catalogo normal, sin ficha ni errores",
+   "resultado": "PASA",
+   "detalle": "dialogo: False; errores JS: ninguno; url final: /catalogo?aroma=no-existe-este-aroma"
+  },
+  {
+   "id": "E3-A1 portada",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "/?aroma=<slug> abre la ficha encima de la portada",
+   "resultado": "FALLA",
+   "detalle": "ficha abierta: False"
+  },
+  {
+   "id": "E3-A1 copiar",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "La ficha tiene 'Copiar link' y copia /catalogo?aroma=<slug>",
+   "resultado": "FALLA",
+   "detalle": "boton: False; copiado: nada"
+  },
+  {
+   "id": "E3-A2 primer",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "Ficha a 390x844: precio y boton de agregar en el primer pantallazo, sin bajar",
+   "resultado": "FALLA",
+   "detalle": "precio a la vista: False; boton a la vista y tocable: False"
+  },
+  {
+   "id": "E3-A2 orden",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "Ficha a 390: foto <= 46% del alto y los tamanos antes de la piramide",
+   "resultado": "FALLA",
+   "detalle": "foto 483 px de 844 (57%); tamanos antes de la piramide: False"
+  },
+  {
+   "id": "E3-A2 notas",
+   "categoria": "visual",
+   "severidad": "media",
+   "descripcion": "La piramide va en tres filas (Salida, Corazon, Fondo) con una pastilla por nota",
+   "resultado": "FALLA",
+   "detalle": "filas: ninguna; pastillas 0 de 3 notas"
+  },
+  {
+   "id": "E3-A2 frase",
+   "categoria": "contenido",
+   "severidad": "media",
+   "descripcion": "Frase corta desde familia y momento (sin inventar)",
+   "resultado": "FALLA",
+   "detalle": "frase: 'ninguna' (familia 'Aromática fougère', momento 'todo')"
+  },
+  {
+   "id": "E3-A2 aviso",
+   "categoria": "visual",
+   "severidad": "baja",
+   "descripcion": "'Versión inspirada en el perfume original.' sigue y ya no va en el acento",
+   "resultado": "FALLA",
+   "detalle": "color: rgb(224, 112, 138)"
+  },
+  {
+   "id": "E3-A2 barra",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "El boton de agregar queda fijo abajo mientras se baja la ficha (390)",
+   "resultado": "FALLA",
+   "detalle": "a la vista a mitad y al final de la hoja: [False, True]"
+  },
+  {
+   "id": "E3-A3 codigo",
+   "categoria": "confianza",
+   "severidad": "alta",
+   "descripcion": "Cada tamano de la ficha muestra 'Codigo NNNNNNNN' igual al de la base",
+   "resultado": "FALLA",
+   "detalle": "0/3 codigos; base: ['20282019', '10282038', '20282011']; ficha: ['', '', '']"
+  },
+  {
+   "id": "E3-A3 ahorro",
+   "categoria": "confianza",
+   "severidad": "alta",
+   "descripcion": "'Ahorras $ X' = precio de lista - precio, solo si hay rebaja",
+   "resultado": "FALLA",
+   "detalle": "base: [-23249, 7500, 8600]; ficha: ['', '', '']"
+  },
+  {
+   "id": "E3-A3 verificar",
+   "categoria": "confianza",
+   "severidad": "media",
+   "descripcion": "Linea de la proveedora con link a la portada de su tienda, segun la linea elegida",
+   "resultado": "FALLA",
+   "detalle": "linea elegida: Bagues, caja Arizona; texto: ''; href "
+  },
+  {
+   "id": "E3-A4 tarjeta",
+   "categoria": "visual",
+   "severidad": "alta",
+   "descripcion": "Tarjeta a 390: sin pastillas ni 'version inspirada', nombre Cormorant 600 y linea de notas",
+   "resultado": "FALLA",
+   "detalle": "pastillas 21; 'version inspirada' en 8 tarjetas; notas en 0/12; nombre Cormorant, 600"
+  },
+  {
+   "id": "E3-A4 aviso",
+   "categoria": "confianza",
+   "severidad": "alta",
+   "descripcion": "El aviso de la cabecera del catalogo sigue a la vista",
+   "resultado": "PASA",
+   "detalle": "aviso corto con 'referencia olfativa': True"
+  },
+  {
+   "id": "E3-A4 hoja",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "390: el + de un aroma con varios tamanos abre una hoja (foco adentro, Escape y 'atras' la cierran)",
+   "resultado": "FALLA",
+   "detalle": "tarjeta -1; abre False; filas 0; fugas -1/8; Escape False; atras False"
+  },
+  {
+   "id": "E3-A4 tactil",
+   "categoria": "accesibilidad",
+   "severidad": "media",
+   "descripcion": "+ de la tarjeta y filas de la hoja con 44x44 reales",
+   "resultado": "PASA",
+   "detalle": "3 controles"
+  },
+  {
+   "id": "E3-A4 directo",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "Con un solo tamano, el + agrega directo (sin hoja)",
+   "resultado": "PASA",
+   "detalle": "tarjeta 0: agrego sin hoja True"
+  },
+  {
+   "id": "E3-A4 altura",
+   "categoria": "visual",
+   "severidad": "media",
+   "descripcion": "Las tarjetas de una misma fila tienen la misma altura (390 y 1440)",
+   "resultado": "PASA",
+   "detalle": "390: diferencia maxima 0 px; 1440: diferencia maxima 0 px"
+  },
+  {
+   "id": "E3-A4 destacados",
+   "categoria": "visual",
+   "severidad": "baja",
+   "descripcion": "Los destacados de la portada usan el mismo peso de Cormorant que la tarjeta (600)",
+   "resultado": "FALLA",
+   "detalle": "peso del nombre en destacados: None"
+  },
+  {
+   "id": "E3-A6 familias",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "Cinco familias; cada una devuelve > 0 aromas y queda en la URL (?familia=)",
+   "resultado": "FALLA",
+   "detalle": "no hay filtro de familia"
+  },
+  {
+   "id": "E3-A6 para",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "'Para': El, Ella, Todos; El + Ella cubren todo (unisex en las dos)",
+   "resultado": "FALLA",
+   "detalle": "pastillas []; cuentas {}; total 100"
+  },
+  {
+   "id": "E3-A6 rebajados",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "'Rebajados' se oculta solo si cubre mas del 80 %; 'Minis' esta si hay tamanos <= 30 ml",
+   "resultado": "FALLA",
+   "detalle": "rebajados 97/101 -> pastilla a la vista (debe ocultarse); minis False (hay True)"
+  },
+  {
+   "id": "E3-A6 pastillas",
+   "categoria": "visual",
+   "severidad": "baja",
+   "descripcion": "Las pastillas de filtro bajan de linea, sin tira que se corta (390)",
+   "resultado": "FALLA",
+   "detalle": "desborde por grupo: []"
+  },
+  {
+   "id": "E3-A6 url",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "Entrar con ?familia=amaderados&para=el aplica los filtros y sobreviven a abrir una ficha y 'atras'",
+   "resultado": "FALLA",
+   "detalle": "100 de 100 aromas; activas []; ficha False; despues de atras 0 en about:blank"
+  },
+  {
+   "id": "E3-A7 parecidos",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "La ficha sugiere 3 aromas con la razon a la vista, ninguno es el mismo",
+   "resultado": "FALLA",
+   "detalle": "None: ninguno"
+  },
+  {
+   "id": "E3-A7 cambia",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "Tocar un parecido cambia la ficha y el ?aroma=; 'atras' cierra la ficha",
+   "resultado": "FALLA",
+   "detalle": "cambia: False"
+  },
+  {
+   "id": "E3-A9 scroll",
+   "categoria": "visual",
+   "severidad": "media",
+   "descripcion": "390: abrir y cerrar la ficha no mueve la pagina de atras",
+   "resultado": "FALLA",
+   "detalle": "scrollY 900 -> 246; tarjeta a 303 px despues, 305 px con la ficha abierta"
+  },
+  {
+   "id": "E3-A9 lcp",
+   "categoria": "rendimiento",
+   "severidad": "media",
+   "descripcion": "Primera fila del catalogo con loading=eager y la primera foto con fetchpriority=high",
+   "resultado": "FALLA",
+   "detalle": "390: [['lazy', ''], ['lazy', '']]; 1440: [['lazy', ''], ['lazy', ''], ['lazy', ''], ['lazy', '']]"
+  },
+  {
+   "id": "E3-A5 cajon",
+   "categoria": "conversion",
+   "severidad": "alta",
+   "descripcion": "El cajon se abre solo en el primer agregado; desde el segundo sube una barra que se va sola",
+   "resultado": "FALLA",
+   "detalle": "primero abre cajon: True; segundo abre cajon: True; barra: no hay; se va a los 4 s: True"
+  },
+  {
+   "id": "E3-A5 tilde",
+   "categoria": "visual",
+   "severidad": "media",
+   "descripcion": "El + pasa a tilde al agregar y vuelve a + despues de 1,2 s",
+   "resultado": "FALLA",
+   "detalle": "al agregar: ''; a los 1,7 s: ''"
+  },
+  {
+   "id": "E3-A5 ver",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "'Ver pedido' en la barra abre el cajon",
+   "resultado": "FALLA",
+   "detalle": "abre: False; anuncio: None"
+  },
+  {
+   "id": "E3-A5 movimiento",
+   "categoria": "accesibilidad",
+   "severidad": "baja",
+   "descripcion": "Con prefers-reduced-motion la barra aparece sin movimiento",
+   "resultado": "FALLA",
+   "detalle": "duraciones: None"
+  },
+  {
+   "id": "E3-A8 ver mas",
+   "categoria": "conversion",
+   "severidad": "media",
+   "descripcion": "390: sin paginador, 'Ver 12 mas (quedan N)' agrega 12 y guarda ?ver= (sobrevive a 'atras')",
+   "resultado": "FALLA",
+   "detalle": "paginador 1; boton 'no hay' (esperado 'Ver 12 más (quedan 88)'); 12 -> 12; url /catalogo; despues de ficha y atras 12"
+  },
+  {
+   "id": "E3-A8 escritorio",
+   "categoria": "conversion",
+   "severidad": "baja",
+   "descripcion": "1440: el paginador sigue y no hay 'Ver mas'",
+   "resultado": "PASA",
+   "detalle": "paginador 1; ver mas 0"
+  }
+ ],
+ "lighthouse": {
+  "/": {
+   "corridas": [
+    {
+     "score": 92,
+     "lcp": 2645,
+     "cls": 0.0,
+     "fcp": 2042,
+     "tbt": 172
+    },
+    {
+     "score": 92,
+     "lcp": 2598,
+     "cls": 0.0,
+     "fcp": 2134,
+     "tbt": 150
+    },
+    {
+     "score": 90,
+     "lcp": 2887,
+     "cls": 0.0,
+     "fcp": 2291,
+     "tbt": 35
+    },
+    {
+     "score": 80,
+     "lcp": 2561,
+     "cls": 0.0,
+     "fcp": 971,
+     "tbt": 686
+    },
+    {
+     "score": 92,
+     "lcp": 2781,
+     "cls": 0.0,
+     "fcp": 2166,
+     "tbt": 114
+    }
+   ],
+   "mediana": 92,
+   "cls_mediana": 0.0,
+   "lcp_mediana": 2645
+  },
+  "/catalogo": {
+   "corridas": [
+    {
+     "score": 79,
+     "lcp": 3819,
+     "cls": 0,
+     "fcp": 2494,
+     "tbt": 282
+    },
+    {
+     "score": 81,
+     "lcp": 3982,
+     "cls": 0.0,
+     "fcp": 1165,
+     "tbt": 288
+    },
+    {
+     "score": 82,
+     "lcp": 3696,
+     "cls": 0,
+     "fcp": 2564,
+     "tbt": 136
+    },
+    {
+     "score": 82,
+     "lcp": 3935,
+     "cls": 0,
+     "fcp": 2471,
+     "tbt": 148
+    },
+    {
+     "score": 78,
+     "lcp": 4064,
+     "cls": 0.0,
+     "fcp": 1666,
+     "tbt": 368
+    }
+   ],
+   "mediana": 81,
+   "cls_mediana": 0,
+   "lcp_mediana": 3935
+  }
+ },
+ "nota": "Produccion antes de la etapa 3A (commit 6c77483), 17/10/2026. Lighthouse repetido con la maquina quieta (la primera corrida coincidio con npm ci y dio 74 en / por CPU ocupada). Los E3-* se escribieron antes de construir: fallan aca a proposito."
+}

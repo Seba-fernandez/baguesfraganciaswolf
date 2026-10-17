@@ -1,0 +1,38 @@
+{
+ "unlock/unlock-bulgari-omnia-indian-garnet": {
+  "ampliacion": 2.6,
+  "medida": "frasco de 161x225 px en la fuente",
+  "tratamiento": "estudio",
+  "origen": "Catálogo Unlock C10 (PDF)"
+ },
+ "unlock/unlock-herrera-for-men": {
+  "ampliacion": 2.6,
+  "medida": "frasco de 111x313 px en la fuente",
+  "tratamiento": "recorte",
+  "origen": "Catálogo Unlock C10 (PDF)"
+ },
+ "unlock/unlock-la-belle-paradise-garden": {
+  "ampliacion": 1.83,
+  "medida": "frasco de 171x458 px en la fuente",
+  "tratamiento": "recorte",
+  "origen": "Catálogo Unlock C10 (PDF)"
+ },
+ "unlock/unlock-polo-red": {
+  "ampliacion": 3.4,
+  "medida": "frasco de 90x161 px en la fuente",
+  "tratamiento": "recorte",
+  "origen": "Catálogo Unlock C10 (PDF)"
+ },
+ "unlock/unlock-rabanne-phantom": {
+  "ampliacion": 3.4,
+  "medida": "frasco de 102x183 px en la fuente",
+  "tratamiento": "recorte",
+  "origen": "Catálogo Unlock C10 (PDF)"
+ },
+ "unlock/unlock-ysl-hom": {
+  "ampliacion": 2.6,
+  "medida": "frasco de 137x297 px en la fuente",
+  "tratamiento": "estudio",
+  "origen": "Catálogo Unlock C10 (PDF)"
+ }
+}

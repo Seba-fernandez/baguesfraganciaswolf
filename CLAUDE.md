@@ -4,8 +4,8 @@ Contexto de trabajo para Claude Code en este repo. Se lee entero antes de tocar
 nada. El porqué del proyecto está en [`docs/CONTEXTO.md`](docs/CONTEXTO.md); acá
 está lo que hace falta para trabajar bien desde el primer cambio.
 
-*Última actualización: 16 de octubre de 2026, después de la etapa 1 de la auditoría
-(registro en [`docs/QA.md`](docs/QA.md)).*
+*Última actualización: 17 de octubre de 2026, después de la etapa 2 de la auditoría
+(fotos de producto; registro en [`docs/QA.md`](docs/QA.md)).*
 
 ---
 
@@ -192,6 +192,9 @@ Cada entrada tiene un `"tratamiento"`:
   solo el fondo llevado a la rampa espresso.
 - `corte` borra el reflejo de piso que trae la foto; `ampliacionMax` achica un
   frasco ancho.
+- **Aviso de resolución:** una fuente agrandada más de 1,8× se publica igual
+  (blanda es mejor que la inicial), pero la consola lo grita, queda en
+  `scripts/fotos/datos/avisos.json` y la hoja de contacto la marca en rojo.
 - **Las máscaras se calculan una vez** con rembg (Python) y quedan versionadas en
   `scripts/fotos/datos/mascaras/`. `componer.mjs` llama solo a `mascaras.py` si
   falta alguna. **El build de Vercel no usa Python**: solo corre `variantes.mjs`
@@ -327,6 +330,12 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
 
 ## 12. Pendientes
 
+- **Seis fotos de Unlock blandas** (aviso de resolución en
+  `scripts/fotos/datos/avisos.json`): Polo Red y Phantom (3,4×), Carolina
+  Herrera for Men, Y de YSL y Omnia Indian Garnet (2,6×), La Belle Paradise
+  Garden (1,8×). No están en la tienda de Unlock y el PDF del ciclo no tiene
+  nada más grande. Una foto propia de cada frasco, subida desde el panel, las
+  resuelve.
 - **Foto de Manhattan (Bagués, 212 VIP).** Está solo en el PDF general del
   ciclo. Sebas puede subirla desde el panel, o se agrega a `fuentes.json` con
   `archivo` y se corre `npm run fotos`.

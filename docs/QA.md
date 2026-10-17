@@ -84,9 +84,10 @@ carpeta de la auditoría (fuera del repo).
 
 | ID | Categoría | Sev. | Qué pasaba | Cómo se reproduce | Chequeo | Base | Final | Commit |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| FOTO-1 | visual | alta | Las cajas en el estudio espresso y 43 escenas de Unlock en azul eléctrico, celeste, gris y rojo: la grilla parecía un marketplace de dos proveedores | Abrir `/catalogo` y mirar las páginas 1 y 2 | `FOTO-1` (esquinas de arriba de las 24 fotos en el rango espresso) | FALLA (20/24) | PASA (24/24) | ver commit FOTO-1 |
-| FOTO-2 | visual | media | Filo blanco de 1 a 2 px y alfa sin borde suave en los recortes (Doha, Abu Dabi, 212 Heroes) | Mirar una caja al 300 % sobre el espresso | Hoja de contacto (`FOTO-2` en el banco dice NO APLICA, ver abajo) | filo blanco en 3 cajas, 1 Unlock | limpio en los 90 recortes | ver commit FOTO-2 |
-| FOTO-3 | visual | media | Cinco recortes de Unlock traían una elipse gris horneada: sobre el espresso, un disco flotando encima de nuestra sombra. La sombra era una mancha y el reflejo, al 16 %, un espejo | Mirar One Million Lucky o Invictus Victory | Hoja de contacto | 5 podios, sombra de una capa | 0 podios, sombra en dos capas, reflejo 9 % | ver commit FOTO-3 |
+| FOTO-1 | visual | alta | Las cajas en el estudio espresso y 43 escenas de Unlock en azul eléctrico, celeste, gris y rojo: la grilla parecía un marketplace de dos proveedores | Abrir `/catalogo` y mirar las páginas 1 y 2 | `FOTO-1` (esquinas de arriba de las 24 fotos en el rango espresso) | FALLA (20/24) | PASA (24/24) | `3c747fc` |
+| FOTO-4 | visual | alta | Fotos agrandadas hasta 3,4 veces (Polo Red, Phantom) sin que nadie se entere | Mirar Polo Red en la ficha | Aviso en `componer.mjs`, `datos/avisos.json` y marco rojo en la hoja de contacto | sin aviso | 6 fotos con aviso; sin fuente mejor (ver pendientes) | `FOTO-4` |
+| FOTO-2 | visual | media | Filo blanco de 1 a 2 px y alfa sin borde suave en los recortes (Doha, Abu Dabi, 212 Heroes) | Mirar una caja al 300 % sobre el espresso | Hoja de contacto (`FOTO-2` en el banco dice NO APLICA, ver abajo) | filo blanco en 3 cajas, 1 Unlock | limpio en los 90 recortes | `0ff3c75` |
+| FOTO-3 | visual | media | Cinco recortes de Unlock traían una elipse gris horneada: sobre el espresso, un disco flotando encima de nuestra sombra. La sombra era una mancha y el reflejo, al 16 %, un espejo | Mirar One Million Lucky o Invictus Victory | Hoja de contacto | 5 podios, sombra de una capa | 0 podios, sombra en dos capas, reflejo 9 % | `6809048` |
 
 **Por qué FOTO-2 no se mide en el banco.** Sobre la foto final, un filo blanco
 y el canto real de un objeto (el borde dorado de una caja, la luz en el borde
@@ -140,10 +141,23 @@ Puede diferir unos puntos de PageSpeed Insights.
    bloqueo del scroll toca el cajón y la ficha a la vez. Conviene confirmarlo
    en un Android real.
 5. **Lo que va en la etapa siguiente** (no se empezó): hero nuevo, `og.jpg`,
-   unificar las fotos del catálogo (FOTO-1 a FOTO-4), achicar el sello GRUPO
+   achicar el sello GRUPO
    WOLF, sacar las pastillas de la tarjeta, reordenar la ficha, filtros por
    familia, "si te gusta este", link por perfume (`?aroma=`), cambio del + y
    del cajón, capturas de clientas.
+
+6. **Fotos blandas (FOTO-4).** Seis fotos de Unlock quedan agrandadas más de
+   1,8×: Polo Red y Phantom (3,4×), Carolina Herrera for Men, Y de YSL y Omnia
+   Indian Garnet (2,6×), La Belle Paradise Garden (1,8×). No están en
+   `unlock.com.ar` y el PDF del ciclo está bajado a 100 ppi (ya se usa su imagen
+   embebida en tamaño original). Se resuelven con una foto propia subida desde
+   el panel.
+7. **Fotos para mirar con criterio de dueño.** Nina (Nina Ricci) y Pure XS
+   conservan, junto a la base, la luz de color que el vidrio proyecta en el piso
+   de la foto original: es real, pero puede leerse como una mancha. Olympéa y
+   Lady Million quedaron como escena espresso (no se pueden parar solas en el
+   estudio) y se ven más grandes que el resto: la fuente es de 800 px y no da
+   para alejarse más.
 
 ### Choques con lo de la etapa siguiente
 

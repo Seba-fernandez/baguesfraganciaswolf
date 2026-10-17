@@ -28,12 +28,17 @@ import { limpiarFilo, sacarPodio, limpiarMascara, cajaDe, llevarAEspresso } from
  *    el fondo viejo): el frasco queda intacto y solo el fondo se lleva a la
  *    rampa espresso. Se encuadra con la misma altura y el mismo piso.
  *  - ESCENA (la foto tal cual, recortada a 3:4): queda para casos puntuales.
+ *
+ * Una foto que hubo que agrandar mas de AVISO_AMPLIACION veces se publica igual
+ * (blanda es mejor que la inicial suelta) pero avisa en la consola y queda
+ * anotada en scripts/fotos/datos/avisos.json.
  */
 
 const RAIZ = path.resolve(import.meta.dirname, '../..');
 const ANCHO = 900;
 const ALTO = 1200;
 const AMPLIACION_MAX = 2.6;
+const AVISO_AMPLIACION = 1.8;
 const PISO = 0.865; // donde apoya el frasco, en proporcion del alto
 const ALTURA = 0.70; // cuanto del alto ocupa el frasco o la caja
 const todo = process.argv.includes('--todo');
@@ -42,6 +47,7 @@ const FUENTES = path.join(RAIZ, 'scripts/fotos/fuentes.json');
 const fuentes = JSON.parse(fs.readFileSync(FUENTES, 'utf8'));
 const CACHE = path.join(RAIZ, 'scripts/fotos/datos/fuentes');
 const MASCARAS = path.join(RAIZ, 'scripts/fotos/datos/mascaras');
+const AVISOS = path.join(RAIZ, 'scripts/fotos/datos/avisos.json');
 fs.mkdirSync(CACHE, { recursive: true });
 
 /** Fondo de estudio: pared espresso con un halo de luz calida y un piso. */
@@ -194,7 +200,7 @@ async function componerRecorte(buf, ampliacionMax = AMPLIACION_MAX) {
     ])
     .webp({ quality: 84, effort: 6 })
     .toBuffer();
-  return { salida, ampliacion: escala };
+  return { salida, ampliacion: escala, medida: `frasco de ${meta.width}x${meta.height} px en la fuente` };
 }
 
 /** Un recorte de verdad: limpieza de filo (FOTO-2) y podio (FOTO-3). */
@@ -242,7 +248,7 @@ async function tratarEspresso(buf, f, slug, linea) {
     .removeAlpha()
     .webp({ quality: 84, effort: 6 })
     .toBuffer();
-  return { salida, ampliacion: escala };
+  return { salida, ampliacion: escala, medida: `foto de ${img.width}x${img.height} px` };
 }
 
 /** Tratamiento escena: la foto tal cual, recortada a 3:4 en el foco. */
@@ -265,14 +271,17 @@ async function tratarEscena(buf, f) {
     .resize(ANCHO, ALTO, { kernel: 'lanczos3' })
     .webp({ quality: 82, effort: 6 })
     .toBuffer();
-  return { salida, ampliacion: ANCHO / cw };
+  return { salida, ampliacion: ANCHO / cw, medida: `foto de ${meta.width}x${meta.height} px` };
 }
 
+const avisos = fs.existsSync(AVISOS) ? JSON.parse(fs.readFileSync(AVISOS, 'utf8')) : {};
 const hechas = { unlock: [], bagues: [] };
 const errores = [];
+const nuevosAvisos = [];
 for (const [slug, porLinea] of Object.entries(fuentes)) {
   for (const [linea, f] of Object.entries(porLinea)) {
     const destino = path.join(RAIZ, 'public', DESTINOS[linea].replace(/^public\/?/, ''), `${slug}.webp`);
+    const clave = `${linea}/${slug}`;
     hechas[linea].push(slug);
     const mascara = path.join(MASCARAS, `${slug}__${linea}.png`);
     const alDia = fs.existsSync(destino)
@@ -284,19 +293,33 @@ for (const [slug, porLinea] of Object.entries(fuentes)) {
       const tratamiento = f.tratamiento || f.tipo || ((await esRecorte(buf)) ? 'recorte' : 'escena');
       const hacer = { recorte: tratarRecorte, estudio: tratarEstudio, espresso: tratarEspresso, escena: tratarEscena }[tratamiento];
       if (!hacer) throw new Error(`tratamiento desconocido: ${tratamiento}`);
-      const { salida, ampliacion } = await hacer(buf, f, slug, linea);
+      const { salida, ampliacion, medida } = await hacer(buf, f, slug, linea);
       fs.mkdirSync(path.dirname(destino), { recursive: true });
       fs.writeFileSync(destino, salida);
       // Las variantes (-360w, -560w) NO se borran: quedan con fecha anterior y
       // variantes.mjs las rehace. Ese paso corre solo en cada build, asi que una
       // foto nueva nunca llega a produccion sin sus anchos chicos.
       const amp = Math.round(ampliacion * 100) / 100;
+      delete avisos[clave];
+      if (amp > AVISO_AMPLIACION) {
+        avisos[clave] = { ampliacion: amp, medida, tratamiento, origen: f.origen || '' };
+        nuevosAvisos.push(`${clave}: ampliada ${amp}x (${medida})`);
+      }
       console.log(linea.padEnd(7), tratamiento.padEnd(9), `${amp}x`.padEnd(6), slug);
     } catch (e) {
       errores.push(`${slug} (${linea}): ${e.message}`);
     }
   }
 }
+
+// Avisos de resolucion: se guardan siempre, asi el de una foto que no se
+// rehizo en esta corrida no se pierde.
+for (const clave of Object.keys(avisos)) {
+  const [linea, slug] = clave.split('/');
+  if (!fuentes[slug]?.[linea]) delete avisos[clave];
+}
+fs.mkdirSync(path.dirname(AVISOS), { recursive: true });
+fs.writeFileSync(AVISOS, JSON.stringify(Object.fromEntries(Object.entries(avisos).sort()), null, 1) + '\n');
 
 // Indice que consulta la web: que aroma tiene foto de cada linea.
 const lista = (arr) => JSON.stringify([...new Set(arr)].sort(), null, 2);
@@ -311,6 +334,12 @@ export const FOTO_BAGUES = new Set(${lista(hechas.bagues)});
 `);
 
 console.log(`\nunlock ${hechas.unlock.length} | bagues ${hechas.bagues.length}`);
+if (nuevosAvisos.length) {
+  console.log(`\n*** AVISO DE RESOLUCION: ${nuevosAvisos.length} foto(s) agrandadas mas de ${AVISO_AMPLIACION}x.`);
+  console.log('*** Se publican igual, pero se ven blandas. Conviene buscarles una fuente mas grande:');
+  for (const a of nuevosAvisos) console.log('***  ', a);
+  console.log(`*** Lista completa en scripts/fotos/datos/avisos.json (${Object.keys(avisos).length} en total).`);
+}
 if (errores.length) {
   console.log('\nNo se pudieron armar:');
   for (const e of errores) console.log('  ', e);

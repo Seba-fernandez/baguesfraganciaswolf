@@ -88,8 +88,11 @@ npm run fotos:componer -- --todo  rehace todas
 npm run fotos                     componer + los anchos chicos para celular
 ```
 
-Todas salen a 3:4 llenando el cuadro. **Antes de publicar, mirarlas todas
-juntas con su nombre al lado**: ya pasó que se cruzaran fotos entre perfumes de
+Todas salen a 3:4 llenando el cuadro, en el mismo estudio espresso. Una foto
+de Unlock con fondo propio lleva `"tratamiento": "estudio"` (o `"espresso"` si
+es vidrio transparente sobre fondo claro). **Antes de publicar, correr
+`npm run fotos:contacto` y mirar la hoja entera**, que pone al lado de cada
+foto el nombre y la caja de la base: ya pasó que se cruzaran fotos entre perfumes de
 la misma familia, y las cajas de Bagués de New York, Amsterdam y Hawai tienen
 versión femenina y masculina con el mismo nombre. El detalle está en
 [`scripts/fotos/README.md`](../scripts/fotos/README.md).

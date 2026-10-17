@@ -120,13 +120,17 @@ buscador. El aviso legal del pie aclara que son versiones inspiradas, y la líne
 de cada tamaño se dice adentro de la ficha ("Unlock" o "Bagues, caja Arizona").
 Para cargar un ciclo, el dato confiable es el **código**, no el nombre del PDF.
 
-### Las fotos tienen un solo tratamiento
+### Las fotos viven en un solo estudio
 
 Convivían tres: recortes sobre un azulejo claro con aire alrededor, escenas a
-sangre, y cajas con un beige propio que dejaba un recuadro. Ahora un script
-(`scripts/fotos/componer.mjs`) las deja todas a 3:4 llenando el cuadro: los
-recortes sobre un estudio espresso con sombra y reflejo, las escenas recortadas.
-Cada fuente queda anotada en `scripts/fotos/fuentes.json`.
+sangre, y cajas con un beige propio que dejaba un recuadro. Primero un script
+(`scripts/fotos/componer.mjs`) las dejó a 3:4 llenando el cuadro, con los
+recortes en un estudio espresso; las escenas de Unlock seguían con su azul o su
+celeste y la grilla parecía de dos proveedores. Desde el 17/10/2026 las escenas
+también entran al estudio: el frasco se recorta con una máscara calculada una
+vez (rembg) y guardada en el repo, o, si es vidrio transparente, solo el fondo
+pasa a espresso. Los recortes tienen el filo limpio y apoyan todos en el mismo
+piso. Cada fuente y su tratamiento quedan en `scripts/fotos/fuentes.json`.
 
 ### El panel es una herramienta, no una vidriera
 

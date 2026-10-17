@@ -122,6 +122,26 @@ con los que tienen versión femenina y masculina con el mismo nombre (New York,
 Amsterdam, Hawai): la tienda los distingue en el título y hay que elegir el que
 corresponde.
 
+## Resolución: `datos/avisos.json` (FOTO-4)
+
+Si para llegar al tamaño hubo que agrandar la fuente **más de 1,8 veces**,
+`componer.mjs` lo avisa en voz alta al final de la corrida, lo anota en
+`scripts/fotos/datos/avisos.json` (se versiona) y la hoja de contacto marca esa
+foto con un marco rojo. **La foto se publica igual**: blanda es mejor que la
+inicial suelta. La regla de "una foto mala es peor que ninguna" es para fotos
+*equivocadas*, no para fotos blandas.
+
+Para sacar un aviso hay que conseguir una fuente más grande. En octubre de 2026
+se buscó para los seis que quedan (Polo Red, Phantom, Carolina Herrera for Men,
+La Belle Paradise Garden, Y de YSL, Omnia Indian Garnet):
+
+- en `unlock.com.ar/products.json` **no están** (la tienda tiene 71 productos y
+  ninguno de esos seis);
+- del PDF del ciclo ya se usa la imagen embebida **en su resolución original**:
+  todo el PDF está bajado a 100 ppi, no hay nada más grande adentro.
+
+Quedan para fotos propias de Sebas o para cuando Unlock los publique.
+
 ## Comandos
 
 ```

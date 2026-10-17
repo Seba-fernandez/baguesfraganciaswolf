@@ -186,7 +186,8 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
               <div className={s.parecidosFila}>
                 {sugeridos.map((r) => (
                   <button key={r.producto.id} type="button" className={s.parecido} onClick={() => onAbrir(r.producto)} data-qa="parecido">
-                    <ProductThumb producto={r.producto} ratio="3 / 4" sizes="(max-width: 767px) 30vw, 130px" />
+                    {/* alt vacio: el nombre va al lado; si no, el lector lo dice dos veces. */}
+                    <ProductThumb producto={r.producto} ratio="3 / 4" sizes="(max-width: 767px) 30vw, 130px" alt="" />
                     <span className={s.parecidoNombre}>{tituloDe(r.producto)}</span>
                     <span className={s.parecidoRazon}>{razon(r)}</span>
                   </button>

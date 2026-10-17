@@ -70,7 +70,7 @@ export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.ta
         <img
           src={imagen}
           {...(srcSet ? { srcSet, sizes } : {})}
-          alt={alt || producto?.inspirado_en || ''}
+          alt={alt ?? (producto?.inspirado_en || '')}
           loading={prioridad ? 'eager' : 'lazy'}
           {...(prioridad > 1 ? { fetchpriority: 'high' } : {})}
           decoding="async"

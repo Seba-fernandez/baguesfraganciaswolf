@@ -291,8 +291,11 @@ Y tres bloques de comportamiento que no son clases pero forman parte del kit:
   (`scrollbar-color` y `::-webkit-scrollbar`). Ojo: la del documento hay que
   declararla en `index.html`, porque cuando el CSS de la tienda carga el
   navegador ya resolvió la del scroll principal.
-- **View Transitions** para el morph tarjeta → ficha: 380 ms con el `--ease` del
-  sistema.
+- **View Transitions** para el morph tarjeta → ficha: quedó el CSS (380 ms con
+  el `--ease` del sistema), pero en la tienda no se usa: la ficha se carga
+  aparte (`lazy`) y React dibuja asincrónico, así que la foto nueva podía no
+  estar al sacar la captura. Para usarlo hace falta `flushSync` y la ficha ya
+  cargada.
 - **`prefers-reduced-motion`** apaga todo: las transiciones caen a 1 ms y nada
   queda en `opacity: 0` sin revelarse.
 

@@ -105,6 +105,58 @@ antes quedaban afuera las 34 escenas de fondo frío o claro y ninguna caja;
 después, ninguna. Necesita Pillow (`pip install pillow`). Una foto subida a
 mano desde el panel puede hacerlo fallar: es a propósito, para que se vea.
 
+### Etapa 3A: ficha, tarjeta, filtros y link por perfume (17 de octubre de 2026)
+
+Base: producción antes de tocar nada (commit `6c77483`), en
+`scripts/qa/linea-base-etapa3.json`. Los chequeos `E3-*` se escribieron antes de
+construir y fallaban ahí a propósito. Final: producción después del último
+bloque (commit `af8fc8c`). Capturas en la carpeta de la auditoría
+(`etapa3a/`, fuera del repo).
+
+| ID | Categoría | Sev. | Qué pasaba | Chequeo | Base | Final | Commit |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| E3-A1 (UX-8) | conversión | alta | Abrir la ficha no cambiaba la dirección: "atrás" sacaba de la tienda y no había link por perfume | `E3-A1 atras`, `link`, `portada`, `copiar`, `inexistente` | FALLA ×4 (inexistente PASA) | PASA ×5 | `390a90f` |
+| E3-A2 (IDEA-11, UX-6) | conversión | alta | En el celular el precio estaba a 1042 px y el botón a 1260 px; pirámide en párrafo; "Versión inspirada" en el acento | `E3-A2 primer`, `orden`, `notas`, `frase`, `aviso`, `barra` | FALLA ×6 | PASA ×6 | `b10f987` |
+| E3-A3 (IDEA-7, IDEA-8) | confianza | alta | Tachado sin explicar; el código de proveedora no se veía | `E3-A3 codigo`, `ahorro`, `verificar` | FALLA ×3 | PASA ×3 | `8ca2cae` |
+| E3-A4 (IDEA-3) | visual | alta | "VERSIÓN INSPIRADA" 12 veces por página y pastillas de tamaño apretadas en el celular | `E3-A4 tarjeta`, `hoja`, `destacados` (más `aviso`, `tactil`, `directo`, `altura` de guarda) | FALLA ×3 | PASA ×7 | `7d663e3` |
+| E3-A5 (UX-11, IDEA-12) | conversión | alta | Cada `+` abría el cajón, que tapa el 85 % de la pantalla | `E3-A5 cajon`, `tilde`, `ver`, `movimiento` | FALLA ×4 | PASA ×4 | `46ce65d` |
+| E3-A6 (IDEA-6, UX-12) | conversión | alta | Filtros mezclados; "Rebajados" dejaba 98 de 100; la familia no aparecía | `E3-A6 familias`, `para`, `rebajados`, `pastillas`, `url` | FALLA ×5 | PASA ×5 | `09bbf1e` |
+| E3-A7 (IDEA-5) | conversión | media | La ficha terminaba sin sugerir otro aroma | `E3-A7 parecidos`, `cambia` | FALLA ×2 | PASA ×2 | `9babef9`, `af8fc8c` |
+| E3-A8 (UX-13) | conversión | media | Nueve páginas de 12 en el celular | `E3-A8 ver mas` (`escritorio` de guarda) | FALLA | PASA | `0f28f0d` |
+| E3-A9 | rendimiento / visual | media | Primera fila del catálogo en `lazy` (LCP); la página saltaba al abrir y cerrar la ficha | `E3-A9 lcp`, `scroll` | FALLA ×2 (900 → 246 px) | PASA ×2 (900 → 900 px) | `1d68f0f` |
+| RENDIMIENTO | rendimiento | alta | Lighthouse mobile en producción, mediana de 5 (contra `linea-base-etapa3.json`) | `RENDIMIENTO /`, `/catalogo` | `/` 92, `/catalogo` 81 (LCP 3935 ms) | `/` 91, `/catalogo` 80 (LCP 3783 ms), CLS 0, los dos PASA | todos |
+
+**Lighthouse mobile en producción, etapa 3A** (cinco corridas, mismo
+contenedor, con la máquina quieta):
+
+| Página | Antes (`6c77483`) | Mediana | LCP | Después (`af8fc8c`) | Mediana | LCP |
+| --- | --- | --- | --- | --- | --- | --- |
+| `/` | 92, 92, 90, 80, 92 | **92** | 2645 ms | 81, 92, 98, 84, 91 | **91** | 2896 ms |
+| `/catalogo` | 79, 81, 82, 82, 78 | **81** | 3935 ms | 81, 79, 74, 80, 84 | **80** | 3783 ms |
+
+Un punto abajo en las dos es ruido (en `/` las corridas van de 81 a 98). Lo
+real: el LCP de `/catalogo` bajó 150 ms; el bundle principal creció 2,6 kB
+comprimidos (73,4 a 76,1 kB: la barra de agregado y las reglas nuevas de
+`lib/producto.js`), y la portada no cambió de otra forma. La primera corrida
+de la línea de base coincidió con `npm ci` y dio 74 en `/`: se repitió.
+
+**Cómo se midió el LCP.** En el contenedor, Lighthouse varía mucho entre
+corridas (TBT de 125 a 690 ms con el mismo build). Cada cambio de E3-A9 se midió
+por separado, con las variantes intercaladas (una y una) y la mediana del LCP:
+sin prioridad en la primera fila 4955 ms, sin precargar las dependencias del
+catálogo 5057, con las dos 4850, y leyendo el catálogo sin preflight de CORS
+4598 contra 4850 a favor de la preflight. Esa última se descartó por la regla
+(quedarse con lo que mejora la medición), aunque en un teléfono real ahorre un
+viaje de red: queda anotada para medir en un Android.
+
+**Un falso positivo del banco que conviene conocer.** El salto 900 → 246 px de
+la línea de base no lo ve una clienta: lo producía el clic de mouse de
+Playwright (trae el elemento a la vista y deja el hover puesto) más el cierre
+con Escape. Con toques reales el código viejo tampoco saltaba en Chromium
+emulado. El arreglo igual vale: el bloqueo con `position: fixed` conserva la
+posición en todos los motores y frena el scroll de fondo en iOS, donde
+`overflow: hidden` no alcanza. El chequeo ahora toca con el dedo.
+
 ### Lighthouse mobile en producción (cinco corridas, Lighthouse 13.5)
 
 | Página | Antes | Mediana | Después | Mediana |
@@ -130,21 +182,19 @@ Puede diferir unos puntos de PageSpeed Insights.
    devuelve 200 con la portada. Dar un 404 de verdad obliga a listar en
    `vercel.json` cada ruta válida, incluidas las del panel (`/panel/...`) y la
    vuelta del ingreso con Google: no se hizo para no arriesgar el panel.
-3. **LCP de `/catalogo` (~3,9 s).** El CLS quedó en 0 y la nota subió de 76 a
-   88, pero lo que define el LCP es la primera foto de la grilla, que hoy carga
-   con `loading="lazy"`. Probar `eager` (y `fetchpriority`) en la primera fila,
-   midiendo con la mediana de cinco.
-4. **En el celular la página salta arriba al abrir la ficha** (medido en
-   Chromium móvil: el `overflow: hidden` del body lleva el scroll a cero). Al
-   cerrar, el foco vuelve a la tarjeta y el navegador la trae a la vista, así
-   que no se pierde el lugar; no se tocó porque en iOS no pasa y cambiar el
-   bloqueo del scroll toca el cajón y la ficha a la vez. Conviene confirmarlo
-   en un Android real.
-5. **Lo que va en la etapa siguiente** (no se empezó): hero nuevo, `og.jpg`,
-   achicar el sello GRUPO
-   WOLF, sacar las pastillas de la tarjeta, reordenar la ficha, filtros por
-   familia, "si te gusta este", link por perfume (`?aroma=`), cambio del + y
-   del cajón, capturas de clientas.
+3. **LCP de `/catalogo`.** Hecho en la etapa 3A (E3-A9): primera fila sin
+   `lazy`, la primera foto con `fetchpriority="high"` y la cáscara precarga los
+   chunks del catálogo. Lo que sigue definiendo el LCP es la cadena HTML → JS →
+   catálogo de la base → foto: la foto no se puede precargar desde el HTML
+   porque el orden lo decide Sebas en el panel. Queda por medir en un Android
+   real leer el catálogo sin preflight de CORS (ver la sección de la etapa 3A).
+4. **El salto al abrir la ficha.** Hecho en la etapa 3A (E3-A9): bloqueo con
+   `position: fixed`. Conviene igual mirarlo una vez en un Android y un iPhone
+   reales.
+5. **Lo que va en la etapa 3B** (no se empezó): hero nuevo, `og.jpg`, achicar el
+   sello GRUPO WOLF, el primer pantallazo de la portada, "Cómo funciona" como
+   chat, Nosotros en dos columnas, la cinta con links a cada ficha, la tira del
+   ciclo, capturas de clientas, foto de Sebas, el color del jugo (IDEA-4).
 
 6. **Fotos blandas (FOTO-4).** Seis fotos de Unlock quedan agrandadas más de
    1,8×: Polo Red y Phantom (3,4×), Carolina Herrera for Men, Y de YSL y Omnia
@@ -159,11 +209,30 @@ Puede diferir unos puntos de PageSpeed Insights.
    estudio) y se ven más grandes que el resto: la fuente es de 800 px y no da
    para alejarse más.
 
-### Choques con lo de la etapa siguiente
+8. **Siete aromas sin familia ni notas** (Bad Boy, One Million, Polo Blue,
+   Polo Red, Creed Aventus, Phantom, Phantom Black): caen en "Otros" del filtro
+   de familia y su tarjeta no tiene línea de notas. Se cargan desde el panel.
+9. **El código de proveedora no se puede buscar en bagues.com.ar ni en
+   unlock.com.ar** (no es su SKU). La ficha dice para qué sirve el código y
+   enlaza a la tienda de la marca; si la caja trae el número impreso, se puede
+   sumar en `FICHA.verificar`.
+10. **Dos intermitencias del banco en producción** justo después de un deploy:
+    `E3-A1 portada` (la portada hidrata después de `load` y del pedido a la
+    base; con el CDN en frío pasó los 20 s, ahora espera 30) y `FOTO-1` (no
+    llegaron las tarjetas en 25 s una vez). Las dos pasaron tres de tres al
+    repetirlas.
+11. **View Transitions de la tarjeta a la ficha:** probado el planteo y
+    descartado (la ficha es `lazy` y React dibuja asincrónico: la foto nueva
+    podía no estar al sacar la captura).
 
-- Las pastillas de talla de la tarjeta ahora tienen un área táctil de 44 px con
-  `::after`. Si en la etapa siguiente salen de la tarjeta, el `::after` se va
-  con ellas.
-- Los destacados de la portada siguen con su `sizes` viejo
-  (`46vw, 250px`) y el nombre en Cormorant 400; la tarjeta del catálogo usa
-  600. Si se unifican, decidir un solo peso.
+### Choques con la etapa 3B
+
+- **Destacados de la portada:** ya usan Cormorant 600 y `sizes` con el ancho
+  real (232/248 px). Si 3B los cambia por la tarjeta del catálogo, el `+` de la
+  tarjeta abre la hoja de tamaños y eso funciona también en la portada (la hoja
+  vive en `TiendaShell`).
+- **La cinta de nombres de la portada como links a cada ficha** (IDEA-6) ya
+  tiene el mecanismo: `abrir(producto)` del contexto pone `?aroma=`.
+- **La barra de agregado** se apoya abajo a 12 px del borde (z-index 90). Si 3B
+  suma una barra fija abajo en la portada, tienen que turnarse.
+- **El sello GRUPO WOLF y el hero** no se tocaron.

@@ -67,12 +67,15 @@ trabajar así es parte del oficio, y prefiero decirlo antes que disimularlo.
 script, con los frascos del ciclo parados sobre la arena y su sombra de contacto. Abajo, la
 promoción del ciclo en barras de cristal, la cinta de nombres reconocibles, una
 selección curada, quiénes somos y los tres pasos de cómo funciona. El catálogo
-completo vive en su propia página (`/catalogo`) con buscador, filtros por género,
-temporada, rebaja y promoción del ciclo, y paginado.
+completo vive en su propia página (`/catalogo`) con buscador, filtros por a quién
+("Para") y por familia olfativa, guardados en la dirección, y paginado (en el
+celular, "Ver 12 más"). Cada tarjeta dice dos o tres notas y un precio.
 
-Cada aroma abre una ficha con la pirámide olfativa y los tamaños de las dos
-líneas. Cada tamaño dice de qué línea es ("Unlock" o "Bagues, caja Arizona") y
-muestra el precio de lista tachado. El pedido se arma en un cajón lateral,
+Cada aroma abre una ficha con su propio link (`?aroma=`), una frase corta, la
+pirámide en pastillas, los tamaños de las dos líneas y tres aromas parecidos.
+Cada tamaño dice de qué línea es ("Unlock" o "Bagues, caja Arizona"), su código
+de proveedora, el precio de lista tachado y cuánto se ahorra. El pedido se arma
+en un cajón lateral (que se abre solo la primera vez; después avisa una barra),
 calcula el 2x1 cuando el ciclo lo tiene y termina en un mensaje de WhatsApp
 listo para enviar.
 
@@ -294,9 +297,10 @@ octubre):
 - Fotos en 100 de los 101 aromas, todas con el mismo tratamiento y llenando el
   cuadro, cada línea con su propio envase.
 - Nombres oficiales en toda la web, y la línea aclarada en cada tamaño.
-- Buscador por nombre y filtros por género, temporada y rebaja (y por promoción
-  cuando el ciclo la trae).
-- Ficha por aroma con pirámide olfativa y los tamaños de las dos listas.
+- Buscador por nombre, nota o caja, y filtros "Para" y "Familia" (más Minis, y
+  Rebajados o la promoción cuando aportan algo).
+- Ficha por aroma con link propio, pirámide olfativa, los tamaños de las dos
+  listas con código y ahorro, y "Si te gusta este, mirá también".
 - Pedido con la cuenta del 2x1 y el aviso de "te falta uno" (este ciclo no
   trae 2x1, así que no se muestra).
 - Mensaje de WhatsApp con el código de proveedora y la línea de cada renglón.

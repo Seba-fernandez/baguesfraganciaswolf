@@ -4,8 +4,9 @@ Contexto de trabajo para Claude Code en este repo. Se lee entero antes de tocar
 nada. El porqué del proyecto está en [`docs/CONTEXTO.md`](docs/CONTEXTO.md); acá
 está lo que hace falta para trabajar bien desde el primer cambio.
 
-*Última actualización: 17 de octubre de 2026, después de la etapa 2 de la auditoría
-(fotos de producto; registro en [`docs/QA.md`](docs/QA.md)).*
+*Última actualización: 17 de octubre de 2026, después de la etapa 3A de la
+auditoría (ficha, tarjeta, filtros por familia, link por perfume; registro en
+[`docs/QA.md`](docs/QA.md)).*
 
 ---
 
@@ -68,13 +69,19 @@ src/
     layout/       estructura del panel (barra de abajo, lateral, encabezado)
     auth/         ingreso al panel: solo Google, sin registro ni contraseña
     ui/           piezas sueltas del panel
-  hooks/          datos (useProducts, useOrders...) y comportamiento (useReveal)
+  hooks/          datos (useProducts, useOrders...) y comportamiento (useReveal,
+                  useDialogo, useBloqueoScroll, useMedia)
   lib/            reglas de negocio sin JSX
     apiTienda.js    lectura de la tienda con fetch, SIN supabase-js
     busqueda.js     el buscador del catálogo (tolerante; pruebas en scripts/qa)
     cachePanel.js   memoria compartida del panel
+    compartir.js    el link de cada ficha (/catalogo?aroma=) y copiarlo
+    familias.js     de familia_olfativa (texto libre) a las 5 familias del filtro
+    filtros.js      Para, Familia, Minis y Rebajados, leídos de la dirección
     fotos.js        qué foto le toca a cada aroma (tienda y panel)
-    producto.js     presentaciones, título, línea de cada tamaño
+    parecidos.js    "Si te gusta este, mirá también"
+    producto.js     presentaciones, título, línea de cada tamaño, frase de la
+                    ficha, pirámide, notas cortas de la tarjeta, ahorro
     promos.js       el 2x1 por grupos
     whatsapp.js     el mensaje del pedido
     vidrioLiquido.js  la lente del vidrio de la tienda
@@ -230,6 +237,13 @@ lente en los controles, radio cero en fotos y píldora en botones, un eyebrow ca
 tres secciones como máximo, **cero guiones largos en textos visibles**, voseo
 ("el perfume que ya conocés").
 
+**Tienda desde la etapa 3A:** la ficha se abre con `?aroma=<slug>` (link para
+compartir, "atrás" la cierra). La tarjeta es foto, nombre, notas y un precio,
+sin pastillas: el `+` agrega directo o abre la hoja de tamaños. El cajón se
+abre solo en el primer agregado; después sube una barra con "Ver pedido".
+Filtros "Para" y "Familia" en la dirección. En el celular, "Ver 12 más" en vez
+del paginador. Detalle en `docs/DISENO.md`.
+
 **Nombres:** la web muestra el **nombre oficial** del perfume (la gente lo busca
 así; el pie aclara que son versiones inspiradas). La línea se aclara en cada
 tamaño de la ficha, el carrito y el WhatsApp: "Unlock" o "Bagues, caja Arizona"
@@ -295,6 +309,29 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
 - **`naturalWidth` con `srcset` viene dividido por la densidad**: el archivo de
   560 px puede decir 179. Para saber los píxeles reales, cargar el archivo sin
   `srcset`.
+- **El clic de Playwright trae el elemento a la vista y deja el mouse
+  encima.** Medir saltos de scroll con eso da falsos positivos (el código
+  viejo "saltaba" 900 → 246 solo en el banco) y el `:hover` de la tarjeta
+  movía 2 px. Para medir posición: `touchscreen.tap` o `el.click()` desde JS.
+- **Con un diálogo abierto el body queda `position: fixed`** (corrido
+  `-scrollY`, `useBloqueoScroll`). `scrollTo` no mueve nada mientras tanto: un
+  chequeo que quiera mover la página de atrás tiene que correr `body.style.top`
+  (ver `abrir_con_pie_detras` en el banco). Y `window.scrollY` lee 0.
+- **`vite build` suelto borra `dist/catalogo/`.** `servir.mjs` contesta 404 en
+  `/catalogo` y el banco o Lighthouse fallan sin explicación. Siempre
+  `npm run build`, que corre el prerender.
+- **Lighthouse en el contenedor tiene mucho ruido** (TBT de 125 a 690 ms con el
+  mismo build). Para decidir entre dos variantes: correrlas intercaladas, una
+  y una, y mirar la mediana del LCP. Así se vio que sacar la preflight de CORS
+  (clave en la dirección) empeoraba la simulación 250 ms: no se hizo.
+- **El estado de una entrada del historial sobrevive a recargar.** La hoja de
+  tamaños se abre con una entrada propia; sin la marca `SESION` de
+  `TiendaShell`, recargar la reabría sola.
+- **Los imports nuevos de `lib/` llevan `.js`** (`./familias.js`): sin eso node
+  no los resuelve y no se pueden probar sin Vite, como `busqueda.js`.
+- **El código de proveedora no es el SKU de las tiendas.** bagues.com.ar y
+  unlock.com.ar usan SKU como `BNUDLINE` o `ULSAUVAH`: buscar `10282038` ahí no
+  encuentra nada. No escribir que "se puede buscar en la web de Bagués".
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.
@@ -354,10 +391,19 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
 - Llevar el vidrio a la ficha y al cajón del pedido (pendiente de diseño viejo).
 - **La aclaración del pie dice "retiro los viernes"** (`settings.aclaracion_pedido`).
   El plazo real varía con el cierre del ciclo: Sebas la cambia desde Ajustes.
-- **De la etapa 1 de la auditoría** quedaron: página 404 (choca con la
-  reescritura de Vercel), el LCP de `/catalogo` (primera fila de fotos en
-  `lazy`) y el salto arriba al abrir la ficha en Chromium móvil. Detalle en
-  [`docs/QA.md`](docs/QA.md#pendientes), junto con lo que va en la etapa 2.
+- **De la etapa 1 de la auditoría** queda la página 404 (choca con la
+  reescritura de Vercel). El salto al abrir la ficha se resolvió en la etapa 3A
+  y el LCP de `/catalogo` bajó 150 ms (E3-A9); lo que sigue es la cadena HTML →
+  JS → catálogo → foto. Pendiente medir en un Android real leer el catálogo sin
+  preflight de CORS (en la simulación de Lighthouse salió peor).
+- **Siete aromas sin familia ni notas** (Bad Boy, One Million, Polo Blue, Polo
+  Red, Creed Aventus, Phantom, Phantom Black): caen en "Otros", no aparecen en
+  ningún filtro de familia y su tarjeta no tiene línea de notas. Se arregla
+  cargándoles `familia_olfativa` (y las notas, si se quiere) desde el panel.
+- **¿La caja trae el código impreso?** Si Sebas lo confirma, la línea de la
+  ficha (`FICHA.verificar` en `contenido.js`) puede decirlo.
+- **Etapa 3B** (portada, sello, og.jpg, capturas de clientas, foto de Sebas)
+  y lo que quedó de la 3A: ver [`docs/QA.md`](docs/QA.md#pendientes).
 
 ## 13. Documentación del repo
 

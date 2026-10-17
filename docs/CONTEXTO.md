@@ -219,6 +219,17 @@ La parte que más enseñó. Ninguno de estos saltaba mirando la pantalla.
 
 ---
 
+## Estado al 17 de octubre de 2026
+
+**Publicadas las etapas 2 (fotos en un solo estudio) y 3A de la auditoría.**
+La 3A cambió cómo se elige y se pide: cada perfume tiene su link
+(`?aroma=`, "atrás" cierra la ficha), la ficha muestra precio, ahorro, código
+de proveedora y el botón en el primer pantallazo del celular, la tarjeta dice
+notas en vez de "versión inspirada", los tamaños se eligen en una hoja chica,
+el cajón se abre solo la primera vez, hay filtros por familia olfativa en la
+dirección, "Si te gusta este, mirá también" y "Ver 12 más" en el celular.
+Registro y mediciones en [`QA.md`](QA.md#etapa-3a-ficha-tarjeta-filtros-y-link-por-perfume-17-de-octubre-de-2026).
+
 ## Estado al 16 de octubre de 2026
 
 **Publicada la etapa 1 de la auditoría de octubre:** la ficha ya no queda

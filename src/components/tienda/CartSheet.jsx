@@ -5,7 +5,9 @@ import useDialogo from '../../hooks/useDialogo';
 import { pesos } from '../../lib/format';
 import { linkWhatsApp, mensajePedidoCliente, normalizarTelefono } from '../../lib/whatsapp';
 import { detalleLinea } from '../../lib/producto';
-import { PEDIDO } from '../../config/contenido';
+import { envioGratis } from '../../lib/envio';
+import { PEDIDO, conDatos } from '../../config/contenido';
+import { ENVIO_GRATIS_DESDE } from '../../config/ajustes';
 import s from './CartSheet.module.css';
 
 export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
@@ -82,6 +84,7 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
   // que mostrar el sello mentiria. `grupos` sale del motor de promos con las
   // reglas de settings.promos_ciclo: vacio cuando no hay 2x1.
   const gruposActivos = new Set((grupos || []).map((g) => g.grupo));
+  const envio = envioGratis(total, ENVIO_GRATIS_DESDE);
 
   return (
     <>
@@ -149,6 +152,24 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
                 ))}
 
                 <div className={s.totales}>
+                  {/* Antes del total, lo que la clienta se pregunta: cómo paga
+                      y cuánto le falta para no pagar el envío. */}
+                  <p className={s.sena}>{PEDIDO.sena}</p>
+                  <div className={s.envio}>
+                    <p className={`${s.envioTexto} tnum`}>
+                      {envio.gratis ? PEDIDO.envioGratis : conDatos(PEDIDO.envioFalta, { falta: pesos(envio.falta) })}
+                    </p>
+                    <div
+                      className={s.barra}
+                      role="progressbar"
+                      aria-label={PEDIDO.envioEtiqueta}
+                      aria-valuemin={0}
+                      aria-valuemax={ENVIO_GRATIS_DESDE}
+                      aria-valuenow={Math.min(total, ENVIO_GRATIS_DESDE)}
+                    >
+                      <span className={s.barraLlena} style={{ transform: `scaleX(${envio.progreso})` }} />
+                    </div>
+                  </div>
                   {ahorro > 0 && (
                     <div className={s.filaTotal}>
                       <span className={s.totalLabel}>Precio de lista</span>
@@ -162,6 +183,7 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
                   {ahorro > 0 && (
                     <p className={`${s.ahorro} tnum`}>Ahorrás {pesos(ahorro)} con la promo del ciclo.</p>
                   )}
+                  <p className={s.confirmo}>{PEDIDO.confirmo}</p>
                 </div>
 
                 <button type="button" className="tbtn wide" onClick={() => setPaso('datos')}>

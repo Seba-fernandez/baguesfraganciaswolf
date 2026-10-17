@@ -67,7 +67,7 @@ export const NOSOTROS = {
   parrafos: [
     'Somos Grupo Wolf, un emprendimiento familiar de Córdoba. Lo arrancó mi viejo y hoy lo seguimos entre la familia, con una idea sencilla: acercarte los perfumes que todo el mundo quiere, de una persona a otra, sin el local caro que después terminás pagando vos.',
     'Cada frasco lo fabrica y lo rotula la casa Bagués. Es el mismo aroma que probás en la perfumería del shopping, pero a precio de reventa directa. Vos reconocés el perfume, nosotros te sacamos el sobreprecio de la marca de arriba.',
-    'Nada de comprar a ciegas. Me escribís por WhatsApp, te cuento qué hay y qué está por llegar, y lo retirás los viernes acá en Córdoba. Si algo no te cierra, lo hablamos tranquilos.',
+    'Nada de comprar a ciegas. Me escribís por WhatsApp, te cuento qué hay y qué está por llegar, y te lo mando por correo o, si sos de Córdoba capital, lo retirás o te lo llevo. Si algo no te cierra, lo hablamos tranquilos.',
   ],
   firma: 'Sebastián, de Grupo Wolf',
 };
@@ -121,6 +121,12 @@ export const PEDIDO = {
   listoSinLink: 'El pedido ya está guardado. Escribime por WhatsApp y lo confirmamos.',
   abrirWhatsapp: 'Abrir WhatsApp con mi pedido',
   cerrar: 'Listo',
+  // Arriba y abajo del total, en el cajón. {falta} se completa con pesos.
+  sena: 'Seña del 50 % para reservar. Transferencia o efectivo.',
+  envioFalta: 'Te faltan {falta} para el envío gratis',
+  envioGratis: 'Tenés envío gratis',
+  envioEtiqueta: 'Envío gratis',
+  confirmo: 'Te confirmo stock, envío y total final por WhatsApp. No pagás nada acá.',
 };
 
 export const TARJETA = {
@@ -134,8 +140,8 @@ export const FICHA = {
   inspirado: 'Versión inspirada en el perfume original.',
   sinCiclo: 'Este aroma no está disponible en este ciclo.',
   aviso:
-    'Trabajo por encargo: el pedido me llega por WhatsApp y te confirmo stock y tiempos. ' +
-    'Retiro los viernes en Córdoba.',
+    'Trabajo por encargo: el pedido me llega por WhatsApp y te confirmo stock, envío y ' +
+    'fecha según el cierre del ciclo.',
 };
 
 export const COMO_FUNCIONA = {
@@ -143,10 +149,27 @@ export const COMO_FUNCIONA = {
   pasos: [
     { icono: 'bolsa', titulo: 'Armás el pedido', texto: 'Elegís aromas y tamaño. No se paga nada acá.' },
     { icono: 'chat', titulo: 'Te escribo', texto: 'Te confirmo stock, total y tiempos por WhatsApp.' },
-    { icono: 'caja', titulo: 'Lo retirás', texto: 'Llega los viernes. Coordinamos en Córdoba.' },
+    { icono: 'caja', titulo: 'Lo recibís', texto: 'Por correo a todo el país. En Córdoba capital lo retirás o te lo llevo.' },
   ],
   cita: 'Trabajo por encargo, con catálogo propio y precio de reventa directa.',
   boton: 'Escribime por WhatsApp',
+};
+
+/**
+ * Antes de pedir: lo que una persona que no te conoce necesita saber para
+ * confiar y pagar. Va en la portada, después de "Cómo funciona".
+ * {monto} es ENVIO_GRATIS_DESDE (ajustes.js), escrito en pesos.
+ * Datos confirmados por Sebastián en octubre de 2026. El plazo de entrega varía
+ * con el cierre del ciclo: por eso no se promete un día.
+ */
+export const ANTES_DE_PEDIR = {
+  titulo: 'Antes de pedir',
+  datos: [
+    { titulo: 'Pagás', texto: 'Seña del 50 % para reservar y el resto al retirar o recibir. Transferencia o efectivo.' },
+    { titulo: 'Envío', texto: 'A todo el país por correo. Gratis desde {monto}; por menos, el envío lo pagás vos.' },
+    { titulo: 'Córdoba', texto: 'En Córdoba capital lo retirás o te lo llevo. El punto de retiro te lo paso por WhatsApp.' },
+    { titulo: 'Cuándo llega', texto: 'Varía con el cierre del ciclo: te confirmo la fecha por WhatsApp.' },
+  ],
 };
 
 /**

@@ -28,12 +28,23 @@ Están agrupados por dónde aparecen:
 | `TARJETA` | la aclaración de "versión inspirada" |
 | `FICHA` | la ventana que se abre al tocar un aroma |
 | `COMO_FUNCIONA` | los tres pasos y la frase de cierre |
+| `ANTES_DE_PEDIR` | el bloque de la portada con el pago, la seña, el envío, Córdoba y cuándo llega |
+| `PEDIDO` | los textos del cajón: botones, campos, la línea de la seña, la barra de envío gratis y la pantalla final |
 | `LEGAL` | el aviso corto del catálogo y los tres párrafos del pie |
 | `PIE` | los títulos de las columnas de abajo |
 
 Donde dice `{aromas}` se mete el número real cuando se muestra. Si se escribe
 `{otracosa}` sin que exista ese dato, queda el `{hueco}` a la vista en la
 pantalla: es a propósito, para que el error se note y no salga un "undefined".
+
+## Cambiar cómo se paga, la seña o el envío
+
+Los textos están en `ANTES_DE_PEDIR` (portada) y `PEDIDO` (cajón) de
+`contenido.js`; el monto del envío gratis, en `ENVIO_GRATIS_DESDE` de
+`ajustes.js`, y los dos lugares lo toman de ahí. Si cambia la seña o los medios
+de pago, hay que cambiar las dos frases (`ANTES_DE_PEDIR` y `PEDIDO.sena`). La
+aclaración chica del pie ("Venta particular...") no está en el código: es
+`aclaracion_pedido` en Ajustes del panel.
 
 **El aviso legal es lo único de ese archivo que conviene no tocar sin
 pensarlo.** Está redactado para dejar en claro que la web no vende originales ni
@@ -42,7 +53,8 @@ representa a las marcas que nombra.
 ## Cambiar un número
 
 En **`src/config/ajustes.js`**: cuántos aromas por página, cuántos destacados
-entran, el tope de unidades por pedido, a qué altura aparece el botón de volver
+entran, desde cuánto el envío es gratis (`ENVIO_GRATIS_DESDE`, en pesos: lo usan
+el bloque "Antes de pedir" y la barra del cajón), el tope de unidades por pedido, a qué altura aparece el botón de volver
 arriba, la proporción del recuadro de las fotos y en qué carpeta viven.
 
 ## Cambiar UNA foto

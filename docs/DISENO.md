@@ -271,7 +271,17 @@ el ícono es chico.
 - **Nombres** — siempre el nombre oficial del perfume, que es como lo busca la
   clienta. La línea y la caja se dicen en el tamaño, nunca en el título.
 - **Cajón del pedido** — carrito y cierre en la misma hoja, nunca una hoja que
-  abre otra hoja.
+  abre otra hoja. Arriba del total, la seña y una barra fina de envío gratis
+  (lo único en acento); abajo, "No pagás nada acá". La pantalla final tiene un
+  enlace real a WhatsApp, no depende de que se abra solo.
+- **Antes de pedir** — cuatro datos en la portada (pago, envío, Córdoba,
+  cuándo llega), 2×2 en el celular y en fila en escritorio. Filete arriba,
+  nombre en Figtree 600, sin íconos ni círculos de color. El único acento es la
+  cifra del envío gratis.
+- **Ficha y cajón son diálogos** — van fuera de `<main>` (si no, el pie se
+  pinta encima), con el resto de la página `inert`, el foco adentro y Escape
+  para cerrar. Foco de teclado: 2 px en el acento. Área táctil de 44 px aunque
+  el control se vea más chico (con `::after`, medido desde adentro del borde).
 - **Barra de filtros** — placa de vidrio con buscador y pastillas. Las pastillas
   bajan de línea en vez de esconderse en una tira que se corta: un filtro que
   hay que descubrir arrastrando es un filtro que no se usa.

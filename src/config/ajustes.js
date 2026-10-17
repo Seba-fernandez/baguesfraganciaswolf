@@ -9,6 +9,13 @@ export const POR_PAGINA = 12;
 /** Cuantos destacados entran en la fila de arriba (se marcan en el panel). */
 export const DESTACADOS_MAXIMO = 6;
 
+/**
+ * Desde cuanto el envio es gratis, en pesos. Lo usan el bloque "Antes de
+ * pedir" de la portada y la barra del cajon. Debajo de ese monto el envio lo
+ * paga quien compra.
+ */
+export const ENVIO_GRATIS_DESDE = 60000;
+
 /** Unidades maximas de un mismo aroma en un pedido. */
 export const CANTIDAD_MAXIMA = 9;
 

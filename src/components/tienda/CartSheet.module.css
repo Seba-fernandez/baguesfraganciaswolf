@@ -112,6 +112,18 @@
 .totalValor { font-size: 1.24rem; font-weight: 600; color: var(--ink); }
 .ahorro { margin-top: 8px; font-size: 0.82rem; color: var(--amber); }
 
+/* Seña y envio gratis, arriba del total; la aclaracion de que aca no se paga,
+   abajo. La barra es lo unico con acento: cuanto falta para no pagar envio. */
+.sena { font-size: 0.82rem; color: var(--ink-dim); line-height: 1.5; }
+.envio { margin: 12px 0 16px; }
+.envioTexto { font-size: 0.82rem; color: var(--ink); margin-bottom: 7px; }
+.barra { height: 4px; border-radius: 2px; background: var(--bg-3); overflow: hidden; }
+.barraLlena {
+  display: block; height: 100%; background: var(--amber);
+  transform-origin: left center; transition: transform var(--dur) var(--ease);
+}
+.confirmo { margin-top: 12px; font-size: 0.78rem; line-height: 1.5; color: var(--ink-faint); }
+
 .campo { display: flex; flex-direction: column; gap: 7px; margin-top: 16px; }
 .input {
   width: 100%; min-height: 48px; padding: 13px 16px;

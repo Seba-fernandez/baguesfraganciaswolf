@@ -3,11 +3,12 @@ import Hero from './Hero';
 import Destacados from './Destacados';
 import Nosotros from './Nosotros';
 import ComoFunciona from './ComoFunciona';
+import AntesDePedir from './AntesDePedir';
 
 /**
  * Página de inicio. Es la vidriera: el hero, la fila de destacados, quiénes
- * somos y cómo funciona. El catálogo completo vive en su propia página
- * (/catalogo), a un botón de acá. Los datos llegan del TiendaShell por contexto.
+ * somos, cómo funciona y lo que hay que saber antes de pedir. El catálogo
+ * completo vive en su propia página (/catalogo), a un botón de acá. Los datos llegan del TiendaShell por contexto.
  */
 export default function HomeScreen() {
   const {
@@ -31,6 +32,7 @@ export default function HomeScreen() {
       {!loading && <Destacados products={products} onOpen={abrir} />}
       <Nosotros settings={settings} />
       <ComoFunciona settings={settings} />
+      <AntesDePedir />
     </>
   );
 }

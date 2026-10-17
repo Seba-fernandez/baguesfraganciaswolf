@@ -1,0 +1,20 @@
+/* Cuatro datos en grilla: 2x2 en el celular, una fila en escritorio. Cada uno
+   con un filete arriba, el nombre en Figtree 600 y el texto en tono
+   secundario. Sin iconos ni circulos de color (DISENO.md). */
+.section { padding-block: clamp(8px, 2vw, 24px) clamp(64px, 9vw, 112px); }
+
+.titulo { font-size: clamp(1.9rem, 4.2vw, 3rem); margin-bottom: clamp(24px, 4vw, 40px); }
+
+.grilla {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 18px; margin: 0;
+}
+@media (min-width: 900px) { .grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; } }
+
+.dato { border-top: 1px solid var(--line-bright); padding-top: 14px; }
+.nombre { font-weight: 600; font-size: 0.98rem; color: var(--ink); margin-bottom: 6px; }
+.texto { margin: 0; color: var(--ink-dim); font-size: 0.9rem; line-height: 1.55; }
+@media (min-width: 900px) { .texto { font-size: 0.95rem; } }
+
+/* La unica cifra con acento: desde cuanto el envio es gratis. */
+.cifra { color: var(--amber); font-weight: 600; white-space: nowrap; }

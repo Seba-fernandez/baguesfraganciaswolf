@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { esPublicable, presentacionPorDefecto, tituloDe } from '../../lib/producto';
+import { ahorroDe, esPublicable, presentacionPorDefecto, tituloDe } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import useReveal from '../../hooks/useReveal';
 import { DESTACADOS } from '../../config/contenido';
@@ -8,10 +8,12 @@ import ProductThumb from './ProductThumb';
 import s from './Destacados.module.css';
 
 /**
- * Seleccion curada. Va CONTENIDA en un marco propio, con su eyebrow, para que
- * se lea como una vidriera aparte del catalogo abierto de abajo. Es un carrusel
- * horizontal: se puede arrastrar, o pasar con las flechas de cada costado, que
- * al llegar al tope vuelven al inicio.
+ * Los que siempre salen (rediseño C). Una fila que se desliza, sin marco: la
+ * tarjeta que queda en el centro se ve nítida y las de los costados quedan
+ * "detrás del vidrio" acanalado, como en el hero (CSS con
+ * animation-timeline: view(inline); donde no hay soporte, todas nítidas).
+ * Precio a pagar en tinta y el de lista tachado al lado (no negociable 11).
+ * En escritorio, flechas a los costados; en el celular, el dedo.
  */
 export default function Destacados({ products, onOpen, cargando = false }) {
   const ref = useReveal();
@@ -41,9 +43,8 @@ export default function Destacados({ products, onOpen, cargando = false }) {
 
   return (
     <section className={`tw ${s.section}`} ref={ref}>
-      <div className={`${s.marco} tglass`}>
+      <div className={s.marco}>
         <header className={s.head}>
-          <p className={s.eyebrow}>{DESTACADOS.eyebrow}</p>
           <h2 className={s.titulo}>{DESTACADOS.titulo}</h2>
           <p className={s.bajada}>{DESTACADOS.bajada}</p>
         </header>
@@ -77,12 +78,18 @@ export default function Destacados({ products, onOpen, cargando = false }) {
                   onClick={() => onOpen(p)}
                 >
                   <span className={s.media}>
-                    <ProductThumb producto={p} ratio={PROPORCION.destacado} sizes="(max-width: 779px) 232px, 248px" />
+                    <ProductThumb producto={p} ratio={PROPORCION.destacado} sizes="(max-width: 779px) 62vw, 260px" />
+                    <span className={s.vidrio} aria-hidden="true" />
                   </span>
                   <span className={s.info}>
                     <span className={s.nombre}>{tituloDe(p)}</span>
                     {p.familia_olfativa && <span className={s.casa}>{p.familia_olfativa}</span>}
-                    {pres && <span className={`${s.precio} tnum`}>{DESTACADOS.desde} {pesos(pres.precio)}</span>}
+                    {pres && (
+                      <span className={`${s.precio} tnum`}>
+                        <span className={s.desde}>{DESTACADOS.desde}</span> {pesos(pres.precio)}
+                        {ahorroDe(pres) > 0 && <s className={s.antes}>{pesos(pres.precio_anterior)}</s>}
+                      </span>
+                    )}
                   </span>
                 </button>
               );

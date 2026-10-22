@@ -1,88 +1,113 @@
-.section { padding-block: clamp(40px, 6vw, 76px); }
+/* Los que siempre salen (rediseño C): una fila sin marco, a sangre en el
+   celular, donde la tarjeta del centro queda nítida y las de los costados
+   detrás del vidrio acanalado. */
+.section { padding-block: 56px 32px; }
+.marco { position: relative; }
 
-/* El marco que la contiene es una placa de vidrio (.tglass en el JSX): lo que la
-   separa del catalogo abierto y la hace leer como vidriera curada. Aca solo la
-   forma. Sin overflow:hidden: las flechas de vidrio asoman por el canto. */
-.marco {
-  padding: clamp(20px, 3.5vw, 38px);
-  border-radius: 26px;
-}
+.head { margin-bottom: 20px; }
+.titulo { font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.04; }
+.bajada { margin-top: 8px; color: var(--ink-dim); font-size: 0.98rem; max-width: 40ch; }
 
-.head { margin-bottom: 22px; }
-.eyebrow {
-  font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--amber); margin-bottom: 10px;
-}
-.titulo { font-size: clamp(1.6rem, 3.4vw, 2.4rem); }
-.bajada { margin-top: 8px; color: var(--ink-dim); font-size: 0.95rem; }
-
-/* Carrusel horizontal con snap: en mobile se desliza, en desktop entra todo.
-   CSS puro, sin libreria de carrusel arrastrando dependencias. */
-/* El carrusel: la pista mas las dos flechas de cada costado. Carrusel en todos
-   los tamanos, para que la metafora de vidriera que se recorre valga igual en
-   la compu. */
 .carrusel { position: relative; }
 
-/* El eje vertical va EXPLICITAMENTE en hidden. Con solo overflow-x:auto, el
-   otro eje computa a auto (regla del spec: si uno deja de ser visible, el otro
-   tambien), asi que la pista quedaba scrolleable en vertical: al arrastrar el
-   dedo hacia abajo sobre el carrusel, el gesto se lo comia la pista en vez de
-   bajar la pagina, y el scroll se sentia trabado hasta tocar en otro lado.
-
-   Con overflow-y en hidden alcanza: el elemento deja de ser scrolleable en
-   vertical y el navegador encadena solo el gesto al documento. NO va
-   touch-action: pan-x aca — eso limitaria el gesto a horizontal y volveria a
-   trabar el scroll de la pagina, que es justo el sintoma que se arregla.
-
-   overscroll-behavior-x corta el encadenamiento al llegar al tope horizontal
-   (si no, en iOS el gesto sigue de largo y dispara el "volver atras").
-   El snap pasa de mandatory a proximity: mandatory pelea con el dedo y hace que
-   la pista se sienta imantada mientras uno todavia esta decidiendo el gesto. */
+/* El eje vertical va en hidden a propósito: con solo overflow-x el otro eje
+   quedaba scrolleable y el gesto vertical se trababa en la pista. Snap
+   proximity: mandatory pelea con el dedo. En el celular la pista sale a sangre
+   y las tarjetas se centran, así la del medio es la nítida. */
 .fila {
-  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(178px, 232px);
+  display: grid; grid-auto-flow: column; grid-auto-columns: 62vw;
   gap: 14px;
+  margin-inline: -20px; padding: 4px 19vw 8px;
   overflow-x: auto; overflow-y: hidden;
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
-  padding-bottom: 6px; scrollbar-width: none;
+  scrollbar-width: none;
+  view-timeline-axis: inline;
 }
 .fila::-webkit-scrollbar { display: none; }
-@media (min-width: 780px) { .fila { grid-auto-columns: minmax(200px, 248px); gap: 18px; } }
+@media (min-width: 780px) {
+  .fila { grid-auto-columns: 260px; gap: 22px; margin-inline: 0; padding-inline: 2px; }
+}
 
-/* Flechas grises, sutiles. Se apoyan en el borde del marco; al llegar al tope,
-   el JS las hace volver al inicio. Se ocultan del lector de pantalla porque el
-   carrusel se puede recorrer con el teclado por los propios items. */
-/* El vidrio lo pone .tglass-clear (clase global en el JSX); acá posición y forma. */
 .flecha {
-  position: absolute; top: 38%; transform: translateY(-50%); z-index: 2;
-  width: 44px; height: 44px; border-radius: 50%;
-  display: grid; place-items: center;
+  position: absolute; top: 40%; transform: translateY(-50%); z-index: 2;
+  width: 46px; height: 46px; border-radius: 50%;
+  display: none; place-items: center;
   color: var(--ink-dim); border: 0; cursor: pointer;
 }
 .flecha:hover { color: var(--ink); }
-.flechaIzq { left: -6px; }
-.flechaDer { right: -6px; }
-@media (min-width: 560px) { .flechaIzq { left: -18px; } .flechaDer { right: -18px; } }
+.flechaIzq { left: -22px; }
+.flechaDer { right: -22px; }
+@media (min-width: 780px) and (hover: hover) { .flecha { display: grid; } }
 
 .item {
-  scroll-snap-align: start;
+  scroll-snap-align: center;
   display: flex; flex-direction: column; gap: 0;
   background: none; border: 0; padding: 0; text-align: left; cursor: pointer;
 }
-.media { display: block; }
-.item:hover .media { opacity: 0.92; }
+.media { position: relative; display: block; overflow: hidden; }
+
+/* El vidrio acanalado sobre la foto: estrías verticales de 26 px con brillo
+   en el filo y sombra en el valle (solo gradientes, nada de desenfoque, que
+   en una fila que se mueve cuesta cuadros). Arranca invisible: si el navegador
+   no sabe de scroll-driven animations, todas las fotos quedan nítidas. */
+.vidrio {
+  position: absolute; inset: 0; pointer-events: none;
+  opacity: 0;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(255, 244, 236, 0.16) 0px, rgba(255, 244, 236, 0.03) 3px,
+      rgba(40, 8, 14, 0) 9px, rgba(40, 8, 14, 0.06) 17px,
+      rgba(40, 8, 14, 0.42) 24px, rgba(255, 236, 220, 0.24) 26px),
+    linear-gradient(180deg, rgba(74, 22, 31, 0.32), rgba(74, 22, 31, 0.5));
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .item {
+      view-timeline-name: --dest;
+      view-timeline-axis: inline;
+    }
+    .vidrio {
+      animation: vidrioCentro linear both;
+      animation-timeline: --dest;
+    }
+    .item .media :global(img) {
+      animation: fotoCentro linear both;
+      animation-timeline: --dest;
+    }
+  }
+}
+/* Entra de costado detrás del vidrio, se aclara en el centro y vuelve a
+   empañarse al salir por el otro lado. */
+@keyframes vidrioCentro {
+  0%, 18% { opacity: 1; }
+  42%, 58% { opacity: 0; }
+  82%, 100% { opacity: 1; }
+}
+@keyframes fotoCentro {
+  0%, 18% { transform: scale(1.04); }
+  42%, 58% { transform: none; }
+  82%, 100% { transform: scale(1.04); }
+}
+/* En escritorio entran casi todas en pantalla: sin vidrio. */
+@media (min-width: 780px) {
+  .vidrio { display: none; }
+  .item .media :global(img) { animation: none; }
+}
 
 .info { display: flex; flex-direction: column; gap: 3px; padding-top: 12px; }
-/* Cormorant 600, igual que el nombre de la tarjeta del catalogo: un solo peso
-   para el nombre del aroma en toda la tienda, y la cara que ya viaja en la
-   primera carga (la 400 llega despues del evento load). */
-.nombre { font-family: var(--f-display); font-weight: 600; font-size: 1.16rem; color: var(--ink); line-height: 1.25; }
+.nombre { font-family: var(--f-display); font-weight: 600; font-size: 1.24rem; color: var(--ink); line-height: 1.2; }
 .item:hover .nombre { color: var(--amber); }
-.casa { font-size: 0.76rem; letter-spacing: 0.1em; color: var(--ink-faint); }
-.precio { font-size: 0.86rem; color: var(--ink-dim); margin-top: 4px; }
+.casa { font-size: 0.8rem; color: var(--ink-faint); }
+.precio {
+  margin-top: 6px;
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px;
+  font-size: 1.05rem; font-weight: 600; color: var(--ink);
+}
+.desde { font-size: 0.8rem; font-weight: 500; color: var(--ink-faint); }
+.antes { font-size: 0.82rem; font-weight: 500; color: var(--ink-faint); text-decoration-color: var(--amber); }
 
-/* Tarjetas de espera, mientras llega la base: mismo 3:4 y casi el mismo alto
-   que una de verdad (nombre, familia, precio). */
+/* Tarjetas de espera, mientras llega la base: mismo 3:4 y casi el mismo alto. */
 .espera { cursor: default; }
 .esperaFoto { display: block; aspect-ratio: 3 / 4; background: var(--bg-2); }
 .esperaLinea { display: block; height: 0.9rem; margin-block: 4px; width: 78%; border-radius: 3px; background: var(--bg-3); }

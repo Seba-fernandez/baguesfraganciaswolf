@@ -5,81 +5,45 @@ import Flecha from './Flecha';
 import s from './Hero.module.css';
 
 /**
- * Hero editorial sobre un escenario: dunas de arena al atardecer (public/hero/
- * duna.svg, lo genera scripts/fondo/generar-duna.mjs) a sangre, y el grupo de
- * frascos del ciclo parado sobre el piso de la duna con su sombra de contacto.
- * Nada de caja ni azulejo: los frascos están EN la escena.
+ * Hero C, "A través del vidrio" (rediseño de octubre de 2026).
  *
- *  - La corona: Wolf como firma, Casa Bagués como aval. Presencia sin explicar.
- *  - El título grande, la bajada y la fila de datos duros, sobre un velo que
- *    oscurece sólo detrás del texto.
- *  - Los CTA y las promos del ciclo son vidrio: flotan sobre la arena, que es
- *    donde el vidrio tiene algo que refractar.
- *  - Abajo, fuera de la escena, la cinta de nombres que la gente reconoce.
+ * La escena es UNA imagen horneada (public/hero/c/, la arma
+ * hornear_hero.py del rediseño): pared vino con un halo rosa, cajas Bagués
+ * reales detrás de un vidrio acanalado y una ventana en arco donde una caja se
+ * ve nítida. "El mismo aroma, visto en otro frasco." Nada de WebGL: el vidrio
+ * ya viene dibujado, así el LCP es una sola imagen precargada.
  *
- * La entrada es la MISMA coreografía que antes hacía GSAP, ahora en CSS puro
- * (ver los @keyframes de Hero.module.css). Se cambió por peso: gsap más
- * ScrollTrigger eran 49 kB comprimidos en el chunk de la portada, para una
- * línea de tiempo que arranca sola y un parallax. Los `data-hero` quedaron
- * porque ahora son los ganchos de los `animation-delay` en el CSS.
+ * La imagen deja libres las zonas del texto. En el celular el hero mide lo
+ * mismo que la imagen (390 x 844, escalado al ancho): titular arriba, ventana
+ * en el medio, precio y botón abajo, dentro del visor de Instagram (664). En
+ * escritorio el texto va en la franja izquierda y la ventana queda a la derecha.
  *
- * Como las animaciones son declarativas, corren apenas el navegador dibuja, sin
- * esperar a que el JavaScript se descargue y se ejecute: además de pesar menos,
- * la entrada se ve antes. El parallax pasó a scroll-driven animation nativa y
- * el respeto por prefers-reduced-motion lo hace una media query.
+ * Se conservan los ganchos que mide el banco (data-hero, data-qa): el sello,
+ * la línea de datos, el botón y la cinta de nombres, que ahora son links a la
+ * ficha de cada aroma (E3-B5).
  */
 export default function Hero({
   settings, promos = {}, onVerPromo, onOpen,
-  totalAromas, desde, nombresAromas = [], heroProducto = null,
+  totalAromas, desde, nombresAromas = [],
 }) {
   const lista = Object.values(promos);
   // El precio minimo y el numero de aromas llegan con la base. Hasta entonces
-  // (y en el HTML pre-generado) su lugar queda reservado y vacio: antes salia
-  // un 104 escrito a mano que despues cambiaba al numero real (UX-17).
+  // (y en el HTML pre-generado) su lugar queda reservado y vacio (UX-17).
   const [antesDesde, despuesDesde] = INICIO.datosDesde.split('{desde}');
   const [antesAromas, despuesAromas] = INICIO.datosAromas.split('{n}');
 
+  function abrirAroma(e, item) {
+    // Con el link de verdad en el href (se puede abrir en otra pestaña); el
+    // toque normal abre la ficha encima de la portada, sin cambiar de página.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0 || !onOpen) return;
+    e.preventDefault();
+    onOpen(item.producto);
+  }
+
   return (
     <section className={s.hero} id="inicio-hero">
-      <div className={s.escenario}>
-      {/* La escena y el velo son decorativos.
-
-          La escena se dibuja como background-image y no como <img>. Se probaron
-          las dos: con <img> el LCP medido empeoraba ~150 ms (2557 contra 2411),
-          porque el pintado queda atado a la decodificación del elemento. El
-          fondo lo descubre igual de temprano el <link rel=preload> de
-          index.html, que va con fetchpriority alta. */}
+      <div className={s.caja}>
       <div className={s.escena} data-hero="escena" aria-hidden="true" />
-      <div className={s.velo} aria-hidden="true" />
-
-      {/* Los frascos (fondo transparente) sobre el piso de la duna, con su sombra
-          de contacto. Imagen decorativa para el lector de pantalla. */}
-      <div className={s.banda}>
-        <div className={s.showcase} aria-hidden="true">
-          <span className={s.sombra} data-hero="sombra" />
-          {/* El grupo de frascos del ciclo, recortado sobre transparente, parado
-              sobre la arena de la duna. <picture> con media (no srcset con
-              anchos): el celular baja la version chica sin que la densidad de
-              pantalla lo empuje a la grande.
-
-              fetchpriority alta porque compite por el ancho de banda con la
-              escena del fondo. Va en minúsculas a propósito: React 18 no conoce
-              fetchPriority en camelCase y lo descarta sin escribirlo. */}
-          <picture>
-            <source media="(max-width: 899px)" srcSet="/hero/frascos-460.webp" width="460" height="292" />
-            <img
-              src="/hero/frascos-760.webp"
-              alt=""
-              className={s.frasco}
-              data-hero="frasco"
-              decoding="async"
-              fetchpriority="high"
-              width="760"
-              height="482"
-            />
-          </picture>
-        </div>
-      </div>
 
       <div className={`tw ${s.inner}`}>
         <div className={s.texto}>
@@ -89,19 +53,20 @@ export default function Hero({
           </p>
 
           <h1 className={s.titulo}>
-            {INICIO.titulo.map((linea) => (
+            {INICIO.titulo.map((linea, i) => (
               <span key={linea} className={s.lineaWrap}>
-                <span className={s.linea} data-hero="linea">{linea}</span>
+                <span className={`${s.linea} ${i === INICIO.titulo.length - 1 ? s.lineaItalica : ''}`} data-hero="linea">{linea}</span>
               </span>
             ))}
           </h1>
 
           <p className={s.bajada} data-hero="bajada">{INICIO.bajada}</p>
+        </div>
 
-          {/* La linea de datos va ARRIBA del boton: lo primero que pregunta
-              quien llega desde Instagram es cuanto sale y si tenes el suyo. */}
+        <div className={s.compra}>
+          {/* El precio es lo que la clienta busca primero: grande y en tinta. */}
           <p className={`${s.meta} tnum`} data-hero="meta" data-qa="hero-datos">
-            <span className={s.metaDato}>
+            <span className={`${s.metaDato} ${s.metaDesde}`}>
               {antesDesde}<span className={`${s.metaNum} ${s.metaPrecio}`}>{desde ? pesos(desde) : ''}</span>{despuesDesde}
             </span>
             <span className={s.metaSep} aria-hidden="true"> · </span>
@@ -112,8 +77,6 @@ export default function Hero({
             <span className={s.metaDato}>{INICIO.datosEnvio}</span>
           </p>
 
-          {/* Un solo boton. "Como funciona" es un enlace de texto: dos botones
-              del mismo peso le hacian elegir a la clienta antes de tiempo. */}
           <div className={s.acciones}>
             <Link to="/catalogo" className={`tbtn ${s.cta}`} data-hero="cta" data-qa="hero-cta">
               <span>{INICIO.verCatalogo}</span>
@@ -121,56 +84,43 @@ export default function Hero({
             </Link>
             <a href="#como" className={s.como} data-hero="como" data-qa="hero-como">{INICIO.verComo}</a>
           </div>
+
+          {lista.length > 0 && (
+            <div className={s.promos} data-hero="promos">
+              {lista.map((p) => (
+                <button key={p.grupo} type="button" className={`${s.promo} tbtn clear`} onClick={() => onVerPromo?.(p.grupo)}>
+                  <span className={s.promoSello}>{INICIO.selloPromo}</span>
+                  <span className={`${s.promoTexto} tnum`}>{p.titulo} · {pesos(p.precio_par)} {INICIO.porPar}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
+      </div>
 
-      {lista.length > 0 && (
-        <div className={`tw ${s.promos}`} data-hero="promos">
-          {lista.map((p) => (
-            <button
-              key={p.grupo}
-              type="button"
-              className={`${s.promo} tbtn clear`}
-              onClick={() => onVerPromo?.(p.grupo)}
+      {/* La cinta de nombres, de borde a borde. Duplicada para que el bucle no
+          tenga costura: la copia va aria-hidden y fuera del orden de tabulación.
+          Se frena con el puntero encima o con el foco adentro; quieta con
+          movimiento reducido. Mientras no llegan los nombres conserva su alto. */}
+      <nav className={s.cinta} data-hero="cinta" aria-label={INICIO.cintaEtiqueta}>
+        <div className={s.cintaPista}>
+          {nombresAromas.length < 6 && <span className={s.cintaItem}>&nbsp;</span>}
+          {nombresAromas.length >= 6 && [0, 1].map((copia) => nombresAromas.map((n) => (
+            <a
+              key={`${n.slug}-${copia}`}
+              href={`/catalogo?aroma=${encodeURIComponent(n.slug)}`}
+              className={s.cintaItem}
+              data-qa="cinta-aroma"
+              onClick={(e) => abrirAroma(e, n)}
+              {...(copia ? { 'aria-hidden': 'true', tabIndex: -1 } : {})}
             >
-              <span className={s.promoSello}>{INICIO.selloPromo}</span>
-              <span className={s.promoTexto}>
-                <span className={s.promoTitulo}>{p.titulo}</span>
-                <span className={`${s.promoDetalle} tnum`}>
-                  {p.detalle} · {pesos(p.precio_par)} {INICIO.porPar}
-                </span>
-              </span>
-              <span className={s.promoFlecha} aria-hidden="true"><Flecha /></span>
-            </button>
-          ))}
+              {n.nombre}
+              <span className={s.cintaPunto} aria-hidden="true">·</span>
+            </a>
+          )))}
         </div>
-      )}
-      </div>
-
-      {/* La cinta de nombres, de borde a borde, en movimiento. Duplicada para que
-          el bucle no tenga costura. Se frena al pasar el mouse.
-
-          Mientras no llegan los nombres (y en el HTML pre-generado) se dibuja
-          vacia pero con su alto: con el hero del celular mas bajo, la cinta
-          cae dentro de la primera pantalla, y aparecer de la nada empujaba a
-          "Nosotros" (CLS 0,09 en produccion, etapa 3B). */}
-      {nombresAromas.length < 6 && (
-        <div className={s.cinta} aria-hidden="true">
-          <div className={s.cintaPista}><span className={s.cintaItem}>&nbsp;</span></div>
-        </div>
-      )}
-      {nombresAromas.length >= 6 && (
-        <div className={s.cinta} data-hero="cinta" aria-hidden="true">
-          <div className={s.cintaPista}>
-            {[...nombresAromas, ...nombresAromas].map((n, i) => (
-              <span key={`${n}-${i}`} className={s.cintaItem}>
-                {n}
-                <span className={s.cintaPunto}>·</span>
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
+      </nav>
     </section>
   );
 }

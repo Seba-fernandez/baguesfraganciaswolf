@@ -91,7 +91,12 @@ export default function TiendaShell() {
       .map((p) => Number(presentacionPorDefecto(p)?.precio) || 0)
       .filter(Boolean);
     const ordenados = [...publicables].sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0));
-    const nombres = [...new Set(ordenados.map(tituloDe).filter((n) => n && n.length <= 22))];
+    // La cinta del hero: un nombre por aroma, con su producto, porque cada
+    // nombre es un link a su ficha (E3-B5).
+    const vistos = new Set();
+    const nombres = ordenados
+      .map((p) => ({ nombre: tituloDe(p), slug: p.slug, producto: p }))
+      .filter((x) => x.nombre && x.nombre.length <= 22 && x.slug && !vistos.has(x.nombre) && vistos.add(x.nombre));
     return {
       totalAromas: publicables.length,
       desde: precios.length ? Math.min(...precios) : null,

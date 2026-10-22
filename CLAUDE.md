@@ -231,8 +231,8 @@ Cada entrada tiene un `"tratamiento"`:
 ## 9. Diseño
 
 **Tienda:** sistema completo en [`docs/DISENO.md`](docs/DISENO.md). Lo mínimo:
-paleta Ámbar Noir (espresso `#17110d`, un solo acento rosa-vino `#e0708a`, oro de
-arena solo para brillos), Cormorant para títulos y Figtree para texto, vidrio con
+paleta Ámbar Noir (en la rama del rediseño, la noche pasó a vino hondo y la
+letra a Melodrama y Boska: ver Rediseño D abajo), Figtree para texto, vidrio con
 lente en los controles, radio cero en fotos y píldora en botones, un eyebrow cada
 tres secciones como máximo, **cero guiones largos en textos visibles**, voseo
 ("el perfume que ya conocés").
@@ -244,8 +244,20 @@ abre solo en el primer agregado; después sube una barra con "Ver pedido".
 Filtros "Para" y "Familia" en la dirección. En el celular, "Ver 12 más" en vez
 del paginador. Detalle en `docs/DISENO.md`.
 
-**Rediseño C, "A través del vidrio"** (rama `rediseno-visual`, a `main` solo con
-OK de Sebas; detalle en [`docs/PORTADA-C.md`](docs/PORTADA-C.md)): el hero es una
+**Rediseño D, "Cada perfume, una ciudad"** (rama `rediseno-visual`, a `main`
+solo con OK de Sebas; plan, decisiones y porqués en
+[`docs/PLAN-PORTADA-D.md`](docs/PLAN-PORTADA-D.md)). Reemplaza en lo visual al
+C y conserva su hero horneado. Una película en dos luces: noche (vino hondo
+`#240604`, pared `#4b1217`) y día (papel `#f6ece8`), un solo acento rubí
+`#9e2335` sobre papel. Letras: Melodrama 600 para palabras grandes, Boska para
+nombres, cifras e itálicas (el cero de Melodrama viene cruzado: nunca en
+números), IBM Plex Mono para datos y La Belle Aurore para un rótulo a mano.
+Una sección de papel lleva la clase `.dia`, que redefine colores y apaga el
+vidrio. Portada: hero, cinta, Las ciudades, familias, destacados en banda vino,
+cómo funciona, antes de pedir, pie de noche con la marca a todo el ancho.
+
+**Rediseño C, "A través del vidrio"** (antecedente; detalle en
+[`docs/PORTADA-C.md`](docs/PORTADA-C.md)): el hero es una
 sola imagen horneada (pared vino `#4a161f`, cajas Bagués reales detrás de vidrio
 acanalado, una ventana en arco nítida) en `public/hero/c/`, que se rehace con
 `scripts/rediseno/hornear_hero.py`. Portada: hero, "Lo que pagás", "¿Qué te
@@ -423,6 +435,7 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
 | [`docs/DISENO.md`](docs/DISENO.md) | Sistema visual de la tienda y del panel |
 | [`docs/QA.md`](docs/QA.md) | Registro de errores y cómo correr el banco de pruebas |
 | [`docs/KIT.md`](docs/KIT.md) | El esqueleto reutilizable en otro proyecto |
+| [`docs/PLAN-PORTADA-D.md`](docs/PLAN-PORTADA-D.md) | Plan del rediseño D: guion de color, letra, decisiones de Sebas y cambios con su porqué |
 | [`docs/RECETA-VISUAL.md`](docs/RECETA-VISUAL.md) | De las referencias a los assets: ADN medido, letra, guion de color, pared, productos, vidrio y adorno, para calcar en otro proyecto |
 | [`scripts/fotos/README.md`](scripts/fotos/README.md) | El pipeline de fotos |
 

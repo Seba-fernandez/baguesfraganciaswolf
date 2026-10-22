@@ -45,6 +45,7 @@ export default function CatalogoScreen() {
     <ProductGrid
       cargando={loading}
       whatsapp={settings?.whatsapp_owner}
+      settings={settings}
       products={products}
       onOpen={abrir}
       onElegir={elegirTamano}

@@ -1,6 +1,9 @@
 .section { padding-block: clamp(56px, 8vw, 104px); }
 
-.head { max-width: 46ch; margin-bottom: 22px; scroll-margin-top: 96px; }
+.head { position: relative; max-width: 46ch; margin-bottom: 22px; scroll-margin-top: 96px; }
+/* Arriba del titulo, dentro del padding de la seccion (56 px o mas): no ocupa
+   lugar en el flujo, asi aparecer despues no mueve la grilla. */
+.ciclo { position: absolute; left: 0; bottom: calc(100% + 8px); width: min(100%, 92vw); font-size: 0.8rem; }
 .titulo { font-size: clamp(2rem, 4.6vw, 3.2rem); }
 .bajada { margin-top: 12px; color: var(--ink-dim); font-size: 1rem; }
 /* Aviso legal a la vista, no escondido en el pie: acompaña al catalogo sin

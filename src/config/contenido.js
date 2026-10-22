@@ -218,6 +218,17 @@ export const COMO_FUNCIONA = {
 };
 
 /**
+ * La tira del ciclo: "Ciclo 10/26 · Pedidos hasta el viernes 30 · Quedan 9
+ * días". Sale de ciclo_nombre y ciclo_hasta (Ajustes del panel) y la calcula
+ * lib/ciclo.js en la hora de Argentina. Si la fecha falta o ya paso, no se
+ * muestra. {dia} es "viernes 30"; {n}, los dias que faltan.
+ */
+export const CICLO = {
+  hasta: 'Pedidos hasta el {dia}',
+  quedan: { hoy: 'Último día', uno: 'Queda 1 día', varios: 'Quedan {n} días' },
+};
+
+/**
  * Antes de pedir: lo que una persona que no te conoce necesita saber para
  * confiar y pagar. Va en la portada, después de "Cómo funciona".
  * {monto} es ENVIO_GRATIS_DESDE (ajustes.js), escrito en pesos.

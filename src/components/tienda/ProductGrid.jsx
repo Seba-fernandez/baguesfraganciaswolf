@@ -9,6 +9,7 @@ import useMedia from '../../hooks/useMedia';
 import { CATALOGO, LEGAL, conDatos } from '../../config/contenido';
 import { DESTACADOS_MAXIMO, POR_PAGINA } from '../../config/ajustes';
 import ProductCard from './ProductCard';
+import TiraCiclo from './TiraCiclo';
 import Flecha from './Flecha';
 import s from './ProductGrid.module.css';
 
@@ -48,7 +49,7 @@ function Pastilla({ activa, onClick, children, tono = '', qa }) {
 }
 
 export default function ProductGrid({
-  products, onOpen, onElegir, abiertoId, promos = {}, promoActiva, setPromoActiva, whatsapp = '', cargando = false,
+  products, onOpen, onElegir, abiertoId, promos = {}, promoActiva, setPromoActiva, whatsapp = '', cargando = false, settings = null,
 }) {
   // Para, Familia y Minis viven en la direccion (lib/filtros.js): se pueden
   // compartir y sobreviven a abrir una ficha y volver "atras". Se cambian con
@@ -147,6 +148,10 @@ export default function ProductGrid({
   return (
     <section className={`tw ${s.section}`} id="catalogo">
       <header className={s.head} ref={tope}>
+        {/* La tira del ciclo va arriba del titulo, en el aire que ya deja la
+            seccion: posicionada, asi cuando llegan los ajustes no corre nada
+            hacia abajo (sin salto de pagina). */}
+        <TiraCiclo settings={settings} className={s.ciclo} />
         <h2 className={s.titulo}>{CATALOGO.titulo}</h2>
         {/* Mientras carga, el numero de aromas tiene su lugar reservado (vacio):
             un numero inventado en el HTML pre-generado despues cambia. */}

@@ -4,6 +4,9 @@
 .section { padding-block: clamp(8px, 2vw, 24px) clamp(64px, 9vw, 112px); }
 
 .titulo { font-size: clamp(1.9rem, 4.2vw, 3rem); margin-bottom: clamp(24px, 4vw, 40px); }
+/* La tira del ciclo entre el titulo y los datos: el titulo cede su aire. */
+.titulo:has(+ .ciclo) { margin-bottom: 10px; }
+.ciclo { margin-bottom: clamp(24px, 4vw, 36px); }
 
 .grilla {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));

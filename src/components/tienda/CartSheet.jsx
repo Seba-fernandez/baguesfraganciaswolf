@@ -7,6 +7,7 @@ import { linkWhatsApp, mensajePedidoCliente, normalizarTelefono } from '../../li
 import { detalleLinea } from '../../lib/producto';
 import { envioGratis } from '../../lib/envio';
 import { PEDIDO, conDatos } from '../../config/contenido';
+import TiraCiclo from './TiraCiclo';
 import { ENVIO_GRATIS_DESDE } from '../../config/ajustes';
 import s from './CartSheet.module.css';
 
@@ -103,6 +104,7 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
               <h2>Tu pedido</h2>
               <button className={s.cerrar} onClick={cerrar} aria-label="Cerrar">✕</button>
             </div>
+            <TiraCiclo settings={settings} className={s.ciclo} />
 
             {items.length === 0 ? (
               <div className={s.vacio}>

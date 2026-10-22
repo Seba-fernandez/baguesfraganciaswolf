@@ -32,7 +32,7 @@ export default function HomeScreen() {
       <Destacados products={products} onOpen={abrir} cargando={loading} />
       <Nosotros settings={settings} />
       <ComoFunciona settings={settings} />
-      <AntesDePedir />
+      <AntesDePedir settings={settings} />
     </>
   );
 }

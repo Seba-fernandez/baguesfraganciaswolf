@@ -1,0 +1,69 @@
+.section { padding-block: 64px 24px; }
+.titulo { font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.04; }
+.bajada { margin-top: 10px; max-width: 40ch; color: var(--ink-dim); font-size: 1rem; }
+
+/* Celular: fila deslizable con snap, la segunda ventana asoma para invitar a
+   deslizar. Escritorio: las cinco en una grilla, con alturas escalonadas. */
+.fila {
+  list-style: none; margin: 28px -20px 0; padding: 6px 20px 14px;
+  display: grid; grid-auto-flow: column; grid-auto-columns: 42vw; gap: 14px;
+  overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 20px;
+  overscroll-behavior-x: contain; scrollbar-width: none;
+}
+.fila::-webkit-scrollbar { display: none; }
+.item { scroll-snap-align: start; }
+
+.link {
+  display: flex; flex-direction: column; gap: 6px;
+  text-decoration: none; color: inherit;
+}
+:global(.tienda) .link { color: var(--ink); }
+
+/* La ventana: un arco de medio punto con la pared vino y su halo, como el
+   hero. Adentro, el frasco Bagués con el ingrediente detrás del vidrio. */
+.ventana {
+  position: relative; display: grid; place-items: end center;
+  aspect-ratio: 3 / 4.4;
+  border-radius: 999px 999px 0 0;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 55% at 50% 42%, rgba(224, 112, 138, 0.34) 0%, rgba(224, 112, 138, 0) 70%),
+    linear-gradient(180deg, #4a161f 0%, #2c0c12 100%);
+  box-shadow: inset 0 0 0 1px rgba(214, 168, 98, 0.32), 0 22px 40px -26px rgba(10, 4, 3, 0.9);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+/* La repisa: una franja más oscura abajo, donde se apoya el frasco. */
+.ventana::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 14%;
+  background: linear-gradient(180deg, rgba(20, 8, 8, 0.2), rgba(20, 8, 8, 0.75));
+  pointer-events: none;
+}
+.frasco {
+  position: relative; z-index: 1;
+  width: 58%; height: auto; margin-bottom: 9%;
+  filter: drop-shadow(0 14px 14px rgba(10, 3, 4, 0.55));
+  transition: transform var(--dur) var(--ease);
+}
+.nombre {
+  margin-top: 8px;
+  font-family: var(--f-display); font-weight: 600; font-size: 1.28rem; line-height: 1.1;
+}
+.ejemplo { font-size: 0.82rem; color: var(--ink-faint); line-height: 1.4; }
+
+@media (hover: hover) {
+  .link:hover .ventana { transform: translateY(-4px); box-shadow: inset 0 0 0 1px rgba(214, 168, 98, 0.6), 0 26px 44px -24px rgba(10, 4, 3, 0.95); }
+  .link:hover .frasco { transform: translateY(-3px) scale(1.02); }
+}
+.link:focus-visible { outline: none; }
+.link:focus-visible .ventana { box-shadow: inset 0 0 0 2px var(--amber); }
+
+@media (min-width: 768px) {
+  .fila {
+    margin-inline: 0; padding-inline: 0; overflow: visible;
+    grid-auto-flow: row; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px;
+    align-items: end;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ventana, .frasco { transition: none; }
+}

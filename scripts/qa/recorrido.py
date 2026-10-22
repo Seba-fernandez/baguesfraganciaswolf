@@ -1347,7 +1347,7 @@ def e3_b1(browser, base):
           const caja = (el) => { if (!el) return null; const r = el.getBoundingClientRect();
             return { top: Math.round(r.top), bottom: Math.round(r.bottom), h: Math.round(r.height) }; };
           const corona = q('[data-hero=corona]');
-          const hijos = corona ? [...corona.children].map(c => Math.round(c.getBoundingClientRect().top)) : [];
+          const hijos = corona ? [...corona.children].map(c => { const r = c.getBoundingClientRect(); return [Math.round(r.top), Math.round(r.bottom)]; }) : [];
           const marca = corona?.children[0];
           return {
             vh, titulo: caja(q('#inicio-hero h1')), datos: caja(q('[data-qa=hero-datos]')), cta: caja(q('[data-qa=hero-cta]')),
@@ -1389,7 +1389,12 @@ def e3_b1(browser, base):
         and servido_txt is not None and not re.search(r"\d", servido_txt) and m["pesoDatos"] == "600",
         f"se ve: '{txt}'; base: desde {desde_txt}, {n} aromas; HTML servido: '{(servido_txt or 'no hay')[:60]}'; peso {m['pesoDatos']}")
     sellos = {k: (v["corona"], v["coronaTops"], v["marcaPx"]) for k, v in res.items()}
-    una_linea = all(c and len(t) >= 2 and max(t) - min(t) <= 4 and c["h"] <= 30 for c, t, _ in sellos.values())
+    # Una linea: los textos del sello se solapan en vertical (el de arriba
+    # termina despues de que empieza el otro) y lo escrito mide 30 px o menos
+    # (sin contar el filete de abajo).
+    def linea(t):
+        return len(t) >= 2 and max(a for a, _ in t) < min(b for _, b in t) and max(b for _, b in t) - min(a for a, _ in t) <= 30
+    una_linea = all(c and linea(t) for c, t, _ in sellos.values())
     chk("E3-B1 sello", "visual", "media", "Sello GRUPO WOLF en una linea con 'Casa Bagués · Córdoba' al lado, mas chico (390 y 1440)",
         una_linea and res["844"]["marcaPx"] <= 16,
         "; ".join(f"{k}: alto {c['h'] if c else '-'} px, tops {t}, marca {px:.1f} px" for k, (c, t, px) in sellos.items()))

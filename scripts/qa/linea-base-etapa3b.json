@@ -528,7 +528,7 @@
    "severidad": "media",
    "descripcion": "Sello GRUPO WOLF en una linea con 'Casa Bagués · Córdoba' al lado, mas chico (390 y 1440)",
    "resultado": "FALLA",
-   "detalle": "664: alto 59 px, tops [416, 441], marca 18.4 px; 844: alto 59 px, tops [416, 441], marca 18.4 px; 1440: alto 65 px, tops [138, 169], marca 24.0 px"
+   "detalle": "664: alto 59 px, tops [[416, 434], [441, 459]], marca 18.4 px; 844: alto 59 px, tops [[416, 434], [441, 459]], marca 18.4 px; 1440: alto 65 px, tops [[138, 162], [169, 187]], marca 24.0 px"
   },
   {
    "id": "E3-B1 banda",
@@ -769,5 +769,5 @@
    "lcp_mediana": 3795
   }
  },
- "nota": "Produccion en b1cebd9, 21/10/2026. E3-B7 bandas se volvio a medir por franjas el mismo dia, sin cambios en produccion."
+ "nota": "Produccion en b1cebd9, 21/10/2026. E3-B7 bandas se volvio a medir por franjas el mismo dia, sin cambios en produccion. E3-B1 sello se volvio a medir (solape vertical en vez de bordes de arriba), sin cambios en produccion."
 }

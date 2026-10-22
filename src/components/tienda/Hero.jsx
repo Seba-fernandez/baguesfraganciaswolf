@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { INICIO, conDatos } from '../../config/contenido';
+import { INICIO } from '../../config/contenido';
 import { pesos } from '../../lib/format';
 import Flecha from './Flecha';
 import s from './Hero.module.css';
@@ -33,10 +33,11 @@ export default function Hero({
   totalAromas, desde, nombresAromas = [], heroProducto = null,
 }) {
   const lista = Object.values(promos);
-  // El numero de aromas llega con la base. Hasta entonces (y en el HTML
-  // pre-generado) su lugar queda reservado y vacio: antes salia un 104 escrito
-  // a mano que despues cambiaba al numero real.
-  const [antesAromas, despuesAromas] = INICIO.metaAromas.split('{n}');
+  // El precio minimo y el numero de aromas llegan con la base. Hasta entonces
+  // (y en el HTML pre-generado) su lugar queda reservado y vacio: antes salia
+  // un 104 escrito a mano que despues cambiaba al numero real (UX-17).
+  const [antesDesde, despuesDesde] = INICIO.datosDesde.split('{desde}');
+  const [antesAromas, despuesAromas] = INICIO.datosAromas.split('{n}');
 
   return (
     <section className={s.hero} id="inicio-hero">
@@ -97,21 +98,28 @@ export default function Hero({
 
           <p className={s.bajada} data-hero="bajada">{INICIO.bajada}</p>
 
+          {/* La linea de datos va ARRIBA del boton: lo primero que pregunta
+              quien llega desde Instagram es cuanto sale y si tenes el suyo. */}
+          <p className={`${s.meta} tnum`} data-hero="meta" data-qa="hero-datos">
+            <span className={s.metaDato}>
+              {antesDesde}<span className={`${s.metaNum} ${s.metaPrecio}`}>{desde ? pesos(desde) : ''}</span>{despuesDesde}
+            </span>
+            <span className={s.metaSep} aria-hidden="true"> · </span>
+            <span className={s.metaDato}>
+              {antesAromas}<span className={s.metaNum}>{totalAromas || ''}</span>{despuesAromas}
+            </span>
+            <span className={s.metaSep} aria-hidden="true"> · </span>
+            <span className={s.metaDato}>{INICIO.datosEnvio}</span>
+          </p>
+
+          {/* Un solo boton. "Como funciona" es un enlace de texto: dos botones
+              del mismo peso le hacian elegir a la clienta antes de tiempo. */}
           <div className={s.acciones}>
-            <Link to="/catalogo" className="tbtn" data-hero="cta">
+            <Link to="/catalogo" className={`tbtn ${s.cta}`} data-hero="cta" data-qa="hero-cta">
               <span>{INICIO.verCatalogo}</span>
               <span className={s.ctaFlecha} aria-hidden="true"><Flecha /></span>
             </Link>
-            <a href="#como" className="tbtn clear" data-hero="cta">{INICIO.verComo}</a>
-          </div>
-
-          <div className={s.meta} data-hero="meta">
-            <span className={`${s.metaDato} tnum`}>
-              {antesAromas}<span className={s.metaNum}>{totalAromas || ''}</span>{despuesAromas}
-            </span>
-            {desde ? (
-              <span className={`${s.metaDato} tnum`}>{conDatos(INICIO.metaDesde, { desde: pesos(desde) })}</span>
-            ) : null}
+            <a href="#como" className={s.como} data-hero="como" data-qa="hero-como">{INICIO.verComo}</a>
           </div>
         </div>
       </div>
@@ -140,7 +148,17 @@ export default function Hero({
       </div>
 
       {/* La cinta de nombres, de borde a borde, en movimiento. Duplicada para que
-          el bucle no tenga costura. Se frena al pasar el mouse. */}
+          el bucle no tenga costura. Se frena al pasar el mouse.
+
+          Mientras no llegan los nombres (y en el HTML pre-generado) se dibuja
+          vacia pero con su alto: con el hero del celular mas bajo, la cinta
+          cae dentro de la primera pantalla, y aparecer de la nada empujaba a
+          "Nosotros" (CLS 0,09 en produccion, etapa 3B). */}
+      {nombresAromas.length < 6 && (
+        <div className={s.cinta} aria-hidden="true">
+          <div className={s.cintaPista}><span className={s.cintaItem}>&nbsp;</span></div>
+        </div>
+      )}
       {nombresAromas.length >= 6 && (
         <div className={s.cinta} data-hero="cinta" aria-hidden="true">
           <div className={s.cintaPista}>

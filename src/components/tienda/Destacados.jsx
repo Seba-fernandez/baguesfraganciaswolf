@@ -13,11 +13,15 @@ import s from './Destacados.module.css';
  * horizontal: se puede arrastrar, o pasar con las flechas de cada costado, que
  * al llegar al tope vuelven al inicio.
  */
-export default function Destacados({ products, onOpen }) {
+export default function Destacados({ products, onOpen, cargando = false }) {
   const ref = useReveal();
   const filaRef = useRef(null);
   const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p)).slice(0, DESTACADOS_MAXIMO);
-  if (!destacados.length) return null;
+  // Mientras carga se dibuja la vidriera con su titulo y tarjetas de espera
+  // del mismo tamano: en el celular empieza dentro de la primera pantalla, y
+  // aparecer de golpe empujaba lo de abajo (CLS, etapa 3B). Tambien es lo que
+  // trae el HTML pre-generado.
+  if (!cargando && !destacados.length) return null;
 
   function mover(dir) {
     const el = filaRef.current;
@@ -52,7 +56,17 @@ export default function Destacados({ products, onOpen }) {
           </button>
 
           <div className={s.fila} ref={filaRef}>
-            {destacados.map((p, i) => {
+            {cargando && Array.from({ length: 4 }, (_, i) => (
+              <span key={i} className={`${s.item} ${s.espera}`} aria-hidden="true">
+                <span className={s.esperaFoto} />
+                <span className={s.info}>
+                  <span className={s.esperaLinea} />
+                  <span className={`${s.esperaLinea} ${s.esperaCorta}`} />
+                  <span className={`${s.esperaLinea} ${s.esperaCorta}`} />
+                </span>
+              </span>
+            ))}
+            {!cargando && destacados.map((p, i) => {
               const pres = presentacionPorDefecto(p);
               return (
                 <button

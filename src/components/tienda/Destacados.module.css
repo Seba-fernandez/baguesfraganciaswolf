@@ -80,3 +80,10 @@
 .item:hover .nombre { color: var(--amber); }
 .casa { font-size: 0.76rem; letter-spacing: 0.1em; color: var(--ink-faint); }
 .precio { font-size: 0.86rem; color: var(--ink-dim); margin-top: 4px; }
+
+/* Tarjetas de espera, mientras llega la base: mismo 3:4 y casi el mismo alto
+   que una de verdad (nombre, familia, precio). */
+.espera { cursor: default; }
+.esperaFoto { display: block; aspect-ratio: 3 / 4; background: var(--bg-2); }
+.esperaLinea { display: block; height: 0.9rem; margin-block: 4px; width: 78%; border-radius: 3px; background: var(--bg-3); }
+.esperaCorta { width: 46%; }

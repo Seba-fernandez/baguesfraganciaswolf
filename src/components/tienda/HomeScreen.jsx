@@ -29,7 +29,7 @@ export default function HomeScreen() {
         heroProducto={heroProducto}
         onOpen={abrir}
       />
-      {!loading && <Destacados products={products} onOpen={abrir} />}
+      <Destacados products={products} onOpen={abrir} cargando={loading} />
       <Nosotros settings={settings} />
       <ComoFunciona settings={settings} />
       <AntesDePedir />

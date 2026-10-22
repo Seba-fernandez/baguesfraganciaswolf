@@ -206,14 +206,24 @@ export const FICHA = {
     'fecha según el cierre del ciclo.',
 };
 
+/**
+ * Cómo funciona: una conversación de WhatsApp dibujada (el mensaje que arma
+ * lib/whatsapp.js con dos aromas reales del catálogo, y mi respuesta) y al
+ * lado los tres pasos. {nombre} del mensaje de ejemplo es `ejemploNombre`.
+ */
 export const COMO_FUNCIONA = {
   titulo: 'Cómo funciona',
+  bajada: 'Así me llega tu pedido: con el código de cada caja, listo para cargarlo en Bagués.',
+  chatEtiqueta: 'Ejemplo de un pedido por WhatsApp',
+  chatContacto: 'Sebastián, Grupo Wolf',
+  ejemploNombre: 'Caro',
+  respuesta: '¡Hola! Te confirmo stock y te paso la seña para reservarlo.',
   pasos: [
-    { icono: 'bolsa', titulo: 'Armás el pedido', texto: 'Elegís aromas y tamaño. No se paga nada acá.' },
-    { icono: 'chat', titulo: 'Te escribo', texto: 'Te confirmo stock, total y tiempos por WhatsApp.' },
-    { icono: 'caja', titulo: 'Lo recibís', texto: 'Por correo a todo el país. En Córdoba capital lo retirás o te lo llevo.' },
+    { titulo: 'Armás el pedido', texto: 'Elegís aromas y tamaño acá. En la web no pagás nada.' },
+    { titulo: 'Me llega por WhatsApp', texto: 'Con el código de cada caja. Te confirmo stock, total y seña.' },
+    { titulo: 'Lo recibís', texto: 'Por correo a todo el país. En Córdoba capital lo retirás o te lo llevo.' },
   ],
-  cita: 'Trabajo por encargo, con catálogo propio y precio de reventa directa.',
+  cita: 'Trabajo por encargo. Si algo no te cierra, lo hablamos tranquilos.',
   boton: 'Escribime por WhatsApp',
 };
 

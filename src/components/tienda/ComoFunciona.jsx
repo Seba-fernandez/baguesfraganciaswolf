@@ -1,65 +1,85 @@
+import { useMemo } from 'react';
 import useReveal from '../../hooks/useReveal';
+import { mensajePedidoCliente, pedidoDeEjemplo } from '../../lib/whatsapp';
 import { COMO_FUNCIONA } from '../../config/contenido';
 import s from './ComoFunciona.module.css';
 
 /**
- * Cómo funciona. Centrado, con un icono claro por paso y poco texto: lo que
- * alguien que compra por primera vez necesita es entender de un vistazo qué
- * pasa después de tocar el botón, no leer un párrafo.
+ * Cómo funciona, mostrado en vez de contado: la conversación de WhatsApp que
+ * de verdad me llega. La burbuja de la clienta es el mensaje que arma
+ * lib/whatsapp.js (el mismo del cajón del pedido) con dos aromas reales del
+ * catálogo, cada uno con su tamaño, su línea y su código; abajo, mi respuesta.
+ * Si cambia el formato del mensaje, esta sección cambia sola.
  *
- * Los iconos son SVG de trazo (estilo Lucide), no dibujos a mano: una bolsa
- * (armás), un globo de chat (te escribo) y una caja (lo retirás). Intuitivos y
- * consistentes entre sí.
+ * Al costado (debajo en el celular), los tres pasos en una lista ordenada: es
+ * una secuencia real, por eso llevan número. Sin íconos en círculos: eran el
+ * patrón que más delataba una plantilla.
  */
-const ICONOS = {
-  bolsa: (
-    <>
-      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-      <path d="M3 6h18" />
-      <path d="M16 10a4 4 0 0 1-8 0" />
-    </>
-  ),
-  chat: (
-    <>
-      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-    </>
-  ),
-  caja: (
-    <>
-      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-      <path d="M3.3 7 12 12l8.7-5" />
-      <path d="M12 22V12" />
-    </>
-  ),
-};
 
-export default function ComoFunciona({ settings }) {
+/** Un renglón del mensaje. El código va aparte, en cifras tabulares. */
+function Renglon({ texto }) {
+  const m = /^\[(\d+)\]\s(.*)$/.exec(texto);
+  if (m) {
+    return (
+      <span className={s.renglon}>
+        <span className={`${s.codigo} tnum`}>[{m[1]}]</span> {m[2]}
+      </span>
+    );
+  }
+  return <span className={`${s.renglon} ${/^Total/.test(texto) ? s.total : ''}`}>{texto}</span>;
+}
+
+export default function ComoFunciona({ settings, products = [] }) {
   const ref = useReveal();
+  const items = useMemo(() => pedidoDeEjemplo(products), [products]);
+  const mensaje = items.length
+    ? mensajePedidoCliente({ nombre: COMO_FUNCIONA.ejemploNombre, items })
+    : '';
+
   return (
     <section className={`tw ${s.section}`} id="como" ref={ref}>
-      <h2 className={s.titulo}>{COMO_FUNCIONA.titulo}</h2>
+      <header className={s.head}>
+        <h2 className={s.titulo}>{COMO_FUNCIONA.titulo}</h2>
+        <p className={s.bajada}>{COMO_FUNCIONA.bajada}</p>
+      </header>
 
-      <ol className={s.pasos}>
-        {COMO_FUNCIONA.pasos.map((p, i) => (
-          <li key={p.titulo} className={`${s.paso} treveal`} style={{ transitionDelay: `${i * 90}ms` }}>
-            <span className={s.iconoWrap} aria-hidden="true">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                {ICONOS[p.icono]}
-              </svg>
-            </span>
-            <h3 className={s.pasoTitulo}>{p.titulo}</h3>
-            <p className={s.pasoTexto}>{p.texto}</p>
-          </li>
-        ))}
-      </ol>
+      <div className={s.cuerpo}>
+        <figure className={s.chat} aria-label={COMO_FUNCIONA.chatEtiqueta}>
+          <figcaption className={s.contacto}>{COMO_FUNCIONA.chatContacto}</figcaption>
+          {mensaje ? (
+            <>
+              <p className={`${s.burbuja} ${s.ella} treveal`} data-qa="chat-pedido">
+                {mensaje.split('\n').map((linea, i) => <Renglon key={i} texto={linea} />)}
+              </p>
+              <p className={`${s.burbuja} ${s.yo} treveal`} style={{ transitionDelay: '420ms' }}>
+                {COMO_FUNCIONA.respuesta}
+              </p>
+            </>
+          ) : (
+            // Mientras llega el catálogo: el mismo lugar, sin texto inventado.
+            <span className={`${s.burbuja} ${s.ella} ${s.espera}`} aria-hidden="true" />
+          )}
+        </figure>
 
-      <p className={s.cita}>{COMO_FUNCIONA.cita}</p>
+        <div className={s.lado}>
+          <ol className={s.pasos} data-qa="pasos">
+            {COMO_FUNCIONA.pasos.map((p, i) => (
+              <li key={p.titulo} className={`${s.paso} treveal`} style={{ transitionDelay: `${i * 90}ms` }}>
+                <h3 className={s.pasoTitulo}>{p.titulo}</h3>
+                <p className={s.pasoTexto}>{p.texto}</p>
+              </li>
+            ))}
+          </ol>
 
-      {settings?.whatsapp_owner && (
-        <a className="tbtn" href={`https://wa.me/${settings.whatsapp_owner}`} target="_blank" rel="noopener">
-          {COMO_FUNCIONA.boton}
-        </a>
-      )}
+          <p className={s.cita}>{COMO_FUNCIONA.cita}</p>
+
+          {settings?.whatsapp_owner && (
+            <a className="tbtn" href={`https://wa.me/${settings.whatsapp_owner}`} target="_blank" rel="noopener">
+              {COMO_FUNCIONA.boton}
+            </a>
+          )}
+        </div>
+      </div>
     </section>
   );
 }

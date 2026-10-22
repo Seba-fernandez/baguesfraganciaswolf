@@ -80,7 +80,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
       <footer className={s.footer} inert={inert}>
         <div className={`tw ${s.fcols}`}>
           <div className={s.fcol}>
-            <h4 className="tlabel">{PIE.tienda}</h4>
+            <h4 className={s.ftitulo}>{PIE.tienda}</h4>
             <Link to="/catalogo">{CABECERA.catalogo}</Link>
             <a href="/#como">{CABECERA.como}</a>
             {settings?.link_catalogo && (
@@ -88,7 +88,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
             )}
           </div>
           <div className={s.fcol}>
-            <h4 className="tlabel">{PIE.contacto}</h4>
+            <h4 className={s.ftitulo}>{PIE.contacto}</h4>
             {settings?.whatsapp_owner && (
               <a href={`https://wa.me/${settings.whatsapp_owner}`} target="_blank" rel="noopener">WhatsApp</a>
             )}
@@ -103,7 +103,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
         </div>
 
         <div className={`tw ${s.legal}`}>
-          <h4 className="tlabel">{LEGAL.titulo}</h4>
+          <h4 className={s.ftitulo}>{LEGAL.titulo}</h4>
           {LEGAL.parrafos.map((parrafo) => (
             <p key={parrafo.slice(0, 24)}>{parrafo}</p>
           ))}

@@ -63,6 +63,13 @@
 @media (min-width: 720px) { .fcols { grid-template-columns: repeat(2, auto) 1fr; gap: 48px; } }
 
 .fcol { display: flex; flex-direction: column; gap: 8px; }
+/* Titulos del pie en Cormorant y en caja normal: la portada guarda una sola
+   etiqueta en mayusculas espaciadas (E3-B8); el pie no compite con ella. */
+.ftitulo {
+  font-family: var(--f-display); font-weight: 600;
+  font-size: 1.12rem; line-height: 1.2; letter-spacing: 0.01em;
+  color: var(--ink-dim);
+}
 .fcol h4 { margin-bottom: 4px; }
 .fcol a { font-size: 0.9rem; color: var(--ink-dim); }
 .fcol a:hover { color: var(--amber); }

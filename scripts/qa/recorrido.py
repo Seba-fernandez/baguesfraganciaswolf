@@ -604,13 +604,13 @@ def foto1(browser, base):
 def ux17(browser, base):
     ctx, page = nuevo(browser, MOVIL)
     html = page.request.get(base + "/").text()
-    m = re.search(r"(\d+)\s*aromas en el ciclo", html)
+    m = re.search(r"(\d+)\s*aromas", html)
     servido = m.group(1) if m else None
     page.goto(base + "/", wait_until="load")
     page.wait_for_timeout(1500)
-    page.wait_for_function("() => /\\d+\\s*aromas en el ciclo/.test(document.querySelector('[data-hero=meta]')?.innerText || '')", timeout=20000)
+    page.wait_for_function("() => /\\d+\\s*aromas/.test(document.querySelector('[data-hero=meta]')?.innerText || '')", timeout=20000)
     page.wait_for_timeout(2500)
-    vivo = page.evaluate("() => (document.querySelector('[data-hero=meta]').innerText.match(/(\\d+)\\s*aromas en el ciclo/) || [])[1] || null")
+    vivo = page.evaluate("() => (document.querySelector('[data-hero=meta]').innerText.match(/(\\d+)\\s*aromas/) || [])[1] || null")
     ctx.close()
     chk("UX-17", "contenido", "baja", "El numero de aromas del HTML servido es el mismo que despues de hidratar",
         servido is None and vivo is not None or servido == vivo,
@@ -1250,6 +1250,392 @@ def e3_a9(browser, base):
         ok, "; ".join(f"{k}: {v}" for k, v in res.items()))
 
 
+# ---------------------------------------------------------------------------
+# Etapa 3B (17/10/2026): primer pantallazo, tira del ciclo, "Como funciona"
+# como chat, Nosotros en dos columnas, cinta con links, capturas de clientas,
+# pulido de la ficha, limpieza y los dos cambios autorizados en la base.
+#
+# Contrato con la pagina:
+#   hero             [data-hero=corona] (sello), [data-hero=escena] (banda en
+#                    el celular), [data-qa=hero-datos] (dentro de
+#                    [data-hero=meta]), [data-qa=hero-cta], [data-qa=hero-como]
+#   ciclo            [data-qa=ciclo], la cifra en [data-qa=ciclo-dias]
+#   como funciona    #como [data-qa=chat-pedido], #como ol[data-qa=pasos]
+#   nosotros         #nosotros [data-qa=pagas] li, [data-qa=no-pagas] li
+#   cinta            [data-hero=cinta] a[data-qa=cinta-aroma]
+#   opiniones        #opiniones
+#   ficha            [data-qa=ficha-media] (el contenedor de la foto)
+# ---------------------------------------------------------------------------
+
+ACENTO = "rgb(224, 112, 138)"
+SEMANA = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+SIETE = ["unlock-bad-boy", "unlock-one-million", "unlock-polo-blue", "unlock-polo-red",
+         "unlock-creed-aventus", "unlock-rabanne-phantom", "unlock-rabanne-phantom-black"]
+# Los que tienen ficha publica con familia y notas en unlock.com.ar o
+# bagues.com.ar (ver docs/QA.md, etapa 3B). Phantom trae notas pero no familia;
+# Polo Red no esta en ninguna de las dos tiendas.
+CON_FAMILIA = ["unlock-bad-boy", "unlock-one-million", "unlock-polo-blue", "unlock-creed-aventus",
+               "unlock-rabanne-phantom-black"]
+CON_NOTAS = CON_FAMILIA + ["unlock-rabanne-phantom"]
+
+
+def hoy_ar():
+    """La fecha de hoy en Cordoba (UTC-3 todo el ano)."""
+    import datetime
+    return (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=3)).date()
+
+
+def con_ciclo(ctx, dias):
+    """Contesta settings con ciclo_hasta = hoy + dias (en Argentina)."""
+    import datetime
+    hasta = hoy_ar() + datetime.timedelta(days=dias)
+
+    def manejar(route):
+        if route.request.method != "GET":
+            route.continue_()
+            return
+        resp = route.fetch()
+        try:
+            filas = resp.json()
+            for f in (filas if isinstance(filas, list) else [filas]):
+                f["ciclo_hasta"] = hasta.isoformat()
+                f["ciclo_nombre"] = "Ciclo de prueba"
+            route.fulfill(response=resp, body=json.dumps(filas), content_type="application/json")
+        except Exception:
+            route.fulfill(response=resp)
+    ctx.route("**/rest/v1/settings*", manejar)
+    return hasta
+
+
+def portada_con_datos(browser, op, ciclo=None, movimiento=None):
+    """Abre la portada, espera a que hidrate con los datos de la base y
+    devuelve las filas de products."""
+    extra = {"reduced_motion": movimiento} if movimiento else {}
+    ctx = browser.new_context(**op, **extra)
+    proteger_base(ctx)
+    hasta = con_ciclo(ctx, ciclo) if ciclo is not None else None
+    page = ctx.new_page()
+    datos = {}
+
+    def guardar(resp):
+        if "/rest/v1/products" in resp.url and resp.request.method == "GET":
+            try:
+                datos["filas"] = resp.json()
+            except Exception:
+                pass
+    page.on("response", guardar)
+    page.goto(BASE + "/", wait_until="load")
+    try:
+        page.wait_for_function("() => /\\d/.test(document.querySelector('[data-hero=meta]')?.innerText || '')", timeout=30000)
+    except Exception:
+        pass
+    page.wait_for_timeout(1200)
+    return ctx, page, datos, hasta
+
+
+def publicables(datos):
+    return [p for p in activos(datos) if (p.get("nombre") or "").strip() and not re.fullmatch(r"\d+", p["nombre"].strip())
+            and pres_activas(p)]
+
+
+def e3_b1(browser, base):
+    res = {}
+    for nombre, op in (("664", dict(MOVIL, viewport={"width": 390, "height": 664})), ("844", MOVIL), ("1440", ESCRITORIO)):
+        ctx, page, datos, _ = portada_con_datos(browser, op)
+        res[nombre] = page.evaluate("""() => {
+          const vh = innerHeight, q = (s) => document.querySelector(s);
+          const caja = (el) => { if (!el) return null; const r = el.getBoundingClientRect();
+            return { top: Math.round(r.top), bottom: Math.round(r.bottom), h: Math.round(r.height) }; };
+          const corona = q('[data-hero=corona]');
+          const hijos = corona ? [...corona.children].map(c => Math.round(c.getBoundingClientRect().top)) : [];
+          const marca = corona?.children[0];
+          return {
+            vh, titulo: caja(q('#inicio-hero h1')), datos: caja(q('[data-qa=hero-datos]')), cta: caja(q('[data-qa=hero-cta]')),
+            textoDatos: (q('[data-qa=hero-datos]')?.innerText || '').replace(/\\s+/g, ' ').trim(),
+            pesoDatos: q('[data-qa=hero-datos]') ? getComputedStyle(q('[data-qa=hero-datos]')).fontWeight : '',
+            como: (() => { const c = q('[data-qa=hero-como]'); return c ? { tag: c.tagName, boton: c.classList.contains('tbtn'), href: c.getAttribute('href') } : null; })(),
+            botones: document.querySelectorAll('#inicio-hero [data-hero=cta], #inicio-hero .tbtn:not([class*=promo])').length,
+            ctaAncho: q('[data-qa=hero-cta]') ? Math.round(q('[data-qa=hero-cta]').getBoundingClientRect().width) : 0,
+            corona: caja(corona), coronaTops: hijos, marcaPx: marca ? parseFloat(getComputedStyle(marca).fontSize) : 0,
+            escena: caja(q('#inicio-hero [data-hero=escena]')),
+            frascos: (() => { const f = q('#inicio-hero img'); return f ? { w: f.naturalWidth, src: f.currentSrc.split('/').pop() } : null; })(),
+          };
+        }""")
+        res[nombre]["filas"] = publicables(datos)
+        res[nombre]["html"] = page.request.get(BASE + "/").text() if nombre == "844" else ""
+        ctx.close()
+
+    def dentro(m, k):
+        c = m.get(k)
+        return bool(c) and c["top"] >= 0 and c["bottom"] <= m["vh"]
+
+    m = res["664"]
+    chk("E3-B1 664", "conversion", "alta", "390x664 (Instagram): titular, linea de datos y boton principal dentro de la pantalla",
+        all(dentro(m, k) for k in ("titulo", "datos", "cta")),
+        f"alto {m['vh']}; titulo {m['titulo']}; datos {m['datos']}; boton {m['cta']}")
+    m = res["844"]
+    chk("E3-B1 844", "conversion", "alta", "390x844: un solo boton a todo el ancho y 'Como funciona' como enlace de texto",
+        dentro(m, "cta") and m["ctaAncho"] >= 340 and bool(m["como"]) and not m["como"]["boton"] and m["como"]["href"] == "#como",
+        f"boton {m['cta']} de {m['ctaAncho']} px; como funciona: {m['como']}")
+    filas = res["844"]["filas"]
+    n = len(filas)
+    desde = min((x["precio"] for p in filas for x in pres_activas(p) if x.get("precio")), default=None)
+    desde_txt = f"{desde:,}".replace(",", ".") if desde else "?"
+    txt = m["textoDatos"]
+    servido = re.search(r'data-qa="hero-datos"[^>]*>(.*?)</p>', res["844"]["html"], re.S)
+    servido_txt = re.sub(r"<[^>]+>", "", servido.group(1)) if servido else None
+    chk("E3-B1 datos", "conversion", "alta", "Linea 'Desde $ X · N aromas · Envio a todo el pais' con X y N reales, sin numeros escritos en el HTML",
+        bool(re.fullmatch(rf"Desde \$\s?{re.escape(desde_txt)} · {n} aromas · Envío a todo el país", txt))
+        and servido_txt is not None and not re.search(r"\d", servido_txt) and m["pesoDatos"] == "600",
+        f"se ve: '{txt}'; base: desde {desde_txt}, {n} aromas; HTML servido: '{(servido_txt or 'no hay')[:60]}'; peso {m['pesoDatos']}")
+    sellos = {k: (v["corona"], v["coronaTops"], v["marcaPx"]) for k, v in res.items()}
+    una_linea = all(c and len(t) >= 2 and max(t) - min(t) <= 4 and c["h"] <= 30 for c, t, _ in sellos.values())
+    chk("E3-B1 sello", "visual", "media", "Sello GRUPO WOLF en una linea con 'Casa Bagués · Córdoba' al lado, mas chico (390 y 1440)",
+        una_linea and res["844"]["marcaPx"] <= 16,
+        "; ".join(f"{k}: alto {c['h'] if c else '-'} px, tops {t}, marca {px:.1f} px" for k, (c, t, px) in sellos.items()))
+    e = res["844"]["escena"]
+    prop = (e["h"] / m["vh"]) if e else 0
+    chk("E3-B1 banda", "visual", "media", "390x844: la banda de frascos ocupa ~42 % del alto (36 a 46 %) y la imagen LCP es la misma",
+        0.36 <= prop <= 0.46 and (res["844"]["frascos"] or {}).get("src") == "frascos-460.webp",
+        f"banda {e['h'] if e else '-'} px de {m['vh']} ({prop:.0%}); frascos {res['844']['frascos']}")
+
+
+def e3_b2(browser, base):
+    import datetime
+    res = {}
+    for dias in (15, 2):
+        ctx, page, _, hasta = portada_con_datos(browser, MOVIL, ciclo=dias)
+        portada = page.evaluate("""() => { const c = document.querySelector('[data-qa=ciclo]');
+            const d = document.querySelector('[data-qa=ciclo] [data-qa=ciclo-dias]');
+            return c ? { txt: c.textContent.replace(/\\s+/g, ' ').trim(), color: d ? getComputedStyle(d).color : '' } : null; }""")
+        # El cajon del pedido.
+        page.locator("header button[aria-label^='Ver pedido']").click()
+        try:
+            page.wait_for_selector("[role=dialog][aria-label='Tu pedido'] [data-qa=ciclo]", timeout=6000)
+            cajon = page.locator("[role=dialog][aria-label='Tu pedido'] [data-qa=ciclo]").inner_text().replace("\n", " ")
+        except Exception:
+            cajon = None
+        ctx.close()
+        # El catalogo, midiendo cuanto se mueve la pagina mientras llegan los datos.
+        ctx = browser.new_context(**MOVIL)
+        proteger_base(ctx)
+        con_ciclo(ctx, dias)
+        ctx.add_init_script("""window.__cls = 0; new PerformanceObserver((l) => { for (const e of l.getEntries())
+            if (!e.hadRecentInput) window.__cls += e.value; }).observe({ type: 'layout-shift', buffered: true });""")
+        page = ctx.new_page()
+        page.goto(base + "/catalogo", wait_until="domcontentloaded")
+        esperar_catalogo(page)
+        page.wait_for_timeout(2500)
+        catalogo = page.evaluate("() => document.querySelector('[data-qa=ciclo]')?.textContent.replace(/\\s+/g, ' ').trim() || null")
+        cls = page.evaluate("window.__cls")
+        ctx.close()
+        res[dias] = dict(hasta=hasta, portada=portada, cajon=cajon, catalogo=catalogo, cls=round(cls, 3))
+
+    r = res[15]
+    esperado = f"hasta el {SEMANA[r['hasta'].weekday()]} {r['hasta'].day}"
+    ok_txt = lambda t: bool(t) and esperado in t and "Quedan 15 días" in t and "Ciclo de prueba" in t
+    chk("E3-B2 tira", "conversion", "media", "Con ciclo_hasta a 15 dias: 'Pedidos hasta el <dia> · Quedan 15 días' en portada, catalogo y cajon, sin mover el catalogo",
+        ok_txt((r["portada"] or {}).get("txt")) and ok_txt(r["catalogo"]) and ok_txt(r["cajon"]) and r["cls"] < 0.02,
+        f"esperado '{esperado}'; portada: {(r['portada'] or {}).get('txt')}; catalogo: {r['catalogo']}; cajon: {r['cajon']}; CLS catalogo {r['cls']}")
+    u = res[2]
+    chk("E3-B2 urgente", "conversion", "baja", "Con 3 dias o menos la cifra pasa al acento; con 15, no",
+        bool(u["portada"]) and u["portada"]["color"] == ACENTO and "Quedan 2 días" in u["portada"]["txt"]
+        and bool(r["portada"]) and r["portada"]["color"] != ACENTO,
+        f"2 dias: {u['portada']}; 15 dias: color {(r['portada'] or {}).get('color')}")
+    # Vencida (ayer) y la base real: nunca una fecha pasada.
+    vistas = []
+    for dias in (-1, None):
+        ctx, page, _, _ = portada_con_datos(browser, MOVIL, ciclo=dias)
+        p = page.locator("[data-qa=ciclo]").count()
+        page.goto(base + "/catalogo", wait_until="domcontentloaded")
+        esperar_catalogo(page)
+        page.wait_for_timeout(1500)
+        vistas.append((dias, p, page.locator("[data-qa=ciclo]").count()))
+        ctx.close()
+    chk("E3-B2 vencida", "contenido", "media", "Con ciclo_hasta vencido (o el de la base, si ya paso) la tira no aparece",
+        vistas[0][1] == 0 and vistas[0][2] == 0,
+        "; ".join(f"{'ayer' if d == -1 else 'base real'}: portada {p}, catalogo {c}" for d, p, c in vistas))
+
+
+def e3_b3(browser, base):
+    ctx, page, datos, _ = portada_con_datos(browser, MOVIL)
+    codigos = {str(x.get("codigo")) for p in publicables(datos) for x in pres_activas(p) if x.get("codigo")}
+    page.evaluate("() => document.getElementById('como')?.scrollIntoView()")
+    page.wait_for_timeout(1500)
+    m = page.evaluate("""() => { const c = document.getElementById('como'); if (!c) return null;
+        const chat = c.querySelector('[data-qa=chat-pedido]');
+        return { chat: chat ? chat.innerText : '', pasos: c.querySelectorAll('ol[data-qa=pasos] > li').length,
+                 iconos: c.querySelectorAll('svg').length, todo: c.innerText }; }""")
+    ctx.close()
+    if not m:
+        chk("E3-B3 chat", "confianza", "media", "'Como funciona' existe", False, "no hay #como")
+        return
+    cods = re.findall(r"\[(\d{8})\]", m["chat"])
+    chk("E3-B3 chat", "confianza", "media", "'Como funciona' muestra el mensaje real de whatsapp.js con dos aromas y codigos de la base",
+        len(cods) >= 2 and all(c in codigos for c in cods) and "Quiero hacer este pedido" in m["chat"],
+        f"codigos en el chat: {cods} (en la base: {[c in codigos for c in cods]}); texto: '{m['chat'][:80]}'")
+    chk("E3-B3 pasos", "visual", "media", "Sin iconos en circulos; los pasos en una lista ordenada de tres",
+        m["iconos"] == 0 and m["pasos"] == 3, f"svg en la seccion: {m['iconos']}; pasos en <ol>: {m['pasos']}")
+
+
+def e3_b4(browser, base):
+    res = {}
+    for nombre, op in (("390", MOVIL), ("1440", ESCRITORIO)):
+        ctx, page, _, _ = portada_con_datos(browser, op)
+        page.evaluate("() => document.getElementById('nosotros')?.scrollIntoView()")
+        page.wait_for_timeout(900)
+        res[nombre] = page.evaluate("""() => { const n = document.getElementById('nosotros'); if (!n) return null;
+            const a = n.querySelector('[data-qa=pagas]'), b = n.querySelector('[data-qa=no-pagas]');
+            return { pagas: a ? a.querySelectorAll('li').length : 0, nopagas: b ? b.querySelectorAll('li').length : 0,
+              lado: a && b ? Math.abs(a.getBoundingClientRect().top - b.getBoundingClientRect().top) : null,
+              palabras: n.innerText.split(/\\s+/).filter(Boolean).length, texto: n.innerText,
+              marcas: n.querySelectorAll('svg').length + (n.innerText.match(/[✓✔✗✘×]/g) || []).length }; }""")
+        ctx.close()
+    a, b = res["390"], res["1440"]
+    ok = all(r and r["pagas"] == 3 and r["nopagas"] == 3 and r["lado"] is not None and r["lado"] <= 4 and r["marcas"] == 0 for r in (a, b))
+    chk("E3-B4 columnas", "confianza", "media", "Nosotros: 'Lo que pagás' y 'Lo que no pagás' lado a lado (390 y 1440), tres y tres, sin tildes ni cruces",
+        ok, "; ".join(f"{k}: {r and {x: r[x] for x in ('pagas', 'nopagas', 'lado', 'marcas')}}" for k, r in res.items()))
+    chk("E3-B4 texto", "contenido", "media", "La placa ya no es una pared de texto (<= 120 palabras) y conserva 'Somos Grupo Wolf, un emprendimiento familiar'",
+        bool(a) and a["palabras"] <= 120 and "Somos Grupo Wolf, un emprendimiento familiar" in a["texto"],
+        f"palabras: {a and a['palabras']}")
+
+
+def e3_b5(browser, base):
+    ctx, page, datos, _ = portada_con_datos(browser, MOVIL)
+    slugs = {p["slug"] for p in publicables(datos)}
+    links = page.evaluate("""() => [...document.querySelectorAll('[data-hero=cinta] a[data-qa=cinta-aroma]')]
+        .filter(a => a.getAttribute('aria-hidden') !== 'true').map(a => a.getAttribute('href'))""")
+    malos = [h for h in links if (urllib.parse.parse_qs(urllib.parse.urlparse(h or "").query).get("aroma") or [None])[0] not in slugs]
+    abre, slug_url, esperado = False, None, None
+    if links:
+        cinta = page.locator("[data-hero=cinta]")
+        cinta.scroll_into_view_if_needed()
+        cinta.hover()
+        page.wait_for_timeout(300)
+        pausa = page.evaluate("() => getComputedStyle(document.querySelector('[data-hero=cinta] [class*=cintaPista]')).animationPlayState")
+        primero = page.locator("[data-hero=cinta] a[data-qa=cinta-aroma]:not([aria-hidden=true])").first
+        esperado = urllib.parse.parse_qs(urllib.parse.urlparse(primero.get_attribute("href")).query)["aroma"][0]
+        primero.evaluate("(a) => a.click()")
+        abre = esperar_ficha(page)
+        slug_url = slug_de_url(page.url)
+    else:
+        pausa = None
+    ctx.close()
+    chk("E3-B5 links", "conversion", "media", "Cada nombre de la cinta es un link a su ficha (?aroma= de un aroma activo) y tocarlo la abre",
+        len(links) >= 6 and not malos and abre and slug_url == esperado,
+        f"{len(links)} links, {len(malos)} sin aroma activo; abre la ficha: {abre} ({slug_url} / {esperado})")
+    ctx, page, _, _ = portada_con_datos(browser, MOVIL, movimiento="reduce")
+    quieta = page.evaluate("() => { const p = document.querySelector('[data-hero=cinta] [class*=cintaPista]'); return p ? getComputedStyle(p).animationName : null; }")
+    ctx.close()
+    chk("E3-B5 pausa", "accesibilidad", "baja", "La cinta se pausa con el puntero encima y queda quieta con prefers-reduced-motion",
+        pausa == "paused" and quieta == "none", f"con el puntero: {pausa}; movimiento reducido: animation-name {quieta}")
+
+
+def e3_b6(browser, base):
+    ctx, page, _, _ = portada_con_datos(browser, MOVIL)
+    txt = texto_completo(page)
+    hay = page.locator("#opiniones").count()
+    ctx.close()
+    chk("E3-B6 vacia", "confianza", "baja", "Sin capturas cargadas no hay seccion de opiniones (ni el titulo)",
+        hay == 0 and "Lo que me escriben" not in txt, f"#opiniones: {hay}; titulo a la vista: {'Lo que me escriben' in txt}")
+
+
+def e3_b7(browser, base):
+    from io import BytesIO
+    from PIL import Image
+    ctx, page, datos = catalogo_con_datos(browser, MOVIL)
+    # Un aroma con dos tamanos y rebaja en los dos (para ver el ultimo "Ahorras").
+    elegido = next((p for p in activos(datos) if len(pres_activas(p)) >= 2
+                    and all((x.get("precio_anterior") or 0) > x["precio"] for x in pres_activas(p))), None)
+    ctx.close()
+    ctx, page = nuevo(browser, MOVIL)
+    page.goto(base + f"/catalogo?aroma={elegido['slug']}", wait_until="domcontentloaded")
+    esperar_ficha(page, 20000)
+    page.wait_for_timeout(1200)
+    r = page.evaluate("""() => { const d = document.querySelector('[data-dialogo=ficha]');
+        const img = d.querySelector('img'); const m = d.querySelector('[data-qa=ficha-media]') || img.closest('div').parentElement;
+        const a = m.getBoundingClientRect(), b = img.getBoundingClientRect();
+        return { m: [a.left, a.top, a.width, a.height], i: [b.left, b.top, b.width, b.height] }; }""")
+    png = Image.open(BytesIO(page.screenshot())).convert("RGB")
+    esc = png.width / 390
+    mx, my, mw, mh = r["m"]
+    ix, iy, iw, ih = r["i"]
+    banda = round(ix - mx)
+
+    def media(x0, x1, y0, y1):
+        px = [png.getpixel((int(x * esc), int(y * esc))) for x in range(int(x0), int(x1)) for y in range(int(y0), int(y1), 6)]
+        return tuple(sum(c[k] for c in px) / len(px) for k in range(3)) if px else None
+    # Por franjas de 5 % del alto: el recuadro se ve donde el estudio cambia
+    # (el halo arriba, el piso con su filo de luz abajo), no en el promedio.
+    if banda <= 1:
+        dif, detalle = 0, "la foto ocupa todo el ancho"
+    else:
+        difs = []
+        for k in range(3, 19):  # arriba del 15 % estan "Copiar link" y el cerrar
+            y0, y1 = iy + ih * k / 20, iy + ih * (k + 1) / 20
+            fuera = media(max(mx + 1, ix - 12), ix - 1, y0, y1)
+            borde = media(ix + 1, ix + 4, y0, y1)
+            difs.append((max(abs(a - b) for a, b in zip(fuera, borde)), k * 5, fuera, borde))
+        dif, pct, fuera, borde = max(difs)
+        detalle = (f"banda {banda} px; peor franja al {pct} % del alto: contenedor {tuple(round(v) for v in fuera)} "
+                   f"contra borde de la foto {tuple(round(v) for v in borde)}; promedio {sum(d[0] for d in difs) / len(difs):.1f}")
+    chk("E3-B7 bandas", "visual", "media", "Ficha a 390: en cada franja, el contenedor de la foto tiene el color del borde de la foto (no se lee un recuadro)",
+        dif <= 4, f"diferencia maxima {dif:.1f}; {detalle}")
+    # El ultimo tamano no queda tapado por la barra fija.
+    t = page.evaluate("""() => { const d = document.querySelector('[data-dialogo=ficha]');
+        const filas = [...d.querySelectorAll('[aria-label="Elegir presentación"] button')]; const u = filas[filas.length - 1];
+        const barra = d.querySelector('[data-qa=agregar-ficha]').parentElement;
+        u.scrollIntoView({ block: 'end' });
+        const a = u.getBoundingClientRect(), b = barra.getBoundingClientRect();
+        const ahorro = u.querySelector('[data-qa=ahorro]');
+        const c = ahorro ? ahorro.getBoundingClientRect() : a;
+        const e = document.elementFromPoint(c.left + c.width / 2, c.top + c.height / 2);
+        return { fila: Math.round(a.bottom), barra: Math.round(b.top), tocable: !!e && (e === ahorro || u.contains(e)) }; }""")
+    page.keyboard.press("Tab")
+    ctx.close()
+    chk("E3-B7 ahorro", "conversion", "media", "Ficha a 390: al bajar hasta el ultimo tamano, su 'Ahorras $ X' queda arriba de la barra fija",
+        t["fila"] <= t["barra"] + 1 and t["tocable"], f"{elegido['slug']}: ultima fila termina en {t['fila']}, barra empieza en {t['barra']}; ahorro a la vista: {t['tocable']}")
+
+
+def e3_b8(browser, base):
+    ctx, page, _, _ = portada_con_datos(browser, MOVIL)
+    texto_completo(page)
+    js = """() => [...document.querySelectorAll('body *')].filter(e => {
+        if (e.closest('[data-hero=corona]') || e.closest('[aria-hidden=true]')) return false;
+        const t = [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+        if (!t) return false;
+        const cs = getComputedStyle(e);
+        return cs.textTransform === 'uppercase' && parseFloat(cs.letterSpacing) / parseFloat(cs.fontSize) >= 0.08 && e.getBoundingClientRect().width > 0;
+      }).map(e => e.textContent.trim().slice(0, 24))"""
+    portada = page.evaluate(js)
+    ctx.close()
+    chk("E3-B8 mayusculas", "visual", "baja", "Portada: a lo sumo una etiqueta en mayusculas espaciadas fuera del sello de marca",
+        len(portada) <= 1, f"{len(portada)}: {portada}")
+    pkg = json.load(open(os.path.join(AQUI, "..", "..", "package.json")))
+    deps = {**pkg.get("dependencies", {}), **pkg.get("devDependencies", {})}
+    chk("E3-B8 motion", "rendimiento", "baja", "La dependencia 'motion' (sin uso) ya no esta en package.json (repo local)",
+        "motion" not in deps, f"motion: {deps.get('motion', 'no esta')}")
+
+
+def e3_b9(browser, base):
+    ctx, page, datos, _ = portada_con_datos(browser, MOVIL)
+    page.evaluate("() => document.querySelector('footer')?.scrollIntoView()")
+    page.wait_for_timeout(800)
+    pie = page.evaluate("() => document.querySelector('footer')?.textContent || ''")
+    ctx.close()
+    m = re.search(r"Grupo Wolf\s*(.*?)Aviso", pie, re.S)
+    aclaracion = (m.group(1) if m else pie[:80]).strip()[:110]
+    chk("E3-B9 pie", "contenido", "media", "El pie ya no dice 'retiro los viernes' (settings.aclaracion_pedido)",
+        "viernes" not in pie.lower() and bool(pie), f"aclaracion: '{aclaracion}'")
+    filas = {p["slug"]: p for p in datos.get("filas", [])}
+    fam = [s for s in CON_FAMILIA if (filas.get(s) or {}).get("familia_olfativa")]
+    notas = [s for s in CON_NOTAS if all((filas.get(s) or {}).get(k) for k in ("nota_salida", "nota_corazon", "nota_fondo"))]
+    chk("E3-B9 familias", "conversion", "media", "Los aromas con ficha publica de la proveedora tienen familia (5) y notas (6); Polo Red queda pendiente",
+        len(fam) == len(CON_FAMILIA) and len(notas) == len(CON_NOTAS),
+        f"con familia {len(fam)}/{len(CON_FAMILIA)}; con notas {len(notas)}/{len(CON_NOTAS)}; "
+        + ", ".join(f"{s.replace('unlock-', '')}: {(filas.get(s) or {}).get('familia_olfativa') or '-'}" for s in SIETE))
+
+
 def lighthouse(base, corridas, linea_base):
     chrome = (glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome") or [None])[0]
     env = dict(os.environ, CHROME_PATH=chrome or "")
@@ -1323,6 +1709,8 @@ def main():
         (["CONFIANZA-1", "CONTENIDO-1", "PANEL-1", "REG-1"], contenido),
         (["E3-A1"], e3_a1), (["E3-A2", "E3-A3"], e3_a2_a3), (["E3-A4"], e3_a4), (["E3-A5"], e3_a5),
         (["E3-A6"], e3_a6), (["E3-A7"], e3_a7), (["E3-A8"], e3_a8), (["E3-A9"], e3_a9),
+        (["E3-B1"], e3_b1), (["E3-B2"], e3_b2), (["E3-B3"], e3_b3), (["E3-B4"], e3_b4), (["E3-B5"], e3_b5),
+        (["E3-B6"], e3_b6), (["E3-B7"], e3_b7), (["E3-B8"], e3_b8), (["E3-B9"], e3_b9),
     ]
     global SIN_HINTING
     with sync_playwright() as p:

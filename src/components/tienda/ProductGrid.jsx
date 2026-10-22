@@ -147,7 +147,8 @@ export default function ProductGrid({
   }
 
   return (
-    <section className={`tw ${s.section}`} id="catalogo">
+    <section className={`dia ${s.section}`} id="catalogo">
+      <div className="tw">
       <header className={s.head} ref={tope}>
         {/* La tira del ciclo va arriba del titulo, en el aire que ya deja la
             seccion: posicionada, asi cuando llegan los ajustes no corre nada
@@ -377,6 +378,7 @@ export default function ProductGrid({
           )}
         </>
       )}
+      </div>
     </section>
   );
 }

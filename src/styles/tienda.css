@@ -50,13 +50,15 @@
   /* --- Paleta Ámbar Noir. Base cálida (espresso), acento rosa-vino, y un
      dorado de arena para los brillos: el archetipo "luxury fragrance"
      (tinta + oro cálido), no el verde botánico de antes. --- */
-  --bg: #17110d;          /* espresso profundo, cálido */
-  --bg-2: #211812;        /* superficie elevada */
-  --bg-3: #2b2018;        /* superficie sobre superficie */
-  --ink: #f3ece1;         /* hueso cálido. ~16:1 sobre --bg */
-  --ink-dim: #ddd0be;     /* secundario */
-  --ink-faint: #bcad98;   /* terciario. Se mide contra el punto más claro del
-                             fondo cálido, no contra el plano. */
+  /* Rediseño D: la noche de la tienda pasa del espresso al vino hondo de la
+     LUT (el negro nunca es neutro). Ficha, cajón y hoja de tamaños la toman
+     sola. Los nombres de las variables quedan como estaban. */
+  --bg: #240604;          /* vino hondo */
+  --bg-2: #33100f;        /* superficie elevada */
+  --bg-3: #42181a;        /* superficie sobre superficie */
+  --ink: #faefea;         /* crema. 17:1 sobre --bg */
+  --ink-dim: #e7cfc6;     /* secundario */
+  --ink-faint: #cdb0a6;   /* terciario: 7,5:1 sobre --bg-3, el peor fondo */
   /* Acento sensual: rosa-vino. Sobre el espresso cálido sigue estallando y
      conversa con la terracota del fondo. Los nombres siguen siendo --amber*
      para no reescribir medio archivo; el valor es lo que cambia. */
@@ -67,8 +69,8 @@
   /* Oro de arena. NO es un segundo acento de UI: vive en los brillos del fondo,
      en algún filete y en el hero. La regla de un solo acento la manda --amber. */
   --gold: #d6a862;
-  --line: rgba(243, 236, 225, 0.11);
-  --line-bright: rgba(243, 236, 225, 0.24);
+  --line: rgba(250, 239, 234, 0.12);
+  --line-bright: rgba(250, 239, 234, 0.24);
 
   /* --- Vidrio. Un solo material en tres grosores (ver "vidrio" abajo):
        clear  controles chicos: casi no desenfoca, se ve el fondo tal cual
@@ -497,9 +499,31 @@
   --gold: var(--rubi);
   --line: var(--filete);
   --line-bright: rgba(42, 10, 14, 0.3);
+  --on-amber: var(--crema);
+  --superficie: #fbf5f2;   /* tarjetas y barra sobre papel: 1,1 pasos arriba */
   background-color: var(--papel);
   color: var(--tinta);
 }
+/* El vidrio no tiene sentido sobre papel liso: de dia las superficies son
+   solidas, un tono arriba del papel, sin filo ni reflejo. El boton principal
+   pasa a rubi plano con texto crema (6,8:1). */
+.dia :is(.tglass, .tglass-lite, .tglass-clear, .tbtn.clear, .tbtn.ghost) {
+  background: var(--superficie);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  box-shadow: none;
+}
+.dia :is(.tglass, .tglass-lite, .tglass-clear, .tbtn)::before,
+.dia :is(.tglass, .tglass-lite, .tglass-clear, .tbtn)::after { content: none; }
+.dia .tbtn:not(.clear):not(.ghost) {
+  background: var(--rubi); color: var(--crema);
+  -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;
+}
+@media (hover: hover) {
+  .dia .tbtn:not(.clear):not(.ghost):hover { background: #8a1c2d; }
+  .dia :is(.tglass-clear, .tbtn.clear, .tbtn.ghost):hover { background: var(--papel-hondo); }
+}
+.dia :is(.tbtn, .tglass-clear):focus-visible { outline-color: var(--rubi); }
+.dia h1, .dia h2, .dia h3 { color: var(--tinta); text-shadow: none; }
 
 /* ---------- reveal (IntersectionObserver, ver useReveal.js) ---------- */
 .treveal { opacity: 0; transform: translateY(20px); }

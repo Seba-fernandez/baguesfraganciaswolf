@@ -37,9 +37,12 @@ export const INICIO = {
   // Etiqueta del frasco protagonista del hero.
   showcaseEtiqueta: 'El más pedido',
 
-  // Fila de datos. {n} y {desde} se completan con lo real en el momento.
-  metaAromas: '{n} aromas en el ciclo',
-  metaDesde: 'desde {desde}',
+  // La linea de datos, arriba del boton: "Desde $ 16.499 · 100 aromas · Envio
+  // a todo el pais". {desde} y {n} salen de la base al hidratar; en el HTML
+  // pre-generado su lugar queda reservado y vacio (nunca un numero viejo).
+  datosDesde: 'Desde {desde}',
+  datosAromas: '{n} aromas',
+  datosEnvio: 'Envío a todo el país',
 
   // Rotulo de la cinta de nombres que se mueve abajo del hero.
   cintaEtiqueta: 'En este ciclo',

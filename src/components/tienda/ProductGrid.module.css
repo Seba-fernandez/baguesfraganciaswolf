@@ -28,6 +28,33 @@
   .barra .input { align-self: center; }
 }
 
+/* Buscador y, en el celular, el boton que despliega la familia. En
+   escritorio el envoltorio no existe para el diseno (display: contents). */
+.busqueda { display: flex; gap: 8px; align-items: center; }
+.busqueda .input { flex: 1; min-width: 0; }
+.plegar { flex-shrink: 0; }
+.plegarFlecha { font-size: 0.7rem; line-height: 1; }
+.plegar[aria-expanded="true"] .plegarFlecha { transform: rotate(180deg); }
+@media (min-width: 768px) {
+  .busqueda { display: contents; }
+  .plegar { display: none; }
+}
+@media (max-width: 767px) {
+  .renglonFamilia:not(.abierta) { display: none; }
+  /* Primer pantallazo del catalogo en el celular: encabezado mas corto para
+     que a 390x664 entre al menos una tarjeta con foto y precio. */
+  .section { padding-block-start: 28px; }
+  .head { margin-bottom: 14px; }
+  /* La bajada repite lo que dicen el buscador y el conteo de abajo. */
+  .bajada { display: none; }
+  /* "Para" se entiende por sus pastillas (El, Ella, Todos); el rotulo sigue
+     nombrando al grupo para el lector de pantalla (aria-labelledby). */
+  .renglon:not(.renglonFamilia) > .rotulo { display: none; }
+  .aviso { margin-top: 10px; line-height: 1.5; }
+  .barra { padding: 10px; gap: 10px; margin-bottom: 18px; }
+  .filtros { gap: 10px; }
+}
+
 .input {
   width: 100%; min-height: 46px; padding: 12px 18px;
   background: rgba(30, 20, 14, 0.55); border: 1px solid var(--line);

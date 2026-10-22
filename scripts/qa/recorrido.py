@@ -1114,6 +1114,12 @@ def e3_a5(browser, base):
 def e3_a6(browser, base):
     ctx, page, datos = catalogo_con_datos(browser, MOVIL)
     total = conteo(page)[0]
+    # En el celular la familia esta plegada en un boton al lado del buscador
+    # (etapa 3C): primero se despliega, como lo haria la clienta.
+    abrir = page.locator("[data-qa=familia-abrir]")
+    if abrir.count() and abrir.is_visible() and abrir.get_attribute("aria-expanded") != "true":
+        abrir.click()
+        page.wait_for_timeout(200)
     fams = page.evaluate("() => [...document.querySelectorAll('[data-qa=filtro-familia] button')].map(b => b.innerText.replace('✓', '').trim())")
     cuentas = {}
     for i, nombre in enumerate(fams):

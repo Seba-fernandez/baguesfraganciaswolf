@@ -59,6 +59,7 @@ export default function ProductGrid({
   const { para, familia, minis } = filtros;
   const poner = (clave, valor) => setParams((prev) => conFiltro(prev, clave, valor), { replace: true });
   const [rebaja, setRebaja] = useState(false);
+  const [familiaAbierta, setFamiliaAbierta] = useState(false);
   const [q, setQ] = useState('');
   const [pagina, setPagina] = useState(0);
   const tope = useRef(null);
@@ -169,14 +170,31 @@ export default function ProductGrid({
       {/* Barra de filtros: se pega abajo del encabezado al scrollear, así se
           puede cambiar de filtro sin volver arriba. */}
       <div className={`${s.barra} tglass`}>
-        <input
-          className={s.input}
-          type="search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={CATALOGO.placeholderBusqueda}
-          aria-label={CATALOGO.buscarEtiqueta}
-        />
+        {/* En el celular la familia se pliega en un boton al lado del buscador:
+            abiertas, las cinco pastillas ocupaban tres renglones y a 390x664 no
+            se veia ni una tarjeta (evaluacion del 22/10/2026). Solo CSS decide
+            que se ve en cada ancho, asi la cascara pre-generada no salta. */}
+        <div className={s.busqueda}>
+          <input
+            className={s.input}
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={CATALOGO.placeholderBusqueda}
+            aria-label={CATALOGO.buscarEtiqueta}
+          />
+          <button
+            type="button"
+            className={`${s.chip} ${s.plegar} ${familia ? s.chipOn : ''}`}
+            aria-expanded={familiaAbierta}
+            aria-controls="grupo-familia"
+            onClick={() => setFamiliaAbierta((v) => !v)}
+            data-qa="familia-abrir"
+          >
+            {familia ? (FAMILIAS.find((f) => f.id === familia)?.nombre.split(' ')[0] || CATALOGO.filtros.familia) : CATALOGO.filtros.familia}
+            <span className={s.plegarFlecha} aria-hidden="true">▾</span>
+          </button>
+        </div>
 
         {/* Dos renglones con rotulo: a quien y que familia. Las pastillas bajan
             de linea, nunca una tira que se corta (DISENO.md). El acento solo en
@@ -200,7 +218,7 @@ export default function ProductGrid({
             )}
             </div>
           </div>
-          <div className={s.renglon}>
+          <div className={`${s.renglon} ${s.renglonFamilia} ${familiaAbierta ? s.abierta : ''}`} id="grupo-familia">
             <span className={s.rotulo} id="filtro-familia">{CATALOGO.filtros.familia}</span>
             <div className={s.chips} role="group" aria-labelledby="filtro-familia" data-qa="filtro-familia">
               {FAMILIAS.map((f) => (

@@ -157,6 +157,58 @@ emulado. El arreglo igual vale: el bloqueo con `position: fixed` conserva la
 posición en todos los motores y frena el scroll de fondo en iOS, donde
 `overflow: hidden` no alcanza. El chequeo ahora toca con el dedo.
 
+### Etapa 3B: portada, ciclo, chat, ficha y datos (17 al 22 de octubre de 2026)
+
+Base: producción antes de la etapa (`scripts/qa/linea-base-etapa3b.json`). Los
+chequeos `E3-B*` se escribieron antes de construir. **B4 (Nosotros en dos
+columnas) y B5 (cinta de nombres con links) no se hicieron:** los absorbe el
+rediseño visual de la portada (rama `rediseno-visual`); sus chequeos siguen en
+FALLA a propósito hasta que entre esa portada.
+
+| ID | Categoría | Qué pasaba | Chequeo | Base | Final | Commit |
+| --- | --- | --- | --- | --- | --- | --- |
+| E3-B1 (UX-5, IDEA-1) | conversión | El primer pantallazo del celular no tenía precio ni un solo botón claro | `E3-B1 664`, `844`, `banda`, `datos`, `sello` | FALLA ×5 | PASA ×5 | `9f5345d` |
+| E3-B2 (IDEA-2) | conversión | No se sabía hasta cuándo se pedía en el ciclo | `E3-B2 tira`, `urgente` | FALLA ×2 | PASA ×2 | `14da399` |
+| E3-B3 (IDEA-10) | confianza | "Cómo funciona" eran tres íconos; ahora es la conversación real de WhatsApp | `E3-B3 chat`, `pasos` | FALLA ×2 | PASA ×2 | `ec1760b` |
+| E3-B6 | confianza | Sección "Lo que me escriben" lista para las capturas de clientas; sin capturas no aparece | `E3-B6 vacia` | PASA | PASA | ver abajo |
+| E3-B7 | visual / conversión | En el celular la foto de la ficha tenía bandas de otro color a los costados, y al bajar al último tamaño la barra fija le tapaba el "Ahorrás" | `E3-B7 bandas`, `ahorro` | FALLA ×2 | PASA ×2 (diferencia 2,7 de 4) | ver abajo |
+| E3-B8 | visual / rendimiento | Cuatro etiquetas en mayúsculas espaciadas en la portada; `motion` instalada sin uso | `E3-B8 mayusculas`, `motion` | FALLA ×2 | PASA ×2 | ver abajo |
+| E3-B9 | contenido / conversión | El pie decía "retiro los viernes"; siete aromas sin familia ni notas | `E3-B9 pie`, `familias` | FALLA ×2 | PASA ×2 | base de datos |
+
+**E3-B7, cómo quedó:** cada costado muestra el 3 % del borde de la misma foto
+estirado a su ancho (`background-size: 3300% 100%`). Como el alto es el de la
+foto, cada altura del relleno es la misma altura del estudio. Un relleno con la
+foto entera estirada y desenfocada se probó primero y falló: el frasco o la caja
+asomaban en la banda (diferencia 206). La barra fija ya no tapa: la hoja tiene
+`scroll-padding-bottom` del alto de la barra.
+
+**E3-B9, cambios en la base (22/10/2026), con respaldo** en
+`respaldo.products_20261022_pre_b9` y `respaldo.settings_20261022_pre_b9`:
+
+- `settings.aclaracion_pedido`: antes "Venta particular · catálogo Bagués.
+  Pedidos de fin de semana, retiro los viernes."; ahora "Venta particular ·
+  catálogo Bagués. El plazo depende del cierre del ciclo: te lo confirmo por
+  WhatsApp."
+- Familia y notas solo de las fichas públicas de las proveedoras
+  (`products.json`, leído el 22/10/2026). Los valores anteriores eran todos
+  vacíos.
+
+| Aroma | Fuente | Familia | Salida / corazón / fondo |
+| --- | --- | --- | --- |
+| Bad Boy | bagues.com.ar, Detroit (etiqueta oriental-ambarada) | Oriental ambarada | Pomelo, pimienta blanca / Vetiver, salvia esclarea / Haba tonka, cacao |
+| One Million | unlock.com.ar, One Million Mini | Amaderada | Toronja, menta, mandarina roja / Rosa, canela, notas especiadas / Cuero, notas amaderadas, pachulí hindú |
+| Polo Blue | unlock.com.ar, Polo Blue Mini | Fougère aromática | Melón, pepino, bergamota / Nota acuática, salvia, geranio, verbena, albahaca / Pachulí, almizcle |
+| Creed Aventus | unlock.com.ar, Creed Aventus Mini | Chipre | Bergamota, grosella negra, manzana, limón / Piña, pachulí, jazmín / Abedul, almizcle, musgo de roble, ambroxan, cedro |
+| Phantom | bagues.com.ar, Singapour (sin familia publicada) | sin cargar | Lavanda, limón de Amalfi / Manzana, notas terrosas, humo, pachulí / Vainilla, vetiver |
+
+Bad Boy cae en "Dulces" del filtro (cacao y tonka). **Polo Red y Phantom Black
+quedan sin datos:** no figuran hoy en ninguna de las dos tiendas. El banco
+ahora espera 4 con familia y 5 con notas.
+
+**Lighthouse (local, intercalado con `main`, cinco corridas):** `/` 88 contra 89
+(sin cambio); `/catalogo` 81 contra 77 con dos agentes usando la CPU en paralelo
+(ruido; LCP +150 ms). Se mide de nuevo en producción después de publicar.
+
 ### Lighthouse mobile en producción (cinco corridas, Lighthouse 13.5)
 
 | Página | Antes | Mediana | Después | Mediana |
@@ -171,13 +223,8 @@ Puede diferir unos puntos de PageSpeed Insights.
 
 ## Pendientes
 
-1. **La aclaración del pie dice "retiro los viernes".** Es
-   `settings.aclaracion_pedido` en la base ("Venta particular · catálogo
-   Bagués. Pedidos de fin de semana, retiro los viernes."), no está en el
-   código, y en esta etapa la base era solo de lectura. Ya no contradice a
-   otro texto, pero sí al plazo real (varía con el cierre del ciclo). **Lo
-   cambia Sebas en un minuto:** panel, Ajustes, campo de la aclaración. El banco
-   la marca como aviso en el detalle de `CONTENIDO-1`.
+1. **La aclaración del pie.** Hecho en la etapa 3B (E3-B9): ya no dice
+   "retiro los viernes". Sebas la puede cambiar desde Ajustes.
 2. **Página 404.** Con la reescritura de Vercel, cualquier ruta inexistente
    devuelve 200 con la portada. Dar un 404 de verdad obliga a listar en
    `vercel.json` cada ruta válida, incluidas las del panel (`/panel/...`) y la
@@ -191,10 +238,9 @@ Puede diferir unos puntos de PageSpeed Insights.
 4. **El salto al abrir la ficha.** Hecho en la etapa 3A (E3-A9): bloqueo con
    `position: fixed`. Conviene igual mirarlo una vez en un Android y un iPhone
    reales.
-5. **Lo que va en la etapa 3B** (no se empezó): hero nuevo, `og.jpg`, achicar el
-   sello GRUPO WOLF, el primer pantallazo de la portada, "Cómo funciona" como
-   chat, Nosotros en dos columnas, la cinta con links a cada ficha, la tira del
-   ciclo, capturas de clientas, foto de Sebas, el color del jugo (IDEA-4).
+5. **Etapa 3B:** hecha salvo B4 y B5, que pasan al rediseño visual. Faltan
+   de Sebas las capturas de clientas (van en `src/data/opiniones.json`), su
+   foto y las fotos propias de cajas para el hero y `og.jpg`.
 
 6. **Fotos blandas (FOTO-4).** Seis fotos de Unlock quedan agrandadas más de
    1,8×: Polo Red y Phantom (3,4×), Carolina Herrera for Men, Y de YSL y Omnia
@@ -209,9 +255,9 @@ Puede diferir unos puntos de PageSpeed Insights.
    estudio) y se ven más grandes que el resto: la fuente es de 800 px y no da
    para alejarse más.
 
-8. **Siete aromas sin familia ni notas** (Bad Boy, One Million, Polo Blue,
-   Polo Red, Creed Aventus, Phantom, Phantom Black): caen en "Otros" del filtro
-   de familia y su tarjeta no tiene línea de notas. Se cargan desde el panel.
+8. **Polo Red y Phantom Black sin familia ni notas** (los otros cinco se
+   cargaron en la etapa 3B; Phantom tiene notas pero no familia publicada).
+   Caen en "Otros" del filtro de familia. Se cargan desde el panel.
 9. **El código de proveedora no se puede buscar en bagues.com.ar ni en
    unlock.com.ar** (no es su SKU). La ficha dice para qué sirve el código y
    enlaza a la tienda de la marca; si la caja trae el número impreso, se puede

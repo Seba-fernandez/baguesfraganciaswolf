@@ -4,9 +4,9 @@ Contexto de trabajo para Claude Code en este repo. Se lee entero antes de tocar
 nada. El porqué del proyecto está en [`docs/CONTEXTO.md`](docs/CONTEXTO.md); acá
 está lo que hace falta para trabajar bien desde el primer cambio.
 
-*Última actualización: 17 de octubre de 2026, después de la etapa 3A de la
-auditoría (ficha, tarjeta, filtros por familia, link por perfume; registro en
-[`docs/QA.md`](docs/QA.md)).*
+*Última actualización: 22 de octubre de 2026, después de la etapa 3B de la
+auditoría (tira del ciclo, chat de WhatsApp, ficha del celular, datos de la
+base; registro en [`docs/QA.md`](docs/QA.md)).*
 
 ---
 
@@ -384,26 +384,24 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
   un dominio que no existe, el ingreso con Google se rompe.
 - **`Hawai Masculino`** quedó inactivo (era un producto cargado a mano, sin
   código; lo reemplaza Hawai Masc tipo Le Male Elixir). Se puede borrar.
-- **La dependencia `motion`** ya no se usa en ningún archivo: se puede sacar de
-  `package.json`.
 - **El respaldo** `respaldo.products_20261001_pre_c10` se puede borrar cuando el
   ciclo esté confirmado.
 - Llevar el vidrio a la ficha y al cajón del pedido (pendiente de diseño viejo).
-- **La aclaración del pie dice "retiro los viernes"** (`settings.aclaracion_pedido`).
-  El plazo real varía con el cierre del ciclo: Sebas la cambia desde Ajustes.
 - **De la etapa 1 de la auditoría** queda la página 404 (choca con la
   reescritura de Vercel). El salto al abrir la ficha se resolvió en la etapa 3A
   y el LCP de `/catalogo` bajó 150 ms (E3-A9); lo que sigue es la cadena HTML →
   JS → catálogo → foto. Pendiente medir en un Android real leer el catálogo sin
   preflight de CORS (en la simulación de Lighthouse salió peor).
-- **Siete aromas sin familia ni notas** (Bad Boy, One Million, Polo Blue, Polo
-  Red, Creed Aventus, Phantom, Phantom Black): caen en "Otros", no aparecen en
-  ningún filtro de familia y su tarjeta no tiene línea de notas. Se arregla
-  cargándoles `familia_olfativa` (y las notas, si se quiere) desde el panel.
+- **Polo Red y Phantom Black sin familia ni notas**: no están en las tiendas de
+  las proveedoras. Caen en "Otros"; se cargan desde el panel.
 - **¿La caja trae el código impreso?** Si Sebas lo confirma, la línea de la
   ficha (`FICHA.verificar` en `contenido.js`) puede decirlo.
-- **Etapa 3B** (portada, sello, og.jpg, capturas de clientas, foto de Sebas)
-  y lo que quedó de la 3A: ver [`docs/QA.md`](docs/QA.md#pendientes).
+- **Etapa 3B:** hecha salvo B4 y B5, que absorbe el rediseño visual (rama
+  `rediseno-visual`, a producción solo con OK de Sebas). Faltan de él las
+  capturas de clientas (`src/data/opiniones.json`, ver `docs/EDITAR.md`), su
+  foto y fotos propias de cajas. Registro en [`docs/QA.md`](docs/QA.md).
+- **El respaldo** `respaldo.products_20261022_pre_b9` y
+  `respaldo.settings_20261022_pre_b9` (etapa 3B) se pueden borrar más adelante.
 
 ## 13. Documentación del repo
 

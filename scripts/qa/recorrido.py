@@ -1274,8 +1274,9 @@ SIETE = ["unlock-bad-boy", "unlock-one-million", "unlock-polo-blue", "unlock-pol
 # Los que tienen ficha publica con familia y notas en unlock.com.ar o
 # bagues.com.ar (ver docs/QA.md, etapa 3B). Phantom trae notas pero no familia;
 # Polo Red no esta en ninguna de las dos tiendas.
-CON_FAMILIA = ["unlock-bad-boy", "unlock-one-million", "unlock-polo-blue", "unlock-creed-aventus",
-               "unlock-rabanne-phantom-black"]
+# Phantom Black ya no figura en unlock.com.ar (revisado el 22/10/2026): sin ficha
+# publica no se carga (no se adivina), igual que Polo Red.
+CON_FAMILIA = ["unlock-bad-boy", "unlock-one-million", "unlock-polo-blue", "unlock-creed-aventus"]
 CON_NOTAS = CON_FAMILIA + ["unlock-rabanne-phantom"]
 
 
@@ -1635,7 +1636,7 @@ def e3_b9(browser, base):
     filas = {p["slug"]: p for p in datos.get("filas", [])}
     fam = [s for s in CON_FAMILIA if (filas.get(s) or {}).get("familia_olfativa")]
     notas = [s for s in CON_NOTAS if all((filas.get(s) or {}).get(k) for k in ("nota_salida", "nota_corazon", "nota_fondo"))]
-    chk("E3-B9 familias", "conversion", "media", "Los aromas con ficha publica de la proveedora tienen familia (5) y notas (6); Polo Red queda pendiente",
+    chk("E3-B9 familias", "conversion", "media", "Los aromas con ficha publica de la proveedora tienen familia (4) y notas (5); Polo Red y Phantom Black quedan pendientes",
         len(fam) == len(CON_FAMILIA) and len(notas) == len(CON_NOTAS),
         f"con familia {len(fam)}/{len(CON_FAMILIA)}; con notas {len(notas)}/{len(CON_NOTAS)}; "
         + ", ".join(f"{s.replace('unlock-', '')}: {(filas.get(s) or {}).get('familia_olfativa') or '-'}" for s in SIETE))

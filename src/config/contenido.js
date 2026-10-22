@@ -93,6 +93,8 @@ export const NOSOTROS = {
   // del mapa de calor) a dos columnas cortas que contestan "¿por qué sale
   // menos?". Sin tildes ni cruces: lo que no pagás va tachado, como un precio.
   intro: 'Somos Grupo Wolf, un emprendimiento familiar de Córdoba. Lo arrancó mi viejo; hoy te atiendo yo por WhatsApp.',
+  // Abajo de la cuenta: el precio mas bajo del ciclo contra su precio de lista.
+  cuenta: 'Lo que pagás acá, contra el precio de lista de Bagués.',
   pagas: {
     titulo: 'Lo que pagás',
     items: ['El perfume, hecho por la casa Bagués', 'Una seña del 50 % para reservarlo', 'El envío, si no llegás a {monto}'],

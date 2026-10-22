@@ -180,6 +180,27 @@ export function piramideDe(producto) {
  * Solo si hay precio de lista y es mayor: nunca un numero inventado ni
  * negativo. Las dos cifras salen de la base (precio_anterior y precio).
  */
+/**
+ * El precio mas bajo del catalogo y su precio de lista, para "Lo que pagas"
+ * de la portada: "$ 16.499" contra "$ 29.999". La lista es la del mismo
+ * tamano mas barato (si hay varios al mismo precio, el de lista mas alta).
+ * Sin datos devuelve { desde: null, lista: null }.
+ */
+export function desdeYLista(productos = []) {
+  let mejor = null;
+  for (const p of productos) {
+    const pres = presentacionPorDefecto(p);
+    const precio = Number(pres?.precio) || 0;
+    if (!precio) continue;
+    const lista = Number(pres?.precio_anterior) || 0;
+    if (!mejor || precio < mejor.desde || (precio === mejor.desde && lista > mejor.lista)) {
+      mejor = { desde: precio, lista };
+    }
+  }
+  if (!mejor) return { desde: null, lista: null };
+  return { desde: mejor.desde, lista: mejor.lista > mejor.desde ? mejor.lista : null };
+}
+
 export function ahorroDe(presentacion) {
   const lista = Number(presentacion?.precio_anterior) || 0;
   const precio = Number(presentacion?.precio) || 0;

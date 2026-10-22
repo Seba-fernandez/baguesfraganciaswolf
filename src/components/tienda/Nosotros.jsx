@@ -9,19 +9,40 @@ import s from './Nosotros.module.css';
  * contesta la duda que deja "al precio que todavía no" (¿por qué sale menos?
  * ¿es confiable?) antes de las dos pantallas, como pide la evaluación.
  *
- * Una placa vino con arco arriba, del mismo material que el hero. Dos columnas
- * lado a lado también en el celular: lo que pagás en tinta, lo que no pagás
- * tachado con el acento, como el precio de lista. Sin íconos de tilde ni cruz.
+ * Una placa vino con arco, del mismo material que el hero: arriba, una caja
+ * Bagués real en su ventana; después la cuenta con números del catálogo (el
+ * precio más bajo contra su precio de lista) y las dos columnas lado a lado
+ * también en el celular. Lo que no pagás va tachado con el acento, como el
+ * precio de lista. Sin íconos de tilde ni cruz.
  */
-export default function Nosotros() {
+export default function Nosotros({ desde = null, lista = null }) {
   const ref = useReveal();
   const conMonto = (t) => t.replace('{monto}', pesos(ENVIO_GRATIS_DESDE));
 
   return (
     <section className={`tw ${s.section}`} id="nosotros" ref={ref} aria-labelledby="nosotros-titulo">
       <div className={`${s.placa} treveal`}>
+        <span className={s.ventana} aria-hidden="true">
+          <img
+            src="/nosotros/venecia-300.webp"
+            srcSet="/nosotros/venecia-300.webp 300w, /nosotros/venecia-480.webp 480w"
+            sizes="(max-width: 767px) 150px, 200px"
+            width="300" height="400"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        </span>
+
         <h2 id="nosotros-titulo" className={s.titulo}>{NOSOTROS.titulo}</h2>
-        <p className={s.intro}>{NOSOTROS.intro}</p>
+
+        {/* La cuenta, con los números del ciclo. Mientras no llegan, el lugar
+            queda reservado (sin un número escrito a mano que después cambia). */}
+        <p className={`${s.cuenta} tnum`} data-qa="nosotros-cuenta">
+          <span className={s.cuentaPrecio}>{desde ? pesos(desde) : ''}</span>
+          {lista && <s className={s.cuentaLista}>{pesos(lista)}</s>}
+          <span className={s.cuentaTexto}>{NOSOTROS.cuenta}</span>
+        </p>
 
         <div className={s.columnas}>
           <div className={s.col} data-qa="pagas">
@@ -38,6 +59,7 @@ export default function Nosotros() {
           </div>
         </div>
 
+        <p className={s.intro}>{NOSOTROS.intro}</p>
         <p className={s.firma}>{NOSOTROS.firma}</p>
       </div>
     </section>

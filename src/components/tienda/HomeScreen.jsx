@@ -24,7 +24,7 @@ import AntesDePedir from './AntesDePedir';
 export default function HomeScreen() {
   const {
     products, settings, promos, loading,
-    totalAromas, desde, nombresAromas,
+    totalAromas, desde, lista, nombresAromas,
     abrir, verPromo,
   } = useOutletContext();
 
@@ -39,7 +39,7 @@ export default function HomeScreen() {
         nombresAromas={nombresAromas}
         onOpen={abrir}
       />
-      <Nosotros />
+      <Nosotros desde={desde} lista={lista} />
       <Familias />
       <Destacados products={products} onOpen={abrir} cargando={loading} />
       <Opiniones />

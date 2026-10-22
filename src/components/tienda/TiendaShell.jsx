@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-
 import useDatosTienda from '../../hooks/useDatosTienda';
 import { CartProvider, useCart } from '../../contexts/CartContext';
 import { indexarPromos } from '../../lib/promos';
-import { esPublicable, presentacionPorDefecto, tituloDe } from '../../lib/producto';
+import { desdeYLista, esPublicable, tituloDe } from '../../lib/producto';
 import { lazy, Suspense } from 'react';
 import TiendaLayout from './TiendaLayout';
 import { fotoDe } from '../../lib/fotos';
@@ -85,11 +85,9 @@ export default function TiendaShell() {
   const promos = useMemo(() => indexarPromos(settings?.promos_ciclo), [settings]);
 
   // Datos que muestra el hero: se calculan una sola vez del catálogo real.
-  const { totalAromas, desde, nombresAromas } = useMemo(() => {
+  const { totalAromas, desde, lista, nombresAromas } = useMemo(() => {
     const publicables = products.filter((p) => p.activo && esPublicable(p));
-    const precios = publicables
-      .map((p) => Number(presentacionPorDefecto(p)?.precio) || 0)
-      .filter(Boolean);
+    const precios = desdeYLista(publicables);
     const ordenados = [...publicables].sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0));
     // La cinta del hero: un nombre por aroma, con su producto, porque cada
     // nombre es un link a su ficha (E3-B5).
@@ -99,7 +97,8 @@ export default function TiendaShell() {
       .filter((x) => x.nombre && x.nombre.length <= 22 && x.slug && !vistos.has(x.nombre) && vistos.add(x.nombre));
     return {
       totalAromas: publicables.length,
-      desde: precios.length ? Math.min(...precios) : null,
+      desde: precios.desde,
+      lista: precios.lista,
       nombresAromas: nombres.slice(0, 16),
     };
   }, [products]);
@@ -170,7 +169,7 @@ export default function TiendaShell() {
 
   const ctx = {
     products, loading, settings, promos,
-    totalAromas, desde, nombresAromas, heroProducto,
+    totalAromas, desde, lista, nombresAromas, heroProducto,
     abrir, elegirTamano, abiertoId: abierto?.id ?? null,
     promoActiva, setPromoActiva, verPromo,
   };

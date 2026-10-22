@@ -8,7 +8,8 @@ import { useCart } from '../../contexts/CartContext';
 const CartSheet = lazy(() => import('./CartSheet'));
 import VolverArriba from './VolverArriba';
 import AvisoAgregado from './AvisoAgregado';
-import { MARCA, CABECERA, LEGAL, PIE } from '../../config/contenido';
+import { MARCA, CABECERA, LEGAL, PIE, COMO_FUNCIONA } from '../../config/contenido';
+import { linkWhatsApp } from '../../lib/whatsapp';
 import '../../styles/tienda.css';
 import s from './TiendaLayout.module.css';
 
@@ -90,7 +91,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
           <div className={s.fcol}>
             <h4 className={s.ftitulo}>{PIE.contacto}</h4>
             {settings?.whatsapp_owner && (
-              <a href={`https://wa.me/${settings.whatsapp_owner}`} target="_blank" rel="noopener">WhatsApp</a>
+              <a href={linkWhatsApp(settings.whatsapp_owner, COMO_FUNCIONA.mensajeConsulta)} target="_blank" rel="noopener">WhatsApp</a>
             )}
             {settings?.instagram_user && (
               <a href={`https://instagram.com/${settings.instagram_user}`} target="_blank" rel="noopener">Instagram</a>

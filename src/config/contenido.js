@@ -225,6 +225,9 @@ export const COMO_FUNCIONA = {
   ],
   cita: 'Trabajo por encargo. Si algo no te cierra, lo hablamos tranquilos.',
   boton: 'Escribime por WhatsApp',
+  // Lo que ya viene escrito al abrir el chat desde el boton o el pie: nadie
+  // arranca de un chat vacio (evaluacion del 22/10/2026).
+  mensajeConsulta: 'Hola Sebastián! Vi la tienda y quiero hacerte una consulta.',
 };
 
 /**

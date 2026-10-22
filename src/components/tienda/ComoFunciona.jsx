@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import useReveal from '../../hooks/useReveal';
-import { mensajePedidoCliente, pedidoDeEjemplo } from '../../lib/whatsapp';
+import { linkWhatsApp, mensajePedidoCliente, pedidoDeEjemplo } from '../../lib/whatsapp';
 import { COMO_FUNCIONA } from '../../config/contenido';
 import s from './ComoFunciona.module.css';
 
@@ -74,7 +74,7 @@ export default function ComoFunciona({ settings, products = [] }) {
           <p className={s.cita}>{COMO_FUNCIONA.cita}</p>
 
           {settings?.whatsapp_owner && (
-            <a className="tbtn" href={`https://wa.me/${settings.whatsapp_owner}`} target="_blank" rel="noopener">
+            <a className="tbtn" href={linkWhatsApp(settings.whatsapp_owner, COMO_FUNCIONA.mensajeConsulta)} target="_blank" rel="noopener">
               {COMO_FUNCIONA.boton}
             </a>
           )}

@@ -12,6 +12,8 @@ nuevo.
 - Para entender **por qué** el diseño es así: [`DISENO.md`](DISENO.md).
 - Para saber **dónde** está cada archivo: [`ARQUITECTURA.md`](ARQUITECTURA.md).
 - Para el contexto del negocio: [`CONTEXTO.md`](CONTEXTO.md).
+- Para **hacer los assets** de la identidad nueva (descifrar referencias, letra,
+  guion de color, pared, productos, vidrio y adorno): [`RECETA-VISUAL.md`](RECETA-VISUAL.md).
 
 ---
 

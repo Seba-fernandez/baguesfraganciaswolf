@@ -423,6 +423,7 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
 | [`docs/DISENO.md`](docs/DISENO.md) | Sistema visual de la tienda y del panel |
 | [`docs/QA.md`](docs/QA.md) | Registro de errores y cómo correr el banco de pruebas |
 | [`docs/KIT.md`](docs/KIT.md) | El esqueleto reutilizable en otro proyecto |
+| [`docs/RECETA-VISUAL.md`](docs/RECETA-VISUAL.md) | De las referencias a los assets: ADN medido, letra, guion de color, pared, productos, vidrio y adorno, para calcar en otro proyecto |
 | [`scripts/fotos/README.md`](scripts/fotos/README.md) | El pipeline de fotos |
 
 Si cambiás algo de lo que describen, actualizalos en el mismo commit.

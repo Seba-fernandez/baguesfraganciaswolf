@@ -113,7 +113,13 @@
 .metaNum { display: inline-block; min-width: 3ch; text-align: right; }
 .metaPrecio { min-width: 0; text-align: left; }
 .metaPrecio:empty { min-width: 4.4em; }
-.metaNum:empty::before {
+/* El precio que todavia no llego: un texto invisible del mismo largo, asi la
+   caja tiene la altura y la linea base del numero de verdad y no salta. */
+.metaPrecio:empty::before {
+  content: '$ 00.000'; color: transparent; width: auto; height: auto;
+  border-radius: 2px; background: var(--line-bright); vertical-align: baseline;
+}
+.metaNum:not(.metaPrecio):empty::before {
   content: ''; display: inline-block; width: 100%; height: 0.7em;
   border-radius: 2px; background: var(--line-bright); vertical-align: -0.05em;
 }
@@ -244,10 +250,16 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   }
   /* Todo centrado: la imagen del celular pone la ventana en el eje. */
   .inner { align-items: center; text-align: center; }
-  .texto, .compra { display: flex; flex-direction: column; align-items: center; }
+  /* A todo el ancho y centrados por text-align: si la caja se ajustara al
+     contenido, al llegar la letra o el precio cambiaria de ancho y todo se
+     correria de costado (CLS 0,013 medido en la vista previa). */
+  .texto, .compra { display: flex; flex-direction: column; align-items: center; width: 100%; }
+  .corona { width: 100%; justify-content: center; }
+  .titulo, .bajada, .meta { width: 100%; }
+  .bajada { margin-inline: auto; }
   .corona { margin-bottom: 4vw; }
   .titulo { font-size: 13.3vw; }     /* 52 px a 390 */
-  .bajada { margin-top: 3vw; font-size: 3.85vw; max-width: 30ch; } /* 15 */
+  .bajada { margin-top: 3vw; font-size: 3.85vw; max-width: 19em; } /* 15; en em y no en ch: el ch cambia con la letra */
   .compra { margin-top: auto; }
   .metaDesde { font-size: 9.7vw; }   /* 38 */
   .meta { font-size: 3.6vw; }        /* 14 */

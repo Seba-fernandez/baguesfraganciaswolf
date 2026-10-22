@@ -241,6 +241,16 @@ como foto de producto (su selector era de las secciones viejas); se sumó
 | Antes de pedir | 6,0 | 5,1 | 5,0 |
 | Pie (aviso legal) | 4,5 | 4,9 | 4,9 |
 
+**Lighthouse mobile, red real, intercalado una y una, cinco corridas** (vista
+previa `09eb4dc`): producción 97 (LCP 2.209 ms, CLS 0) contra rediseño D 97
+(LCP 2.314 ms, CLS 0,013). El CLS venía del hero del celular centrado: las
+cajas se ajustaban al contenido y al llegar la letra o el precio cambiaban de
+ancho. Ahora van a todo el ancho y el precio reserva su lugar con un texto
+invisible del mismo largo: 0,009 en local con red lenta (bueno es menos de
+0,1). Lo que queda es el cambio de letra del título; precargar Melodrama y la
+itálica de Boska lo sacaría, a cambio de competir con la imagen del LCP: a
+probar intercalado antes de pasar a `main`.
+
 Las ciudades arrancó en 5,0: las cajas de 64 px eran el 7 % de la sección. A
 92 px (140 en escritorio) sube a 6,4. **Antes de pedir bajó** al pasar de la
 banda vino al papel hondo que pide el guion: es texto y cifras sin foto. La

@@ -25,6 +25,11 @@
    un font-weight 600 heredado use la 500 y no una negrita sintetica. */
 @font-face { font-family: 'Melodrama'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/melodrama-600.woff2') format('woff2'); }
 @font-face { font-family: 'Boska'; font-style: italic; font-weight: 300 700; font-display: swap; src: url('/fonts/boska-italic-400.woff2') format('woff2'); }
+/* Respaldos del titulo con la altura de Melodrama y de Boska (ascent, descent
+   y espacio entre lineas de sus tablas): mientras no llegan, la serif del
+   sistema ocupa el mismo alto y el cambio de letra no mueve el hero. */
+@font-face { font-family: 'Melodrama Respaldo'; src: local('Georgia'), local('Times New Roman'), local('Noto Serif'), local('DejaVu Serif'); ascent-override: 98%; descent-override: 28%; line-gap-override: 9%; }
+@font-face { font-family: 'Boska Respaldo'; font-style: italic; src: local('Georgia Italic'), local('Georgia-Italic'), local('Times New Roman Italic'), local('Noto Serif Italic'), local('DejaVu Serif Italic'); ascent-override: 96%; descent-override: 25%; line-gap-override: 9%; }
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/figtree-400.woff2') format('woff2'); }
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/figtree-600.woff2') format('woff2'); }
 
@@ -131,10 +136,10 @@
                    del titulo (Melodrama no trae italica).
        --f-mono    IBM Plex Mono 500: solo datos (ml, precio chico, codigo).
        --f-mano    La Belle Aurore: un rotulo a mano por seccion, como mucho. */
-  --f-titulo: 'Melodrama', 'Boska', Georgia, serif;
+  --f-titulo: 'Melodrama', 'Melodrama Respaldo', Georgia, serif;
   --f-display: 'Boska', 'Iowan Old Style', ui-serif, Georgia, serif;
   --f-body: 'Figtree', 'Figtree Respaldo', 'Figtree Respaldo Android', system-ui, -apple-system, sans-serif;
-  --f-quote: 'Boska', Georgia, serif;
+  --f-quote: 'Boska', 'Boska Respaldo', Georgia, serif;
   --f-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
   --f-mano: 'La Belle Aurore', 'Segoe Script', cursive;
 

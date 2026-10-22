@@ -5,7 +5,13 @@ import Flecha from './Flecha';
 import s from './Hero.module.css';
 
 /**
- * Hero C, "A través del vidrio" (rediseño de octubre de 2026).
+ * Hero D, "Cada perfume, una ciudad." (22/10/2026), sobre la escena del C.
+ * Letra: Melodrama con el giro en la itálica de Boska. El botón va entre dos
+ * trazos de plumilla, como el cierre de una carta (public/trazo.svg, lo dibuja
+ * scripts/rediseno/trazo.py). En el celular todo va centrado; en escritorio el
+ * texto sigue a la izquierda (decisión de Sebas: la imagen queda como está).
+ *
+ * Lo que sigue es de la versión C y sigue valiendo:
  *
  * La escena es UNA imagen horneada (public/hero/c/, la arma
  * hornear_hero.py del rediseño): pared vino con un halo rosa, cajas Bagués
@@ -78,10 +84,14 @@ export default function Hero({
           </p>
 
           <div className={s.acciones}>
-            <Link to="/catalogo" className={`tbtn ${s.cta}`} data-hero="cta" data-qa="hero-cta">
-              <span>{INICIO.verCatalogo}</span>
-              <span className={s.ctaFlecha} aria-hidden="true"><Flecha /></span>
-            </Link>
+            <span className={s.carta}>
+              <span className={s.trazo} aria-hidden="true" />
+              <Link to="/catalogo" className={`tbtn ${s.cta}`} data-hero="cta" data-qa="hero-cta">
+                <span>{INICIO.verCatalogo}</span>
+                <span className={s.ctaFlecha} aria-hidden="true"><Flecha /></span>
+              </Link>
+              <span className={`${s.trazo} ${s.trazoDer}`} aria-hidden="true" />
+            </span>
             <a href="#como" className={s.como} data-hero="como" data-qa="hero-como">{INICIO.verComo}</a>
           </div>
 

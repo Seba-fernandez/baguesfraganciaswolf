@@ -29,7 +29,10 @@ export const INICIO = {
   corona: 'Grupo Wolf',
   aval: 'Casa Bagués · Córdoba',
 
-  titulo: ['El perfume que ya', 'conocés, al precio', 'que todavía no.'],
+  // Rediseño D: el titulo sale de algo que el negocio ya tiene (cada caja
+  // Bagués lleva el nombre de una ciudad). La ultima linea va en la italica
+  // de Boska.
+  titulo: ['Cada perfume,', 'una ciudad.'],
   // Una sola linea. Los datos duros (cuantos, desde cuanto) van en la fila de
   // abajo, que se lee de un vistazo.
   // Rediseño C: "versiones inspiradas" en el primer pantallazo (no negociable

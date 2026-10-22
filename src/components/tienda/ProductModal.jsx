@@ -8,6 +8,7 @@ import {
 import { pesos } from '../../lib/format';
 import { copiarTexto, linkDeAroma } from '../../lib/compartir';
 import { parecidos } from '../../lib/parecidos';
+import { fotoDe, fotoChica } from '../../lib/fotos';
 import { FICHA, PARECIDOS, conDatos } from '../../config/contenido';
 import { CANTIDAD_MAXIMA } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
@@ -67,6 +68,9 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
   const frase = fraseDe(producto);
   const piramide = piramideDe(producto);
   const sugeridos = parecidos(producto, todos, 3);
+  // Los costados de la foto en el celular: su propio borde, estirado a lo
+  // ancho, asi el estudio sigue hasta el filo de la hoja (E3-B7).
+  const fondoFoto = fotoChica(producto.imagen_url || fotoDe(producto, elegida?.linea));
 
   /** La razon de cada sugerencia, a la vista. */
   const razon = (r) => (r.comparte.length
@@ -99,13 +103,19 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
           </div>
         )}
 
-        <div className={s.media}>
+        <div className={s.media} data-qa="ficha-media">
           <ProductThumb
             producto={producto}
             ratio="3 / 4"
             linea={elegida?.linea}
             sizes="(max-width: 767px) 75vw, 380px"
           />
+          {fondoFoto && (
+            <>
+              <span className={`${s.banda} ${s.bandaIzq}`} style={{ backgroundImage: `url(${fondoFoto})` }} aria-hidden="true" />
+              <span className={`${s.banda} ${s.bandaDer}`} style={{ backgroundImage: `url(${fondoFoto})` }} aria-hidden="true" />
+            </>
+          )}
         </div>
 
         <div className={s.info}>

@@ -5,6 +5,9 @@
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
   max-width: 960px; margin: 0 auto;
   max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain;
+  /* Lo que se trae a la vista dentro de la hoja (el ultimo tamano, el foco
+     con Tab) se apoya arriba de la barra fija de agregar, no debajo (E3-B7). */
+  scroll-padding-bottom: calc(92px + env(safe-area-inset-bottom));
   border-radius: 14px 14px 0 0;
   display: grid; grid-template-columns: 1fr;
   background: var(--bg-2);
@@ -67,7 +70,20 @@
   display: flex; align-items: center; justify-content: center;
   background: linear-gradient(180deg, #2a1f17 0%, #1d1510 100%);
 }
-.media > div { height: 46vh; height: 46dvh; width: auto; max-width: 100%; }
+.media > div { position: relative; z-index: 1; height: 46vh; height: 46dvh; width: auto; max-width: 100%; }
+/* Los costados (E3-B7): cada banda muestra solo el 3 % del borde de la misma
+   foto, estirado a su ancho (background-size 3300 %). Como el alto es el de
+   la foto, cada altura del relleno es la misma altura del estudio: el halo
+   sigue al halo y el piso al piso, sin recuadro. La foto mide 46dvh x 3/4. */
+.media { position: relative; overflow: hidden; isolation: isolate; }
+.banda {
+  position: absolute; top: 0; bottom: 0; z-index: 0;
+  width: max(0px, calc((100% - 34.5dvh) / 2 + 2px));
+  background-repeat: no-repeat; background-size: 3300% 100%;
+  pointer-events: none;
+}
+.bandaIzq { left: 0; background-position: left top; }
+.bandaDer { right: 0; background-position: right top; }
 
 /* Orden para decidir (celular): para, nombre, frase, tamanos, piramide,
    descripcion, aviso y la barra de agregar pegada abajo. */
@@ -192,7 +208,9 @@
   /* La columna entera lleva la pared del estudio; la foto se queda quieta
      arriba mientras se baja el texto. */
   .media { align-items: flex-start; padding: 30px; }
+  .media { overflow: visible; }
   .media > div { position: sticky; top: 30px; height: auto; width: 100%; }
+  .banda { display: none; }
   .info { padding: 34px 32px 30px; }
   .para { order: 1; } .nombre { order: 2; } .frase { order: 3; } .inspirado { order: 4; }
   .desc { order: 5; } .piramide { order: 6; } .campo { order: 7; } .verificar { order: 8; } .promoNota { order: 8; }

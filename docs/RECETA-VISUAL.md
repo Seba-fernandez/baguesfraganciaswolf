@@ -223,12 +223,30 @@ en la pared, en WebP y AVIF de hasta 90 kB.
 7. **Exportar** con `exportar_peso()`: WebP calidad 84 y AVIF 62; si se pasa
    del límite, baja de a 4 puntos (nunca de 30).
 
-**Para el catálogo entero** (133 fotos) el mismo proceso entra al pipeline de
-siempre (`scripts/fotos/componer.mjs`), cambiando el estudio espresso por esta
-pared. Ojo con los frascos de vidrio transparente de Unlock (tratamiento
-`espresso`): su fondo original se ve a través del vidrio y hay que recortarlos
-con su máscara antes de apoyarlos en la pared. Se prueba primero con 8 fotos
-y la hoja de contacto.
+**Para el catálogo entero** se usa el pipeline de fotos de siempre para
+limpiar, y este motor para apoyar:
+
+```bash
+# 1. Recortes limpios (filo, podio, corte y máscara ya aplicados), sin tocar la web
+node scripts/fotos/componer.mjs --todo --recortes /tmp/recortes [--solo slug1,slug2]
+# 2. Apoyarlos en la pared
+python3 scripts/rediseno/pared_productos.py /tmp/recortes /tmp/pared
+```
+
+Lo que enseñó la prueba de 8 (cajas Bagués y frascos Unlock de los tres tipos):
+
+- **Cajas Bagués y frascos recortados o con máscara:** salen parejas, con el
+  proceso de arriba tal cual. Al alfa se le corta lo menor a 6 %: los restos
+  casi invisibles del fondo viejo dibujaban un rectángulo más claro.
+- **Vidrio transparente (`espresso`): no se recorta.** Recortado, el vidrio
+  queda flotando, desflecado o con el fondo viejo adentro. El frasco queda
+  intacto en su foto y **solo el fondo** pasa a la pared: su luminancia se lleva
+  a una rampa vino (`#14070a`, `#3a1118`, `#6a2230`, `#8a3443`) y se mezcla
+  55/45 con la pared, así conserva su sombra y su reflejo y toma la textura y
+  el halo. Encuadre igual que el estudio de siempre: frasco al 70 % del alto,
+  apoyado al 86,5 %.
+- **Una foto de origen mala no la arregla ningún proceso** (en Bagués, Olympéa:
+  frasco inclinado y cortado). Esa va con foto propia.
 
 ---
 

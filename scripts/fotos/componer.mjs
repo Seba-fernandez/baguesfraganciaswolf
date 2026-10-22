@@ -42,6 +42,14 @@ const AVISO_AMPLIACION = 1.8;
 const PISO = 0.865; // donde apoya el frasco, en proporcion del alto
 const ALTURA = 0.70; // cuanto del alto ocupa el frasco o la caja
 const todo = process.argv.includes('--todo');
+// Modo recortes (rediseño, pared vino): en vez de componer en el estudio,
+// guarda el recorte limpio (filo, podio, corte y mascara ya aplicados) en
+// <dir>/<linea>/<slug>.png para que lo apoye scripts/rediseno/pared_productos.py.
+// --solo slug1,slug2 limita a esos aromas. No toca public/ ni los avisos.
+const argRecortes = process.argv.indexOf('--recortes');
+const RECORTES = argRecortes > -1 ? path.resolve(process.argv[argRecortes + 1]) : null;
+const argSolo = process.argv.indexOf('--solo');
+const SOLO = argSolo > -1 ? new Set(process.argv[argSolo + 1].split(',')) : null;
 
 const FUENTES = path.join(RAIZ, 'scripts/fotos/fuentes.json');
 const fuentes = JSON.parse(fs.readFileSync(FUENTES, 'utf8'));
@@ -165,6 +173,7 @@ async function componerRecorte(buf, ampliacionMax = AMPLIACION_MAX) {
   // Recorte al contenido visible: el alfa decide, no el color.
   const recortado = await sharp(buf).ensureAlpha().trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 8 }).png().toBuffer();
   const meta = await sharp(recortado).metadata();
+  if (RECORTES) return { salida: recortado, ampliacion: 1, medida: `recorte de ${meta.width}x${meta.height} px`, recorte: true };
 
   const altoMax = ALTO * ALTURA;
   const anchoMax = ANCHO * 0.84;
@@ -229,6 +238,21 @@ async function tratarEspresso(buf, f, slug, linea) {
   const crudo = await mascaraDe(buf, slug, linea, img.width, img.height);
   const mascara = limpiarMascara(crudo, img.width, img.height, { corte: f.corte });
   const caja = cajaDe(mascara, img.width, img.height);
+  if (RECORTES) {
+    // Vidrio transparente: se guarda con su mascara y el color del fondo que
+    // se ve a traves, asi la pared vino puede reemplazarlo adentro del vidrio.
+    const fondo = [[], [], []];
+    for (let i = 0; i < mascara.length; i += 7) {
+      if (mascara[i] < 10) for (let c = 0; c < 3; c++) fondo[c].push(img.data[i * 4 + c]);
+    }
+    const mediana = (a) => { a.sort((x, y) => x - y); return a[a.length >> 1] ?? 255; };
+    const conAlfa = Buffer.from(img.data);
+    for (let i = 0; i < mascara.length; i++) conAlfa[i * 4 + 3] = mascara[i];
+    // La foto entera (no se recorta): el frasco queda en su escena y solo el
+    // fondo pasa a la pared. La caja del frasco va en el .json para encuadrar.
+    const salida = await sharp(conAlfa, { raw: { width: img.width, height: img.height, channels: 4 } }).png().toBuffer();
+    return { salida, ampliacion: 1, medida: 'escena de vidrio', recorte: false, fondo: fondo.map(mediana), caja };
+  }
   const tratada = llevarAEspresso(img, mascara);
 
   // Escala que deja el frasco al ALTURA del cuadro (o al 84 % del ancho).
@@ -280,7 +304,10 @@ const errores = [];
 const nuevosAvisos = [];
 for (const [slug, porLinea] of Object.entries(fuentes)) {
   for (const [linea, f] of Object.entries(porLinea)) {
-    const destino = path.join(RAIZ, 'public', DESTINOS[linea].replace(/^public\/?/, ''), `${slug}.webp`);
+    if (SOLO && !SOLO.has(slug)) continue;
+    const destino = RECORTES
+      ? path.join(RECORTES, linea, `${slug}.png`)
+      : path.join(RAIZ, 'public', DESTINOS[linea].replace(/^public\/?/, ''), `${slug}.webp`);
     const clave = `${linea}/${slug}`;
     hechas[linea].push(slug);
     const mascara = path.join(MASCARAS, `${slug}__${linea}.png`);
@@ -293,9 +320,14 @@ for (const [slug, porLinea] of Object.entries(fuentes)) {
       const tratamiento = f.tratamiento || f.tipo || ((await esRecorte(buf)) ? 'recorte' : 'escena');
       const hacer = { recorte: tratarRecorte, estudio: tratarEstudio, espresso: tratarEspresso, escena: tratarEscena }[tratamiento];
       if (!hacer) throw new Error(`tratamiento desconocido: ${tratamiento}`);
-      const { salida, ampliacion, medida } = await hacer(buf, f, slug, linea);
+      const { salida, ampliacion, medida, recorte, fondo, caja } = await hacer(buf, f, slug, linea);
       fs.mkdirSync(path.dirname(destino), { recursive: true });
       fs.writeFileSync(destino, salida);
+      if (RECORTES) {
+        fs.writeFileSync(destino.replace(/\.png$/, '.json'), JSON.stringify({ tratamiento, recorte: !!recorte, fondo: fondo || null, caja: caja || null, ampliacionMax: f.ampliacionMax ?? null }) + '\n');
+        console.log(linea.padEnd(7), tratamiento.padEnd(9), medida.padEnd(28), slug);
+        continue;
+      }
       // Las variantes (-360w, -560w) NO se borran: quedan con fecha anterior y
       // variantes.mjs las rehace. Ese paso corre solo en cada build, asi que una
       // foto nueva nunca llega a produccion sin sus anchos chicos.
@@ -310,6 +342,12 @@ for (const [slug, porLinea] of Object.entries(fuentes)) {
       errores.push(`${slug} (${linea}): ${e.message}`);
     }
   }
+}
+
+// En modo recortes no se toca nada de la web (ni avisos ni el indice).
+if (RECORTES) {
+  if (errores.length) { console.error('Errores:\n  ' + errores.join('\n  ')); process.exit(1); }
+  process.exit(0);
 }
 
 // Avisos de resolucion: se guardan siempre, asi el de una foto que no se

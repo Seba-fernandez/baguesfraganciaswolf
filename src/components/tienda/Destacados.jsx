@@ -8,11 +8,12 @@ import ProductThumb from './ProductThumb';
 import s from './Destacados.module.css';
 
 /**
- * Los que siempre salen (rediseño C). Una fila que se desliza, sin marco: la
- * tarjeta que queda en el centro se ve nítida y las de los costados quedan
- * "detrás del vidrio" acanalado, como en el hero (CSS con
- * animation-timeline: view(inline); donde no hay soporte, todas nítidas).
- * Precio a pagar en tinta y el de lista tachado al lado (no negociable 11).
+ * Los que siempre salen (rediseño D, plano 4: el clímax). La sección entera
+ * del vino de la marca, como la banda roja de NOIR, con las fotos de producto
+ * sobre la misma pared del hero. El vidrio sobre las tarjetas del rediseño C
+ * se sacó: Sebas lo sintió pegado encima; el vidrio vive solo en el hero.
+ * Una fila que se desliza; precio a pagar en crema y el de lista tachado al
+ * lado (no negociable 11).
  * En escritorio, flechas a los costados; en el celular, el dedo.
  */
 export default function Destacados({ products, onOpen, cargando = false }) {
@@ -42,8 +43,8 @@ export default function Destacados({ products, onOpen, cargando = false }) {
   }
 
   return (
-    <section className={`tw ${s.section}`} ref={ref}>
-      <div className={s.marco}>
+    <section className={s.section} ref={ref}>
+      <div className={`tw ${s.marco}`}>
         <header className={s.head}>
           <h2 className={s.titulo}>{DESTACADOS.titulo}</h2>
           <p className={s.bajada}>{DESTACADOS.bajada}</p>
@@ -79,7 +80,6 @@ export default function Destacados({ products, onOpen, cargando = false }) {
                 >
                   <span className={s.media}>
                     <ProductThumb producto={p} ratio={PROPORCION.destacado} sizes="(max-width: 779px) 62vw, 260px" />
-                    <span className={s.vidrio} aria-hidden="true" />
                   </span>
                   <span className={s.info}>
                     <span className={s.nombre}>{tituloDe(p)}</span>

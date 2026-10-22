@@ -11,9 +11,9 @@ import s from './ComoFunciona.module.css';
  * catálogo, cada uno con su tamaño, su línea y su código; abajo, mi respuesta.
  * Si cambia el formato del mensaje, esta sección cambia sola.
  *
- * Al costado (debajo en el celular), los tres pasos en una lista ordenada: es
- * una secuencia real, por eso llevan número. Sin íconos en círculos: eran el
- * patrón que más delataba una plantilla.
+ * Rediseño D (plano 5, el respiro): papel después del clímax vino, y el chat
+ * real nada más. Los tres pasos numerados salieron: el chat ya los cuenta.
+ * Al costado, una frase y el botón de WhatsApp en el acento.
  */
 
 /** Un renglón del mensaje. El código va aparte, en cifras tabulares. */
@@ -37,7 +37,8 @@ export default function ComoFunciona({ settings, products = [] }) {
     : '';
 
   return (
-    <section className={`tw ${s.section}`} id="como" ref={ref}>
+    <section className={s.section} id="como" ref={ref}>
+      <div className="tw">
       <header className={s.head}>
         <h2 className={s.titulo}>{COMO_FUNCIONA.titulo}</h2>
         <p className={s.bajada}>{COMO_FUNCIONA.bajada}</p>
@@ -62,23 +63,15 @@ export default function ComoFunciona({ settings, products = [] }) {
         </figure>
 
         <div className={s.lado}>
-          <ol className={s.pasos} data-qa="pasos">
-            {COMO_FUNCIONA.pasos.map((p, i) => (
-              <li key={p.titulo} className={`${s.paso} treveal`} style={{ transitionDelay: `${i * 90}ms` }}>
-                <h3 className={s.pasoTitulo}>{p.titulo}</h3>
-                <p className={s.pasoTexto}>{p.texto}</p>
-              </li>
-            ))}
-          </ol>
-
           <p className={s.cita}>{COMO_FUNCIONA.cita}</p>
 
           {settings?.whatsapp_owner && (
-            <a className="tbtn" href={linkWhatsApp(settings.whatsapp_owner, COMO_FUNCIONA.mensajeConsulta)} target="_blank" rel="noopener">
+            <a className={`tbtn ${s.boton}`} href={linkWhatsApp(settings.whatsapp_owner, COMO_FUNCIONA.mensajeConsulta)} target="_blank" rel="noopener">
               {COMO_FUNCIONA.boton}
             </a>
           )}
         </div>
+      </div>
       </div>
     </section>
   );

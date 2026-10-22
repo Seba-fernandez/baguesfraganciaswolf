@@ -485,6 +485,22 @@
 .tbtn:disabled { opacity: 0.42; cursor: not-allowed; }
 .tbtn.wide { width: 100%; }
 
+/* ---------- luz de dia (rediseño D) ----------
+   Una seccion de papel redefine los colores de la tienda para lo que tenga
+   adentro (la tira del ciclo, links, focos): tinta en vez de hueso y rubi en
+   vez del rosa, que sobre papel no llega a 3:1. */
+.dia {
+  --ink: var(--tinta);
+  --ink-dim: var(--tinta-suave);
+  --ink-faint: var(--tinta-suave);
+  --amber: var(--rubi);
+  --gold: var(--rubi);
+  --line: var(--filete);
+  --line-bright: rgba(42, 10, 14, 0.3);
+  background-color: var(--papel);
+  color: var(--tinta);
+}
+
 /* ---------- reveal (IntersectionObserver, ver useReveal.js) ---------- */
 .treveal { opacity: 0; transform: translateY(20px); }
 .trevealed { opacity: 1; transform: none; transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease); }

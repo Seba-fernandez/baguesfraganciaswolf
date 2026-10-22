@@ -13,11 +13,15 @@ import s from './Familias.module.css';
  *
  * Celular: una fila que se desliza (es una vidriera, no un filtro). Escritorio:
  * las cinco a la vista.
+ *
+ * Rediseño D (plano 3): de día, sobre papel, con las cinco ventanas de noche.
+ * El vino entra de a poco antes de la banda vino de los destacados.
  */
 export default function Familias() {
   const ref = useReveal();
   return (
-    <section className={`tw ${s.section}`} id="familias" ref={ref} aria-labelledby="familias-titulo">
+    <section className={s.section} id="familias" ref={ref} aria-labelledby="familias-titulo">
+      <div className="tw">
       <h2 id="familias-titulo" className={s.titulo}>{FAMILIAS_PORTADA.titulo}</h2>
       <p className={s.bajada}>{FAMILIAS_PORTADA.bajada}</p>
       <ul className={s.fila}>
@@ -42,6 +46,7 @@ export default function Familias() {
           </li>
         ))}
       </ul>
+      </div>
     </section>
   );
 }

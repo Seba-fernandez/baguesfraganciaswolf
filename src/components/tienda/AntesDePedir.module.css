@@ -1,33 +1,37 @@
-/* La banda vino a sangre, con el halo del hero arriba a la izquierda. */
+/* Antes de pedir (rediseño D, plano 6): papel hondo, a sangre. */
 .banda {
-  margin-top: clamp(24px, 4vw, 48px);
-  background:
-    radial-gradient(50% 60% at 18% 0%, rgba(224, 112, 138, 0.26) 0%, rgba(224, 112, 138, 0) 70%),
-    linear-gradient(180deg, #4a161f 0%, #2a0c12 100%);
-  border-top: 1px solid rgba(214, 168, 98, 0.3);
+  background-color: var(--papel-hondo);
 }
-.section { padding-block: clamp(56px, 8vw, 96px); }
+.section { padding-block: clamp(72px, 10vw, 140px); }
 
-.titulo { font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.04; margin-bottom: clamp(24px, 4vw, 40px); }
-.titulo:has(+ .ciclo) { margin-bottom: 10px; }
-.ciclo { margin-bottom: clamp(24px, 4vw, 36px); }
+:global(.tienda) .titulo {
+  font-family: var(--f-display); font-weight: 500;
+  font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1; letter-spacing: -0.01em;
+  color: var(--tinta); text-shadow: none;
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+:global(.tienda) .titulo:has(+ .ciclo) { margin-bottom: 12px; }
+.ciclo { margin-bottom: clamp(28px, 4vw, 40px); }
 
 /* 2x2 en el celular, una fila en escritorio. */
 .grilla {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 30px 18px; margin: 0;
+  gap: 34px 18px; margin: 0;
 }
 @media (min-width: 900px) { .grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 36px; } }
 
-.dato { border-top: 1px solid rgba(243, 236, 225, 0.26); padding-top: 14px; }
-.encabezado { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
-/* La cifra: lo que se lee primero. Cormorant 600, de 40 a 64 px. */
+.dato { border-top: 1px solid var(--filete); padding-top: 16px; }
+.encabezado { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+/* La cifra: lo que se lee primero. En Boska y no en Melodrama: el cero de
+   Melodrama viene cruzado (parece una Ø) en todas sus formas, y "$ 60.000"
+   se leia raro. Melodrama queda para las palabras. */
 .cifra {
-  font-family: var(--f-display); font-weight: 600;
-  font-size: clamp(2.3rem, 9.4vw, 4rem); line-height: 0.95; letter-spacing: -0.01em;
-  color: var(--ink); white-space: nowrap;
+  font-family: var(--f-display); font-weight: 500;
+  font-size: clamp(2.2rem, 9vw, 3.6rem); line-height: 0.95; letter-spacing: -0.01em;
+  color: var(--vino);
   font-variant-numeric: lining-nums tabular-nums;
 }
-.nombre { font-weight: 600; font-size: 0.92rem; color: var(--ink); }
-.texto { margin: 0; color: var(--ink-dim); font-size: 0.86rem; line-height: 1.5; }
-@media (min-width: 900px) { .texto { font-size: 0.95rem; } }
+.nombre { font-family: var(--f-mono); font-weight: 500; font-size: 0.86rem; color: var(--tinta); }
+.texto { margin: 0; color: var(--tinta); font-size: 0.92rem; line-height: 1.5; }
+@media (min-width: 900px) { .texto { font-size: 0.98rem; } }
+@media (min-width: 900px) { .cifra { font-size: clamp(2.4rem, 3.6vw, 3.6rem); } }

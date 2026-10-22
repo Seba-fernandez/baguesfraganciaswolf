@@ -63,7 +63,18 @@
 .pulso { animation: pulso 420ms var(--ease); }
 @keyframes pulso { 0% { transform: scale(1); } 35% { transform: scale(1.28); } 100% { transform: scale(1); } }
 
-.footer { border-top: 1px solid var(--line); padding-block: 52px 60px; margin-top: 40px; }
+.footer {
+  background: var(--vino-hondo); color: var(--crema);
+  padding-block: clamp(56px, 8vw, 110px) 60px; margin-top: 0;
+}
+/* La marca a todo el ancho: Melodrama de 64 a 220 px. */
+.firma {
+  font-family: var(--f-titulo); font-weight: 600;
+  font-size: clamp(4.4rem, 17vw, 13.75rem); line-height: 0.85; letter-spacing: -0.01em;
+  color: var(--crema); white-space: nowrap;
+  margin-bottom: clamp(36px, 5vw, 64px);
+}
+.firmaWolf { font-family: var(--f-quote); font-style: italic; font-weight: 400; font-size: 0.36em; color: var(--crema-suave); letter-spacing: 0; }
 .fcols { display: grid; gap: 32px; grid-template-columns: 1fr; }
 @media (min-width: 720px) { .fcols { grid-template-columns: repeat(2, auto) 1fr; gap: 48px; } }
 
@@ -72,14 +83,14 @@
    etiqueta en mayusculas espaciadas (E3-B8); el pie no compite con ella. */
 .ftitulo {
   font-family: var(--f-display); font-weight: 600;
-  font-size: 1.12rem; line-height: 1.2; letter-spacing: 0.01em;
-  color: var(--ink-dim);
+  font-size: 1.2rem; line-height: 1.2; letter-spacing: 0.01em;
+  color: var(--crema); text-shadow: none;
 }
 .fcol h4 { margin-bottom: 4px; }
-.fcol a { font-size: 0.9rem; color: var(--ink-dim); }
-.fcol a:hover { color: var(--amber); }
+.fcol a { font-size: 0.95rem; color: var(--crema-suave); min-height: 32px; display: inline-flex; align-items: center; }
+.fcol a:hover { color: var(--crema); }
 
-.copy { font-size: 0.8rem; line-height: 1.7; color: var(--ink-faint); }
+.copy { font-size: 0.84rem; line-height: 1.7; color: var(--crema-suave); }
 @media (min-width: 720px) { .copy { text-align: right; } }
 
 /* Aviso legal completo. Va abajo de todo, con el cuerpo mas chico del sitio,
@@ -87,8 +98,8 @@
    acompana al catalogo. */
 .legal {
   margin-top: 40px; padding-top: 26px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid rgba(231, 207, 198, 0.16);
   display: flex; flex-direction: column; gap: 10px;
   max-width: 78ch;
 }
-.legal p { font-size: 0.76rem; line-height: 1.72; color: var(--ink-faint); }
+.legal p { font-size: 0.8rem; line-height: 1.72; color: var(--crema-suave); }

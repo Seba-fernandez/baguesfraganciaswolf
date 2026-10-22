@@ -1,12 +1,22 @@
-/* Los que siempre salen (rediseño C): una fila sin marco, a sangre en el
-   celular, donde la tarjeta del centro queda nítida y las de los costados
-   detrás del vidrio acanalado. */
-.section { padding-block: 56px 32px; }
+/* Los que siempre salen (rediseño D, plano 4): el clímax. Banda vino entera,
+   con una sola luz arriba, como la pared del hero. Una fila sin marco, a
+   sangre en el celular. */
+.section {
+  background:
+    radial-gradient(60% 46% at 50% 18%, rgba(158, 35, 53, 0.42), rgba(158, 35, 53, 0) 72%),
+    var(--vino);
+  color: var(--crema);
+  padding-block: clamp(72px, 10vw, 140px) clamp(64px, 9vw, 120px);
+}
 .marco { position: relative; }
 
-.head { margin-bottom: 20px; }
-.titulo { font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.04; }
-.bajada { margin-top: 8px; color: var(--ink-dim); font-size: 0.98rem; max-width: 40ch; }
+.head { margin-bottom: clamp(24px, 4vw, 44px); }
+:global(.tienda) .titulo {
+  font-family: var(--f-titulo); font-weight: 600;
+  font-size: clamp(2.8rem, 8vw, 5.6rem); line-height: 0.95; letter-spacing: -0.005em;
+  color: var(--crema); text-shadow: none;
+}
+.bajada { margin-top: 12px; color: var(--crema-suave); font-size: 1.04rem; line-height: 1.5; max-width: 40ch; }
 
 .carrusel { position: relative; }
 
@@ -33,9 +43,9 @@
   position: absolute; top: 40%; transform: translateY(-50%); z-index: 2;
   width: 46px; height: 46px; border-radius: 50%;
   display: none; place-items: center;
-  color: var(--ink-dim); border: 0; cursor: pointer;
+  color: var(--crema); border: 0; cursor: pointer;
 }
-.flecha:hover { color: var(--ink); }
+.flecha:hover { color: #fff; }
 .flechaIzq { left: -22px; }
 .flechaDer { right: -22px; }
 @media (min-width: 780px) and (hover: hover) { .flecha { display: grid; } }
@@ -47,68 +57,23 @@
 }
 .media { position: relative; display: block; overflow: hidden; }
 
-/* El vidrio acanalado sobre la foto: estrías verticales de 26 px con brillo
-   en el filo y sombra en el valle (solo gradientes, nada de desenfoque, que
-   en una fila que se mueve cuesta cuadros). Arranca invisible: si el navegador
-   no sabe de scroll-driven animations, todas las fotos quedan nítidas. */
-.vidrio {
-  position: absolute; inset: 0; pointer-events: none;
-  opacity: 0;
-  background:
-    repeating-linear-gradient(90deg,
-      rgba(255, 244, 236, 0.16) 0px, rgba(255, 244, 236, 0.03) 3px,
-      rgba(40, 8, 14, 0) 9px, rgba(40, 8, 14, 0.06) 17px,
-      rgba(40, 8, 14, 0.42) 24px, rgba(255, 236, 220, 0.24) 26px),
-    linear-gradient(180deg, rgba(74, 22, 31, 0.32), rgba(74, 22, 31, 0.5));
-}
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .item {
-      view-timeline-name: --dest;
-      view-timeline-axis: inline;
-    }
-    .vidrio {
-      animation: vidrioCentro linear both;
-      animation-timeline: --dest;
-    }
-    .item .media :global(img) {
-      animation: fotoCentro linear both;
-      animation-timeline: --dest;
-    }
-  }
-}
-/* Entra de costado detrás del vidrio, se aclara en el centro y vuelve a
-   empañarse al salir por el otro lado. */
-@keyframes vidrioCentro {
-  0%, 18% { opacity: 1; }
-  42%, 58% { opacity: 0; }
-  82%, 100% { opacity: 1; }
-}
-@keyframes fotoCentro {
-  0%, 18% { transform: scale(1.04); }
-  42%, 58% { transform: none; }
-  82%, 100% { transform: scale(1.04); }
-}
-/* En escritorio entran casi todas en pantalla: sin vidrio. */
-@media (min-width: 780px) {
-  .vidrio { display: none; }
-  .item .media :global(img) { animation: none; }
-}
-
 .info { display: flex; flex-direction: column; gap: 3px; padding-top: 12px; }
-.nombre { font-family: var(--f-display); font-weight: 600; font-size: 1.24rem; color: var(--ink); line-height: 1.2; }
-.item:hover .nombre { color: var(--amber); }
-.casa { font-size: 0.8rem; color: var(--ink-faint); }
+.nombre { font-family: var(--f-display); font-weight: 600; font-size: 1.36rem; color: var(--crema); line-height: 1.15; }
+.item:hover .nombre { color: #fff; }
+.item:focus-visible { outline: 2px solid var(--crema); outline-offset: 4px; }
+.item .media :global(img) { transition: transform var(--dur-slow) var(--ease); }
+@media (hover: hover) { .item:hover .media :global(img) { transform: scale(1.04); } }
+.casa { font-family: var(--f-quote); font-style: italic; font-size: 1rem; color: var(--crema-suave); }
 .precio {
-  margin-top: 6px;
-  display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px;
-  font-size: 1.05rem; font-weight: 600; color: var(--ink);
+  margin-top: 8px;
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px;
+  font-family: var(--f-mono); font-size: 0.95rem; font-weight: 500; color: var(--crema);
 }
-.desde { font-size: 0.8rem; font-weight: 500; color: var(--ink-faint); }
-.antes { font-size: 0.82rem; font-weight: 500; color: var(--ink-faint); text-decoration-color: var(--amber); }
+.desde { font-size: 0.8rem; color: var(--crema-suave); }
+.antes { font-size: 0.82rem; color: var(--crema-suave); text-decoration-color: var(--crema-suave); }
 
 /* Tarjetas de espera, mientras llega la base: mismo 3:4 y casi el mismo alto. */
 .espera { cursor: default; }
-.esperaFoto { display: block; aspect-ratio: 3 / 4; background: var(--bg-2); }
-.esperaLinea { display: block; height: 0.9rem; margin-block: 4px; width: 78%; border-radius: 3px; background: var(--bg-3); }
+.esperaFoto { display: block; aspect-ratio: 3 / 4; background: rgba(36, 6, 4, 0.35); }
+.esperaLinea { display: block; height: 0.9rem; margin-block: 4px; width: 78%; border-radius: 3px; background: rgba(36, 6, 4, 0.3); }
 .esperaCorta { width: 46%; }

@@ -1,68 +1,61 @@
-/* Como funciona: el chat a la izquierda y los pasos a la derecha (debajo en el
-   celular). Superficies --bg-2 y --bg-3, sin acento: el unico rosa-vino de la
-   seccion es el boton de WhatsApp. */
-.section { padding-block: clamp(64px, 9vw, 120px); }
+/* Como funciona (rediseño D, plano 5: el respiro). Papel, el chat a la
+   izquierda y al costado una frase y el boton. Las burbujas son las de
+   WhatsApp pasadas por el grado: la de la clienta en papel hondo, la mia en
+   vino. El unico acento de la seccion es el boton. */
+.section {
+  background: var(--papel); color: var(--tinta);
+  padding-block: clamp(72px, 10vw, 140px);
+}
 
 .head { max-width: 46ch; margin-bottom: clamp(28px, 4vw, 44px); }
-.titulo { font-size: clamp(1.9rem, 4.2vw, 3rem); }
-.bajada { margin-top: 10px; color: var(--ink-dim); font-size: 1rem; line-height: 1.6; }
+:global(.tienda) .titulo {
+  font-family: var(--f-display); font-weight: 500;
+  font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1; letter-spacing: -0.01em;
+  color: var(--tinta); text-shadow: none;
+}
+.bajada { margin-top: 12px; color: var(--tinta); font-size: 1.04rem; line-height: 1.55; }
 
-.cuerpo { display: grid; gap: clamp(32px, 5vw, 64px); align-items: start; }
-@media (min-width: 900px) { .cuerpo { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); } }
+.cuerpo { display: grid; gap: clamp(32px, 5vw, 64px); align-items: center; }
+@media (min-width: 900px) { .cuerpo { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); } }
 
-/* ---------- el chat ----------
-   Una placa solida (no vidrio: es un objeto, la pantalla de un telefono), con
-   el nombre arriba y dos burbujas. La de la clienta a la derecha en --bg-3, la
-   mia a la izquierda en el espresso de la pagina. La cola de cada burbuja es
-   la esquina chica del lado de quien habla. */
+/* ---------- el chat ---------- */
 .chat {
   margin: 0; display: flex; flex-direction: column; gap: 12px;
   padding: 16px 16px 22px; border-radius: 24px;
-  background: var(--bg-2);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: #fbf5f2;
   min-height: 300px;
 }
 .contacto {
-  font-size: 0.82rem; font-weight: 600; color: var(--ink-dim);
+  font-size: 0.86rem; font-weight: 600; color: var(--tinta-suave);
   padding: 2px 4px 12px; margin-bottom: 2px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--filete);
 }
 .burbuja {
   margin: 0; max-width: 92%;
   display: flex; flex-direction: column; gap: 3px;
   padding: 12px 14px 13px;
-  font-size: 0.88rem; line-height: 1.45; color: var(--ink);
+  font-size: 0.92rem; line-height: 1.45;
   overflow-wrap: anywhere;
 }
-.ella { align-self: flex-end; background: var(--bg-3); border-radius: 16px 16px 4px 16px; }
-.yo { align-self: flex-start; background: var(--bg); border-radius: 16px 16px 16px 4px; }
-/* El renglon vacio del mensaje (entre saludo, items y total) es aire. */
+.ella { align-self: flex-end; background: var(--papel-hondo); color: var(--tinta); border-radius: 16px 16px 4px 16px; }
+.yo { align-self: flex-start; background: var(--vino); color: var(--crema); border-radius: 16px 16px 16px 4px; }
 .renglon:empty { height: 6px; }
-.codigo { color: var(--ink-faint); }
+.codigo { font-family: var(--f-mono); font-weight: 500; font-size: 0.92em; color: var(--rubi); }
 .total { font-weight: 600; margin-top: 6px; }
 .espera { width: 78%; height: 168px; opacity: 0.6; }
 
-/* ---------- los pasos ----------
-   Lista ordenada de verdad: el numero sale del contador de la lista, en
-   Cormorant 600, y el texto se alinea en su columna. */
+/* ---------- al costado ---------- */
 .lado { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(22px, 3vw, 30px); }
-.pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; counter-reset: paso; }
-.paso {
-  counter-increment: paso;
-  display: grid; grid-template-columns: 36px 1fr; column-gap: 12px; row-gap: 3px;
-}
-.paso::before {
-  content: counter(paso);
-  grid-row: span 2;
-  font-family: var(--f-display); font-weight: 600; font-size: 1.7rem; line-height: 1;
-  color: var(--ink-faint);
-}
-/* :global(.tienda) porque `.tienda h3` (Cormorant) le gana a una clase sola. */
-:global(.tienda) .pasoTitulo { font-family: var(--f-body); font-weight: 600; font-size: 1rem; line-height: 1.35; text-shadow: none; }
-.pasoTexto { color: var(--ink-dim); font-size: 0.94rem; line-height: 1.55; max-width: 40ch; }
-
 .cita {
-  font-family: var(--f-quote); font-style: italic; font-weight: 500;
-  font-size: clamp(1.3rem, 2.4vw, 1.6rem); line-height: 1.3;
-  color: var(--ink-dim); max-width: 26ch;
+  font-family: var(--f-quote); font-style: italic; font-weight: 400;
+  font-size: clamp(1.5rem, 3vw, 2.1rem); line-height: 1.2;
+  color: var(--tinta); max-width: 22ch;
 }
+:global(.tienda) .lado a.boton {
+  background: var(--rubi); color: var(--crema);
+  padding: 15px 26px; min-height: 50px; border-radius: var(--r-pill);
+  box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+:global(.tienda) .lado a.boton::before, :global(.tienda) .lado a.boton::after { content: none; }
+:global(.tienda) .lado a.boton:hover { background: #8a1c2d; }
+:global(.tienda) .lado a.boton:focus-visible { outline: 2px solid var(--rubi); outline-offset: 3px; }

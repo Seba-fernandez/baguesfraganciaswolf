@@ -241,11 +241,6 @@ export const COMO_FUNCIONA = {
   chatContacto: 'Sebastián, Grupo Wolf',
   ejemploNombre: 'Caro',
   respuesta: '¡Hola! Te confirmo stock y te paso la seña para reservarlo.',
-  pasos: [
-    { titulo: 'Armás el pedido', texto: 'Elegís aromas y tamaño acá. En la web no pagás nada.' },
-    { titulo: 'Me llega por WhatsApp', texto: 'Con el código de cada caja. Te confirmo stock, total y seña.' },
-    { titulo: 'Lo recibís', texto: 'Por correo a todo el país. En Córdoba capital lo retirás o te lo llevo.' },
-  ],
   cita: 'Trabajo por encargo. Si algo no te cierra, lo hablamos tranquilos.',
   boton: 'Escribime por WhatsApp',
   // Lo que ya viene escrito al abrir el chat desde el boton o el pie: nadie

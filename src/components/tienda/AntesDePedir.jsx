@@ -6,11 +6,11 @@ import TiraCiclo from './TiraCiclo';
 import s from './AntesDePedir.module.css';
 
 /**
- * Antes de pedir (rediseño C): seña, envío, Córdoba y cuándo llega. Es lo que
- * se pregunta quien no te conoce antes de escribir. Cada dato abre con una
- * cifra grande en Cormorant (lo que se lee de un vistazo, en vez de cuatro
- * párrafos) y abajo el detalle. Va sobre la pared vino del hero, a sangre: la
- * última banda de color antes del pie.
+ * Antes de pedir: seña, envío, Córdoba y cuándo llega. Es lo que se pregunta
+ * quien no te conoce antes de escribir. Cada dato abre con una cifra grande
+ * (lo que se lee de un vistazo, en vez de cuatro párrafos) y abajo el detalle.
+ * Rediseño D (plano 6, el último día): papel un tono más hondo, que avisa que
+ * la página se termina; las cifras en Melodrama vino.
  *
  * Debajo del título, la tira del ciclo (hasta cuándo se pide), solo si el
  * ciclo tiene fecha vigente.
@@ -21,7 +21,7 @@ export default function AntesDePedir({ settings }) {
   const conMonto = (t) => t.replace('{monto}', monto);
 
   return (
-    <section className={s.banda} id="antes" ref={ref} aria-labelledby="antes-titulo">
+    <section className={`dia ${s.banda}`} id="antes" ref={ref} aria-labelledby="antes-titulo">
       <div className={`tw ${s.section}`}>
         <h2 id="antes-titulo" className={s.titulo}>{ANTES_DE_PEDIR.titulo}</h2>
         <TiraCiclo settings={settings} className={s.ciclo} />

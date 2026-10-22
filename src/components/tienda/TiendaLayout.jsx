@@ -92,6 +92,11 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
       <main id="inicio" inert={inert}>{children}</main>
 
       <footer className={s.footer} inert={inert}>
+        {/* Rediseño D (plano 7): de noche otra vez, con la marca de vuelta a
+            todo el ancho, como el cierre de los créditos. */}
+        <p className={`tw ${s.firma}`} aria-hidden="true">
+          {MARCA.nombre} <span className={s.firmaWolf}>{MARCA.complemento}</span>
+        </p>
         <div className={`tw ${s.fcols}`}>
           <div className={s.fcol}>
             <h4 className={s.ftitulo}>{PIE.tienda}</h4>

@@ -56,7 +56,8 @@
 .ciudad {
   grid-area: ciudad;
   font-family: var(--f-titulo); font-weight: 600;
-  font-size: clamp(2.4rem, 11vw, 6.2rem); line-height: 0.92; letter-spacing: -0.005em;
+  font-size: clamp(2.2rem, 9.6vw, 6.2rem); line-height: 0.92; letter-spacing: -0.005em;
+  text-wrap: balance;
   color: var(--vino);
   overflow-wrap: anywhere;
   transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);

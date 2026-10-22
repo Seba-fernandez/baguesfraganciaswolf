@@ -99,8 +99,10 @@
    copiado, pero no se ve al principio del renglón de abajo. */
 .metaDesde {
   display: block;
-  font-family: var(--f-titulo); font-weight: 600;
-  font-size: 2rem; line-height: 1; letter-spacing: 0.005em;
+  /* En la italica de Boska, la misma del giro del titulo: el cero de
+     Melodrama viene cruzado y un precio puede tenerlo. */
+  font-family: var(--f-quote); font-style: italic; font-weight: 400;
+  font-size: 2rem; line-height: 1; letter-spacing: -0.005em;
   margin-bottom: 8px;
   font-variant-numeric: lining-nums tabular-nums;
 }

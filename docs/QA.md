@@ -209,6 +209,36 @@ ahora espera 4 con familia y 5 con notas.
 (sin cambio); `/catalogo` 81 contra 77 con dos agentes usando la CPU en paralelo
 (ruido; LCP +150 ms). Se mide de nuevo en producción después de publicar.
 
+### Rediseño visual C (rama `rediseno-visual`, 22 de octubre de 2026)
+
+Sin publicar: va a `main` solo con el OK de Sebas. Especificación y decisiones en
+[`PORTADA-C.md`](PORTADA-C.md). Banco local sobre la rama: **84 de 84**. B4
+(Lo que pagás en dos columnas) y B5 (cinta con links) pasan con el rediseño.
+`REG-1 portada` y `E3-B1 banda` se reescribieron para medir el hero nuevo: la
+imagen horneada carga de verdad (ancho real, no el código 200), el titular
+termina antes de la ventana (y <= 290) y el botón antes de 664.
+
+**Mapa de calor por sección** (`scripts/qa/atencion/heatmap.py`, DeepGaze IIE,
+rúbrica de 0 a 10 en su README), portada a 390:
+
+| Sección | Producción | Rediseño |
+| --- | --- | --- |
+| Hero | 7,2 | 7,9 |
+| Nosotros / Lo que pagás | 4,4 | 6,1 |
+| ¿Qué te gusta oler? | no existía | 6,5 |
+| Destacados | 7,1 | 7,1 |
+| Cómo funciona | 6,6 | 6,0 |
+| Antes de pedir | 5,0 | 6,0 |
+| Pie (aviso legal) | 4,7 | 4,5 |
+
+A 1440: hero 6,8, Lo que pagás 6,1, familias 8,2, destacados 8,3, cómo
+funciona 5,4, antes de pedir 6,9. Cómo funciona no cambió de contenido: baja por
+quedar más abajo en la página.
+
+**Lighthouse mobile, red real, intercalado una y una, cinco corridas:**
+producción 94 (LCP 2.262 ms) contra vista previa del rediseño 93 (LCP 2.273 ms),
+CLS 0 en las dos. Empate dentro del ruido.
+
 ### Lighthouse mobile en producción (cinco corridas, Lighthouse 13.5)
 
 | Página | Antes | Mediana | Después | Mediana |

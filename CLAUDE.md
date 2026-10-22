@@ -244,6 +244,15 @@ abre solo en el primer agregado; después sube una barra con "Ver pedido".
 Filtros "Para" y "Familia" en la dirección. En el celular, "Ver 12 más" en vez
 del paginador. Detalle en `docs/DISENO.md`.
 
+**Rediseño C, "A través del vidrio"** (rama `rediseno-visual`, a `main` solo con
+OK de Sebas; detalle en [`docs/PORTADA-C.md`](docs/PORTADA-C.md)): el hero es una
+sola imagen horneada (pared vino `#4a161f`, cajas Bagués reales detrás de vidrio
+acanalado, una ventana en arco nítida) en `public/hero/c/`, que se rehace con
+`scripts/rediseno/hornear_hero.py`. Portada: hero, "Lo que pagás", "¿Qué te
+gusta oler?", destacados, opiniones, cómo funciona, "Antes de pedir" en banda
+vino. Formas: arco (`border-radius: 999px 999px 0 0`) en ventanas y placas.
+El mapa de calor por sección se mide con `scripts/qa/atencion/heatmap.py`.
+
 **Nombres:** la web muestra el **nombre oficial** del perfume (la gente lo busca
 así; el pie aclara que son versiones inspiradas). La línea se aclara en cada
 tamaño de la ficha, el carrito y el WhatsApp: "Unlock" o "Bagues, caja Arizona"

@@ -245,6 +245,16 @@ export const CICLO = {
  * Datos confirmados por Sebastián en octubre de 2026. El plazo de entrega varía
  * con el cierre del ciclo: por eso no se promete un día.
  */
+/**
+ * "Lo que me escriben": capturas de mensajes de clientas, con permiso. Las
+ * capturas se cargan en src/data/opiniones.json (ver docs/EDITAR.md); sin
+ * ninguna cargada, la seccion no aparece.
+ */
+export const OPINIONES = {
+  titulo: 'Lo que me escriben',
+  bajada: 'Mensajes de clientas después de recibir su pedido. Los comparto con su permiso.',
+};
+
 export const ANTES_DE_PEDIR = {
   titulo: 'Antes de pedir',
   datos: [

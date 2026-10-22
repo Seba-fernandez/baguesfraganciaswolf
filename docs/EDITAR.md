@@ -90,6 +90,28 @@ Esa foto le gana a todas las demás. El orden de preferencia que usa la web es:
 Eso está en `src/lib/fotos.js`, en la función `fotoDe`. La usan la tienda y la
 lista del catálogo del panel, así las dos muestran el mismo frasco.
 
+## Sumar capturas de clientas ("Lo que me escriben")
+
+La sección aparece sola en la portada cuando hay al menos una captura; sin
+capturas no se ve nada (ni el título).
+
+1. Pedirle permiso a la clienta y tapar su número y su foto de perfil.
+2. Exportar la captura a WebP de 720 px de ancho y guardarla en
+   `public/opiniones/` (por ejemplo `public/opiniones/martina-good-girl.webp`).
+3. Sumarla a `src/data/opiniones.json`:
+
+```json
+[
+  { "imagen": "/opiniones/martina-good-girl.webp", "ancho": 720, "alto": 1280,
+    "alt": "Mensaje de una clienta: me encantó, dura todo el día",
+    "aroma": "Good Girl" }
+]
+```
+
+`alt` transcribe el mensaje para quien usa lector de pantalla; `aroma` es
+opcional. Los textos de la sección están en `OPINIONES` de
+`src/config/contenido.js`.
+
 ## Agregar o cambiar fotos del pipeline
 
 Cada foto tiene su fuente anotada en **`scripts/fotos/fuentes.json`**: una

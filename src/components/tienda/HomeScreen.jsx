@@ -4,6 +4,7 @@ import Destacados from './Destacados';
 import Nosotros from './Nosotros';
 import ComoFunciona from './ComoFunciona';
 import AntesDePedir from './AntesDePedir';
+import Opiniones from './Opiniones';
 
 /**
  * Página de inicio. Es la vidriera: el hero, la fila de destacados, quiénes
@@ -32,6 +33,7 @@ export default function HomeScreen() {
       <Destacados products={products} onOpen={abrir} cargando={loading} />
       <Nosotros settings={settings} />
       <ComoFunciona settings={settings} products={products} />
+      <Opiniones />
       <AntesDePedir settings={settings} />
     </>
   );

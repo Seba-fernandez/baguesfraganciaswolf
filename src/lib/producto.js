@@ -236,3 +236,33 @@ export function notasCortas(producto, maximo = 3) {
   if (elegidas.length === 1) return elegidas[0];
   return `${elegidas.slice(0, -1).join(', ')} y ${elegidas[elegidas.length - 1]}`;
 }
+
+/**
+ * Las ciudades de la portada (rediseño D): aromas que tienen caja Bagués
+ * activa, con el nombre de la ciudad que lleva la caja. Primero los que no
+ * están en "Los que siempre salen" (para no repetir la misma caja dos
+ * secciones seguidas), en el orden del catálogo.
+ * Alterna ella, el y unisex. Devuelve { producto, ciudad, perfume, ml, precio }.
+ */
+export function ciudadesDe(productos = [], maximo = 4) {
+  const filas = [];
+  for (const p of productos) {
+    if (!p?.activo || !esPublicable(p)) continue;
+    const caja = presentacionesActivas(p).find((x) => x.linea === 'bagues' && x.nombre_proveedor && Number(x.precio));
+    if (!caja) continue;
+    filas.push({ producto: p, ciudad: caja.nombre_proveedor.trim(), perfume: tituloDe(p), ml: caja.ml, precio: Number(caja.precio), repetido: Boolean(p.destacado) });
+  }
+  const vistas = new Set();
+  const ordenadas = filas
+    .sort((a, b) => (a.repetido - b.repetido) || ((a.producto.orden ?? 999) - (b.producto.orden ?? 999)))
+    .filter((f) => !vistas.has(f.ciudad) && vistas.add(f.ciudad));
+  // De a una por genero (ella, el, unisex), para que la portada no quede
+  // toda de un lado por como viene el orden del catalogo.
+  const grupos = ['femenino', 'masculino', 'unisex'].map((g) => ordenadas.filter((f) => f.producto.genero === g));
+  const resto = ordenadas.filter((f) => !['femenino', 'masculino', 'unisex'].includes(f.producto.genero));
+  const salida = [];
+  for (let i = 0; salida.length < ordenadas.length && i < ordenadas.length; i++) {
+    for (const g of grupos) if (g[i]) salida.push(g[i]);
+  }
+  return [...salida, ...resto].slice(0, maximo);
+}

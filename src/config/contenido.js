@@ -86,27 +86,16 @@ export const DESTACADOS = {
 };
 
 /**
- * Quiénes somos. La sección "nosotros" que pidió Sebastián: cercana,
- * rioplatense, con el gancho del precio. Grupo Wolf es el emprendimiento
- * familiar (lo arrancó el papá); Bagués es la casa que fabrica los frascos.
+ * Las ciudades (rediseño D, 22/10/2026). Reemplaza a "Nosotros / Lo que
+ * pagás" (Sebas decidió sacarlo): cada caja Bagués con el nombre de su ciudad
+ * en grande, el perfume y el precio. Las elige ciudadesDe (lib/producto.js).
  */
-export const NOSOTROS = {
-  titulo: 'El mismo perfume, sin la vidriera cara.',
-  // Rediseño C (E3-B4): de tres párrafos (141 palabras, la sección más fría
-  // del mapa de calor) a dos columnas cortas que contestan "¿por qué sale
-  // menos?". Sin tildes ni cruces: lo que no pagás va tachado, como un precio.
-  intro: 'Somos Grupo Wolf, un emprendimiento familiar de Córdoba. Lo arrancó mi viejo; hoy te atiendo yo por WhatsApp.',
-  // Abajo de la cuenta: el precio mas bajo del ciclo contra su precio de lista.
-  cuenta: 'Lo que pagás acá, contra el precio de lista de Bagués.',
-  pagas: {
-    titulo: 'Lo que pagás',
-    items: ['El perfume, hecho por la casa Bagués', 'Una seña del 50 % para reservarlo', 'El envío, si no llegás a {monto}'],
-  },
-  noPagas: {
-    titulo: 'Lo que no pagás',
-    items: ['La marca de diseñador', 'El local y la publicidad', 'Nada en esta web'],
-  },
-  firma: 'Sebastián, de Grupo Wolf',
+export const CIUDADES = {
+  titulo: 'Las ciudades',
+  rotulo: 'una por caja',
+  bajada: 'Cada caja Bagués lleva el nombre de una ciudad. Adentro, el perfume que ya conocés.',
+  verTodas: 'Ver todas las cajas',
+  abrir: 'Ver {perfume}, caja {ciudad}',
 };
 
 export const CATALOGO = {

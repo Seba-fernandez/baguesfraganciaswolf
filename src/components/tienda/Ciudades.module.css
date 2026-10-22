@@ -1,0 +1,104 @@
+/* ============================================================================
+   Las ciudades (rediseño D, plano 2: de día)
+
+   Papel claro y mucho aire. El vino solo en los nombres y en las cajas chicas.
+   Una lista de carta: la ciudad enorme en Melodrama, el perfume en la italica
+   de Boska y el precio en mono. Los filetes entre filas vienen de la
+   referencia de la fruta que eligio Sebas (una carta, no una grilla).
+   ============================================================================ */
+
+.section {
+  background: var(--papel);
+  color: var(--tinta);
+  padding-block: clamp(64px, 10vw, 140px) clamp(56px, 8vw, 120px);
+}
+
+.head {
+  display: grid; grid-template-columns: auto 1fr; align-items: baseline;
+  column-gap: 14px; row-gap: 14px;
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+:global(.tienda) .titulo {
+  font-family: var(--f-display); font-weight: 500;
+  font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1; letter-spacing: -0.01em;
+  color: var(--tinta); text-shadow: none;
+}
+.mano {
+  font-family: var(--f-mano); font-size: clamp(1.4rem, 2.6vw, 1.9rem); line-height: 1;
+  color: var(--rubi); transform: rotate(-4deg);
+  white-space: nowrap; justify-self: start;
+}
+.bajada {
+  grid-column: 1 / -1; max-width: 46ch;
+  font-size: 1.04rem; line-height: 1.5; color: var(--tinta);
+}
+
+.lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--filete); }
+.fila { border-bottom: 1px solid var(--filete); }
+.fila:global(.trevealed) { transition-delay: calc(var(--i, 0) * 70ms); }
+
+.link {
+  display: grid; align-items: center;
+  grid-template-columns: 64px minmax(0, 1fr);
+  grid-template-areas: 'caja ciudad' 'caja dato';
+  column-gap: 16px; row-gap: 4px;
+  padding-block: 14px;
+  color: inherit;
+  transition: background-color var(--dur) var(--ease);
+}
+.caja {
+  grid-area: caja;
+  display: block; aspect-ratio: 3 / 4;
+  background: var(--vino);
+  overflow: hidden;
+}
+.caja img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease); }
+.ciudad {
+  grid-area: ciudad;
+  font-family: var(--f-titulo); font-weight: 600;
+  font-size: clamp(2.4rem, 11vw, 6.2rem); line-height: 0.92; letter-spacing: -0.005em;
+  color: var(--vino);
+  overflow-wrap: anywhere;
+  transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.dato { grid-area: dato; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; min-height: 1.4em; }
+.perfume {
+  font-family: var(--f-quote); font-style: italic; font-weight: 400;
+  font-size: 1.12rem; line-height: 1.2; color: var(--tinta);
+}
+.precio {
+  font-family: var(--f-mono); font-weight: 500;
+  font-size: 0.86rem; letter-spacing: 0.02em; color: var(--tinta-suave);
+}
+
+@media (hover: hover) {
+  .link:hover .ciudad { color: var(--rubi); transform: translateX(6px); }
+  .link:hover .caja img { transform: scale(1.05); }
+}
+.link:focus-visible { outline: 2px solid var(--rubi); outline-offset: 4px; }
+.link:active .ciudad { color: var(--rubi); }
+
+.vacia .caja { background: var(--papel-hondo); }
+
+.todas {
+  display: inline-flex; align-items: center; min-height: 48px; margin-top: 18px;
+  font-weight: 600; font-size: 0.98rem; color: var(--rubi);
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px;
+}
+:global(.tienda) a.todas { color: var(--rubi); }
+.todas:hover { text-decoration-thickness: 2px; }
+.todas:focus-visible { outline: 2px solid var(--rubi); outline-offset: 3px; }
+
+/* Escritorio: tres columnas de carta. La ciudad ocupa el centro; el perfume y
+   el precio, alineados a la derecha. */
+@media (min-width: 760px) {
+  .link {
+    grid-template-columns: 96px minmax(0, 1fr) minmax(200px, auto);
+    grid-template-areas: 'caja ciudad dato';
+    column-gap: clamp(20px, 3vw, 40px);
+    padding-block: 18px;
+  }
+  .dato { flex-direction: column; align-items: flex-end; text-align: right; gap: 4px; }
+  .perfume { font-size: 1.4rem; }
+  .precio { font-size: 0.92rem; }
+}

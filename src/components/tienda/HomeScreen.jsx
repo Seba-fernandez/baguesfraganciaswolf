@@ -1,6 +1,6 @@
 import { useOutletContext } from 'react-router-dom';
 import Hero from './Hero';
-import Nosotros from './Nosotros';
+import Ciudades from './Ciudades';
 import Familias from './Familias';
 import Destacados from './Destacados';
 import Opiniones from './Opiniones';
@@ -8,11 +8,12 @@ import ComoFunciona from './ComoFunciona';
 import AntesDePedir from './AntesDePedir';
 
 /**
- * Página de inicio (rediseño C). El orden sigue a la evaluación de captación
- * del 22/10/2026:
+ * Página de inicio (rediseño D, 22/10/2026). Sigue el guion de color de
+ * docs/PLAN-PORTADA-D.md, una película en dos luces:
  *
- *  1. Hero: qué vendo, que son versiones inspiradas, desde cuánto y el botón.
- *  2. Lo que pagás y lo que no: la confianza antes de las dos pantallas.
+ *  1. Hero (noche): qué vendo, que son versiones inspiradas, desde cuánto y el botón.
+ *  2. Las ciudades (día): cada caja con su ciudad, el perfume y el precio.
+ *     Reemplaza a "Lo que pagás", que Sebas decidió sacar.
  *  3. ¿Qué te gusta oler?: la puerta para quien no sabe qué quiere o regala.
  *  4. Los que siempre salen: los destacados.
  *  5. Lo que me escriben: capturas de clientas (oculta mientras esté vacía).
@@ -24,7 +25,7 @@ import AntesDePedir from './AntesDePedir';
 export default function HomeScreen() {
   const {
     products, settings, promos, loading,
-    totalAromas, desde, lista, nombresAromas,
+    totalAromas, desde, nombresAromas,
     abrir, verPromo,
   } = useOutletContext();
 
@@ -39,7 +40,7 @@ export default function HomeScreen() {
         nombresAromas={nombresAromas}
         onOpen={abrir}
       />
-      <Nosotros desde={desde} lista={lista} />
+      <Ciudades products={products} onOpen={abrir} />
       <Familias />
       <Destacados products={products} onOpen={abrir} cargando={loading} />
       <Opiniones />

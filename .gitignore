@@ -22,3 +22,10 @@ dist-ssr
 # Salida del banco de pruebas (cambia en cada corrida; la linea de base si se versiona)
 scripts/qa/resultado.json
 __pycache__/
+
+# Rediseño: cajas bajadas y salidas del horneado (se regeneran con
+# scripts/rediseno/hornear_hero.py). Las fuentes generadas SI se versionan.
+scripts/rediseno/cache/
+scripts/rediseno/salida/
+scripts/qa/atencion/salida/
+scripts/qa/atencion/despues/

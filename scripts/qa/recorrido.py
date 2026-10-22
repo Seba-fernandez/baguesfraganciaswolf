@@ -657,9 +657,15 @@ def contenido(browser, base):
     page.wait_for_timeout(2500)
     portada = texto_completo(page)
     pie_panel = page.evaluate("() => [...document.querySelectorAll('footer a')].filter(a => /\\/panel/.test(a.getAttribute('href') || '') || a.innerText.trim() === 'Panel').length")
-    escena = page.evaluate("""() => { const e = document.querySelector('#inicio-hero [data-hero=escena]');
-        const f = document.querySelector('#inicio-hero img');
-        return { fondo: e ? getComputedStyle(e).backgroundImage : '', frasco: f ? f.naturalWidth : 0 }; }""")
+    # Rediseño C (22/10/2026): la escena es una sola imagen horneada (pared,
+    # cajas detras del vidrio y la ventana), sin frascos sueltos encima. Se
+    # carga el archivo del fondo y se mide su ancho real: Vercel contesta un
+    # archivo que no existe con HTML y 200, asi que el codigo no alcanza.
+    escena = page.evaluate("""async () => { const e = document.querySelector('#inicio-hero [data-hero=escena]');
+        const fondo = e ? getComputedStyle(e).backgroundImage : '';
+        const url = (fondo.match(/url\\(["']?([^"')]+)/) || [])[1];
+        const ancho = url ? await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i.naturalWidth); i.onerror = () => ok(0); i.src = url; }) : 0;
+        return { fondo, frasco: ancho }; }""")
     page.goto(base + "/catalogo", wait_until="domcontentloaded")
     esperar_catalogo(page)
     catalogo = texto_completo(page)
@@ -696,8 +702,8 @@ def contenido(browser, base):
         chk("PANEL-1", "contenido", "baja", "El pie publico no enlaza al panel y /panel sigue cargando el ingreso",
             pie_panel == 0 and panel_ok, f"enlaces a panel en el pie: {pie_panel}; /panel muestra 'Ingresar con Google': {panel_ok}")
     if quiere("REG-1"):
-        chk("REG-1 portada", "visual", "alta", "La portada sigue mostrando la escena del hero y los frascos",
-            "duna" in escena["fondo"] and escena["frasco"] > 0, f"fondo: {escena['fondo'][-40:]}; frascos naturalWidth {escena['frasco']}")
+        chk("REG-1 portada", "visual", "alta", "La portada muestra la escena horneada del hero (la imagen carga de verdad)",
+            "/hero/c/" in escena["fondo"] and escena["frasco"] >= 700, f"fondo: {escena['fondo'][-40:]}; ancho real {escena['frasco']} px")
 
 
 # ---------------------------------------------------------------------------
@@ -1405,11 +1411,15 @@ def e3_b1(browser, base):
     chk("E3-B1 sello", "visual", "media", "Sello GRUPO WOLF en una linea con 'Casa Bagués · Córdoba' al lado, mas chico (390 y 1440)",
         una_linea and res["844"]["marcaPx"] <= 16,
         "; ".join(f"{k}: alto {c['h'] if c else '-'} px, tops {t}, marca {px:.1f} px" for k, (c, t, px) in sellos.items()))
+    # Rediseño C: la escena es el hero entero (la imagen de 390x844 cortada
+    # abajo); lo que importa es que el titular no se monte sobre la ventana
+    # (zona libre de la imagen: hasta y=290 a 390) y que el boton termine
+    # antes del visor de Instagram (664). Antes medía la banda de frascos.
     e = res["844"]["escena"]
-    prop = (e["h"] / m["vh"]) if e else 0
-    chk("E3-B1 banda", "visual", "media", "390x844: la banda de frascos ocupa ~42 % del alto (36 a 46 %) y la imagen LCP es la misma",
-        0.36 <= prop <= 0.46 and (res["844"]["frascos"] or {}).get("src") == "frascos-460.webp",
-        f"banda {e['h'] if e else '-'} px de {m['vh']} ({prop:.0%}); frascos {res['844']['frascos']}")
+    t = m["titulo"] or {}
+    chk("E3-B1 banda", "visual", "media", "390x844: la escena ocupa el hero, el titular termina antes de la ventana (y <= 290) y el boton antes de 664",
+        bool(e) and e["h"] >= 600 and t.get("bottom", 999) <= 290 and (m["cta"] or {}).get("bottom", 999) <= 664,
+        f"escena {e['h'] if e else '-'} px; titulo {t}; boton {m['cta']}")
 
 
 def e3_b2(browser, base):

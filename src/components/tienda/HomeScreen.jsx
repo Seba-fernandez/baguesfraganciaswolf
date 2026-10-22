@@ -1,20 +1,30 @@
 import { useOutletContext } from 'react-router-dom';
 import Hero from './Hero';
-import Destacados from './Destacados';
 import Nosotros from './Nosotros';
+import Familias from './Familias';
+import Destacados from './Destacados';
+import Opiniones from './Opiniones';
 import ComoFunciona from './ComoFunciona';
 import AntesDePedir from './AntesDePedir';
-import Opiniones from './Opiniones';
 
 /**
- * Página de inicio. Es la vidriera: el hero, la fila de destacados, quiénes
- * somos, cómo funciona y lo que hay que saber antes de pedir. El catálogo
- * completo vive en su propia página (/catalogo), a un botón de acá. Los datos llegan del TiendaShell por contexto.
+ * Página de inicio (rediseño C). El orden sigue a la evaluación de captación
+ * del 22/10/2026:
+ *
+ *  1. Hero: qué vendo, que son versiones inspiradas, desde cuánto y el botón.
+ *  2. Lo que pagás y lo que no: la confianza antes de las dos pantallas.
+ *  3. ¿Qué te gusta oler?: la puerta para quien no sabe qué quiere o regala.
+ *  4. Los que siempre salen: los destacados.
+ *  5. Lo que me escriben: capturas de clientas (oculta mientras esté vacía).
+ *  6. Cómo funciona: el chat de WhatsApp.
+ *  7. Antes de pedir: seña, envío, Córdoba.
+ *
+ * El catálogo completo vive en /catalogo. Los datos llegan del TiendaShell.
  */
 export default function HomeScreen() {
   const {
     products, settings, promos, loading,
-    totalAromas, desde, nombresAromas, heroProducto,
+    totalAromas, desde, nombresAromas,
     abrir, verPromo,
   } = useOutletContext();
 
@@ -27,13 +37,13 @@ export default function HomeScreen() {
         totalAromas={totalAromas}
         desde={desde}
         nombresAromas={nombresAromas}
-        heroProducto={heroProducto}
         onOpen={abrir}
       />
+      <Nosotros />
+      <Familias />
       <Destacados products={products} onOpen={abrir} cargando={loading} />
-      <Nosotros settings={settings} />
-      <ComoFunciona settings={settings} products={products} />
       <Opiniones />
+      <ComoFunciona settings={settings} products={products} />
       <AntesDePedir settings={settings} />
     </>
   );

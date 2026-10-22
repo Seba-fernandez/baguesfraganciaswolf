@@ -32,7 +32,9 @@ export const INICIO = {
   titulo: ['El perfume que ya', 'conocés, al precio', 'que todavía no.'],
   // Una sola linea. Los datos duros (cuantos, desde cuanto) van en la fila de
   // abajo, que se lee de un vistazo.
-  bajada: 'El mismo aroma que ya te gusta, hecho por la casa Bagués, a precio de reventa directa. Acá en Córdoba, por WhatsApp.',
+  // Rediseño C: "versiones inspiradas" en el primer pantallazo (no negociable
+  // de la evaluacion: quien llega tiene que saber que compra antes de bajar).
+  bajada: 'Versiones inspiradas, hechas por la casa Bagués.',
 
   // Etiqueta del frasco protagonista del hero.
   showcaseEtiqueta: 'El más pedido',
@@ -53,6 +55,26 @@ export const INICIO = {
   porPar: 'el par',
 };
 
+/**
+ * "¿Qué te gusta oler?" de la portada (rediseño C): las cinco familias del
+ * filtro como puerta al catálogo filtrado. "archivo" es el nombre de la imagen
+ * en public/familias/ (sin el ancho).
+ */
+export const FAMILIAS_PORTADA = {
+  titulo: '¿Qué te gusta oler?',
+  bajada: 'Para vos o para regalar, empezá por lo que te gusta.',
+  archivo: {
+    frescos: 'citricos', florales: 'florales', dulces: 'dulces', amaderados: 'amaderados', ambar: 'ambar',
+  },
+  ejemplos: {
+    frescos: 'Bergamota, limón, notas marinas',
+    florales: 'Jazmín, rosa, azahar',
+    dulces: 'Vainilla, caramelo, café',
+    amaderados: 'Cedro, sándalo, vetiver',
+    ambar: 'Ámbar, canela, especias',
+  },
+};
+
 export const DESTACADOS = {
   eyebrow: 'Selección del ciclo',
   titulo: 'Los que siempre salen',
@@ -67,11 +89,18 @@ export const DESTACADOS = {
  */
 export const NOSOTROS = {
   titulo: 'El mismo perfume, sin la vidriera cara.',
-  parrafos: [
-    'Somos Grupo Wolf, un emprendimiento familiar de Córdoba. Lo arrancó mi viejo y hoy lo seguimos entre la familia, con una idea sencilla: acercarte los perfumes que todo el mundo quiere, de una persona a otra, sin el local caro que después terminás pagando vos.',
-    'Cada frasco lo fabrica y lo rotula la casa Bagués. Es el mismo aroma que probás en la perfumería del shopping, pero a precio de reventa directa. Vos reconocés el perfume, yo te saco el sobreprecio de la marca de arriba.',
-    'Nada de comprar a ciegas. Me escribís por WhatsApp, te cuento qué hay y qué está por llegar, y te lo mando por correo o, si sos de Córdoba capital, lo retirás o te lo llevo. Si algo no te cierra, lo hablamos tranquilos.',
-  ],
+  // Rediseño C (E3-B4): de tres párrafos (141 palabras, la sección más fría
+  // del mapa de calor) a dos columnas cortas que contestan "¿por qué sale
+  // menos?". Sin tildes ni cruces: lo que no pagás va tachado, como un precio.
+  intro: 'Somos Grupo Wolf, un emprendimiento familiar de Córdoba. Lo arrancó mi viejo; hoy te atiendo yo por WhatsApp.',
+  pagas: {
+    titulo: 'Lo que pagás',
+    items: ['El perfume, hecho por la casa Bagués', 'Una seña del 50 % para reservarlo', 'El envío, si no llegás a {monto}'],
+  },
+  noPagas: {
+    titulo: 'Lo que no pagás',
+    items: ['La marca de diseñador', 'El local y la publicidad', 'Nada en esta web'],
+  },
   firma: 'Sebastián, de Grupo Wolf',
 };
 
@@ -260,11 +289,13 @@ export const OPINIONES = {
 
 export const ANTES_DE_PEDIR = {
   titulo: 'Antes de pedir',
+  // Rediseño C: cada dato abre con una cifra grande (lo que se lee de un
+  // vistazo) y abajo el detalle corto. {monto} es el envío gratis.
   datos: [
-    { titulo: 'Pagás', texto: 'Seña del 50 % para reservar y el resto al retirar o recibir. Transferencia o efectivo.' },
-    { titulo: 'Envío', texto: 'A todo el país por correo. Gratis desde {monto}; por menos, el envío lo pagás vos.' },
-    { titulo: 'Córdoba', texto: 'En Córdoba capital lo retirás o te lo llevo. El punto de retiro te lo paso por WhatsApp.' },
-    { titulo: 'Cuándo llega', texto: 'Varía con el cierre del ciclo: te confirmo la fecha por WhatsApp.' },
+    { cifra: '50 %', titulo: 'De seña', texto: 'Seña del 50 % para reservar; el resto al retirar o recibir. Transferencia o efectivo.' },
+    { cifra: '{monto}', titulo: 'Envío gratis', texto: 'A todo el país por correo. Gratis desde {monto}; por menos, lo pagás vos.' },
+    { cifra: 'Córdoba', titulo: 'Capital', texto: 'Lo retirás o te lo llevo. El punto te lo paso por WhatsApp.' },
+    { cifra: 'Al cierre', titulo: 'Cuándo llega', texto: 'Varía con el cierre del ciclo: te confirmo la fecha por WhatsApp.' },
   ],
 };
 

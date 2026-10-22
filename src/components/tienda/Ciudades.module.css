@@ -39,7 +39,7 @@
 
 .link {
   display: grid; align-items: center;
-  grid-template-columns: 64px minmax(0, 1fr);
+  grid-template-columns: 92px minmax(0, 1fr);
   grid-template-areas: 'caja ciudad' 'caja dato';
   column-gap: 16px; row-gap: 4px;
   padding-block: 14px;
@@ -94,7 +94,7 @@
    el precio, alineados a la derecha. */
 @media (min-width: 760px) {
   .link {
-    grid-template-columns: 96px minmax(0, 1fr) minmax(200px, auto);
+    grid-template-columns: clamp(120px, 11vw, 168px) minmax(0, 1fr) minmax(200px, auto);
     grid-template-areas: 'caja ciudad dato';
     column-gap: clamp(20px, 3vw, 40px);
     padding-block: 18px;

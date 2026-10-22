@@ -225,8 +225,10 @@ JS_CAJAS = r"""
     for (const r of rg.getClientRects()) if (r.width > 3 && r.height > 5) texto.push({ ...Y(r), t: n.textContent.trim().slice(0, 40), fs: parseFloat(getComputedStyle(p).fontSize) });
   }
   // Lo que vende: foto de producto, precio, boton de compra / WhatsApp.
+  // [data-qa=ciudades] img: las cajas de "Las ciudades" (rediseño D) son fotos
+  // de producto como las de las tarjetas; el selector no conocia la seccion.
   const venta = [];
-  document.querySelectorAll('article img, [class*=carrusel] img, [class*=showcase] img, [class*=frasco]').forEach(e => { if (vis(e)) venta.push({ ...Y(e.getBoundingClientRect()), tipo: 'producto', t: e.alt || 'foto' }); });
+  document.querySelectorAll('article img, [class*=carrusel] img, [class*=showcase] img, [class*=frasco], [data-qa=ciudades] img').forEach(e => { if (vis(e)) venta.push({ ...Y(e.getBoundingClientRect()), tipo: 'producto', t: e.alt || 'foto' }); });
   document.querySelectorAll('a, button').forEach(e => {
     if (!vis(e) || e.closest('[role=dialog]')) return;
     const t = (e.innerText || e.getAttribute('aria-label') || '').trim();

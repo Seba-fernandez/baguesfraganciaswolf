@@ -513,8 +513,9 @@ def ux10(browser, base):
     page.goto(base + "/catalogo", wait_until="domcontentloaded")
     esperar_catalogo(page)
     fam = page.evaluate("() => getComputedStyle(document.querySelector('article [class*=titulo]')).fontFamily")
-    chk("UX-10", "visual", "media", "El nombre de la tarjeta del catalogo usa Cormorant",
-        fam.strip().strip("'\"").lower().startswith("cormorant"), f"font-family: {fam[:60]}")
+    # Rediseño D: la letra de los nombres paso de Cormorant a Boska.
+    chk("UX-10", "visual", "media", "El nombre de la tarjeta del catalogo usa Boska (rediseño D)",
+        fam.strip().strip("'\"").lower().startswith("boska"), f"font-family: {fam[:60]}")
     ctx.close()
 
 
@@ -955,8 +956,8 @@ def e3_a4(browser, base):
     con_datos = {(p.get("inspirado_en") or p.get("nombre")) for p in filas.values()
                  if p.get("nota_salida") or p.get("nota_corazon") or p.get("nota_fondo") or p.get("familia_olfativa")}
     faltan = [v for v in t["vacias"] if v in con_datos]
-    chk("E3-A4 tarjeta", "visual", "alta", "Tarjeta a 390: sin pastillas ni 'version inspirada', nombre Cormorant 600 y linea de notas",
-        t["pastillas"] == 0 and t["inspirado"] == 0 and t["notas"] > 0 and not faltan and t["peso"] == "600" and "ormorant" in t["fam"],
+    chk("E3-A4 tarjeta", "visual", "alta", "Tarjeta a 390: sin pastillas ni 'version inspirada', nombre en Boska (rediseño D) y linea de notas",
+        t["pastillas"] == 0 and t["inspirado"] == 0 and t["notas"] > 0 and not faltan and t["peso"] == "600" and "Boska" in t["fam"],
         f"pastillas {t['pastillas']}; 'version inspirada' en {t['inspirado']} tarjetas; notas en {t['notas']}/{t['total']}; nombre {t['fam'][:10]} {t['peso']}")
     chk("E3-A4 aviso", "confianza", "alta", "El aviso de la cabecera del catalogo sigue a la vista",
         t["aviso"], f"aviso corto con 'referencia olfativa': {t['aviso']}")
@@ -1037,12 +1038,12 @@ def e3_a4(browser, base):
     page.goto(base + "/", wait_until="load")
     try:
         # Los destacados llegan despues de hidratar y de que conteste la base.
-        page.wait_for_function("() => [...document.querySelectorAll('section [class*=nombre]')].some(e => getComputedStyle(e).fontFamily.includes('ormorant'))", timeout=25000)
-        peso = page.evaluate("""() => { const n = [...document.querySelectorAll('[class*=nombre]')].find(e => e.closest('section') && getComputedStyle(e).fontFamily.includes('ormorant'));
+        page.wait_for_function("() => [...document.querySelectorAll('section button [class*=nombre]')].some(e => getComputedStyle(e).fontFamily.includes('Boska'))", timeout=25000)
+        peso = page.evaluate("""() => { const n = [...document.querySelectorAll('section button [class*=nombre]')].find(e => getComputedStyle(e).fontFamily.includes('Boska'));
             return n ? getComputedStyle(n).fontWeight : null; }""")
     except Exception:
         peso = None
-    chk("E3-A4 destacados", "visual", "baja", "Los destacados de la portada usan el mismo peso de Cormorant que la tarjeta (600)",
+    chk("E3-A4 destacados", "visual", "baja", "Los destacados de la portada usan la misma letra y peso que la tarjeta (Boska 600)",
         peso == "600", f"peso del nombre en destacados: {peso}")
     ctx.close()
 
@@ -1280,6 +1281,8 @@ def e3_a9(browser, base):
 # ---------------------------------------------------------------------------
 
 ACENTO = "rgb(224, 112, 138)"
+# Rediseño D: sobre papel (clase .dia) el acento es el rubi.
+RUBI = "rgb(158, 35, 53)"
 SEMANA = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
 SIETE = ["unlock-bad-boy", "unlock-one-million", "unlock-polo-blue", "unlock-polo-red",
          "unlock-creed-aventus", "unlock-rabanne-phantom", "unlock-rabanne-phantom-black"]
@@ -1369,6 +1372,9 @@ def e3_b1(browser, base):
             como: (() => { const c = q('[data-qa=hero-como]'); return c ? { tag: c.tagName, boton: c.classList.contains('tbtn'), href: c.getAttribute('href') } : null; })(),
             botones: document.querySelectorAll('#inicio-hero [data-hero=cta], #inicio-hero .tbtn:not([class*=promo])').length,
             ctaAncho: q('[data-qa=hero-cta]') ? Math.round(q('[data-qa=hero-cta]').getBoundingClientRect().width) : 0,
+            ctaCentro: q('[data-qa=hero-cta]') ? (() => { const r = q('[data-qa=hero-cta]').getBoundingClientRect(); return Math.round(r.left + r.width / 2 - innerWidth / 2); })() : null,
+            ctaAlto: q('[data-qa=hero-cta]') ? Math.round(q('[data-qa=hero-cta]').getBoundingClientRect().height) : 0,
+            trazos: document.querySelectorAll('#inicio-hero [class*=trazo]').length,
             corona: caja(corona), coronaTops: hijos, marcaPx: marca ? parseFloat(getComputedStyle(marca).fontSize) : 0,
             escena: caja(q('#inicio-hero [data-hero=escena]')),
             frascos: (() => { const f = q('#inicio-hero img'); return f ? { w: f.naturalWidth, src: f.currentSrc.split('/').pop() } : null; })(),
@@ -1387,9 +1393,13 @@ def e3_b1(browser, base):
         all(dentro(m, k) for k in ("titulo", "datos", "cta")),
         f"alto {m['vh']}; titulo {m['titulo']}; datos {m['datos']}; boton {m['cta']}")
     m = res["844"]
-    chk("E3-B1 844", "conversion", "alta", "390x844: un solo boton a todo el ancho y 'Como funciona' como enlace de texto",
-        dentro(m, "cta") and m["ctaAncho"] >= 340 and bool(m["como"]) and not m["como"]["boton"] and m["como"]["href"] == "#como",
-        f"boton {m['cta']} de {m['ctaAncho']} px; como funciona: {m['como']}")
+    # Rediseño D (22/10, aprobado por Sebas): el boton ya no va a todo el
+    # ancho sino centrado entre dos trazos de plumilla. Se pide que sea grande
+    # al dedo (200 px o mas de ancho, 48 o mas de alto) y que este centrado.
+    chk("E3-B1 844", "conversion", "alta", "390x844: un solo boton (>= 200x48, centrado entre dos trazos) y 'Como funciona' como enlace de texto",
+        dentro(m, "cta") and m["ctaAncho"] >= 200 and m["ctaAlto"] >= 48 and m["ctaCentro"] is not None and abs(m["ctaCentro"]) <= 4 and m["trazos"] == 2
+        and bool(m["como"]) and not m["como"]["boton"] and m["como"]["href"] == "#como",
+        f"boton {m['cta']} de {m['ctaAncho']}x{m['ctaAlto']} px, corrido {m['ctaCentro']} px del centro, trazos {m['trazos']}; como funciona: {m['como']}")
     filas = res["844"]["filas"]
     n = len(filas)
     desde = min((x["precio"] for p in filas for x in pres_activas(p) if x.get("precio")), default=None)
@@ -1461,8 +1471,8 @@ def e3_b2(browser, base):
         f"esperado '{esperado}'; portada: {(r['portada'] or {}).get('txt')}; catalogo: {r['catalogo']}; cajon: {r['cajon']}; CLS catalogo {r['cls']}")
     u = res[2]
     chk("E3-B2 urgente", "conversion", "baja", "Con 3 dias o menos la cifra pasa al acento; con 15, no",
-        bool(u["portada"]) and u["portada"]["color"] == ACENTO and "Quedan 2 días" in u["portada"]["txt"]
-        and bool(r["portada"]) and r["portada"]["color"] != ACENTO,
+        bool(u["portada"]) and u["portada"]["color"] in (ACENTO, RUBI) and "Quedan 2 días" in u["portada"]["txt"]
+        and bool(r["portada"]) and r["portada"]["color"] not in (ACENTO, RUBI),
         f"2 dias: {u['portada']}; 15 dias: color {(r['portada'] or {}).get('color')}")
     # Vencida (ayer) y la base real: nunca una fecha pasada.
     vistas = []
@@ -1496,30 +1506,48 @@ def e3_b3(browser, base):
     chk("E3-B3 chat", "confianza", "media", "'Como funciona' muestra el mensaje real de whatsapp.js con dos aromas y codigos de la base",
         len(cods) >= 2 and all(c in codigos for c in cods) and "Quiero hacer este pedido" in m["chat"],
         f"codigos en el chat: {cods} (en la base: {[c in codigos for c in cods]}); texto: '{m['chat'][:80]}'")
-    chk("E3-B3 pasos", "visual", "media", "Sin iconos en circulos; los pasos en una lista ordenada de tres",
-        m["iconos"] == 0 and m["pasos"] == 3, f"svg en la seccion: {m['iconos']}; pasos en <ol>: {m['pasos']}")
+    # Rediseño D (22/10, aprobado por Sebas): "el chat real y nada mas". Los
+    # tres pasos numerados salieron; el chat ya cuenta el proceso.
+    chk("E3-B3 pasos", "visual", "media", "Sin iconos en circulos y sin pasos numerados: solo el chat (rediseño D)",
+        m["iconos"] == 0 and m["pasos"] == 0, f"svg en la seccion: {m['iconos']}; pasos en <ol>: {m['pasos']}")
 
 
 def e3_b4(browser, base):
+    # Rediseño D (22/10): Sebas saco "Lo que pagas / Lo que no pagas". Su
+    # lugar lo ocupa "Las ciudades". Se mide que sean cajas Bagues de aromas
+    # activos, que no repitan los destacados y que cada fila abra su ficha.
     res = {}
     for nombre, op in (("390", MOVIL), ("1440", ESCRITORIO)):
-        ctx, page, _, _ = portada_con_datos(browser, op)
-        page.evaluate("() => document.getElementById('nosotros')?.scrollIntoView()")
+        ctx, page, datos, _ = portada_con_datos(browser, op)
+        page.evaluate("() => document.getElementById('ciudades')?.scrollIntoView()")
         page.wait_for_timeout(900)
-        res[nombre] = page.evaluate("""() => { const n = document.getElementById('nosotros'); if (!n) return null;
-            const a = n.querySelector('[data-qa=pagas]'), b = n.querySelector('[data-qa=no-pagas]');
-            return { pagas: a ? a.querySelectorAll('li').length : 0, nopagas: b ? b.querySelectorAll('li').length : 0,
-              lado: a && b ? Math.abs(a.getBoundingClientRect().top - b.getBoundingClientRect().top) : null,
-              palabras: n.innerText.split(/\\s+/).filter(Boolean).length, texto: n.innerText,
-              marcas: n.querySelectorAll('svg').length + (n.innerText.match(/[✓✔✗✘×]/g) || []).length }; }""")
+        res[nombre] = page.evaluate("""() => { const c = document.getElementById('ciudades'); if (!c) return null;
+            const filas = [...c.querySelectorAll('[data-qa=ciudades] a[href*="aroma="]')];
+            const ciudad = c.querySelector('[class*=ciudad]');
+            return { hrefs: filas.map(a => a.getAttribute('href')), ciudades: filas.map(a => a.querySelector('[class*=ciudad]')?.textContent.trim()),
+              fam: ciudad ? getComputedStyle(ciudad).fontFamily : '', nosotros: !!document.getElementById('nosotros'),
+              palabras: c.innerText.split(/\\s+/).filter(Boolean).length,
+              desborda: filas.some(a => { const e = a.querySelector('[class*=ciudad]'); return e && e.scrollWidth > e.clientWidth + 1; }) }; }""")
+        res[nombre]["filas"] = publicables(datos) if res[nombre] else []
+        if nombre == "390" and res[nombre] and res[nombre]["hrefs"]:
+            page.locator('#ciudades [data-qa=ciudades] a').first.evaluate("(a) => a.click()")
+            res[nombre]["abre"] = esperar_ficha(page)
         ctx.close()
-    a, b = res["390"], res["1440"]
-    ok = all(r and r["pagas"] == 3 and r["nopagas"] == 3 and r["lado"] is not None and r["lado"] <= 4 and r["marcas"] == 0 for r in (a, b))
-    chk("E3-B4 columnas", "confianza", "media", "Nosotros: 'Lo que pagás' y 'Lo que no pagás' lado a lado (390 y 1440), tres y tres, sin tildes ni cruces",
-        ok, "; ".join(f"{k}: {r and {x: r[x] for x in ('pagas', 'nopagas', 'lado', 'marcas')}}" for k, r in res.items()))
-    chk("E3-B4 texto", "contenido", "media", "La placa ya no es una pared de texto (<= 120 palabras) y conserva 'Somos Grupo Wolf, un emprendimiento familiar'",
-        bool(a) and a["palabras"] <= 120 and "Somos Grupo Wolf, un emprendimiento familiar" in a["texto"],
-        f"palabras: {a and a['palabras']}")
+    a = res["390"]
+    if not a:
+        chk("E3-B4 ciudades", "conversion", "media", "Las ciudades existe", False, "no hay #ciudades")
+        return
+    filas = {p["slug"]: p for p in a["filas"]}
+    slugs = [(urllib.parse.parse_qs(urllib.parse.urlparse(h).query).get("aroma") or [None])[0] for h in a["hrefs"]]
+    con_caja = [sl for sl in slugs if sl in filas and any(x.get("linea") == "bagues" for x in pres_activas(filas[sl]))]
+    repetidos = [sl for sl in slugs if (filas.get(sl) or {}).get("destacado")]
+    chk("E3-B4 ciudades", "conversion", "media", "Las ciudades: 4 cajas Bagues de aromas activos, sin repetir destacados, y tocar una abre su ficha (reemplaza a 'Lo que pagas')",
+        len(slugs) == 4 and len(con_caja) == 4 and not repetidos and a.get("abre") and not a["nosotros"],
+        f"ciudades {a['ciudades']}; con caja activa {len(con_caja)}/4; repiten destacados {repetidos}; abre ficha {a.get('abre')}; #nosotros {a['nosotros']}")
+    b = res["1440"]
+    chk("E3-B4 texto", "visual", "media", "Las ciudades: nombre en Melodrama, sin desbordar a 390 ni a 1440, y no es una pared de texto (<= 60 palabras)",
+        "Melodrama" in a["fam"] and not a["desborda"] and bool(b) and not b["desborda"] and a["palabras"] <= 60,
+        f"letra {a['fam'][:12]}; desborda 390 {a['desborda']}, 1440 {b and b['desborda']}; palabras {a['palabras']}")
 
 
 def e3_b5(browser, base):

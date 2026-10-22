@@ -209,6 +209,43 @@ ahora espera 4 con familia y 5 con notas.
 (sin cambio); `/catalogo` 81 contra 77 con dos agentes usando la CPU en paralelo
 (ruido; LCP +150 ms). Se mide de nuevo en producción después de publicar.
 
+### Rediseño visual D (rama `rediseno-visual`, 22 de octubre de 2026)
+
+Sin publicar: va a `main` solo con el OK de Sebas. Plan, decisiones y porqués en
+[`PLAN-PORTADA-D.md`](PLAN-PORTADA-D.md). Banco local sobre la rama: **84 de
+84**. Ocho chequeos se reescribieron porque Sebas cambió lo que miden (no para
+que pasen): cada uno dice en el código qué decisión lo cambió.
+
+| Chequeo | Antes medía | Ahora mide | Por qué |
+| --- | --- | --- | --- |
+| E3-B1 844 | botón a todo el ancho (340 px o más) | botón de 200x48 o más, centrado entre dos trazos | el botón entre trazos de plumilla, aprobado en la prueba |
+| E3-B2 urgente | la cifra en rosa-vino | rosa-vino o rubí | sobre papel el acento es el rubí |
+| E3-B3 pasos | tres pasos en una lista | sin pasos: solo el chat | "el chat real y nada más" |
+| E3-B4 columnas y texto | Lo que pagás / Lo que no pagás | Las ciudades: 4 cajas activas que no repiten destacados, abren la ficha, Melodrama sin desbordar | Sebas sacó la sección del ahorro |
+| UX-10, E3-A4 tarjeta y destacados | nombre en Cormorant | nombre en Boska 600 | la letra nueva |
+
+Además: el centro del botón medía `-0.0` y `abs(-0.0 or 99)` daba 99; se
+corrigió el chequeo. El mapa de calor no reconocía las cajas de Las ciudades
+como foto de producto (su selector era de las secciones viejas); se sumó
+`[data-qa=ciudades] img`.
+
+**Mapa de calor por sección**, portada (DeepGaze IIE, misma rúbrica):
+
+| Sección | C a 390 | D a 390 | D a 1440 |
+| --- | --- | --- | --- |
+| Hero | 7,9 | 8,1 | 7,8 |
+| Lo que pagás → Las ciudades | 6,1 | 6,4 | 6,0 |
+| ¿Qué te gusta oler? | 6,5 | 6,6 | 6,7 |
+| Destacados | 7,1 | 7,8 | 7,8 |
+| Cómo funciona | 6,0 | 6,0 | 6,3 |
+| Antes de pedir | 6,0 | 5,1 | 5,0 |
+| Pie (aviso legal) | 4,5 | 4,9 | 4,9 |
+
+Las ciudades arrancó en 5,0: las cajas de 64 px eran el 7 % de la sección. A
+92 px (140 en escritorio) sube a 6,4. **Antes de pedir bajó** al pasar de la
+banda vino al papel hondo que pide el guion: es texto y cifras sin foto. La
+salida natural es la foto de Sebas con producto cuando llegue.
+
 ### Rediseño visual C (rama `rediseno-visual`, 22 de octubre de 2026)
 
 Sin publicar: va a `main` solo con el OK de Sebas. Especificación y decisiones en

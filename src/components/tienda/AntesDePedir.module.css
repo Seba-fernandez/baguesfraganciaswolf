@@ -1,23 +1,33 @@
-/* Cuatro datos en grilla: 2x2 en el celular, una fila en escritorio. Cada uno
-   con un filete arriba, el nombre en Figtree 600 y el texto en tono
-   secundario. Sin iconos ni circulos de color (DISENO.md). */
-.section { padding-block: clamp(8px, 2vw, 24px) clamp(64px, 9vw, 112px); }
+/* La banda vino a sangre, con el halo del hero arriba a la izquierda. */
+.banda {
+  margin-top: clamp(24px, 4vw, 48px);
+  background:
+    radial-gradient(50% 60% at 18% 0%, rgba(224, 112, 138, 0.26) 0%, rgba(224, 112, 138, 0) 70%),
+    linear-gradient(180deg, #4a161f 0%, #2a0c12 100%);
+  border-top: 1px solid rgba(214, 168, 98, 0.3);
+}
+.section { padding-block: clamp(56px, 8vw, 96px); }
 
-.titulo { font-size: clamp(1.9rem, 4.2vw, 3rem); margin-bottom: clamp(24px, 4vw, 40px); }
-/* La tira del ciclo entre el titulo y los datos: el titulo cede su aire. */
+.titulo { font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.04; margin-bottom: clamp(24px, 4vw, 40px); }
 .titulo:has(+ .ciclo) { margin-bottom: 10px; }
 .ciclo { margin-bottom: clamp(24px, 4vw, 36px); }
 
+/* 2x2 en el celular, una fila en escritorio. */
 .grilla {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px 18px; margin: 0;
+  gap: 30px 18px; margin: 0;
 }
-@media (min-width: 900px) { .grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; } }
+@media (min-width: 900px) { .grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 36px; } }
 
-.dato { border-top: 1px solid var(--line-bright); padding-top: 14px; }
-.nombre { font-weight: 600; font-size: 0.98rem; color: var(--ink); margin-bottom: 6px; }
-.texto { margin: 0; color: var(--ink-dim); font-size: 0.9rem; line-height: 1.55; }
+.dato { border-top: 1px solid rgba(243, 236, 225, 0.26); padding-top: 14px; }
+.encabezado { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+/* La cifra: lo que se lee primero. Cormorant 600, de 40 a 64 px. */
+.cifra {
+  font-family: var(--f-display); font-weight: 600;
+  font-size: clamp(2.3rem, 9.4vw, 4rem); line-height: 0.95; letter-spacing: -0.01em;
+  color: var(--ink); white-space: nowrap;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.nombre { font-weight: 600; font-size: 0.92rem; color: var(--ink); }
+.texto { margin: 0; color: var(--ink-dim); font-size: 0.86rem; line-height: 1.5; }
 @media (min-width: 900px) { .texto { font-size: 0.95rem; } }
-
-/* La unica cifra con acento: desde cuanto el envio es gratis. */
-.cifra { color: var(--amber); font-weight: 600; white-space: nowrap; }

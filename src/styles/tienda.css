@@ -8,28 +8,23 @@
    gradiente malla, no foto. Vidrio con refraccion real (solo escritorio).
    ============================================================================ */
 
-/* Fuentes alojadas en el proyecto (public/fonts), no traidas de Google. Se ven
-   sin depender de la red, la web no filtra la visita a un tercero y arranca sin
-   una request que bloquea el render. Subset latino.
+/* Fuentes alojadas en el proyecto (public/fonts), recortadas a latín. Se ven
+   sin depender de la red y la web no le avisa la visita a un tercero.
 
-   Aca van SOLO las cuatro que se ven en la primera pantalla. Las otras tres
-   viven en public/fuentes-diferidas.css, que index.html carga sin bloquear.
+   Aca van SOLO las que se ven en la primera pantalla de la portada: el
+   titulo (Melodrama 600 con el giro en la italica de Boska) y el texto y el
+   boton (Figtree 400 y 600). Las otras (Boska redonda, IBM Plex Mono, La Belle
+   Aurore y Figtree 500) viven en public/fuentes-diferidas.css, que index.html
+   carga sin bloquear: con la portada pre-generada en el HTML, el navegador baja
+   una fuente apenas ve texto que la usa, y si salen todas juntas le roban ancho
+   de banda a la imagen del hero, que define el LCP. Estas cuatro pesan 50 kB.
 
-   El motivo: el navegador descarga una fuente cuando encuentra texto que la usa,
-   y con la portada ya pre-generada en el HTML ese texto existe desde el primer
-   milisegundo. Las siete salian juntas —125 kB— compitiendo por el ancho de
-   banda contra la imagen del hero, que es la que define el LCP. Declarando solo
-   estas cuatro, las otras ni se enteran hasta despues del primer dibujado.
-
-   Cuales son cuales sale de mirar el hero: el titulo es Cormorant 600, el cuerpo
-   Figtree 400 y los botones Figtree 600. La marca y la corona tambien usan
-   Cormorant 600 a proposito, para no traer una cuarta cara (ver .marca en
-   TiendaLayout.module.css). Cormorant 400, la italica y Figtree 500 recien
-   aparecen mas abajo, asi que van en la hoja diferida.
-
-   Medido en produccion: las cuatro caras criticas eran 67 kB a prioridad
-   maxima, y le robaban ancho de banda a la imagen que define el LCP. Son 45. */
-@font-face { font-family: 'Cormorant'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/cormorant-600.woff2') format('woff2'); }
+   Rediseño D (22/10/2026): Melodrama y Boska son de Fontshare (licencia ITF
+   FFL, gratis tambien para uso comercial); Plex Mono y La Belle Aurore, OFL.
+   Boska tiene solo 400 y 500: cada archivo declara un rango de pesos para que
+   un font-weight 600 heredado use la 500 y no una negrita sintetica. */
+@font-face { font-family: 'Melodrama'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/melodrama-600.woff2') format('woff2'); }
+@font-face { font-family: 'Boska'; font-style: italic; font-weight: 300 700; font-display: swap; src: url('/fonts/boska-italic-400.woff2') format('woff2'); }
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/figtree-400.woff2') format('woff2'); }
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/figtree-600.woff2') format('woff2'); }
 
@@ -125,13 +120,35 @@
      difuminado se ve, que es lo que se pidio. */
   --grano: 0.16;
 
-  /* Cormorant: una didone de contraste altisimo, romantica y sensual, con la
-     cara de un aviso de perfume. Distinta de la Fraunces anterior y a anos luz
-     de las sans genericas. Va en peso medio-alto en los titulos, si no el trazo
-     fino se afina de mas. Su italica cubre las citas. */
-  --f-display: 'Cormorant', 'Iowan Old Style', ui-serif, Georgia, serif;
+  /* Letra del rediseño D (docs/PLAN-PORTADA-D.md): tres voces, como en las
+     referencias medidas de Sebas.
+       --f-titulo  Melodrama 600: lo que se ve de lejos (titulo, ciudades,
+                   cifras grandes). Condensada y dramatica; a menos de 24 px
+                   se aprieta, por eso no va en nombres chicos.
+       --f-display Boska: nombres de perfume, titulos de seccion y la italica
+                   del titulo (Melodrama no trae italica).
+       --f-mono    IBM Plex Mono 500: solo datos (ml, precio chico, codigo).
+       --f-mano    La Belle Aurore: un rotulo a mano por seccion, como mucho. */
+  --f-titulo: 'Melodrama', 'Boska', Georgia, serif;
+  --f-display: 'Boska', 'Iowan Old Style', ui-serif, Georgia, serif;
   --f-body: 'Figtree', 'Figtree Respaldo', 'Figtree Respaldo Android', system-ui, -apple-system, sans-serif;
-  --f-quote: 'Cormorant', Georgia, serif;
+  --f-quote: 'Boska', Georgia, serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --f-mano: 'La Belle Aurore', 'Segoe Script', cursive;
+
+  /* La LUT del rediseño D: una pelicula en dos luces. Noche (vino) y dia
+     (papel), con el mismo blanco, el mismo negro y un solo acento.
+     Medido en las referencias: ver docs/RECETA-VISUAL.md, paso 3. */
+  --papel: #f6ece8;        /* blanco: nunca #fff */
+  --papel-hondo: #eadcd4;
+  --vino: #4b1217;         /* pared del hero */
+  --vino-hondo: #240604;   /* negro: nunca negro neutro */
+  --rubi: #9e2335;         /* el unico acento: lo que se toca. 6,6:1 sobre papel; crema encima, 6,8:1 */
+  --tinta: #2a0a0e;        /* texto sobre papel, 15,7:1 */
+  --tinta-suave: #5e3d38;  /* secundario sobre papel, 8,2:1 (7,1 sobre papel hondo) */
+  --crema: #faefea;        /* texto sobre vino */
+  --crema-suave: #e7cfc6;  /* secundario sobre vino, 10:1 */
+  --filete: rgba(42, 10, 14, 0.16);
 
   position: relative;
   min-height: 100vh;

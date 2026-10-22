@@ -8,23 +8,28 @@
   display: flex; align-items: center; gap: 10px;
   height: var(--bar-h);
   padding: 0 max(4vw, calc((100vw - var(--wrap)) / 2));
-  background: linear-gradient(to bottom, rgba(18, 11, 8, 0.82) 0%, rgba(18, 11, 8, 0.5) 60%, rgba(18, 11, 8, 0) 100%);
+  /* De noche: vino hondo solido (la "tira vino" que abre el catalogo y que
+     separa la barra de las secciones de papel). Sobre la escena del hero, un
+     velo vino en vez del espresso de antes. El cambio lo marca TiendaLayout
+     con data-luz. */
+  background: var(--vino-hondo);
   border-bottom: 0;
+  transition: background-color var(--dur) var(--ease);
+}
+.bar[data-luz='hero'] {
+  background: linear-gradient(to bottom, rgba(36, 6, 4, 0.78) 0%, rgba(36, 6, 4, 0.42) 60%, rgba(36, 6, 4, 0) 100%);
 }
 
 .marca {
-  /* Peso 600 y no 400: es el unico uso de Cormorant 400 en la primera
-     pantalla junto con la corona del hero, y esa cara son 22 kB que competian
-     por el ancho de banda con la imagen del LCP. En un sello de marca el trazo
-     mas firme ademas queda mejor (ver docs/DISENO.md: Cormorant es de trazo
-     fino y pide peso medio-alto). */
-  font-family: var(--f-display); font-weight: 600;
-  font-size: 1.02rem; letter-spacing: 0.04em;
-  color: var(--ink); white-space: nowrap; flex-shrink: 0;
+  /* Melodrama: la misma cara del titulo, que ya viaja en la primera carga.
+     Asi la marca no trae una quinta fuente al primer pantallazo. */
+  font-family: var(--f-titulo); font-weight: 600;
+  font-size: 1.25rem; letter-spacing: 0.02em;
+  color: var(--crema); white-space: nowrap; flex-shrink: 0;
 }
-.marcaWolf { color: var(--amber); }
+.marcaWolf { color: var(--crema-suave); font-family: var(--f-quote); font-style: italic; font-weight: 400; letter-spacing: 0; }
 @media (max-width: 619px) {
-  .marca { font-size: 0.94rem; }
+  .marca { font-size: 1.12rem; }
   .marcaWolf { display: none; }
 }
 

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { montarVidrioLiquido } from '../../lib/vidrioLiquido';
 import { useCart } from '../../contexts/CartContext';
 // El cajón del pedido, igual que la ficha: se carga la primera vez que se abre.
@@ -44,6 +44,19 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
   // Y se trae el código del cajón en el primer rato libre, sin esperar a que lo
   // abran: así el primer toque no tiene espera en una conexión lenta. Es un
   // chunk de 2,5 kB y para cuando corre esto la primera pantalla ya está.
+  // Rediseño D: la barra es de noche (vino hondo, solida) salvo mientras
+  // flota sobre la escena del hero, donde queda transparente con un velo. Asi
+  // no queda un degradado oscuro manchando las secciones de papel.
+  const { pathname } = useLocation();
+  const [sobreHero, setSobreHero] = useState(pathname === '/');
+  useEffect(() => {
+    const hero = document.getElementById('inicio-hero');
+    if (!hero || !('IntersectionObserver' in window)) { setSobreHero(false); return undefined; }
+    const io = new IntersectionObserver(([e]) => setSobreHero(e.isIntersecting), { rootMargin: '-74px 0px 0px 0px', threshold: 0.12 });
+    io.observe(hero);
+    return () => io.disconnect();
+  }, [pathname]);
+
   useEffect(() => {
     if (!('requestIdleCallback' in window)) return;
     const id = requestIdleCallback(() => { import('./CartSheet'); }, { timeout: 4000 });
@@ -54,7 +67,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
     <div className="tienda" ref={raiz}>
       <div className="tfondo" aria-hidden="true" />
 
-      <header className={s.bar} inert={inert}>
+      <header className={s.bar} data-luz={sobreHero ? 'hero' : 'noche'} inert={inert}>
         <Link to="/" className={s.marca}>
           {MARCA.nombre} <span className={s.marcaWolf}>{MARCA.complemento}</span>
         </Link>

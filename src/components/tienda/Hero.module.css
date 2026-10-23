@@ -128,9 +128,18 @@
 
 /* El boton entre dos trazos, como el cierre de una carta. Boton plano crema
    sobre la noche: sin el vidrio de los otros botones de la tienda. */
-.carta { display: inline-flex; align-items: center; gap: 10px; }
+/* Grilla de tres columnas con anchos explicitos (trazo, boton, trazo). Con
+   inline-flex y el ancho del trazo puesto por aspect-ratio, Safari calculaba
+   la caja mas angosta que su contenido y el boton se salia a la derecha
+   (visto en un iPhone el 22/10; reproducido en WebKit). */
+.carta {
+  --trazo: clamp(52px, 14vw, 112px);
+  display: grid; grid-template-columns: var(--trazo) auto var(--trazo);
+  align-items: center; column-gap: 10px;
+  width: max-content; max-width: 100%;
+}
 .trazo {
-  flex: 0 0 clamp(52px, 14vw, 112px); aspect-ratio: 114 / 22;
+  display: block; width: var(--trazo); height: calc(var(--trazo) * 22 / 114);
   background: var(--crema-suave);
   -webkit-mask: url('/trazo.svg') center / 100% 100% no-repeat;
   mask: url('/trazo.svg') center / 100% 100% no-repeat;
@@ -263,7 +272,7 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   .compra { margin-top: auto; }
   .metaDesde { font-size: 9.7vw; }   /* 38 */
   .meta { font-size: 3.6vw; }        /* 14 */
-  .acciones { margin-top: 3.6vw; justify-content: center; }
+  .acciones { margin-top: 3.6vw; justify-content: center; width: 100%; }
   .como { display: none; }
   .promos { display: none; }
 }

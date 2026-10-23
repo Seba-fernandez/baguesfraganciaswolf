@@ -273,7 +273,13 @@ deshace y, ya aplicada, desde afuera con la clave pública.
   Costo medido con Lighthouse intercalado en local (5 + 5 corridas): sin
   precarga, +140 ms de LCP; con las dos fuentes precargadas, igual que antes.
 - **Lag de la banda:** la primera versión animaba `clip-path` (se repinta en
-  cada cuadro). La cortina anima solo `transform`.
+  cada cuadro). Ahora el fondo entero se estira con `transform: scaleY`.
+- **Parón al llegar a las familias:** `filter: drop-shadow` en los cinco
+  frascos, rasterizado al entrar la fila (con su animación de aparición).
+  Medido con la CPU frenada 4x: el hilo principal no tenía cuadros largos
+  ahí, así que el costo era de rasterizado. Se cambió por una elipse.
+- **La barra saltaba de color:** `--fondo-barra` registrado con `@property`
+  como `<color>` para que la transición lo interpole.
 - **`view()` en un `::before` mide al seudoelemento, no a la sección**, en
   Chrome (Safari mide a la sección): los paños nunca salían. Se usa una
   línea de tiempo con nombre en la sección (`view-timeline: --banda`).

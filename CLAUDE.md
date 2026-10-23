@@ -422,6 +422,10 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
 - **`animation-timeline: view()` en un `::before` mide al seudoelemento** en
   Chrome (Safari, a su dueño). Para que un paño siga a su sección, la sección
   declara `view-timeline: --nombre` y el paño usa ese nombre.
+- **`filter: drop-shadow` en imágenes que aparecen al bajar traba el scroll**
+  en el celular: se rasteriza al entrar. Una elipse pintada hace lo mismo.
+- **Una variable CSS no se anima** salvo que se registre con `@property`
+  (así cambia suave el fondo de la barra).
 - **`document.fonts.load` antes del `@font-face` contesta enseguida y vacío.**
   El build pega la hoja embebida después de los scripts del `<head>`: el
   script del hero pide las fuentes en el primer cuadro.

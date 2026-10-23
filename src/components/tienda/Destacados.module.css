@@ -10,54 +10,50 @@
 }
 .marco { position: relative; }
 
-/* La cortina (Sebas, 23/10, tercera version, con sus imagenes de como
-   queria que se viera). Cuando "Los mas pedidos" llena la pantalla no tienen
-   que verse las franjas de papel de arriba y abajo: dos paños del mismo vino
-   salen del borde de arriba y del de abajo de la seccion y tapan esos
-   margenes (solo el relleno de las secciones vecinas, nunca su contenido).
-   Al irse, vuelven a entrar. La barra y el volver arriba toman el vino solos:
-   miden que hay debajo y el paño cuenta como parte de esta seccion.
-   Sin lag: cada paño anima solo transform (scaleY desde su borde), atado al
-   scroll con animation-timeline: view(). Eso lo mueve el compositor, fuera
-   del hilo principal: no repinta ni depende de lo que haga la pagina. La luz
-   rosada del fondo se bajo un poco (26 %) para que el borde de arriba sea
-   vino liso y el paño empalme sin costura.
+/* La banda se estira (Sebas, 23/10, cuarta version). Cuando "Los mas
+   pedidos" llega a la pantalla, su fondo entero (el mismo degrade, una sola
+   pieza, sin costura) se estira de alto mas alla de los bordes de la seccion
+   y tapa las franjas de papel de arriba y abajo; al irse vuelve a su tamaño.
+   El contenido no se mueve: lo que se estira es un ::before detras.
+   Sin lag: se anima solo transform (scaleY), atado al scroll con una linea
+   de tiempo de la seccion (--banda). Lo mueve el compositor, fuera del hilo
+   principal, sin repintar. El degrade estirado un 18 % no se nota.
+   La barra y el volver arriba toman el vino solos: miden lo que tienen
+   debajo y el fondo estirado cuenta como parte de esta seccion.
    Sin animation-timeline (Firefox hoy) o con movimiento reducido: la banda
-   como siempre, con sus bordes. */
+   como siempre. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     /* Por encima de la seccion de abajo, y dibujada siempre: con
-       content-visibility (tienda.css) lo que sale de la caja se recorta. */
+       content-visibility (tienda.css) lo que sale de la caja se recorta.
+       La linea de tiempo es la de la seccion, con nombre: con view() a secas
+       Chrome mediria al ::before por su cuenta. */
     :global(.tienda) > main > section.section:not(#inicio-hero) {
-      position: relative; z-index: 2;
+      position: relative; z-index: 2; isolation: isolate;
       content-visibility: visible;
-      /* La linea de tiempo es la de la seccion, con nombre, y los paños la
-         usan: con view() a secas Chrome mide a cada paño por su cuenta (una
-         franja de 64 px afuera de la seccion) y nunca salian a tiempo. */
       view-timeline: --banda block;
+      background: transparent;
     }
-    .section::before,
-    .section::after {
-      content: ''; position: absolute; left: 0; right: 0;
-      height: var(--cortina, 64px);
-      background: var(--vino);
+    .section::before {
+      content: ''; position: absolute; inset: 0; z-index: -1;
+      background:
+        radial-gradient(60% 46% at 50% 26%, rgba(158, 35, 53, 0.42), rgba(158, 35, 53, 0) 72%),
+        var(--vino);
+      transform-origin: 50% 50%;
       will-change: transform;
-      animation: cortina-sale linear both;
+      animation: banda-estira linear both;
       animation-timeline: --banda;
       animation-range: cover 0% cover 100%;
     }
-    .section::before { bottom: 100%; transform-origin: 50% 100%; }
-    .section::after { top: 100%; transform-origin: 50% 0; }
   }
 }
-/* El paño mide menos que el relleno de las vecinas (72 px en el celular,
-   hasta 140 en escritorio): tapa papel, nunca un texto. Sale cuando la
-   seccion ya ocupa casi toda la pantalla y entra cuando se empieza a ir. */
-.section { --cortina: clamp(64px, 9vw, 128px); }
-@keyframes cortina-sale {
-  0%, 28% { transform: scaleY(0); }
-  40%, 60% { transform: none; }
-  72%, 100% { transform: scaleY(0); }
+/* 1,18 en el alto de la seccion: unos 60 px de mas arriba y abajo en el
+   celular y unos 85 en escritorio, siempre menos que el relleno de las
+   secciones vecinas (72 a 140 px): tapa papel, nunca un texto. */
+@keyframes banda-estira {
+  0%, 26% { transform: none; }
+  40%, 60% { transform: scaleY(1.18); }
+  74%, 100% { transform: none; }
 }
 
 .head { margin-bottom: clamp(24px, 4vw, 44px); }

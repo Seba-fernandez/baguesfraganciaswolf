@@ -62,9 +62,19 @@
 .frasco {
   position: relative; z-index: 1;
   width: 58%; height: auto; margin-bottom: 9%;
-  filter: drop-shadow(0 14px 14px rgba(10, 3, 4, 0.55));
   transition: transform var(--dur) var(--ease);
 }
+/* La sombra del frasco en la repisa: una elipse pintada, no un
+   filter: drop-shadow. El filtro (desenfoque de 14 px sobre cada frasco, a
+   3x en el celular) se rasterizaba justo cuando la fila entraba a la
+   pantalla y aparecia con su animacion: ese era el paron al bajar (Sebas,
+   23/10). Sobre la pared vino la diferencia no se ve. */
+.ventana::before {
+  content: ''; position: absolute; z-index: 1; pointer-events: none;
+  left: 18%; right: 18%; bottom: 7%; height: 9%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(10, 3, 4, 0.6), rgba(10, 3, 4, 0) 100%);
+}
+.frasco { z-index: 2; }
 .nombre {
   margin-top: 10px;
   font-family: var(--f-titulo); font-weight: 600; font-size: 1.7rem; line-height: 1;

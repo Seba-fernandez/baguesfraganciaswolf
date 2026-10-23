@@ -150,13 +150,20 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
 
 ## Sexta vuelta (23/10, segundo video de Sebas y sus imágenes de la cortina)
 
-- **La banda de "Los más pedidos" es una cortina de alto**, no de ancho: a
-  todo el ancho siempre, y cuando la sección llena la pantalla dos paños del
-  mismo vino salen de su borde de arriba y de abajo y tapan las franjas de
-  papel (solo el relleno de las vecinas). La barra y el volver arriba toman
-  el vino solos. Se anima solo `transform` atado al scroll: lo mueve el
-  compositor y no tironea. La versión anterior (de ancho, con `clip-path`)
-  se repintaba en cada cuadro: ese era el lag que notaba Sebas.
+- **La banda de "Los más pedidos" se estira de alto**, no de ancho: a todo
+  el ancho siempre. Cuando la sección llega a la pantalla, su fondo entero
+  (el mismo degradé, una sola pieza) se estira un 18 % más allá de sus
+  bordes y tapa las franjas de papel de arriba y abajo; al irse vuelve. Una
+  primera prueba con dos paños sueltos dejaba ver el corte (Sebas). El
+  contenido no se mueve. Se anima solo `transform` atado al scroll: lo
+  mueve el compositor y no tironea. La versión de ancho, con `clip-path`, se
+  repintaba en cada cuadro: ese era el lag.
+- **La barra cambia de luz en 0,45 s** (fondo y letras), no de golpe.
+- **"¿Con cuál te identificás?" sin parón al bajar:** el frasco de cada
+  ventana tenía un `filter: drop-shadow` que se rasterizaba justo al entrar
+  la fila con su animación. Ahora la sombra es una elipse pintada.
+- **El hero tiene parallax** (desde la primera vuelta del D): al bajar, la
+  escena se queda un poco atrás. Se deja.
 - **El inicio aparece entero y con su letra:** el título, la bajada y el
   botón esperan a las dos fuentes del título (como mucho 0,9 s) y entran
   juntos; antes se veía la letra de respaldo y después cambiaba. Las dos

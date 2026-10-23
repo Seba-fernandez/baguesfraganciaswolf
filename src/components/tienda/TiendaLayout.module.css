@@ -24,8 +24,15 @@
      fundia desde el 62 %, adentro de la barra: arriba de todo, donde detras
      esta el fondo oscuro del body, el papel quedaba gris con una franja. */
   background: linear-gradient(to bottom, var(--fondo-barra) 0, var(--fondo-barra) calc(100% - 28px), transparent 100%);
-  transition: opacity var(--dur) var(--ease);
+  transition: opacity var(--dur) var(--ease), --fondo-barra 0.45s var(--ease);
 }
+/* El color de la barra pasa de una luz a otra en 0,45 s en vez de saltar
+   (Sebas, 23/10). Registrado como <color> para que el navegador sepa
+   interpolarlo; donde @property no existe, cambia de golpe como antes. */
+@property --fondo-barra {
+  syntax: '<color>'; inherits: true; initial-value: rgba(36, 6, 4, 0.96);
+}
+.bar { transition: --fondo-barra 0.45s var(--ease); }
 .bar[data-luz='dia'] { --fondo-barra: rgb(246, 236, 232); background: none; }
 .bar[data-luz='hero'] { --fondo-barra: rgba(36, 6, 4, 0.55); }
 .bar[data-luz='dia'] .marca { color: var(--tinta); }
@@ -39,9 +46,9 @@
   font-family: var(--f-titulo); font-weight: 600;
   font-size: 1.25rem; letter-spacing: 0.02em;
   color: var(--crema); white-space: nowrap; flex-shrink: 0;
-  transition: color var(--dur) var(--ease);
+  transition: color 0.45s var(--ease);
 }
-.marcaWolf { color: var(--crema-suave); font-family: var(--f-quote); font-style: italic; font-weight: 400; letter-spacing: 0; }
+.marcaWolf { transition: color 0.45s var(--ease); color: var(--crema-suave); font-family: var(--f-quote); font-style: italic; font-weight: 400; letter-spacing: 0; }
 @media (max-width: 619px) {
   .marca { font-size: 1.12rem; }
   .marcaWolf { display: none; }
@@ -54,7 +61,7 @@
    ninguno. */
 .nav { display: flex; gap: 2px; font-size: 0.84rem; color: var(--ink-dim); margin-left: 2px; }
 /* Area de toque real: 22px de alto de texto no alcanza para un dedo. */
-.nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; white-space: nowrap; }
+.nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; white-space: nowrap; transition: color 0.45s var(--ease); }
 .nav a:hover { color: var(--ink); }
 @media (min-width: 620px) {
   .nav { gap: 8px; font-size: 0.88rem; margin-left: 4px; }

@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import postcss from 'postcss';
+import subsetFont from 'subset-font';
 
 /**
  * Pre-genera el HTML de la portada y lo mete en dist/index.html.
@@ -45,6 +46,44 @@ if (!html.includes(ANCLA)) {
 }
 
 html = html.replace(ANCLA, `<div id="root">${marcado}</div>`);
+
+/**
+ * Las letras del primer pantallazo, adentro del HTML (Sebas, 23/10).
+ *
+ * El titulo, la marca y el precio usan Melodrama y Boska itálica. Si llegan
+ * como archivos aparte, el navegador dibuja primero con la letra de respaldo
+ * y despues la cambia (se ve), o hay que esperarlas (cuesta tiempo y compite
+ * con la foto del hero). Aca se recortan a los caracteres que esas lineas usan
+ * de verdad (salen del marcado recien dibujado: si cambia el titulo, cambia el
+ * recorte) y se embeben como 'Melodrama Primera' y 'Boska Primera' (recta e
+ * itálica). Pesan unos 8 kB en total. El hero y la barra las ponen primero en su font-family; cualquier
+ * caracter que no este lo pone la fuente completa, que sigue cargando como
+ * siempre para el resto de la pagina.
+ */
+{
+  const texto = (re) => [...marcado.matchAll(re)].map((m) => m[1].replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, ' ')).join('');
+  const titulo = texto(/<h1[^>]*>([\s\S]*?)<\/h1>/g);
+  const marca = texto(/class="_marca_[^"]*"[^>]*>([\s\S]*?)<\/a>/g);
+  if (!titulo.trim() || !marca.trim()) {
+    console.error('  no se encontro el titulo o la marca en el marcado para recortar las letras; se aborta');
+    process.exit(1);
+  }
+  const numeros = 'Desde $0123456789.,';
+  const cara = async (archivo, caracteres, familia, peso, estilo) => {
+    const fuente = fs.readFileSync(path.join(RAIZ, 'public', 'fonts', archivo));
+    const recorte = await subsetFont(fuente, caracteres, { targetFormat: 'woff2' });
+    return { css: `@font-face{font-family:'${familia}';font-style:${estilo};font-weight:${peso};font-display:swap;src:url(data:font/woff2;base64,${recorte.toString('base64')}) format('woff2')}`, kb: recorte.length };
+  };
+  // La marca va en Melodrama; el titulo en Boska recta (la que mas se notaba
+  // cambiar: llegaba despues de cargar la pagina) y su segunda linea, el
+  // precio y "Grupo Wolf" en Boska itálica.
+  const melodrama = await cara('melodrama-600.woff2', marca, 'Melodrama Primera', 600, 'normal');
+  const recta = await cara('boska-500.woff2', titulo, 'Boska Primera', '451 800', 'normal');
+  const italica = await cara('boska-italic-400.woff2', titulo + numeros + 'Grupo Wolf', 'Boska Primera', '300 700', 'italic');
+  html = html.replace('</head>', `<style>${melodrama.css}${recta.css}${italica.css}</style>\n  </head>`);
+  const k = (x) => (x.kb / 1024).toFixed(1);
+  console.log(`  letras del primer pantallazo embebidas: Melodrama ${k(melodrama)} kB, Boska ${k(recta)} kB, Boska itálica ${k(italica)} kB`);
+}
 
 /**
  * El CSS se parte en dos: lo que hace falta para dibujar la primera pantalla va

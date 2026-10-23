@@ -47,8 +47,16 @@
   display: flex; flex-direction: column;
 }
 
-.titulo {
-  font-family: var(--f-titulo); font-weight: 600;
+.titulo { font-weight: 600; }
+/* La letra del titulo es Boska (la de los nombres), no Melodrama: la regla
+   global .tienda h1 le ganaba a .titulo y asi quedo, y asi lo aprobo Sebas.
+   Ahora se dice a proposito, con :global(.tienda) para empatar. 'Boska
+   Primera' son las mismas letras recortadas a lo que dice el hero y embebidas
+   en el HTML (scripts/prerender.mjs): antes la Boska recta llegaba recien
+   despues de cargar la pagina (fuentes-diferidas.css) y el titulo cambiaba de
+   letra a la vista. Lo que no este en el recorte lo pone la fuente completa. */
+:global(.tienda) .titulo {
+  font-family: 'Boska Primera', var(--f-display);
   letter-spacing: -0.01em; line-height: 0.95;
   color: var(--crema);
   text-shadow: 0 2px 30px rgba(30, 6, 10, 0.55);
@@ -58,7 +66,7 @@
 /* El giro del titular en la italica de Boska (Melodrama no trae italica). Un
    punto mas chica: Boska es mas ancha y de ojo mas alto. */
 .lineaItalica {
-  font-family: var(--f-quote); font-style: italic; font-weight: 400;
+  font-family: 'Boska Primera', var(--f-quote); font-style: italic; font-weight: 400;
   font-size: 0.86em; letter-spacing: -0.005em;
 }
 
@@ -82,7 +90,7 @@
   display: block;
   /* En la italica de Boska, la misma del giro del titulo: el cero de
      Melodrama viene cruzado y un precio puede tenerlo. */
-  font-family: var(--f-quote); font-style: italic; font-weight: 400;
+  font-family: 'Boska Primera', var(--f-quote); font-style: italic; font-weight: 400;
   font-size: 2rem; line-height: 1; letter-spacing: -0.005em;
   margin-bottom: 8px;
   font-variant-numeric: lining-nums tabular-nums;
@@ -213,12 +221,6 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   .lineaWrap:nth-child(3) .linea { animation-delay: 0.28s; }
   .bajada { animation: heroSube 0.7s var(--sal) 0.42s both; }
   .compra { animation: heroSube 0.7s var(--sal) 0.55s both; }
-  /* Hasta que llegan las fuentes (clase "fe" del script de index.html), la
-     entrada queda quieta en su primer cuadro: el titulo tapado, la bajada y
-     el boton transparentes. Despues arranca todo junto, con la letra buena. */
-  :global(html.fe) .linea,
-  :global(html.fe) .bajada,
-  :global(html.fe) .compra { animation-play-state: paused; }
 }
 
 /* Parallax leve (rediseño D, pedido de Sebas): al bajar, la escena se queda

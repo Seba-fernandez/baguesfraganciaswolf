@@ -1,4 +1,4 @@
-/* Los que siempre salen (rediseño D, plano 4): el clímax. Banda vino entera,
+/* Los más pedidos (antes "Los que siempre salen"; rediseño D, plano 4): el clímax. Banda vino entera,
    con una sola luz arriba, como la pared del hero. Una fila sin marco, a
    sangre en el celular. */
 .section {
@@ -9,6 +9,40 @@
   padding-block: clamp(72px, 10vw, 140px) clamp(64px, 9vw, 120px);
 }
 .marco { position: relative; }
+
+/* La banda que se abre (Sebas, 23/10). Entre dos secciones de papel, el vino
+   entra angosto, con las esquinas redondas y un margen de papel a los
+   costados; se abre hasta el borde mientras la seccion llega al centro de la
+   pantalla y se vuelve a cerrar al irse. Se anima solo el fondo (un ::before
+   con el degrade, sin fotos adentro): el contenido no se mueve ni se recorta,
+   y el navegador no repinta mas que un degrade. Va atada al scroll
+   (animation-timeline: view()), sin JavaScript: no hay nada que se trabe ni
+   que pelee con el dedo. Donde no existe (Firefox hoy) o con movimiento
+   reducido, la banda queda abierta, como siempre. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .section {
+      position: relative; isolation: isolate;
+      background: var(--arena) 0 0 / 180px 180px, var(--papel);
+    }
+    .section::before {
+      content: ''; position: absolute; inset: 0; z-index: -1;
+      background:
+        radial-gradient(60% 46% at 50% 18%, rgba(158, 35, 53, 0.42), rgba(158, 35, 53, 0) 72%),
+        var(--vino);
+      animation: banda-abre linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+@keyframes banda-abre {
+  0%, 100% { clip-path: inset(0 var(--banda-margen, 14px) round var(--banda-radio, 26px)); }
+  32%, 68% { clip-path: inset(0 0 round 0); }
+}
+@media (min-width: 780px) {
+  .section { --banda-margen: clamp(20px, 2.6vw, 40px); --banda-radio: 36px; }
+}
 
 .head { margin-bottom: clamp(24px, 4vw, 44px); }
 :global(.tienda) .titulo {

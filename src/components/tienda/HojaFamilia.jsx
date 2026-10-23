@@ -9,7 +9,7 @@ import ProductCard from './ProductCard';
 import s from './HojaFamilia.module.css';
 
 /**
- * "¿Qué te gusta oler?" abre esta hoja encima de la portada (Sebas, 23/10).
+ * Las familias de la portada ("¿Con cuál te identificás?") abren esta hoja encima de la portada (Sebas, 23/10).
  * Antes cada familia llevaba a /catalogo?familia= y, al cambiar de pagina, por
  * un instante se veia el pie: parecia un error. Ahora la hoja sube desde
  * abajo como la ficha, con las mismas tarjetas del catalogo, y una capa opaca

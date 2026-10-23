@@ -149,6 +149,32 @@
 }
 @media (min-width: 1100px) { .grid { gap: 20px; } }
 
+/* Entrada de las tarjetas (Sebas, 23/10): suben de a una, 40 ms entre cada
+   una, mientras bajan las fotos. Solo opacidad y transform, que no mueven el
+   resto de la pagina ni obligan a recalcular nada. Cada tarjeta lo hace una
+   vez, al montarse: las 12 de "Ver 12 mas" arrancan su propia cuenta desde
+   cero (12n + k) y las que ya estaban no se mueven. Empieza en 0,01 y no en
+   0: una tarjeta transparente no cuenta como pintada para el LCP. Con
+   "backwards" y no "both": al terminar suelta el transform y vuelve a andar
+   el levantarse de la tarjeta con el mouse. */
+.entra > * { animation: tarjeta-sube 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+.entra > :nth-child(12n + 2) { animation-delay: 40ms; }
+.entra > :nth-child(12n + 3) { animation-delay: 80ms; }
+.entra > :nth-child(12n + 4) { animation-delay: 120ms; }
+.entra > :nth-child(12n + 5) { animation-delay: 160ms; }
+.entra > :nth-child(12n + 6) { animation-delay: 200ms; }
+.entra > :nth-child(12n + 7) { animation-delay: 240ms; }
+.entra > :nth-child(12n + 8) { animation-delay: 280ms; }
+.entra > :nth-child(12n + 9) { animation-delay: 320ms; }
+.entra > :nth-child(12n + 10) { animation-delay: 360ms; }
+.entra > :nth-child(12n + 11) { animation-delay: 400ms; }
+.entra > :nth-child(12n + 12) { animation-delay: 440ms; }
+@keyframes tarjeta-sube {
+  from { opacity: 0.01; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .entra > * { animation: none; } }
+
 /* "Ver 12 más (quedan 76)": el vidrio claro, a todo el ancho de la grilla. */
 .verMasCaja { display: flex; justify-content: center; margin-top: 28px; }
 .verMas { width: 100%; max-width: 420px; }

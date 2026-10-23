@@ -1,5 +1,8 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigationType } from 'react-router-dom';
+import { precargarCatalogoCuandoConvenga } from './precargaCatalogo.js';
+// En el prerender no hay pantalla: ahi va el useEffect comun, que no avisa.
+const useAntesDePintar = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 import { alScroll, medirDeNuevo } from '../../lib/alScroll.js';
 import { montarVidrioLiquido } from '../../lib/vidrioLiquido';
 import { montarScrollSuave, irASeccion } from '../../lib/scrollSuave.js';
@@ -39,7 +42,21 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
   // Chromium de escritorio; ver src/lib/vidrioLiquido.js).
   useEffect(() => montarVidrioLiquido(raiz.current), []);
 
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
+  const tipoNavegacion = useNavigationType();
+
+  // El catalogo se trae antes de que lo pidan (ver precargaCatalogo.js).
+  useEffect(() => precargarCatalogoCuandoConvenga(), []);
+
+  // Al cambiar de pagina con un link, arriba de todo ANTES de pintar: si no,
+  // por un cuadro se veia la pagina nueva parada a la altura de la vieja (en
+  // el catalogo, el pie con el aviso). "Atras" (POP) y los links a una
+  // seccion (#como) se manejan aparte.
+  const primera = useRef(true);
+  useAntesDePintar(() => {
+    if (primera.current) { primera.current = false; return; }
+    if (tipoNavegacion !== 'POP' && !hash) window.scrollTo(0, 0);
+  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Scroll suave con la ruedita, solo en escritorio y despues de cargar.
   useEffect(() => montarScrollSuave(), []);

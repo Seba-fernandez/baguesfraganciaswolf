@@ -27,7 +27,7 @@ function HojaConCarrito({ producto, onClose, ...resto }) {
 const ProductModal = lazy(() => import('./ProductModal'));
 // La hoja de tamanos tambien se carga al abrirse por primera vez.
 const HojaTamanos = lazy(() => import('./HojaTamanos'));
-// La hoja de una familia ("¿Qué te gusta oler?"), igual.
+// La hoja de una familia ("¿Con cuál te identificás?"), igual.
 const HojaFamilia = lazy(() => import('./HojaFamilia'));
 
 // Marca de esta carga de la pagina. La hoja de tamanos se abre con una entrada

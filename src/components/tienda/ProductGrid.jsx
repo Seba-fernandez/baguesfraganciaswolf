@@ -304,7 +304,7 @@ export default function ProductGrid({
         </div>
       ) : (
         <>
-          <div className={s.grid}>
+          <div className={`${s.grid} ${s.entra}`}>
             {/* La primera fila (hasta 4 columnas) baja la foto enseguida y la
                 primera con prioridad alta: es el LCP de /catalogo. Solo en la
                 primera pagina, que es la que se ve al entrar. */}

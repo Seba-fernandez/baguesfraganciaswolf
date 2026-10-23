@@ -63,10 +63,15 @@ const SIZES_TARJETA = '(max-width: 767px) 46vw, (max-width: 1100px) 30vw, 310px'
  * que ya bajo la tarjeta: la ficha nunca se abre con el fondo solo. La grande
  * aparece encima, en el mismo encuadre, apenas se termina de dibujar.
  */
-export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.tarjeta, linea, sizes = SIZES_TARJETA, prioridad = 0, previa = false }) {
+export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.tarjeta, linea, sizes = SIZES_TARJETA, prioridad = 0, previa = false, aparece = false }) {
   const imagen = src ?? (producto?.imagen_url || fotoDe(producto, linea));
   const [lista, setLista] = useState(false);
   const chica = previa && imagen?.startsWith('/perfumes/') ? fotoChica(imagen) : null;
+  // `aparece`: la tarjeta del catalogo. La foto sube de opacidad cuando
+  // termina de bajar, sobre el vino de la pared, en vez de dibujarse a
+  // pedazos. La que ya estaba en cache se ve enseguida (ver el ref). La foto
+  // del LCP (prioridad 2) no: una imagen transparente no cuenta como pintada.
+  const fundido = Boolean(chica) || (aparece && prioridad < 2);
 
   if (imagen) {
     // Todas las fotos del pipeline salen a 3:4 y ya traen su fondo (el estudio
@@ -86,9 +91,9 @@ export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.ta
           loading={prioridad ? 'eager' : 'lazy'}
           {...(prioridad > 1 ? { fetchpriority: 'high' } : {})}
           decoding="async"
-          className={`${s.img} ${chica && !lista ? s.oculta : ''}`}
-          onLoad={chica ? () => setLista(true) : undefined}
-          ref={chica ? (el) => { if (el?.complete && el.naturalWidth && !lista) setLista(true); } : undefined}
+          className={`${s.img} ${aparece ? s.suave : ''} ${fundido && !lista ? s.oculta : ''}`}
+          onLoad={fundido ? () => setLista(true) : undefined}
+          ref={fundido ? (el) => { if (el?.complete && el.naturalWidth && !lista) setLista(true); } : undefined}
         />
       </div>
     );

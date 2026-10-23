@@ -315,7 +315,7 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
   Vercel, salvo `/catalogo`, que tiene su propia cáscara (`dist/catalogo/`,
   regla aparte en `vercel.json`, antes de la general). `main.jsx` solo hidrata
   en `/`; en `/catalogo` monta encima de la cáscara sin vaciarla (espera el
-  chunk del catálogo, ver `precargarCatalogo` en `App.jsx`); en otra ruta vacía
+  chunk del catálogo, ver `components/tienda/precargaCatalogo.js`); en otra ruta vacía
   el `#root` y monta. `vite preview` no lee `vercel.json` y contesta
   `/catalogo` con la portada: para probar en local, `node scripts/qa/servir.mjs`.
 - **Fotos sin variantes = tarjetas vacías.** Vercel contesta un archivo que no
@@ -409,6 +409,13 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
   local las dos versiones intercaladas (la otra en un `git worktree`, servida
   con `PORT=4174 node scripts/qa/servir.mjs`) o medir producción después de
   publicar.
+- **Un `Suspense` con `fallback={null}` deja ver el pie.** Mientras baja el
+  chunk de una página, la página mide solo lo que mide el pie y el navegador
+  queda parado ahí. El catálogo se precarga, sube arriba antes de pintar y
+  su espera es una página de papel de `100dvh`.
+- **Una animación con `fill-mode: both` pisa el `:hover`.** El `transform`
+  final queda aplicado por la animación y le gana a la regla normal: la
+  entrada de las tarjetas va con `backwards`.
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.

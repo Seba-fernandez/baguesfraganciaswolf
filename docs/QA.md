@@ -264,6 +264,19 @@ sale como `5493515551234`). Pruebas sin navegador: `datos.test.mjs` (56
 casos). La base se probó con los mismos casos en una transacción que se
 deshace y, ya aplicada, desde afuera con la clave pública.
 
+### Rediseño D, quinta vuelta (23 de octubre de 2026)
+
+- **Pantallazo al entrar al catálogo** (visto por Sebas en el celular):
+  durante la carga del chunk la página medía 1122 px y el pie con el aviso
+  tapaba la pantalla. Causa: `Suspense fallback={null}` y el scroll a cero
+  recién al montar el catálogo. Arreglo: precarga en rato libre y al apoyar
+  el dedo, scroll arriba antes de pintar, y una cáscara de papel de
+  `100dvh` como espera. Prueba (Playwright, 390 px, tocando el botón del
+  hero): con red rápida y con red lenta, tocando enseguida o esperando, el
+  pie no aparece en ningún cuadro.
+- Banco local **86 chequeos, 0 fallan**; `motores.py` sin fallas en Safari,
+  Chrome y Firefox a 5 anchos.
+
 ### Rediseño D, segunda vuelta (23 de octubre de 2026)
 
 Lo que vio Sebas en la vista previa y en el iPhone de su novia, y lo que salió

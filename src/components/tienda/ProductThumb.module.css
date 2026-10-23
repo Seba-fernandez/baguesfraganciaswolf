@@ -19,6 +19,7 @@
    el cambio no se nota. La grande sigue en su lugar mientras baja. */
 .conPrevia { background-size: cover; background-position: 50% 42%; }
 .oculta { opacity: 0; }
+.suave { transition-duration: var(--dur-slow), 0.45s; }
 
 /* Placeholder tipografico. Tres tonos cálidos, para que las tarjetas sin foto
    no se lean como una pared plana. */

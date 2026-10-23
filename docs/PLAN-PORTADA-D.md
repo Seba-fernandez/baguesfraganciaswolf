@@ -115,6 +115,33 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
 - **Rendimiento:** un oyente de scroll y un IntersectionObserver para toda la
   tienda.
 
+## Quinta vuelta (23/10, lo que vio Sebas en el video)
+
+- **El pantallazo del catálogo:** al tocar "Catálogo", la portada se iba
+  antes de que llegara el catálogo; la página medía lo que mide el pie y se
+  veía el aviso legal un instante (segundos con red lenta). Ahora el chunk se
+  pide en un rato libre después de cargar y apenas el dedo apoya en un link
+  al catálogo (`components/tienda/precargaCatalogo.js`); la página nueva
+  arranca arriba antes de pintar (`TiendaLayout`), y si aun así tarda se ve
+  una página de papel del alto de la pantalla, no el pie. Probado con red
+  rápida y con red lenta (400 ms, 50 kB/s): el pie no aparece nunca.
+- **Entrada del catálogo:** las tarjetas suben de a una, 40 ms entre cada
+  una, solo con opacidad y transform; las 12 de "Ver 12 más" arrancan su
+  propia cuenta. La foto aparece suave cuando termina de bajar, sobre el vino
+  de la pared. Con movimiento reducido, nada se mueve.
+- **La banda que se abre:** "Los más pedidos" entra angosta, con un margen de
+  papel y esquinas redondas, se abre hasta el borde al llegar al centro y se
+  vuelve a cerrar al irse. Atado al scroll con CSS (`animation-timeline:
+  view()`), sin JavaScript, sin enganche ni snap; se anima solo el fondo, el
+  contenido queda quieto. Donde no existe (Firefox hoy) queda abierta, como
+  antes.
+- **Títulos:** "Los más pedidos" (antes "Los que siempre salen") y "¿Con cuál
+  te identificás?" con "Elegí la familia que te gusta oler, para vos o para
+  regalar."
+- **Vidrio de iOS en flechas y botones:** espera las capturas de Sebas (no
+  llegaron con el mensaje). El problema sigue: sobre papel el vidrio se
+  aplana y casi no se ve (el botón de volver arriba, por ejemplo).
+
 ## Guion de la portada
 
 | # | Sección | Luz | Qué cambia |

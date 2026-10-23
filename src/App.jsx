@@ -18,11 +18,16 @@ import HomeScreen from './components/tienda/HomeScreen';
 // pantalla. Con el módulo ya en memoria, el lazy lo entrega en el mismo render
 // (un `then` que contesta en el acto, que React resuelve sin suspender). El
 // render del build usa lo mismo para dibujar la cáscara.
-let moduloCatalogo = null;
-export const precargarCatalogo = () =>
-  import('./components/tienda/CatalogoScreen').then((m) => (moduloCatalogo = m));
+import { precargarCatalogo, moduloCatalogo } from './components/tienda/precargaCatalogo.js';
+export { precargarCatalogo };
 const CatalogoScreen = lazy(() =>
-  moduloCatalogo ? { then: (listo) => listo(moduloCatalogo) } : precargarCatalogo()
+  moduloCatalogo() ? { then: (listo) => listo(moduloCatalogo()) } : precargarCatalogo()
+);
+
+// Si aun asi el catalogo tarda (red muy lenta), se ve una pagina de papel del
+// alto de la pantalla, no la portada vaciada con el pie arriba.
+const EsperaCatalogo = () => (
+  <section className="dia" style={{ minHeight: '100dvh' }} aria-busy="true" />
 );
 
 // El panel entero en un chunk aparte (contextos, sesión, base de datos,
@@ -45,7 +50,7 @@ export default function App() {
         <Route
           path="/catalogo"
           element={
-            <Suspense fallback={null}>
+            <Suspense fallback={<EsperaCatalogo />}>
               <CatalogoScreen />
             </Suspense>
           }

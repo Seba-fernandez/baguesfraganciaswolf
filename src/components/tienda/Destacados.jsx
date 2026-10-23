@@ -10,7 +10,7 @@ import ProductThumb from './ProductThumb';
 import s from './Destacados.module.css';
 
 /**
- * Los que siempre salen (rediseño D, plano 4: el clímax). La sección entera
+ * Los más pedidos (antes "Los que siempre salen"; rediseño D, plano 4: el clímax). La sección entera
  * del vino de la marca, como la banda roja de NOIR, con las fotos de producto
  * sobre la misma pared del hero. El vidrio sobre las tarjetas del rediseño C
  * se sacó: Sebas lo sintió pegado encima; el vidrio vive solo en el hero.

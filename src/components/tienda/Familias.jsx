@@ -7,7 +7,7 @@ import { FAMILIAS_PORTADA } from '../../config/contenido';
 import s from './Familias.module.css';
 
 /**
- * "¿Qué te gusta oler?" (rediseño C). Las cinco familias del filtro como
+ * "¿Con cuál te identificás?" (antes "¿Qué te gusta oler?", rediseño C). Las cinco familias del filtro como
  * ventanas con la silueta del frasco Bagués y el ingrediente detrás del vidrio
  * acanalado (las imágenes las hornea el rediseño: public/familias/). Cada una
  * lleva al catálogo ya filtrado (?familia=). Es la puerta para quien no sabe

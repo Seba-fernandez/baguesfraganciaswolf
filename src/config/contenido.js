@@ -57,8 +57,10 @@ export const INICIO = {
  * en public/familias/ (sin el ancho).
  */
 export const FAMILIAS_PORTADA = {
-  titulo: '¿Qué te gusta oler?',
-  bajada: 'Para vos o para regalar, empezá por lo que te gusta.',
+  // Sebas, 23/10: la pregunta invita a elegirse, y la bajada arranca con el
+  // verbo de lo que hay que hacer.
+  titulo: '¿Con cuál te identificás?',
+  bajada: 'Elegí la familia que te gusta oler, para vos o para regalar.',
   archivo: {
     frescos: 'citricos', florales: 'florales', dulces: 'dulces', amaderados: 'amaderados', ambar: 'ambar',
   },
@@ -99,7 +101,7 @@ export const DUDA = {
 };
 
 export const DESTACADOS = {
-  titulo: 'Los que siempre salen',
+  titulo: 'Los más pedidos',
   bajada: 'Los que vuelan cada mes. Si dudás, empezá por acá.',
 };
 

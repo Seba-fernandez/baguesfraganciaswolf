@@ -57,7 +57,7 @@ export default function ProductCard({ producto, onOpen, onElegir, promos = {}, p
         onClick={() => onOpen(producto)}
         aria-label={`Ver ${titulo}`}
       >
-        <ProductThumb producto={producto} linea={base?.linea} prioridad={prioridad} />
+        <ProductThumb producto={producto} linea={base?.linea} prioridad={prioridad} aparece />
         {hayPromo && <span className={s.promoTag}>2x1</span>}
       </button>
 

@@ -21,6 +21,16 @@
 .fila::-webkit-scrollbar { display: none; }
 .item { scroll-snap-align: start; }
 
+/* Puntitos de la fila (celular): uno por familia; se marcan los de las
+   ventanas que se ven enteras. Solo indican, no se tocan. */
+.puntos { display: flex; justify-content: center; gap: 9px; margin-top: 18px; }
+.punto {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(42, 10, 14, 0.2);
+  transition: background var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.puntoOn { background: var(--vino); transform: scale(1.15); }
+
 .link {
   display: flex; flex-direction: column; gap: 6px;
   text-decoration: none; color: inherit;
@@ -71,6 +81,7 @@
 .link:focus-visible .ventana { outline: 2px solid var(--rubi); outline-offset: 3px; }
 
 @media (min-width: 768px) {
+  .puntos { display: none; }
   .fila {
     margin-inline: 0; padding-inline: 0; overflow: visible;
     grid-auto-flow: row; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px;

@@ -4,7 +4,8 @@
    prefers-reduced-motion la regla general de tienda.css baja las transiciones
    a 1 ms: aparece sin moverse. */
 .aviso {
-  position: fixed; z-index: 90;
+  /* Encima de la hoja de una familia (91), debajo de los dialogos (100). */
+  position: fixed; z-index: 95;
   left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
   max-width: 520px; margin-inline: auto;
   display: flex; align-items: center; gap: 10px;

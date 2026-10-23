@@ -1,0 +1,65 @@
+/* La hoja de una familia, encima de la portada. La capa tapa todo, tambien la
+   barra (z 90 > 30): tocar afuera cierra la hoja y no lleva al inicio. Opaca,
+   no negra (Sebas, 23/10). La ficha (z 100/101) se abre por encima. */
+.capa {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(24, 5, 6, 0.52);
+  animation: aparece 0.24s var(--ease) both;
+}
+.hoja {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 91;
+  max-height: 88dvh; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--papel);
+  padding: 0 16px calc(24px + env(safe-area-inset-bottom));
+  box-shadow: 0 -24px 60px -20px rgba(0, 0, 0, 0.55);
+  animation: sube 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@media (min-width: 820px) {
+  .hoja {
+    top: 50%; bottom: auto; left: 50%; right: auto;
+    width: min(1120px, 92vw); max-height: 86vh;
+    padding: 0 32px 32px;
+    transform: translate(-50%, -50%);
+    animation-name: sube-centro;
+  }
+}
+
+/* La cabecera queda pegada arriba mientras se bajan las tarjetas. */
+.cabeza {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  margin: 0 -16px 14px; padding: 20px 16px 14px;
+  background: var(--papel);
+  border-bottom: 1px solid var(--filete);
+}
+@media (min-width: 820px) { .cabeza { margin: 0 -32px 20px; padding: 28px 32px 18px; } }
+:global(.tienda) .titulo {
+  font-family: var(--f-titulo); font-weight: 600;
+  font-size: clamp(2rem, 5vw, 3rem); line-height: 1; color: var(--tinta); text-shadow: none;
+}
+.bajada { margin-top: 8px; font-family: var(--f-quote); font-style: italic; font-size: 1.02rem; color: var(--tinta-suave); }
+.cuenta { font-family: var(--f-texto, inherit); font-style: normal; font-size: 0.86rem; }
+.cerrar {
+  flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--papel-hondo); color: var(--tinta);
+  border: 1px solid var(--filete); cursor: pointer; font-size: 1rem;
+}
+.cerrar:hover { background: #e2d1c8; }
+.cerrar:focus-visible { outline: 2px solid var(--rubi); outline-offset: 2px; }
+
+/* Las mismas columnas que el catalogo: 2, 3 y 4. */
+.grilla { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 640px) { .grilla { gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+@keyframes aparece { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sube { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes sube-centro {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 24px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .capa, .hoja { animation-duration: 0.01s; }
+}

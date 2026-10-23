@@ -27,6 +27,8 @@ function HojaConCarrito({ producto, onClose, ...resto }) {
 const ProductModal = lazy(() => import('./ProductModal'));
 // La hoja de tamanos tambien se carga al abrirse por primera vez.
 const HojaTamanos = lazy(() => import('./HojaTamanos'));
+// La hoja de una familia ("¿Qué te gusta oler?"), igual.
+const HojaFamilia = lazy(() => import('./HojaFamilia'));
 
 // Marca de esta carga de la pagina. La hoja de tamanos se abre con una entrada
 // propia en el historial (asi "atras" la cierra), y el estado de esa entrada
@@ -160,6 +162,22 @@ export default function TiendaShell() {
     setParams(conAroma(hojaProducto.slug), { replace: true, state: { ficha: true } });
   }, [hojaProducto, setParams]);
 
+  // La hoja de una familia, encima de la portada: vive en la direccion
+  // (/?familia=amaderados), como la ficha. Abrirla suma una entrada (marcada
+  // `familia`), asi "atras" o tocar afuera la cierra y la clienta queda donde
+  // estaba. La ficha que se abra desde ahi va por encima.
+  const familiaAbierta = location.pathname === '/' ? params.get('familia') : null;
+  const disparadorFamilia = useRef(null);
+  const abrirFamilia = useCallback((id) => {
+    disparadorFamilia.current = document.activeElement;
+    setParams((prev) => { const n = new URLSearchParams(prev); n.set('familia', id); return n; },
+      { state: { ...(location.state || {}), familia: true }, preventScrollReset: true });
+  }, [location.state, setParams]);
+  const cerrarFamilia = useCallback(() => {
+    if (location.state?.familia) navigate(-1);
+    else setParams((prev) => { const n = new URLSearchParams(prev); n.delete('familia'); return n; }, { replace: true, preventScrollReset: true });
+  }, [location.state, navigate, setParams]);
+
   // Ver una promo lleva al catálogo con ese filtro puesto (antes hacía scroll en
   // la misma página; ahora el catálogo es una página aparte).
   const verPromo = (grupo) => {
@@ -170,7 +188,7 @@ export default function TiendaShell() {
   const ctx = {
     products, loading, settings, promos,
     totalAromas, desde, lista, nombresAromas, heroProducto,
-    abrir, elegirTamano, abiertoId: abierto?.id ?? null,
+    abrir, elegirTamano, abiertoId: abierto?.id ?? null, abrirFamilia,
     promoActiva, setPromoActiva, verPromo,
   };
 
@@ -179,6 +197,20 @@ export default function TiendaShell() {
       <TiendaLayout
         settings={settings}
         onVerPromo={verPromo}
+        capa={familiaAbierta && products.length > 0 && (
+          <Suspense fallback={null}>
+            <HojaFamilia
+              familiaId={familiaAbierta}
+              products={products}
+              onClose={cerrarFamilia}
+              onOpen={abrir}
+              onElegir={elegirTamano}
+              promos={promos}
+              disparador={disparadorFamilia.current}
+              inert={abierto || hojaProducto ? '' : undefined}
+            />
+          </Suspense>
+        )}
         hoja={hojaProducto && !abierto && (
           <Suspense fallback={null}>
             <HojaConCarrito

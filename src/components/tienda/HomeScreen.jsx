@@ -26,7 +26,7 @@ export default function HomeScreen() {
   const {
     products, settings, promos, loading,
     totalAromas, desde, nombresAromas,
-    abrir, elegirTamano, verPromo,
+    abrir, elegirTamano, abrirFamilia, verPromo,
   } = useOutletContext();
 
   return (
@@ -41,7 +41,7 @@ export default function HomeScreen() {
         onOpen={abrir}
       />
       <Ciudades products={products} onOpen={abrir} />
-      <Familias />
+      <Familias onAbrir={abrirFamilia} />
       <Destacados products={products} onOpen={abrir} onElegir={elegirTamano} cargando={loading} />
       <Opiniones />
       <ComoFunciona settings={settings} products={products} />

@@ -72,6 +72,9 @@ export const FAMILIAS_PORTADA = {
     amaderados: 'Cedro, sándalo, vetiver',
     ambar: 'Ámbar, canela, especias',
   },
+  // La hoja que se abre al tocar una familia (encima de la portada).
+  cuenta: '{n} aromas',
+  cerrar: 'Cerrar',
 };
 
 export const DESTACADOS = {

@@ -21,7 +21,7 @@ const CartIcon = () => (
   </svg>
 );
 
-export default function TiendaLayout({ children, ficha = null, hoja = null, settings, onVerPromo }) {
+export default function TiendaLayout({ children, ficha = null, hoja = null, capa = null, settings, onVerPromo }) {
   const { count, open, setOpen, ultimo } = useCart();
   const [avisoVisible, setAvisoVisible] = useState(false);
   const raiz = useRef(null);
@@ -31,7 +31,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
   // Con la ficha o el cajón abiertos, el resto de la página queda inert: no se
   // puede tocar, Tab no se escapa del diálogo y el lector de pantalla no lee lo
   // de atrás. React 18 no conoce el atributo, por eso va como texto vacío.
-  const hayDialogo = open || Boolean(ficha) || Boolean(hoja);
+  const hayDialogo = open || Boolean(ficha) || Boolean(hoja) || Boolean(capa);
   const inert = hayDialogo ? '' : undefined;
 
   // Lente de vidrio liquido en el canto de cada superficie de vidrio (solo
@@ -178,6 +178,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
       <VolverArriba oculto={hayDialogo || avisoVisible} />
       <AvisoAgregado onVisible={setAvisoVisible} />
 
+      {capa}
       {ficha}
       {hoja}
 

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import useReveal from '../../hooks/useReveal';
+import useTrasCarga from '../../hooks/useTrasCarga';
 import { CIUDADES } from '../../config/contenido';
 import { ciudadesDe } from '../../lib/producto';
 import { CIUDADES_ELEGIDAS } from '../../config/ajustes';
@@ -19,6 +20,7 @@ import s from './Ciudades.module.css';
  */
 export default function Ciudades({ products = [], onOpen }) {
   const ref = useReveal();
+  const fotos = useTrasCarga();
   const filas = ciudadesDe(products, 4, CIUDADES_ELEGIDAS);
   const vacias = filas.length ? [] : [0, 1, 2, 3];
 
@@ -49,7 +51,7 @@ export default function Ciudades({ products = [], onOpen }) {
                   aria-label={CIUDADES.abrir.replace('{perfume}', f.perfume).replace('{ciudad}', f.ciudad)}
                 >
                   <span className={s.caja} aria-hidden="true">
-                    {foto && <img src={foto} alt="" width="360" height="480" loading="lazy" decoding="async" />}
+                    {foto && fotos && <img src={foto} alt="" width="360" height="480" loading="lazy" decoding="async" />}
                   </span>
                   <span className={s.ciudad}>{f.ciudad}</span>
                   <span className={s.dato}>

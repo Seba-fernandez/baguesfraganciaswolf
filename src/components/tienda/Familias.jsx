@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import useReveal from '../../hooks/useReveal';
+import useTrasCarga from '../../hooks/useTrasCarga';
 import { FAMILIAS } from '../../lib/familias';
 import { FAMILIAS_PORTADA } from '../../config/contenido';
 import s from './Familias.module.css';
@@ -19,6 +20,7 @@ import s from './Familias.module.css';
  */
 export default function Familias() {
   const ref = useReveal();
+  const fotos = useTrasCarga();
   return (
     <section className={`dia ${s.section}`} id="familias" ref={ref} aria-labelledby="familias-titulo">
       <div className="tw">
@@ -29,7 +31,7 @@ export default function Familias() {
           <li key={f.id} className={`${s.item} treveal`} style={{ transitionDelay: `${i * 70}ms` }}>
             <Link to={`/catalogo?familia=${f.id}`} className={s.link} data-qa="familia-portada">
               <span className={s.ventana}>
-                <img
+                {fotos && <img
                   src={`/familias/${FAMILIAS_PORTADA.archivo[f.id]}-240.webp`}
                   srcSet={`/familias/${FAMILIAS_PORTADA.archivo[f.id]}-240.webp 240w, /familias/${FAMILIAS_PORTADA.archivo[f.id]}-420.webp 420w`}
                   sizes="(max-width: 767px) 38vw, 180px"
@@ -38,7 +40,7 @@ export default function Familias() {
                   loading="lazy"
                   decoding="async"
                   className={s.frasco}
-                />
+                />}
               </span>
               <span className={s.nombre}>{f.nombre}</span>
               <span className={s.ejemplo}>{FAMILIAS_PORTADA.ejemplos[f.id]}</span>

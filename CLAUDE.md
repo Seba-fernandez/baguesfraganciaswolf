@@ -58,7 +58,8 @@ una clave secreta en un archivo.**
 
 React 18, Vite 5, React Router 7. CSS Modules y variables CSS, sin Tailwind ni
 biblioteca de componentes. PostgreSQL en Supabase con RLS en todas las tablas.
-Portada pre-generada como HTML en el build. Movimiento en CSS nativo.
+Portada pre-generada como HTML en el build. Movimiento en CSS nativo, salvo
+Lenis (5,7 kB) para la ruedita en escritorio (`lib/scrollSuave.js`).
 
 ```
 src/
@@ -86,6 +87,7 @@ src/
     producto.js     presentaciones, título, línea de cada tamaño, frase de la
                     ficha, pirámide, notas cortas de la tarjeta, ahorro
     promos.js       el 2x1 por grupos
+    scrollSuave.js  Lenis en escritorio y irASeccion (saltos a #seccion medidos)
     whatsapp.js     el mensaje del pedido
     vidrioLiquido.js  la lente del vidrio de la tienda
   data/           constantes y fotos.js (índice generado)
@@ -93,6 +95,8 @@ src/
 scripts/
   fotos/          componer.mjs + fuentes.json: el pipeline de fotos
   fondo/          dibuja la escena del hero y la textura
+  rediseno/       hero horneado, previa del hero, pared de productos, og.jpg
+  video/          graba la tienda cuadro por cuadro y arma el antes/después
   prerender.mjs   pega la portada en dist/index.html y la cáscara de /catalogo
                   en dist/catalogo/index.html
 supabase/migrations/  esquema, RLS y la función de pedido

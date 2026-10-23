@@ -63,6 +63,30 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
   navegadores (`scripts/qa/motores.py`).
 - **Seguridad:** revisión completa en `docs/SEGURIDAD.md`; CSP y HSTS sumados.
 
+## Tercera vuelta (23/10)
+
+- **Rendimiento sin bajar calidad.** Una previa del hero de 2,8 kB
+  (`hero_c_previa_195x422.webp`, `scripts/rediseno/previa_hero.py`) va dentro
+  del CSS y se pinta al instante debajo de la escena nítida. Pesa más de 0,05
+  bits por píxel, así Chrome la cuenta para el LCP: en red lenta, de 1,3 a
+  0,68 s, con la misma imagen final. Más esfuerzo de AVIF ahorraba 3 % y bajar
+  calidad perdía nitidez: descartado. Las fotos de ciudades y familias esperan
+  al evento load (`useTrasCarga`).
+- **Movimiento.** Lenis 1.3.26 (5,7 kB) suaviza la ruedita del mouse: solo
+  escritorio con mouse, desde 900 px, después del load y sin "reducir
+  movimiento"; se frena con un diálogo abierto (`lib/scrollSuave.js`). El
+  hero tiene un parallax leve atado al scroll, en CSS nativo. GSAP no hizo
+  falta.
+- **Saltos a una sección** (`#como`) bien medidos: `irASeccion` dibuja las
+  secciones con `content-visibility`, mide y corrige al llegar. 82 px debajo
+  de la barra en Safari, Chrome y Firefox.
+- **Favicon:** la B de Melodrama en crema sobre vino, como trazo en el SVG,
+  más PNG de 32 y apple-touch-icon. **og.jpg:** el hero a 1200 × 630 con sello,
+  título y bajada, sin botones ni precio (`scripts/rediseno/og.py`).
+- **Nombre y WhatsApp con reglas** en la tienda, el panel y la base
+  (`lib/datosCliente.js`, migración 0012; detalle en `docs/SEGURIDAD.md`).
+- **Video antes y después** para LinkedIn: `scripts/video/` (README ahí).
+
 ## Guion de la portada
 
 | # | Sección | Luz | Qué cambia |

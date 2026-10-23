@@ -20,7 +20,7 @@ tercero está acotado, con dos mejoras para autorizar.
 | Claves en el repo (que es público) | Bien. Ninguna clave secreta, en ningún commit |
 | Dependencias | Bien. `npm audit`: 0 vulnerabilidades |
 | Cabeceras del sitio | **Mejorado hoy**: política de contenido (CSP) y HSTS |
-| Pedidos falsos | Acotado. **Dos mejoras para autorizar** |
+| Pedidos falsos | Acotado. Las dos mejoras, **autorizadas y aplicadas el 23/10** |
 
 ## Lo que se revisó y cómo está
 
@@ -75,7 +75,13 @@ permisos de cámara, micrófono, ubicación ni pago. **Sumado hoy:**
 Probado con la política puesta: banco 84 de 84 y `motores.py` (Safari, Chrome y
 Firefox, 5 anchos), sin un solo bloqueo en la consola.
 
-## Para autorizar (tocan `crear_pedido_web`, que no se cambia sin OK)
+## Autorizado y aplicado el 23/10 (migración `20261023_0011`)
+
+A y B, con el OK de Sebas. Probado en una transacción que se deshace (cinco
+casos) y, ya aplicado, desde afuera con la clave pública: un ítem sin
+producto devuelve `item_invalido` sin escribir nada. C sigue opcional.
+
+## Lo que se propuso
 
 **A. Que un pedido no le cambie el nombre a una clienta.** Hoy, si alguien
 pide con el teléfono de otra persona, el nombre de esa clienta en el panel pasa

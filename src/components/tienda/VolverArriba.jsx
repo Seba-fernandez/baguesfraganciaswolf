@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { VOLVER_ARRIBA } from '../../config/contenido';
 import { VOLVER_ARRIBA_DESDE } from '../../config/ajustes';
+import { alScroll } from '../../lib/alScroll.js';
 import s from './VolverArriba.module.css';
 
 /**
@@ -15,12 +16,8 @@ import s from './VolverArriba.module.css';
 export default function VolverArriba({ oculto = false }) {
   const [visible, setVisible] = useState(false);
 
-  useEffect(() => {
-    const mirar = () => setVisible(window.scrollY > VOLVER_ARRIBA_DESDE);
-    mirar();
-    window.addEventListener('scroll', mirar, { passive: true });
-    return () => window.removeEventListener('scroll', mirar);
-  }, []);
+  // Una vez por cuadro, con el oyente compartido (lib/alScroll.js).
+  useEffect(() => alScroll((y) => setVisible(y > VOLVER_ARRIBA_DESDE)), []);
 
   function subir() {
     const brusco = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

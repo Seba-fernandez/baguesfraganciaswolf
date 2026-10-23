@@ -245,14 +245,17 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
     background-image: url('/hero/c/hero_c_780x1688.webp'), var(--previa);
     background-image: image-set(url('/hero/c/hero_c_780x1688.avif') type('image/avif'), url('/hero/c/hero_c_780x1688.webp') type('image/webp')), var(--previa);
     background-size: 100% auto;
-    background-position: 50% 0;
+    /* La escena sube 20 px: la repisa queda en 520 y el precio entra entero
+       en la zona oscura sin que el boton se salga del visor de Instagram. */
+    background-position: 50% -5.2vw;
   }
   .inner {
     position: absolute; inset: 0;
     padding-top: 24.6vw;      /* 96: sin sello, el titulo baja un poco y respira */
-    /* El precio y el boton bajan a la zona oscura, debajo de la repisa: el
-       precio ya no queda encima de las cajas (Sebas, 23/10). */
-    padding-bottom: 5.2vw;    /* 718 - 698 */
+    /* El precio y el boton van en la zona oscura, debajo de la repisa (el
+       precio ya no queda encima de las cajas, Sebas 23/10), y el boton
+       termina antes de 664: el alto del visor de Instagram. */
+    padding-bottom: 16.4vw;   /* 718 - 654 */
   }
   /* Todo centrado: la imagen del celular pone la ventana en el eje. */
   .inner { align-items: center; text-align: center; }
@@ -265,9 +268,9 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   .titulo { font-size: 13.3vw; }     /* 52 px a 390 */
   .bajada { margin-top: 3vw; font-size: 3.85vw; max-width: 19em; } /* 15; en em y no en ch: el ch cambia con la letra */
   .compra { margin-top: auto; }
-  .metaDesde { font-size: 9.7vw; }   /* 38 */
+  .metaDesde { font-size: 9.7vw; margin-bottom: 1vw; }   /* 38 */
   .meta { font-size: 3.6vw; }        /* 14 */
-  .acciones { margin-top: 3.6vw; justify-content: center; width: 100%; }
+  .acciones { margin-top: 2.8vw; justify-content: center; width: 100%; }
   .promos { display: none; }
 }
 

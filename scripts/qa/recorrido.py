@@ -1428,9 +1428,11 @@ def e3_b1(browser, base):
     # Rediseño D (22/10, aprobado por Sebas): el boton ya no va a todo el
     # ancho sino centrado entre dos trazos de plumilla. Se pide que sea grande
     # al dedo (200 px o mas de ancho, 48 o mas de alto) y que este centrado.
-    chk("E3-B1 844", "conversion", "alta", "390x844: un solo boton (>= 200x48, centrado entre dos trazos) y 'Como funciona' como enlace de texto",
+    # 23/10 (Sebas): "Como funciona" ya no se repite en el hero; queda en la
+    # barra. Se pide que el hero no lo vuelva a sumar.
+    chk("E3-B1 844", "conversion", "alta", "390x844: un solo boton (>= 200x48, centrado entre dos trazos) y sin un segundo 'Como funciona' (esta en la barra)",
         dentro(m, "cta") and m["ctaAncho"] >= 200 and m["ctaAlto"] >= 48 and m["ctaCentro"] is not None and abs(m["ctaCentro"]) <= 4 and m["trazos"] == 2
-        and bool(m["como"]) and not m["como"]["boton"] and m["como"]["href"] == "#como",
+        and not m["como"],
         f"boton {m['cta']} de {m['ctaAncho']}x{m['ctaAlto']} px, corrido {m['ctaCentro']} px del centro, trazos {m['trazos']}; como funciona: {m['como']}")
     filas = res["844"]["filas"]
     n = len(filas)
@@ -1449,9 +1451,10 @@ def e3_b1(browser, base):
     # (sin contar el filete de abajo).
     def linea(t):
         return len(t) >= 2 and max(a for a, _ in t) < min(b for _, b in t) and max(b for _, b in t) - min(a for a, _ in t) <= 30
-    una_linea = all(c and linea(t) for c, t, _ in sellos.values())
-    chk("E3-B1 sello", "visual", "media", "Sello GRUPO WOLF en una linea con 'Casa Bagués · Córdoba' al lado, mas chico (390 y 1440)",
-        una_linea and res["844"]["marcaPx"] <= 16,
+    # 23/10 (Sebas): el sello sale del hero; la marca ya esta en la barra y
+    # la bajada dice de donde viene el perfume.
+    chk("E3-B1 sello", "visual", "media", "Sin sello arriba del titulo (decision del 23/10): el hero respira",
+        all(not c for c, _, _ in sellos.values()),
         "; ".join(f"{k}: alto {c['h'] if c else '-'} px, tops {t}, marca {px:.1f} px" for k, (c, t, px) in sellos.items()))
     # Rediseño C: la escena es el hero entero (la imagen de 390x844 cortada
     # abajo); lo que importa es que el titular no se monte sobre la ventana

@@ -12,6 +12,28 @@ import { useEffect, useRef } from 'react';
  * MutationObserver watchea el DOM y engancha los .treveal que van
  * apareciendo, durante toda la vida del componente.
  */
+/**
+ * Un solo IntersectionObserver para toda la tienda: antes cada seccion armaba
+ * el suyo (siete u ocho en la portada). Mismo umbral para todos.
+ */
+let compartido = null;
+function observador() {
+  if (!compartido) {
+    compartido = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('trevealed');
+            compartido.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+    );
+  }
+  return compartido;
+}
+
 export default function useReveal() {
   const ref = useRef(null);
 
@@ -32,18 +54,7 @@ export default function useReveal() {
       return () => mo.disconnect();
     }
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('trevealed');
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
-    );
-
+    const io = observador();
     const observeNew = () => {
       root.querySelectorAll('.treveal:not(.trevealed)').forEach((el) => io.observe(el));
     };
@@ -53,7 +64,8 @@ export default function useReveal() {
     mo.observe(root, { childList: true, subtree: true });
 
     return () => {
-      io.disconnect();
+      // El observador es de todos: se dejan de mirar solo los de esta seccion.
+      root.querySelectorAll('.treveal:not(.trevealed)').forEach((el) => io.unobserve(el));
       mo.disconnect();
     };
   }, []);

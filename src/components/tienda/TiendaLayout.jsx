@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { alScroll, medirDeNuevo } from '../../lib/alScroll.js';
 import { montarVidrioLiquido } from '../../lib/vidrioLiquido';
 import { montarScrollSuave, irASeccion } from '../../lib/scrollSuave.js';
 import { useCart } from '../../contexts/CartContext';
@@ -80,9 +81,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
   // despues de que llegan los datos.
   const [luz, setLuz] = useState(pathname === '/' ? 'hero' : 'noche');
   useEffect(() => {
-    let cuadro = 0;
     const medir = () => {
-      cuadro = 0;
       const barra = document.querySelector('.tienda > header');
       const y = (barra?.offsetHeight || 74) + 2;
       const debajo = document.elementsFromPoint(Math.min(24, innerWidth - 1), y).find((e) => !e.closest('.tienda > header'));
@@ -92,15 +91,10 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
         : 'noche';
       setLuz((vieja) => (vieja === nueva ? vieja : nueva));
     };
-    const pedir = () => { if (!cuadro) cuadro = requestAnimationFrame(medir); };
-    pedir();
-    const t = setTimeout(pedir, 600); // el catalogo llega un rato despues
-    addEventListener('scroll', pedir, { passive: true });
-    addEventListener('resize', pedir);
-    return () => {
-      removeEventListener('scroll', pedir); removeEventListener('resize', pedir);
-      cancelAnimationFrame(cuadro); clearTimeout(t);
-    };
+    // Un solo oyente de scroll para toda la tienda (lib/alScroll.js).
+    const soltar = alScroll(medir);
+    const t = setTimeout(medirDeNuevo, 600); // el catalogo llega un rato despues
+    return () => { soltar(); clearTimeout(t); };
   }, [pathname]);
 
   useEffect(() => {

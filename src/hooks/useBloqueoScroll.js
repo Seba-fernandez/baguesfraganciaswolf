@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { frenarScrollSuave } from '../lib/scrollSuave.js';
 
 /**
  * Mientras un dialogo de la tienda esta abierto (la ficha, la hoja de
@@ -19,6 +20,7 @@ export default function useBloqueoScroll(activo = true) {
     if (!activo) return undefined;
     pedidos += 1;
     if (pedidos === 1) {
+      frenarScrollSuave(true);
       guardado = window.scrollY;
       const b = document.body.style;
       b.position = 'fixed';
@@ -38,6 +40,7 @@ export default function useBloqueoScroll(activo = true) {
       b.width = '';
       // Sin animacion: tiene que aparecer donde estaba, no viajar hasta ahi.
       window.scrollTo({ top: guardado, left: 0, behavior: 'instant' });
+      frenarScrollSuave(false);
     };
   }, [activo]);
 }

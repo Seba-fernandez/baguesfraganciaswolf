@@ -242,14 +242,38 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   .compra { animation: heroSube 0.7s var(--sal) 0.55s both; }
 }
 
+/* Parallax leve (rediseño D, pedido de Sebas): al bajar, la escena se queda
+   un poco atras, 9 % de su alto en la primera pantalla de scroll. Movimiento
+   atado al scroll del navegador (animation-timeline), sin JavaScript y en la
+   capa de composicion: no traba. Usa la propiedad `translate`, separada del
+   `transform` de la entrada, asi las dos conviven. Sin soporte, o con
+   movimiento reducido, la escena queda quieta. */
+@keyframes heroParallax { to { translate: 0 9%; } }
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .escena {
+      animation: heroEscena 1.6s var(--sal) both, heroParallax linear both;
+      animation-timeline: auto, scroll(root block);
+      animation-range: normal, 0 100vh;
+    }
+  }
+}
+
 /* ============================================================================
    CELULAR: la composición vertical de 390 x 844
    ============================================================================ */
 @media (max-width: 599px) {
   .caja { height: 184vw; } /* 718 de 844: botón hasta 660 y el enlace abajo */
   .escena {
-    background-image: url('/hero/c/hero_c_780x1688.webp');
-    background-image: image-set(url('/hero/c/hero_c_780x1688.avif') type('image/avif'), url('/hero/c/hero_c_780x1688.webp') type('image/webp'));
+    /* Dos capas: arriba la escena nitida; abajo, la previa (195 x 422, 2,8 kB)
+       que viene dentro del HTML y se pinta al instante, desenfocada por el
+       escalado. La nitida la tapa apenas llega. Pesa lo justo para que el
+       navegador la cuente como imagen real (mas de 0,05 bits por pixel): el
+       LCP se marca cuando aparece la escena, sin achicar la calidad final.
+       La regenera scripts/rediseno/previa_hero.py. */
+    --previa: url('data:image/webp;base64,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');
+    background-image: url('/hero/c/hero_c_780x1688.webp'), var(--previa);
+    background-image: image-set(url('/hero/c/hero_c_780x1688.avif') type('image/avif'), url('/hero/c/hero_c_780x1688.webp') type('image/webp')), var(--previa);
     background-size: 100% auto;
     background-position: 50% 0;
   }
@@ -317,8 +341,8 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
 /* Celular 3x (iPhone): la de 1170 x 2532. */
 @media (max-width: 599px) and (min-resolution: 2.5dppx) {
   .escena {
-    background-image: url('/hero/c/hero_c_1170x2532.webp');
-    background-image: image-set(url('/hero/c/hero_c_1170x2532.avif') type('image/avif'), url('/hero/c/hero_c_1170x2532.webp') type('image/webp'));
+    background-image: url('/hero/c/hero_c_1170x2532.webp'), var(--previa);
+    background-image: image-set(url('/hero/c/hero_c_1170x2532.avif') type('image/avif'), url('/hero/c/hero_c_1170x2532.webp') type('image/webp')), var(--previa);
   }
 }
 @media (min-width: 600px) and (min-resolution: 1.5dppx) {

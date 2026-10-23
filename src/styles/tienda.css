@@ -484,6 +484,20 @@
 .tbtn:disabled { opacity: 0.42; cursor: not-allowed; }
 .tbtn.wide { width: 100%; }
 
+/* ---------- scroll suave (Lenis, src/lib/scrollSuave.js) ----------
+   Lo que pide Lenis: que el navegador no anime por su cuenta mientras Lenis
+   anima, y frenar del todo cuando un dialogo lo detiene. */
+/* Saltar a #como o #ciudades deja la seccion abajo de la barra fija, no
+   tapada por ella (con o sin scroll suave). */
+.tienda main section[id] { scroll-margin-top: calc(var(--bar-h) + 8px); }
+/* Mientras se salta a una seccion, todas se dibujan para medir bien
+   (irASeccion en src/lib/scrollSuave.js). */
+.tienda.saltando > main > section { content-visibility: visible; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: clip; }
+
 /* ---------- luz de dia (rediseño D) ----------
    Una seccion de papel redefine los colores de la tienda para lo que tenga
    adentro (la tira del ciclo, links, focos): tinta en vez de hueso y rubi en

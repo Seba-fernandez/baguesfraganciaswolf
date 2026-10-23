@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { montarVidrioLiquido } from '../../lib/vidrioLiquido';
+import { montarScrollSuave, irASeccion } from '../../lib/scrollSuave.js';
 import { useCart } from '../../contexts/CartContext';
 // El cajón del pedido, igual que la ficha: se carga la primera vez que se abre.
 // Mientras tanto no existe ni su JavaScript ni su CSS, y no se ve nunca al
@@ -37,6 +38,33 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
   // Chromium de escritorio; ver src/lib/vidrioLiquido.js).
   useEffect(() => montarVidrioLiquido(raiz.current), []);
 
+  const { pathname } = useLocation();
+
+  // Scroll suave con la ruedita, solo en escritorio y despues de cargar.
+  useEffect(() => montarScrollSuave(), []);
+
+  // Los links a una seccion de la portada (#como, /#como): con la portada en
+  // pantalla, se va con irASeccion (medido bien, debajo de la barra). Si se
+  // llega desde otra pagina con #como, se hace lo mismo al montar.
+  useEffect(() => {
+    const alTocar = (e) => {
+      const a = e.target.closest?.('a[href*="#"]');
+      if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      const url = new URL(a.href, location.href);
+      if (url.pathname !== location.pathname || !url.hash) return;
+      if (irASeccion(decodeURIComponent(url.hash.slice(1)))) {
+        e.preventDefault();
+        history.replaceState(history.state, '', url.hash);
+      }
+    };
+    document.addEventListener('click', alTocar);
+    if (location.hash) {
+      const id = decodeURIComponent(location.hash.slice(1));
+      setTimeout(() => irASeccion(id, { suave: false }), 350);
+    }
+    return () => document.removeEventListener('click', alTocar);
+  }, [pathname]);
+
   // Apenas se abre una vez, el cajón queda montado para siempre: necesita seguir
   // vivo después de cerrarse para animar la salida.
   useEffect(() => { if (open) setPedidoUsado(true); }, [open]);
@@ -50,7 +78,6 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
   // cuadro de scroll (elementsFromPoint, una llamada por cuadro): con
   // IntersectionObserver no alcanzaba, porque el catalogo arma sus secciones
   // despues de que llegan los datos.
-  const { pathname } = useLocation();
   const [luz, setLuz] = useState(pathname === '/' ? 'hero' : 'noche');
   useEffect(() => {
     let cuadro = 0;

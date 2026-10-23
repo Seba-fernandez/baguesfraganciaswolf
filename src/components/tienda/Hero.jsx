@@ -53,11 +53,6 @@ export default function Hero({
 
       <div className={`tw ${s.inner}`}>
         <div className={s.texto}>
-          <p className={s.corona} data-hero="corona">
-            <span className={s.coronaMarca}>{INICIO.corona}</span>
-            <span className={s.coronaAval}>{INICIO.aval}</span>
-          </p>
-
           <h1 className={s.titulo}>
             {INICIO.titulo.map((linea, i) => (
               <span key={linea} className={s.lineaWrap}>
@@ -92,7 +87,6 @@ export default function Hero({
               </Link>
               <span className={`${s.trazo} ${s.trazoDer}`} aria-hidden="true" />
             </span>
-            <a href="#como" className={s.como} data-hero="como" data-qa="hero-como">{INICIO.verComo}</a>
           </div>
 
           {lista.length > 0 && (

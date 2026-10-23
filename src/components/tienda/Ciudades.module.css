@@ -39,9 +39,9 @@
 
 .link {
   display: grid; align-items: center;
-  grid-template-columns: 92px minmax(0, 1fr);
-  grid-template-areas: 'caja ciudad' 'caja dato';
-  column-gap: 16px; row-gap: 4px;
+  grid-template-columns: 92px minmax(0, 1fr) 24px;
+  grid-template-areas: 'caja ciudad flecha' 'caja dato flecha';
+  column-gap: 16px; row-gap: 6px;
   padding-block: 14px;
   color: inherit;
   transition: background-color var(--dur) var(--ease);
@@ -62,7 +62,15 @@
   overflow-wrap: anywhere;
   transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
-.dato { grid-area: dato; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; min-height: 1.4em; }
+/* El perfume pegado debajo de la ciudad y el precio siempre abajo: la
+   relacion "Granada es La Bomba" se lee de un vistazo (Sebas, 23/10). */
+.ciudad { align-self: end; }
+.dato { grid-area: dato; align-self: start; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-height: 1.4em; }
+.flecha {
+  grid-area: flecha; justify-self: end;
+  color: var(--rubi); opacity: 0.55;
+  transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
 .perfume {
   font-family: var(--f-quote); font-style: italic; font-weight: 400;
   font-size: 1.12rem; line-height: 1.2; color: var(--tinta);
@@ -75,6 +83,7 @@
 
 @media (hover: hover) {
   .link:hover .ciudad { color: var(--rubi); transform: translateX(6px); }
+  .link:hover .flecha { opacity: 1; transform: translateX(4px); }
   .link:hover .caja img { transform: scale(1.05); }
 }
 .link:focus-visible { outline: 2px solid var(--rubi); outline-offset: 4px; }
@@ -91,17 +100,15 @@
 .todas:hover { text-decoration-thickness: 2px; }
 .todas:focus-visible { outline: 2px solid var(--rubi); outline-offset: 3px; }
 
-/* Escritorio: tres columnas de carta. La ciudad ocupa el centro; el perfume y
-   el precio, alineados a la derecha. */
+/* Escritorio: la misma lectura que en el celular, mas grande. Antes el
+   perfume iba a la derecha, a 600 px de su ciudad, y el ojo no los unia. */
 @media (min-width: 760px) {
   .link {
-    grid-template-columns: clamp(120px, 11vw, 168px) minmax(0, 1fr) minmax(200px, auto);
-    grid-template-areas: 'caja ciudad dato';
-    column-gap: clamp(20px, 3vw, 40px);
+    grid-template-columns: clamp(120px, 11vw, 168px) minmax(0, 1fr) 40px;
+    column-gap: clamp(20px, 3vw, 40px); row-gap: 10px;
     padding-block: 18px;
   }
-  .dato { flex-direction: column; align-items: flex-end; text-align: right; gap: 4px; }
   .perfume { font-size: 1.4rem; }
-  .es { font-style: normal; font-family: var(--f-body); font-size: 0.86em; color: var(--tinta-suave); }
-.precio { font-size: 0.92rem; }
+  .precio { font-size: 0.92rem; }
+  .flecha { width: 30px; height: 30px; }
 }

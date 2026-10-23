@@ -47,25 +47,6 @@
   display: flex; flex-direction: column;
 }
 
-/* ---------- el sello ----------
-   Grupo Wolf en mayúsculas espaciadas (la única etiqueta así de la portada) y
-   el aval de Bagués al lado, en una sola línea (E3-B1). */
-.corona {
-  display: flex; flex-wrap: nowrap; align-items: baseline; gap: 12px;
-  width: fit-content;
-}
-.coronaMarca {
-  font-family: var(--f-titulo); font-weight: 600;
-  font-size: 0.86rem; line-height: 1;
-  letter-spacing: 0.24em; text-transform: uppercase;
-  color: var(--crema);
-}
-.coronaAval {
-  font-family: var(--f-quote); font-style: italic; font-weight: 400;
-  font-size: 0.86rem; line-height: 1;
-  color: var(--crema-suave); white-space: nowrap;
-}
-
 .titulo {
   font-family: var(--f-titulo); font-weight: 600;
   letter-spacing: -0.01em; line-height: 0.95;
@@ -162,16 +143,6 @@
 .acciones :global(.tbtn):hover .ctaFlecha { transform: translateX(4px); }
 
 /* "Cómo funciona" es un enlace de texto, no un segundo botón. */
-.como {
-  display: inline-flex; align-items: center; min-height: 44px; padding: 0 2px;
-  font-size: 0.94rem; font-weight: 600; color: var(--crema);
-  text-decoration: underline; text-decoration-thickness: 1px;
-  text-underline-offset: 5px; text-decoration-color: var(--line-bright);
-  text-shadow: 0 1px 12px rgba(30, 6, 10, 0.7);
-  transition: text-decoration-color var(--dur) var(--ease);
-}
-:global(.tienda) .como { color: var(--crema); }
-.como:hover { text-decoration-color: var(--crema); }
 
 /* ---------- promo del ciclo (si hay) ---------- */
 .promos { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
@@ -233,7 +204,6 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
 @media (prefers-reduced-motion: no-preference) {
   .hero { --sal: cubic-bezier(0.16, 1, 0.3, 1); }
   .escena { animation: heroEscena 1.6s var(--sal) both; transform-origin: 70% 60%; }
-  .corona { animation: heroSube 0.6s var(--sal) 0.05s both; }
   .linea { animation: heroVerso 0.9s var(--sal) both; }
   .lineaWrap:nth-child(1) .linea { animation-delay: 0.12s; }
   .lineaWrap:nth-child(2) .linea { animation-delay: 0.2s; }
@@ -271,7 +241,7 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
        navegador la cuente como imagen real (mas de 0,05 bits por pixel): el
        LCP se marca cuando aparece la escena, sin achicar la calidad final.
        La regenera scripts/rediseno/previa_hero.py. */
-    --previa: url('data:image/webp;base64,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');
+    --previa: url('data:image/webp;base64,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');
     background-image: url('/hero/c/hero_c_780x1688.webp'), var(--previa);
     background-image: image-set(url('/hero/c/hero_c_780x1688.avif') type('image/avif'), url('/hero/c/hero_c_780x1688.webp') type('image/webp')), var(--previa);
     background-size: 100% auto;
@@ -279,8 +249,10 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   }
   .inner {
     position: absolute; inset: 0;
-    padding-top: 22.6vw;      /* 88 */
-    padding-bottom: 14.9vw;   /* 718 - 660 */
+    padding-top: 24.6vw;      /* 96: sin sello, el titulo baja un poco y respira */
+    /* El precio y el boton bajan a la zona oscura, debajo de la repisa: el
+       precio ya no queda encima de las cajas (Sebas, 23/10). */
+    padding-bottom: 5.2vw;    /* 718 - 698 */
   }
   /* Todo centrado: la imagen del celular pone la ventana en el eje. */
   .inner { align-items: center; text-align: center; }
@@ -288,29 +260,15 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
      contenido, al llegar la letra o el precio cambiaria de ancho y todo se
      correria de costado (CLS 0,013 medido en la vista previa). */
   .texto, .compra { display: flex; flex-direction: column; align-items: center; width: 100%; }
-  .corona { width: 100%; justify-content: center; }
   .titulo, .bajada, .meta { width: 100%; }
   .bajada { margin-inline: auto; }
-  .corona { margin-bottom: 4vw; }
   .titulo { font-size: 13.3vw; }     /* 52 px a 390 */
   .bajada { margin-top: 3vw; font-size: 3.85vw; max-width: 19em; } /* 15; en em y no en ch: el ch cambia con la letra */
   .compra { margin-top: auto; }
   .metaDesde { font-size: 9.7vw; }   /* 38 */
   .meta { font-size: 3.6vw; }        /* 14 */
   .acciones { margin-top: 3.6vw; justify-content: center; width: 100%; }
-  .como { display: none; }
   .promos { display: none; }
-}
-/* En el celular "Cómo funciona" sigue estando (lo pide el banco y sirve con
-   lector de pantalla), pero fuera del primer pantallazo: abajo de la cinta. */
-@media (max-width: 599px) {
-  .como {
-    display: inline-flex;
-    position: absolute; left: 50%; top: 100%; margin-top: 2px;
-    transform: translateX(-50%); white-space: nowrap;
-    min-height: 44px;
-  }
-  .acciones { position: relative; }
 }
 
 /* ============================================================================
@@ -331,7 +289,6 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
     padding-bottom: 40px;
   }
   .texto, .compra { max-width: min(600px, 48vw); }
-  .corona { margin-bottom: 22px; }
   .titulo { font-size: clamp(3rem, 5.4vw, 5.6rem); }
   .bajada { margin-top: 18px; font-size: clamp(1rem, 1.4vw, 1.12rem); max-width: 40ch; }
   .compra { margin-top: 28px; }

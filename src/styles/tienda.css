@@ -515,6 +515,16 @@ html.lenis, html.lenis body { height: auto; }
   background-color: var(--papel);
   color: var(--tinta);
 }
+/* Arena: un grano muy fino y muy suave sobre las secciones de papel (Sebas,
+   23/10: "arena, mas fino y sutil"), para que el papel no se vea plano. Un
+   SVG de ruido de 180 px que se repite, teñido de tinta y con alfa bajo; sin
+   imagen extra ni costo de scroll (es un fondo quieto). Las de vino ya tienen
+   la pared. */
+.tienda main section.dia,
+.tienda .dia[role=dialog] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.04 0 0 0 0 0.05 0 0 0 0.24 -0.085'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
 /* El vidrio no tiene sentido sobre papel liso: de dia las superficies son
    solidas, un tono arriba del papel, sin filo ni reflejo. El boton principal
    pasa a rubi plano con texto crema (6,8:1). */

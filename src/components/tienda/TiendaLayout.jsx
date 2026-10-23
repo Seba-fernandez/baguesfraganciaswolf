@@ -87,7 +87,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
       const y = (barra?.offsetHeight || 74) + 2;
       const debajo = document.elementsFromPoint(Math.min(24, innerWidth - 1), y).find((e) => !e.closest('.tienda > header'));
       const nueva = !debajo ? 'noche'
-        : debajo.closest('#inicio-hero') ? 'hero'
+        : debajo.closest('#inicio-hero') && !debajo.closest('[data-hero=cinta]') ? 'hero'
         : debajo.closest('.dia') ? 'dia'
         : 'noche';
       setLuz((vieja) => (vieja === nueva ? vieja : nueva));

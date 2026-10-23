@@ -70,11 +70,11 @@ FORMATOS = {
         halo=dict(cx=195, cy=430, r=170, fuerza=1.0),
         panel=dict(tipo='y', desde=272),
         estria=24,
-        ventana=dict(cx=195, ancho=200, arriba=290, abajo=540),
-        caja_ventana=dict(cx=195, base=528, alto=184),
+        ventana=dict(cx=195, ancho=232, arriba=270, abajo=540),
+        caja_ventana=dict(cx=195, base=528, alto=210),
         cajas=[
-            (58, 512, 150, 0.60), (334, 512, 150, 0.66),
-            (-12, 524, 172, 0.55), (404, 524, 172, 0.55),
+            (40, 512, 146, 0.52), (350, 512, 146, 0.56),
+            (-26, 524, 168, 0.46), (416, 524, 168, 0.46),
         ],
         zonas_texto=[(16, 96, 374, 260), (16, 580, 374, 660)],
     ),
@@ -192,9 +192,15 @@ def sombras_y_reflejo(capa, caja, x, y_base, escala, lado_luz, y_frente_px, fuer
     al = caja[..., 3]
     H, W = capa.shape[:2]
     # 1) sombra proyectada sobre la pared (la luz de frente arriba-izq la tira atras, a un lado)
-    sh = np.zeros((h, w, 4), np.float32)
-    sh[..., 3] = cv2.GaussianBlur(al, (0, 0), 0.05 * h) * 0.38 * fuerza
-    pegar(capa, sh, x - lado_luz * 0.06 * h, y_base - h - 0.02 * h)
+    # Con margen alrededor antes de desenfocar: sin el, el desenfoque se cortaba
+    # en el borde del recorte y la sombra quedaba como un rectangulo detras de
+    # los frascos finos (se veia como un parche en la foto, 23/10/2026).
+    sigma = 0.05 * h
+    pad = int(math.ceil(3 * sigma))
+    sh = np.zeros((h + 2 * pad, w + 2 * pad, 4), np.float32)
+    sh[pad:pad + h, pad:pad + w, 3] = al
+    sh[..., 3] = cv2.GaussianBlur(sh[..., 3], (0, 0), sigma) * 0.38 * fuerza
+    pegar(capa, sh, x - lado_luz * 0.06 * h - pad, y_base - h - 0.02 * h - pad)
     # 2) reflejo en la piedra pulida
     ref = caja[::-1].copy()
     largo = int(0.32 * h)
@@ -311,12 +317,15 @@ def aplicar_vidrio(escena, halo, panel, estria_css, s, sdf_ventana=None, fuerza=
     fase = (xx - origen_x) / Wf
     u = (fase - np.floor(fase)) * 2 - 1  # -1..1 a lo ancho de la estria
     # lente cilindrica: el centro casi no desvia, los bordes desvian y comprimen
-    A, B = 0.34 * fuerza, 0.52 * fuerza
+    # Vidrio pulido (Sebas, 23/10: "como el liquid glass de iOS"): la lente
+    # desvia mas y desenfoca menos. Lo que se lee como vidrio es la refraccion
+    # y el brillo nitido del canto, no el borroneo.
+    A, B = 0.42 * fuerza, 0.60 * fuerza
     desv = Wf * (A * u ** 3 + B * u)
     ca = 1.0 * s * u  # aberracion cromatica 1 px CSS
     # desenfoque vertical leve (y algo mas en los bordes de la estria)
-    suave = cv2.GaussianBlur(escena, (0, 0), sigmaX=0.6 * s, sigmaY=2.4 * s)
-    muy = cv2.GaussianBlur(escena, (0, 0), sigmaX=2.0 * s, sigmaY=4.0 * s)
+    suave = cv2.GaussianBlur(escena, (0, 0), sigmaX=0.4 * s, sigmaY=1.3 * s)
+    muy = cv2.GaussianBlur(escena, (0, 0), sigmaX=1.3 * s, sigmaY=2.6 * s)
     mx = np.tile((xx + desv)[None, :], (H, 1)).astype(np.float32)
     my = np.tile(np.arange(H, dtype=np.float32)[:, None], (1, W))
     out = np.empty_like(escena)
@@ -326,8 +335,11 @@ def aplicar_vidrio(escena, halo, panel, estria_css, s, sdf_ventana=None, fuerza=
         a = cv2.remap(suave[..., c], mxc, my, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
         b = cv2.remap(muy[..., c], mxc, my, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
         out[..., c] = a * (1 - 0.7 * peso_borde) + b * 0.7 * peso_borde
-    # transmision: el vidrio come un poco de luz
-    out *= np.array([0.93, 0.91, 0.90], np.float32)
+    # transmision: el vidrio come luz y algo de color, asi las cajas de atras
+    # quedan un paso atras y la caja nitida de la ventana gana
+    out *= np.array([0.85, 0.83, 0.83], np.float32)
+    gris = (out[..., 0] * 0.3 + out[..., 1] * 0.59 + out[..., 2] * 0.11)[..., None]
+    out = out * 0.8 + gris * 0.2
     # sombreado de lente: cada estria es un cilindro, claro del lado de la luz y mas oscuro del otro
     out *= (1.0 - 0.10 * u - 0.10 * u ** 2)[None, :, None]
     # sombra en el valle entre estrias
@@ -335,26 +347,36 @@ def aplicar_vidrio(escena, halo, panel, estria_css, s, sdf_ventana=None, fuerza=
     out *= 1 - 0.38 * valle
     # brillo especular fino: uno por la luz de frente (hueso), otro por el halo de atras (oro)
     yy = np.linspace(0, 1, H, dtype=np.float32)[:, None]
-    esp_frente = (np.exp(-((u + 0.55) / 0.05) ** 2) + 0.35 * np.exp(-((u + 0.45) / 0.18) ** 2))[None, :]
-    esp_halo = np.exp(-((u - 0.82) / 0.04) ** 2)[None, :]
+    esp_frente = (1.6 * np.exp(-((u + 0.55) / 0.035) ** 2) + 0.35 * np.exp(-((u + 0.45) / 0.18) ** 2))[None, :]
+    esp_halo = 1.3 * np.exp(-((u - 0.82) / 0.03) ** 2)[None, :]
+    # filo nitido en cada canto de estria, como el borde pulido de un cristal
+    filo = np.exp(-((np.abs(u) - 0.96) / 0.018) ** 2)[None, :]
     # el borde ilumina segun lo que hay detras (luz transmitida)
     detras = lum(cv2.GaussianBlur(escena, (0, 0), 6 * s))
     i_frente = (0.05 + 0.10 * (1 - yy)) * (0.4 + 0.6 * np.clip(detras * 3, 0, 1)) * (0.6 + 0.8 * halo)
     i_halo = 0.06 + 0.55 * halo * (0.5 + 0.5 * np.clip(detras * 2.5, 0, 1))
     out += esp_frente[..., None] * i_frente[..., None] * HUESO
     out += esp_halo[..., None] * i_halo[..., None] * ORO
+    out += filo[..., None] * (0.04 + 0.10 * halo[..., None]) * HUESO
     # brillo suave de Fresnel al costado de cada estria
-    out += (np.abs(u) ** 6)[None, :, None] * 0.018
+    out += (np.abs(u) ** 6)[None, :, None] * 0.024
     out = np.clip(out, 0, 1)
 
     # mascara del panel
+    # El borde del panel ya no es una linea: el vidrio entra en una rampa de
+    # 56 px CSS (en escritorio se veia una costura vertical que partia la
+    # imagen en dos). Suavizado con smoothstep.
+    rampa = 56 * s
+    def entrada(pos):
+        t = np.clip(pos / rampa, 0, 1)
+        return t * t * (3 - 2 * t)
     if panel['tipo'] == 'x':
         pos = np.arange(W, dtype=np.float32)[None, :] - panel['desde'] * s
-        m_panel = np.clip(pos + 0.5, 0, 1) * np.ones((H, 1), np.float32)
+        m_panel = entrada(pos) * np.ones((H, 1), np.float32)
         dist_borde = np.tile(pos, (H, 1))
     elif panel['tipo'] == 'y':
         pos = np.arange(H, dtype=np.float32)[:, None] - panel['desde'] * s
-        m_panel = np.clip(pos + 0.5, 0, 1) * np.ones((1, W), np.float32)
+        m_panel = entrada(pos) * np.ones((1, W), np.float32)
         dist_borde = np.tile(pos, (1, W))
     else:
         m_panel = np.ones((H, W), np.float32); dist_borde = np.full((H, W), 1e6, np.float32)
@@ -371,7 +393,8 @@ def aplicar_vidrio(escena, halo, panel, estria_css, s, sdf_ventana=None, fuerza=
         banda_osc = np.exp(-((dist - 4.5 * s) / (2.5 * s)) ** 2)
         linea_osc = np.exp(-((dist + 0.2 * s) / (0.6 * s)) ** 2)
         return linea_clara * intens, banda_osc, linea_osc
-    if panel['tipo'] in ('x', 'y'):
+    # Sin canto marcado en el borde del panel: la rampa ya lo funde.
+    if False and panel['tipo'] in ('x', 'y'):
         lc, bo, lo = bisel(dist_borde, 1.0)
         intens = 0.30 + 0.35 * halo
         res = res * (1 - 0.30 * bo[..., None] - 0.35 * lo[..., None])

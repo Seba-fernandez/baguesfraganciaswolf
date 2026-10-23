@@ -58,6 +58,8 @@ export default function Ciudades({ products = [], onOpen }) {
                     <span className={s.perfume}><span className={s.es}>{CIUDADES.es} </span>{f.perfume}</span>
                     <span className={`${s.precio} tnum`}>{f.ml} ml · {pesos(f.precio)}</span>
                   </span>
+                  {/* Que se note que la fila se toca: una flecha fina al final. */}
+                  <svg className={s.flecha} width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
                 </a>
               </li>
             );

@@ -58,3 +58,19 @@
 :global(.tienda) .lado a.boton::before, :global(.tienda) .lado a.boton::after { content: none; }
 :global(.tienda) .lado a.boton:hover { background: #8a1c2d; }
 :global(.tienda) .lado a.boton:focus-visible { outline: 2px solid var(--rubi); outline-offset: 3px; }
+
+/* Celular (Sebas, 23/10: "achicarlo o acomodarlo"): el chat mas compacto,
+   como se ve en un WhatsApp de verdad. Letra y aire un paso abajo, la
+   respuesta pegada al pedido y menos espacio entre la frase y el boton. */
+@media (max-width: 599px) {
+  .section { padding-block: 64px 72px; }
+  .head { margin-bottom: 22px; }
+  .cuerpo { gap: 26px; }
+  .chat { gap: 8px; padding: 12px 12px 14px; border-radius: 20px; min-height: 0; }
+  .contacto { font-size: 0.8rem; padding: 0 4px 9px; }
+  .burbuja { max-width: 88%; padding: 9px 12px 10px; font-size: 0.84rem; line-height: 1.38; gap: 1px; }
+  .total { margin-top: 3px; }
+  .renglon:empty { height: 3px; }
+  .lado { gap: 16px; }
+  .cita { font-size: 1.36rem; }
+}

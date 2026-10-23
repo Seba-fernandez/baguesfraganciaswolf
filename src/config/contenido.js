@@ -23,10 +23,8 @@ export const CABECERA = {
 };
 
 export const INICIO = {
-  // La corona de marca, arriba del titulo. Wolf es el grupo, la firma; Bagués
-  // es la casa que respalda el aroma. Presencia sin explicar.
-  corona: 'Grupo Wolf',
-  aval: 'Casa Bagués · Córdoba',
+  // Sin sello arriba del titulo (Sebas, 23/10): la marca ya esta en la barra
+  // y la bajada dice de donde viene el perfume. El hero respira.
 
   // Rediseño D: el titulo sale de algo que el negocio ya tiene (cada caja
   // Bagués lleva el nombre de una ciudad). La ultima linea va en la italica
@@ -49,7 +47,6 @@ export const INICIO = {
   cintaEtiqueta: 'En este ciclo',
 
   verCatalogo: 'Ver el catálogo',
-  verComo: 'Cómo funciona',
   selloPromo: '2x1',
   porPar: 'el par',
 };

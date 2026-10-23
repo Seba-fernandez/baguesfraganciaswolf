@@ -8,7 +8,7 @@
   /* Lo que se trae a la vista dentro de la hoja (el ultimo tamano, el foco
      con Tab) se apoya arriba de la barra fija de agregar, no debajo (E3-B7). */
   scroll-padding-bottom: calc(92px + env(safe-area-inset-bottom));
-  border-radius: 14px 14px 0 0;
+  border-radius: 0;
   display: grid; grid-template-columns: 1fr;
   background: var(--bg-2);
   box-shadow: 0 -24px 60px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -19,10 +19,20 @@
   from { opacity: 0; transform: translateY(24px) scale(0.985); }
   to { opacity: 1; transform: none; }
 }
+/* Escritorio (rediseño D): la foto ocupa toda la columna izquierda, de arriba
+   abajo. La ficha tiene un alto fijo y la columna de la foto mide ese alto por
+   3/4, la proporcion de todas las fotos: llena sin deformar ni dejar aire
+   alrededor. Si la pantalla es angosta, la foto cede ancho (cover recorta un
+   poco de pared a los costados, nunca el frasco) y el texto conserva 420 px.
+   El texto se desplaza dentro de su columna. */
 @media (min-width: 820px) {
   .sheet {
-    grid-template-columns: 5fr 6fr; bottom: 4vh; max-height: 92vh;
-    border-radius: 16px;
+    --alto: min(88vh, 860px);
+    top: calc((100vh - var(--alto)) / 2); bottom: auto;
+    height: var(--alto); max-height: none;
+    width: min(calc(var(--alto) * 0.75 + 520px), 94vw); max-width: none;
+    grid-template-columns: minmax(0, calc(var(--alto) * 0.75)) minmax(420px, 1fr);
+    overflow: hidden;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -68,7 +78,7 @@
    fotos (#2a1f17 a #1d1510), asi la foto no se lee como un recorte pegado. */
 .media {
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(180deg, #2a1f17 0%, #1d1510 100%);
+  background: #2c0d11;
 }
 .media > div { position: relative; z-index: 1; height: 46vh; height: 46dvh; width: auto; max-width: 100%; }
 /* Los costados (E3-B7): cada banda muestra solo el 3 % del borde de la misma
@@ -76,6 +86,11 @@
    la foto, cada altura del relleno es la misma altura del estudio: el halo
    sigue al halo y el piso al piso, sin recuadro. La foto mide 46dvh x 3/4. */
 .media { position: relative; overflow: hidden; isolation: isolate; }
+/* Safari: la hoja es una grilla con max-height y scroll; con overflow hidden
+   en la foto, WebKit achicaba esa fila hasta 55 px y la foto quedaba cortada
+   arriba (visto en un iPhone el 22/10, reproducido en WebKit). El alto minimo
+   explicito lo evita. */
+.media { min-height: 46vh; min-height: 46dvh; }
 .banda {
   position: absolute; top: 0; bottom: 0; z-index: 0;
   width: max(0px, calc((100% - 34.5dvh) / 2 + 2px));
@@ -89,11 +104,11 @@
    descripcion, aviso y la barra de agregar pegada abajo. */
 .info { padding: 22px 20px 0; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .para { font-size: 0.78rem; color: var(--ink-faint); letter-spacing: 0.02em; }
-.nombre { font-size: clamp(1.9rem, 3.4vw, 2.4rem); margin-top: -4px; }
+:global(.tienda) .nombre { font-family: var(--f-display); font-weight: 500; font-size: clamp(2rem, 3.4vw, 2.6rem); line-height: 1.05; margin-top: -4px; }
 /* La frase sale de familia y momento (lib/producto.js, fraseDe). Cormorant
    italica: es la voz de aviso de perfume, no un dato. */
 .frase {
-  font-family: var(--f-quote); font-style: italic; font-weight: 500;
+  font-family: var(--f-quote); font-style: italic; font-weight: 400;
   font-size: 1.22rem; line-height: 1.25; color: var(--ink-dim); margin-top: -6px;
 }
 /* El aviso ya no va en el acento: el rosa-vino queda para lo que se toca. */
@@ -119,8 +134,8 @@
      vez de cuatro columnas, para que "Bagues, caja New York Fem Heroes" entre
      en un celular sin apretar el precio. */
   display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px;
-  min-height: 60px; padding: 10px 22px; cursor: pointer; text-align: left;
-  background: none; border: 1px solid var(--line); border-radius: var(--r-pill);
+  min-height: 60px; padding: 12px 18px; cursor: pointer; text-align: left;
+  background: none; border: 1px solid var(--line); border-radius: 0;
   color: var(--ink-dim);
   transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
@@ -179,7 +194,7 @@
 }
 .resumen { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; margin-right: auto; }
 .resumenMl { font-size: 0.76rem; color: var(--ink-faint); }
-.resumenPrecio { font-size: 1.06rem; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.resumenPrecio { font-family: var(--f-mono); font-size: 1.06rem; font-weight: 500; color: var(--ink); white-space: nowrap; }
 .stepper { display: inline-flex; align-items: center; gap: 2px; background: var(--bg-3); border-radius: var(--r-pill); padding: 2px; flex-shrink: 0; }
 .stepper button {
   position: relative;
@@ -207,14 +222,14 @@
 @media (min-width: 820px) {
   /* La columna entera lleva la pared del estudio; la foto se queda quieta
      arriba mientras se baja el texto. */
-  .media { align-items: flex-start; padding: 30px; }
-  .media { overflow: visible; }
-  .media > div { position: sticky; top: 30px; height: auto; width: 100%; }
+  .media { align-items: stretch; padding: 0; overflow: hidden; min-height: 0; }
+  .media > div { position: static; height: 100%; width: 100%; aspect-ratio: auto !important; }
   .banda { display: none; }
-  .info { padding: 34px 32px 30px; }
+  .info { padding: 40px 36px 0; overflow-y: auto; overscroll-behavior: contain; }
   .para { order: 1; } .nombre { order: 2; } .frase { order: 3; } .inspirado { order: 4; }
   .desc { order: 5; } .piramide { order: 6; } .campo { order: 7; } .verificar { order: 8; } .promoNota { order: 8; }
-  .barra { order: 9; margin: 4px 0 0; padding: 12px 0; box-shadow: 0 -14px 20px -16px rgba(10, 5, 3, 0.8); }
+  .barra { order: 9; margin: 4px -36px 0; padding: 14px 36px; box-shadow: 0 -14px 20px -16px rgba(10, 5, 3, 0.8); }
+  .aviso { padding-bottom: 32px; }
   .parecidos { order: 19; }
   .aviso { order: 20; }
   .agregarResto { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }

@@ -108,7 +108,7 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
             producto={producto}
             ratio="3 / 4"
             linea={elegida?.linea}
-            sizes="(max-width: 767px) 75vw, 380px"
+            sizes="(max-width: 767px) 75vw, 640px"
           />
           {fondoFoto && (
             <>

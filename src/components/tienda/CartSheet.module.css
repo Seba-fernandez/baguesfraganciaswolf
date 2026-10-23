@@ -12,7 +12,7 @@
   width: min(86vw, 360px);
   display: flex; flex-direction: column;
   overflow-y: auto; overscroll-behavior: contain;
-  border-radius: 18px 0 0 18px;
+  border-radius: 0;
   padding: 20px 20px calc(24px + env(safe-area-inset-bottom));
   background: var(--bg-2);
   box-shadow: -26px 0 60px -24px rgba(0, 0, 0, 0.8), inset 1px 0 0 rgba(255, 255, 255, 0.08);
@@ -23,7 +23,7 @@
 @media (min-width: 768px) {
   .sheet {
     top: 16px; bottom: 16px; right: 16px;
-    border-radius: 18px;
+    border-radius: 0;
     width: 380px;
   }
 }

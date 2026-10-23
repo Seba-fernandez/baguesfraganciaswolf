@@ -1,7 +1,7 @@
 .card {
   display: flex; flex-direction: column;
   /* el fondo y el canto los pone .tglass-lite */
-  border-radius: 12px;
+  border-radius: 0; /* rediseño D: lo que se mira es recto */
   overflow: hidden;
   transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
   /* Muchas tarjetas: no renderizar lo que no se ve. CSS puro, cero JS. */

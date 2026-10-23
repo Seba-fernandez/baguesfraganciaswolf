@@ -24,7 +24,7 @@
   position: relative; z-index: 1;
   display: flex; flex-direction: column; gap: 12px;
   padding: 14px; margin-bottom: 26px;
-  border-radius: 24px;
+  border-radius: 0;
 }
 @media (min-width: 900px) {
   .barra { flex-direction: row; align-items: flex-start; flex-wrap: wrap; gap: 14px; padding: 16px 18px; }
@@ -201,7 +201,7 @@
    real, sin brillo animado (no hay nada que mirar ahi, solo lugar reservado). */
 .esqueleto {
   display: flex; flex-direction: column;
-  border-radius: 12px; overflow: hidden;
+  border-radius: 0; overflow: hidden;
   background: var(--superficie, rgba(51, 16, 15, 0.62));
   box-shadow: inset 0 0 0 1px var(--line);
 }

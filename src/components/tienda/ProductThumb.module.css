@@ -2,9 +2,9 @@
 .wrap {
   position: relative; width: 100%; overflow: hidden;
   border-radius: var(--r-media);
-  /* El mismo espresso del estudio de las fotos: mientras la imagen baja no
-     hay salto de color. */
-  background: #1d1510;
+  /* El mismo vino de la pared de las fotos (rediseño D): mientras la imagen
+     baja no hay salto de color. */
+  background: #2c0d11;
 }
 /* Todas las fotos llenan el cuadro. Las del pipeline ya vienen a 3:4, asi que
    cover no recorta nada; solo actua sobre una foto subida a mano desde el

@@ -116,7 +116,6 @@ export const CIUDADES = {
   bajada: 'El perfume que ya conocés viene en una caja con nombre de ciudad. Así la reconocés cuando te llega.',
   es: 'es',
   verTodas: 'Ver todas las cajas',
-  abrir: 'Ver {perfume}, caja {ciudad}',
 };
 
 export const CATALOGO = {
@@ -372,3 +371,14 @@ export function conDatos(texto, datos = {}) {
     datos[clave] == null ? hueco : String(datos[clave])
   );
 }
+
+/**
+ * La pagina que no existe (/lo-que-sea): link viejo o mal copiado. Vercel la
+ * contesta con 404 de verdad (dist/404.html).
+ */
+export const NO_ENCONTRADA = {
+  titulo: 'Esta página no existe',
+  texto: 'Puede ser un link viejo o mal copiado. Los perfumes siguen todos acá.',
+  catalogo: 'Ver el catálogo',
+  inicio: 'Ir al inicio',
+};

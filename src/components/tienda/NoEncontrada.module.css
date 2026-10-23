@@ -1,0 +1,27 @@
+/* La 404: una sola pantalla de papel, el titulo en Melodrama y un solo boton
+   principal (rubi, el de dia). El numero va en Boska italica: el cero de
+   Melodrama viene cruzado. */
+.pagina {
+  min-height: calc(100dvh - var(--bar-h));
+  display: grid; align-items: center;
+  padding-block: clamp(64px, 12vw, 140px);
+}
+.caja { max-width: 640px; }
+.numero {
+  font-family: var(--f-quote); font-style: italic; font-weight: 400;
+  font-size: clamp(3.4rem, 14vw, 6rem); line-height: 1;
+  color: var(--rubi); margin-bottom: 10px;
+  font-variant-numeric: lining-nums;
+}
+:global(.tienda) .titulo {
+  font-family: var(--f-titulo); font-weight: 600;
+  font-size: clamp(2.4rem, 9vw, 4.4rem); line-height: 0.98;
+  color: var(--tinta); text-shadow: none;
+}
+.texto { margin-top: 16px; font-size: 1.05rem; line-height: 1.55; color: var(--tinta-suave); max-width: 38ch; }
+.acciones { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; }
+:global(.tienda) .inicio {
+  display: inline-flex; align-items: center; min-height: 44px;
+  color: var(--tinta); text-decoration: underline; text-underline-offset: 4px;
+}
+:global(.tienda) .inicio:hover { color: var(--rubi); }

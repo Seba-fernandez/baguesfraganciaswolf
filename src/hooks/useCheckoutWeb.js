@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { crearPedidoWeb } from '../lib/apiTienda';
 import { PEDIDO } from '../config/contenido';
+import { registrarError } from '../lib/errores.js';
 
 /**
  * Checkout público: llama a la función crear_pedido_web() (SECURITY DEFINER).
@@ -22,6 +23,9 @@ export default function useCheckoutWeb() {
       const data = await crearPedidoWeb({ nombre, telefono, items });
       return { data };
     } catch (e) {
+      // Queda anotado para Sebas (panel > Ajustes): el codigo del error de la
+      // base (telefono_invalido, pedido_muy_seguido...) y cuantos items eran.
+      registrarError('pedido', e?.message, `items: ${items?.length ?? 0}`);
       setError(PEDIDO.errorBase);
       return { error: e };
     } finally {

@@ -655,6 +655,57 @@ def ux17(browser, base):
         f"servido: {servido if servido is not None else 'sin numero (lugar reservado)'}; despues de hidratar: {vivo}")
 
 
+def a11y1(browser, base):
+    # Accesibilidad automatica con axe-core (23/10/2026): las reglas WCAG 2.1
+    # A y AA en la portada, el catalogo, una ficha y la 404, a 390 px. Falla si
+    # hay algo "serio" o "critico" (contraste, nombres de botones, etiquetas
+    # que no coinciden con el texto, foco). Las secciones se dibujan todas
+    # antes (content-visibility) y sin la animacion de aparicion.
+    axe = os.path.join(AQUI, "..", "..", "node_modules", "axe-core", "axe.min.js")
+    if not os.path.exists(axe):
+        chk("A11Y-1", "accesibilidad", "media", "axe-core sin violaciones serias o criticas", None, "falta node_modules/axe-core (npm ci)")
+        return
+    codigo = open(axe, encoding="utf-8").read()
+    hallazgos = []
+    for ruta in ["/", "/catalogo", "/?aroma=bagues-le-male-elixir", "/esta-no-existe"]:
+        ctx = browser.new_context(**MOVIL, bypass_csp=True)
+        proteger_base(ctx)
+        page = ctx.new_page()
+        page.goto(base + ruta, wait_until="networkidle")
+        page.wait_for_timeout(1500)
+        page.add_style_tag(content=".tienda > main > section, .tienda > footer { content-visibility: visible !important; } .treveal { opacity: 1 !important; transform: none !important; }")
+        page.evaluate(codigo)
+        v = page.evaluate("""async () => (await axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] }))
+            .violations.filter((x) => x.impact === 'serious' || x.impact === 'critical')
+            .map((x) => x.id + ' (' + x.nodes.length + ')')""")
+        ctx.close()
+        if v:
+            hallazgos.append(f"{ruta}: {', '.join(v)}")
+    chk("A11Y-1", "accesibilidad", "media", "axe-core (WCAG 2.1 A y AA) sin violaciones serias o criticas en portada, catalogo, ficha y 404",
+        not hallazgos, "; ".join(hallazgos) or "sin violaciones serias ni criticas")
+
+
+def no_encontrada(browser, base):
+    # La 404 de verdad (23/10/2026): una direccion que no existe contesta 404
+    # con la pagina propia; una foto que falta tambien da 404 (antes 200 con
+    # HTML); las rutas de la tienda y del panel siguen andando.
+    import urllib.request
+    import urllib.error
+
+    def estado(ruta):
+        try:
+            with urllib.request.urlopen(base + ruta) as r:
+                return r.status, r.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            return e.code, e.read().decode("utf-8", "replace")
+    falta, html = estado("/esta-pagina-no-existe")
+    foto, _ = estado("/perfumes/no-existe-360w.webp")
+    rutas = {r: estado(r)[0] for r in ["/", "/catalogo", "/panel", "/?aroma=bagues-le-male-elixir"]}
+    chk("404-1", "contenido", "media", "Una direccion que no existe da 404 con la pagina propia; las rutas de la tienda y el panel dan 200",
+        falta == 404 and "no-encontrada-titulo" in html and foto == 404 and all(c == 200 for c in rutas.values()),
+        f"no existe: {falta}; foto que falta: {foto}; rutas: {rutas}")
+
+
 SIN_HINTING = None
 
 
@@ -1819,6 +1870,7 @@ def main():
         (["E3-A6"], e3_a6), (["E3-A7"], e3_a7), (["E3-A8"], e3_a8), (["E3-A9"], e3_a9),
         (["E3-B1"], e3_b1), (["E3-B2"], e3_b2), (["E3-B3"], e3_b3), (["E3-B4"], e3_b4), (["E3-B5"], e3_b5),
         (["E3-B6"], e3_b6), (["E3-B7"], e3_b7), (["E3-B8"], e3_b8), (["E3-B9"], e3_b9),
+        (["A11Y-1"], a11y1), (["404-1"], no_encontrada),
     ]
     global SIN_HINTING
     with sync_playwright() as p:

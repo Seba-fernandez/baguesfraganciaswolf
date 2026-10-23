@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import TiendaShell from './components/tienda/TiendaShell';
 import HomeScreen from './components/tienda/HomeScreen';
 
@@ -19,6 +19,7 @@ import HomeScreen from './components/tienda/HomeScreen';
 // (un `then` que contesta en el acto, que React resuelve sin suspender). El
 // render del build usa lo mismo para dibujar la cáscara.
 import { precargarCatalogo, moduloCatalogo } from './components/tienda/precargaCatalogo.js';
+import NoEncontrada from './components/tienda/NoEncontrada';
 export { precargarCatalogo };
 const CatalogoScreen = lazy(() =>
   moduloCatalogo() ? { then: (listo) => listo(moduloCatalogo()) } : precargarCatalogo()
@@ -47,6 +48,7 @@ export default function App() {
     <Routes>
       <Route element={<TiendaShell />}>
         <Route path="/" element={<HomeScreen />} />
+        <Route path="*" element={<NoEncontrada />} />
         <Route
           path="/catalogo"
           element={
@@ -65,8 +67,6 @@ export default function App() {
           </Suspense>
         }
       />
-
-      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

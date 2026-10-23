@@ -219,9 +219,31 @@ fs.writeFileSync(path.join(DIST, 'catalogo', 'index.html'), catalogo);
 console.log(`  cascara de /catalogo: ${kb(marcadoCatalogo.length)} de marcado en dist/catalogo/index.html`);
 
 /**
- * Ojo: la reescritura de Vercel manda la portada pre-generada a cualquier ruta
- * que no sea /catalogo (incluido /panel). main.jsx la vacia y monta lo que
- * corresponde.
+ * La pagina que no existe, en dist/404.html. Vercel la sirve con estado 404 a
+ * toda direccion que no sea un archivo ni una de las rutas de vercel.json
+ * (/, /catalogo y /panel). Antes la reescritura mandaba la portada a
+ * cualquier ruta: un link roto parecia andar, y una foto que faltaba
+ * contestaba 200 con HTML en vez de dar error.
+ */
+{
+  const marcado404 = await render('/esta-pagina-no-existe');
+  if (!marcado404.includes('no-encontrada-titulo')) {
+    console.error('  la pagina 404 salio sin su titulo; se aborta');
+    process.exit(1);
+  }
+  let html404 = plantillaLimpia
+    .replace(ANCLA, `<div id="root" data-ruta="404">${marcado404}</div>`)
+    .replace(linkCss[0], `<style>${fs.readFileSync(path.join(DIST, linkCss[1]), 'utf8')}</style>`)
+    .replace(/\n\s*<link rel="preload" href="\/(hero|fonts)\/[^>]*>/g, '')
+    .replace(/<title>[^<]*<\/title>/, '<title>Página no encontrada · Bagues Grupo Wolf</title>')
+    .replace('</head>', '  <meta name="robots" content="noindex" />\n  </head>');
+  fs.writeFileSync(path.join(DIST, '404.html'), html404);
+  console.log(`  pagina 404: ${kb(marcado404.length)} de marcado en dist/404.html`);
+}
+
+/**
+ * /panel recibe la portada pre-generada (regla de vercel.json): main.jsx la
+ * vacia y monta el panel.
  */
 
 /**
@@ -236,7 +258,7 @@ console.log(`  cascara de /catalogo: ${kb(marcadoCatalogo.length)} de marcado en
   const csp = (JSON.parse(fs.readFileSync(path.join(RAIZ, 'vercel.json'), 'utf8')).headers || [])
     .flatMap((h) => h.headers).find((h) => h.key === 'Content-Security-Policy')?.value || '';
   const faltan = new Set();
-  for (const archivo of ['index.html', path.join('catalogo', 'index.html')]) {
+  for (const archivo of ['index.html', path.join('catalogo', 'index.html'), '404.html']) {
     const html = fs.readFileSync(path.join(DIST, archivo), 'utf8');
     for (const [, atributos, cuerpo] of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/g)) {
       if (/type="(application\/(ld\+)?json)"/.test(atributos)) continue;

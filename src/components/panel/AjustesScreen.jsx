@@ -5,6 +5,7 @@ import useSettings from '../../hooks/useSettings';
 import { telefonoArgentino } from '../../lib/datosCliente.js';
 import { PEDIDO } from '../../config/contenido';
 import Toggle from '../ui/Toggle';
+import ErroresTienda from './ErroresTienda';
 import s from './panel.module.css';
 
 export default function AjustesScreen() {
@@ -107,6 +108,8 @@ export default function AjustesScreen() {
           onBlur={() => guardar('mensaje_checkout')}
         />
       </div>
+
+      <ErroresTienda />
 
       <a className={`${s.btn} ${s.btnGhost} ${s.btnWide}`} href="/" style={{ textDecoration: 'none' }}>
         Ver la tienda pública

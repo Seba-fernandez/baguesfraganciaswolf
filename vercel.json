@@ -5,7 +5,15 @@
       "destination": "/catalogo/index.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/panel",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/panel/(.*)",
       "destination": "/index.html"
     }
   ],

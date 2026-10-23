@@ -129,6 +129,24 @@ A y B, con el OK de Sebas. Probado en una transacción que se deshace (cinco
 casos) y, ya aplicado, desde afuera con la clave pública: un ítem sin
 producto devuelve `item_invalido` sin escribir nada. C sigue opcional.
 
+## Registro de errores y copia semanal (migraciones `0013` y `0014`, 23/10)
+
+- **`errores_web`**: la tienda no la puede leer ni escribir; la única puerta
+  es `registrar_error_web(p jsonb)` (SECURITY DEFINER, como
+  `crear_pedido_web`), que recorta cada campo (mensaje a 500 caracteres), corta
+  si en el último minuto ya hubo 30 y llama a una poda de 30 días que nadie de
+  afuera puede ejecutar. Leer y borrar: solo `es_admin()`. El navegador no
+  manda nombres ni teléfonos y tapa cualquier número de 7 cifras o más.
+- **Copia semanal**: `respaldo.copia_semanal()` (pg_cron, lunes 9 UTC) guarda
+  cada tabla como JSON en `respaldo.copias` y conserva cinco semanas. El
+  esquema `respaldo` no está expuesto por la API. No sale de Supabase a
+  propósito: el repo es público y una copia con teléfonos no puede ir a
+  GitHub.
+- **Índice** `order_items_product_id_idx` (lo pedía el asesor).
+- **Pendiente de Sebas**: borrar los respaldos viejos con
+  `supabase/manual/limpiar_respaldos_viejos.sql` (el conector pide confirmar
+  los borrados) y borrar la fila de prueba de `errores_web` desde el panel.
+
 ## Lo que se propuso
 
 **A. Que un pedido no le cambie el nombre a una clienta.** Hoy, si alguien

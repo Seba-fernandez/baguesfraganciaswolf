@@ -48,8 +48,11 @@ export default function Ciudades({ products = [], onOpen }) {
                   href={`/catalogo?aroma=${encodeURIComponent(f.producto.slug)}`}
                   className={s.link}
                   onClick={(e) => abrir(e, f.producto)}
-                  aria-label={CIUDADES.abrir.replace('{perfume}', f.perfume).replace('{ciudad}', f.ciudad)}
                 >
+                  {/* Sin aria-label: el lector lee lo que se ve ("Granada es La
+                      Bomba, 50 ml, $ 16.499"). Una etiqueta distinta del texto
+                      visible confunde a quien maneja el telefono por voz (axe,
+                      label-content-name-mismatch, 23/10). */}
                   <span className={s.caja} aria-hidden="true">
                     {foto && fotos && <img src={foto} alt="" width="360" height="480" loading="lazy" decoding="async" />}
                   </span>

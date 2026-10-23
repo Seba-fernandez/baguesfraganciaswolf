@@ -90,6 +90,8 @@ src/
     scrollSuave.js  Lenis en escritorio y irASeccion (saltos a #seccion medidos)
     alScroll.js     un solo oyente de scroll, una pasada por cuadro (barra, volver arriba)
     whatsapp.js     el mensaje del pedido
+    errores.js      anota en la base los errores de una clienta (panel > Ajustes)
+    metricas.js     Vercel Analytics y Speed Insights, despues de cargar
     vidrioLiquido.js  la lente del vidrio de la tienda
   data/           constantes y fotos.js (índice generado)
   styles/         tienda.css (tienda) y global.css (panel)
@@ -100,7 +102,10 @@ scripts/
   video/          graba la tienda cuadro por cuadro y arma el antes/después
   prerender.mjs   pega la portada en dist/index.html y la cáscara de /catalogo
                   en dist/catalogo/index.html
-supabase/migrations/  esquema, RLS y la función de pedido
+supabase/migrations/  esquema, RLS, la función de pedido, errores_web (0013) y
+                      la copia semanal (0014)
+supabase/manual/      SQL para que Sebas corra a mano (borrar respaldos viejos)
+.github/              pruebas automáticas en cada push y Dependabot
 ```
 
 **Dos fronteras que no se cruzan:**
@@ -312,16 +317,18 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
   script de `index.html` manda a `/panel` las tres formas de vuelta (incluido el
   error). `redirectTo` pide `/panel`. Si Supabase no lo tiene en su lista,
   vuelve a la Site URL y el script igual lo resuelve.
-- **La portada pre-generada se sirve en toda ruta** por la reescritura de
-  Vercel, salvo `/catalogo`, que tiene su propia cáscara (`dist/catalogo/`,
-  regla aparte en `vercel.json`, antes de la general). `main.jsx` solo hidrata
+- **La portada pre-generada se sirve en `/` y en `/panel`** (reglas de
+  `vercel.json`); `/catalogo` tiene su propia cáscara (`dist/catalogo/`) y
+  cualquier otra dirección recibe `dist/404.html` con estado 404 (desde el
+  23/10; antes la portada iba a toda ruta). Una ruta nueva de la app tiene
+  que sumarse a `rewrites` o va a dar 404. `main.jsx` solo hidrata
   en `/`; en `/catalogo` monta encima de la cáscara sin vaciarla (espera el
   chunk del catálogo, ver `components/tienda/precargaCatalogo.js`); en otra ruta vacía
   el `#root` y monta. `vite preview` no lee `vercel.json` y contesta
   `/catalogo` con la portada: para probar en local, `node scripts/qa/servir.mjs`.
-- **Fotos sin variantes = tarjetas vacías.** Vercel contesta un archivo que no
-  existe con el HTML (200, `text/html`): no hay 404 que avise. Para verificar,
-  mirar `naturalWidth` de las imágenes, no el código de respuesta.
+- **Fotos sin variantes = tarjetas vacías.** Hasta el 23/10 Vercel contestaba
+  un archivo que no existe con el HTML (200, `text/html`). Desde la 404 real
+  da 404, pero igual: para verificar, mirar `naturalWidth`.
 - **El panel trabado era el fondo:** orbes de 400 a 600 px con `blur(80px)`
   animados sin parar, más `backdrop-filter` con refracción SVG en cada caja.
 - **Cambiar de pestaña era esperar:** cada pantalla del panel era `lazy` y
@@ -431,6 +438,12 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
   script del hero pide las fuentes en el primer cuadro.
 - **`servir.mjs` lee la CSP de `vercel.json` al arrancar.** Si cambiaste un
   script en línea y su hash, reiniciá el servidor local o el script no corre.
+- **El conector de Supabase pide confirmación para lo destructivo** (`drop`,
+  `delete`, `drop policy`) y si nadie confirma devuelve `cancelled`. Una
+  migración que mezcla eso con lo demás se cancela entera: separarla, y lo que
+  borra dejarlo en `supabase/manual/` para Sebas.
+- **No se puede escribir en las variables de GitHub Actions desde acá** (el
+  proxy lo bloquea): las carga Sebas en Settings > Secrets and variables.
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.

@@ -1,0 +1,100 @@
+# Pruebas automaticas (23/10/2026)
+#
+# Cada vez que se sube un cambio a cualquier rama, GitHub corre esto en una
+# maquina limpia y deja una tilde verde o una cruz roja al lado del commit (y
+# en el PR). Es lo mismo que antes se corria a mano antes de publicar:
+#
+#  1. "construir": instala, corre las pruebas sin navegador (WhatsApp y nombre,
+#     buscador, ciclo), arma la tienda como Vercel y revisa que no haya guiones
+#     largos en textos visibles. Si algo de esto falla, la cruz es roja.
+#  2. "banco": levanta la tienda armada y corre el banco de pruebas completo
+#     (86 chequeos en Chrome). Va en los PR y en main. El resultado queda
+#     adjunto a la corrida (resultado.json).
+#
+# Las claves de la base son las publicas (las mismas que viajan en la pagina),
+# guardadas como variables del repo (no en este archivo): Settings > Secrets
+# and variables > Actions > pestaña Variables > New repository variable,
+# VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY, con los mismos valores del .env.
+name: Pruebas
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: pruebas-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+  VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Pruebas sin navegador
+        run: |
+          node scripts/qa/datos.test.mjs
+          node scripts/qa/busqueda.test.mjs
+          node scripts/qa/ciclo.test.mjs
+      - name: Armar la tienda (con prerender y control de la CSP)
+        run: npm run build
+      - name: Sin guiones largos en textos visibles
+        run: |
+          if grep -rnP "—|–" src/config src/components --include=*.js --include=*.jsx | grep -vP "^\S+:\d+:\s*(//|\*|/\*|\{/\*)"; then
+            echo "Hay guiones largos en textos visibles"; exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 3
+
+  banco:
+    needs: construir
+    # Necesita las dos variables del repo (la tienda armada tiene que poder
+    # leer el catalogo). Sin ellas, este paso se saltea y "construir" corre igual.
+    if: vars.VITE_SUPABASE_URL != '' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci   # el banco usa axe-core de node_modules
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Playwright y Chrome
+        run: |
+          pip install playwright pillow
+          python -m playwright install --with-deps chromium
+      - name: Banco de pruebas
+        run: |
+          node scripts/qa/servir.mjs &
+          for i in $(seq 1 30); do curl -s -o /dev/null http://localhost:4173 && break; sleep 1; done
+          python scripts/qa/recorrido.py --url http://localhost:4173 | tee banco.txt
+          if grep -q "  FALLA " banco.txt; then echo "El banco tiene fallas"; exit 1; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: banco
+          path: |
+            banco.txt
+            scripts/qa/resultado.json
+          retention-days: 14

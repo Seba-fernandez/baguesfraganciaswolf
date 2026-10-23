@@ -264,6 +264,25 @@ sale como `5493515551234`). Pruebas sin navegador: `datos.test.mjs` (56
 casos). La base se probó con los mismos casos en una transacción que se
 deshace y, ya aplicada, desde afuera con la clave pública.
 
+### Calidad (23 de octubre de 2026, tarde)
+
+- **Chequeos nuevos del banco (88 en total):** `A11Y-1` corre axe-core
+  (WCAG 2.1 A y AA) en portada, catálogo, ficha y 404 y falla con algo serio o
+  crítico; la primera corrida encontró las filas de Las ciudades con una
+  etiqueta distinta del texto visible (`label-content-name-mismatch`) y se
+  sacó la etiqueta. `404-1` comprueba que una dirección que no existe y una
+  foto que falta den 404 y que `/`, `/catalogo` y `/panel` den 200.
+- **Pruebas automáticas** en `.github/workflows/pruebas.yml`: en cada push,
+  pruebas sin navegador y el build; en PR y en `main`, el banco entero
+  (necesita las variables `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` del
+  repo; sin ellas se saltea).
+- **Registro de errores** probado interceptando el envío: dos errores iguales
+  mandan uno solo, un número de teléfono en el mensaje sale tapado, las
+  promesas rotas también se anotan. La función de la base recorta a 500
+  caracteres, no deja leer la tabla con la clave pública ni llamar a la poda.
+- Producción después de publicar la sexta vuelta (`f646a5a`): banco 87/87,
+  Lighthouse mobile portada 96 (LCP 2,47 s), catálogo 91.
+
 ### Rediseño D, sexta vuelta (23 de octubre de 2026)
 
 - **La marca de la barra no subía** al tocarla con la portada bajada: el link

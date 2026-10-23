@@ -1,0 +1,28 @@
+# Dependabot (23/10/2026): una vez por semana revisa si React, Vite, React
+# Router o el resto de las dependencias sacaron versiones nuevas, y abre un PR
+# con el cambio armado. Los arreglos chicos (parches y menores) llegan juntos
+# en un solo PR; las versiones grandes, de a una, porque pueden romper algo.
+# Cada PR pasa por las pruebas automaticas (.github/workflows/pruebas.yml):
+# si queda en verde, se puede aceptar. Los avisos de seguridad llegan aparte y
+# en el momento.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Argentina/Cordoba
+    open-pull-requests-limit: 5
+    groups:
+      menores:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: "deps"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "ci"

@@ -35,7 +35,14 @@ http.createServer((req, res) => {
     const regla = (config.rewrites || []).find((r) => patron(r.source).test(ruta));
     if (regla) f = archivo(regla.destination);
   }
-  if (!f) { res.writeHead(404); res.end('404'); return; }
+  // Como Vercel: lo que no es archivo ni ruta conocida recibe dist/404.html
+  // con estado 404.
+  let estado = 200;
+  if (!f) {
+    f = archivo('/404.html');
+    estado = 404;
+    if (!f) { res.writeHead(404); res.end('404'); return; }
+  }
   const cabeceras = { 'Content-Type': TIPOS[path.extname(f)] || 'application/octet-stream' };
   for (const h of config.headers || []) {
     if (patron(h.source).test(ruta)) for (const { key, value } of h.headers) cabeceras[key] = value;
@@ -43,6 +50,6 @@ http.createServer((req, res) => {
   // HSTS solo tiene sentido en https. En local (http) Safari lo aplica igual y
   // pasa todo a https://localhost, que no existe: la pagina queda vacia.
   delete cabeceras['Strict-Transport-Security'];
-  res.writeHead(200, cabeceras);
+  res.writeHead(estado, cabeceras);
   fs.createReadStream(f).pipe(res);
 }).listen(PUERTO, () => console.log(`dist/ como en Vercel: http://localhost:${PUERTO}`));

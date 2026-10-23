@@ -285,6 +285,16 @@ deshace y, ya aplicada, desde afuera con la clave pública.
   línea de tiempo con nombre en la sección (`view-timeline: --banda`).
 - **UX-17 y E3-B1 datos** pasan a mirar el precio "Desde" (ya no hay número
   de aromas).
+- **Control antes de publicar (23/10, tarde):** banco local 86/86; contra la
+  vista previa publicada, 84/86 con E3-B2 tira y urgente en FALLA una sola
+  vez: el chequeo leía la tira de la portada antes de que llegara `settings`
+  (repetido dos veces: pasa). Ahora espera a la tira. Consola sin errores en
+  Chrome y Safari; en Firefox solo avisos de las fuentes (cajas de glifos) y
+  de las precargas con `media` que no aplican. En la vista previa Vercel
+  inyecta su barra de comentarios (`vercel.live`), que la CSP bloquea: pasa
+  solo en vistas previas. `datos.test` (todo bien), `busqueda.test` (23),
+  `ciclo.test` (9), `motores.py` sin fallas. Asesor de Supabase: lo conocido
+  (`crear_pedido_web` pública a propósito, respaldos sin política).
 - Banco local **86 chequeos, 0 fallan**; `motores.py` sin fallas.
 
 ### Rediseño D, quinta vuelta (23 de octubre de 2026)

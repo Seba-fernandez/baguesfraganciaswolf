@@ -1477,6 +1477,13 @@ def e3_b2(browser, base):
     res = {}
     for dias in (15, 2):
         ctx, page, _, hasta = portada_con_datos(browser, MOVIL, ciclo=dias)
+        # La tira de la portada vive en "Antes de pedir" y llega con settings,
+        # que puede contestar despues que products: contra una vista previa
+        # fria de Vercel, leerla enseguida dio None una vez (23/10). Se espera.
+        try:
+            page.wait_for_selector("[data-qa=ciclo]", state="attached", timeout=8000)
+        except Exception:
+            pass
         portada = page.evaluate("""() => { const c = document.querySelector('[data-qa=ciclo]');
             const d = document.querySelector('[data-qa=ciclo] [data-qa=ciclo-dias]');
             return c ? { txt: c.textContent.replace(/\\s+/g, ' ').trim(), color: d ? getComputedStyle(d).color : '' } : null; }""")

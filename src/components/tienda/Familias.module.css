@@ -14,7 +14,8 @@
 .fila {
   list-style: none; margin: 28px -20px 0; padding: 6px 20px 14px;
   display: grid; grid-auto-flow: column; grid-auto-columns: 42vw; gap: 14px;
-  overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 20px;
+  overflow-x: auto; overflow-y: hidden; touch-action: pan-x pan-y;
+  scroll-snap-type: x mandatory; scroll-padding-inline: 20px;
   overscroll-behavior-x: contain; scrollbar-width: none;
 }
 .fila::-webkit-scrollbar { display: none; }

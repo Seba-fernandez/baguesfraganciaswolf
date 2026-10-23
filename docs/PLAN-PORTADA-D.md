@@ -37,6 +37,32 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
 - **Clase `.dia`** (tienda.css): una sección de papel redefine tinta, acento y
   líneas para lo que tenga adentro, y apaga el vidrio (superficies sólidas).
 
+## Segunda vuelta (23/10, lo que pidió Sebas al ver la vista previa)
+
+- **Barra fija** al bajar, sin rectángulo: su fondo se funde 28 px hacia abajo y
+  toma papel o vino según la sección (nunca había quedado fija: una regla
+  general le ganaba al sticky).
+- **Ficha de escritorio:** la foto llena toda la columna izquierda (alto × 3/4),
+  sin aire alrededor; el texto se desplaza en su columna.
+- **Regla de formas** para toda la tienda: lo que se toca es redondo, lo que se
+  mira es recto. Tarjetas, barra de filtros, cajón, hoja de tamaños y filas de
+  tamaño pasan a rectas. Botón principal plano (crema de noche, rubí de día).
+- **Familias:** sombra casi imperceptible en los arcos. Se probó el ingrediente
+  en la etiqueta del frasco: solo el floral contrastaba; queda el color liso
+  (Sebas: "si no hace buen contraste, dejalo").
+- **Destacados:** sombra más marcada, bordes rectos, fila hasta el borde
+  derecho (entran cinco y asoma la sexta).
+- **Las ciudades tienen un para qué:** enseñar el código de la caja ("Ginebra es
+  Baccarat Rouge 540"), con las más conocidas (`CIUDADES_ELEGIDAS`).
+- **Antes de pedir:** frases enteras y letra más grande (clientela grande). Sin
+  flechas: no es una secuencia.
+- **Testimonios** diseñado y oculto, entre destacados y cómo funciona.
+- **Las 133 fotos en la pared vino** en toda la tienda.
+- **Hero nítido:** AVIF, 1170 × 2532 en iPhone, 2880 desde 1601 px.
+- **Safari:** botón del hero y foto de la ficha corregidos; prueba fija en tres
+  navegadores (`scripts/qa/motores.py`).
+- **Seguridad:** revisión completa en `docs/SEGURIDAD.md`; CSP y HSTS sumados.
+
 ## Guion de la portada
 
 | # | Sección | Luz | Qué cambia |

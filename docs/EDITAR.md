@@ -125,7 +125,9 @@ npm run fotos:componer -- --todo  rehace todas
 npm run fotos                     componer + los anchos chicos para celular
 ```
 
-Todas salen a 3:4 llenando el cuadro, en el mismo estudio espresso. Una foto
+Todas salen a 3:4 llenando el cuadro. Desde el rediseño D (23/10/2026) viven
+en la **pared vino** del hero: después de componer, se sacan los recortes y se
+pasan a la pared (ver "Las fotos en la pared vino" abajo). Una foto
 de Unlock con fondo propio lleva `"tratamiento": "estudio"` (o `"espresso"` si
 es vidrio transparente sobre fondo claro). **Antes de publicar, correr
 `npm run fotos:contacto` y mirar la hoja entera**, que pone al lado de cada
@@ -137,6 +139,22 @@ versión femenina y masculina con el mismo nombre. El detalle está en
 Los anchos chicos (`-360w`, `-560w`) los genera el build solo. **No borrarlos a
 mano**: sin ellos las tarjetas quedan vacías y el servidor no avisa.
 
+### Las fotos en la pared vino
+
+```
+node scripts/fotos/componer.mjs --todo --recortes /tmp/recortes   # [--solo slug1,slug2]
+python3 scripts/rediseno/pared_productos.py /tmp/recortes /tmp/pared
+cp /tmp/pared/unlock/*.webp public/perfumes/
+cp /tmp/pared/bagues/*.webp public/perfumes/bagues/
+node scripts/fotos/variantes.mjs        # rehace los -360w y -560w de las nuevas
+```
+
+Mismos nombres de archivo: la tienda las toma sola. El banco (`FOTO-1`) mide
+que el fondo de cada foto sea la pared vino. La pared vacía que va a los
+costados de la ficha en el celular sale de
+`python3 scripts/rediseno/pared_productos.py --vacia public/fondo` (y se achica a
+`pared-vacia-360.webp`).
+
 ## Cargar un ciclo nuevo
 
 Precios, códigos, tamaños que entran y salen: van a la base, comparando **por
@@ -146,16 +164,23 @@ el ciclo 10/26, está en la sección 7 de [`CLAUDE.md`](../CLAUDE.md).
 ## Cambiar el orden de los bloques de la página
 
 En **`src/components/tienda/HomeScreen.jsx`**. Es una lista de bloques en el
-orden en que se ven: inicio, destacados, quiénes somos y cómo funciona. Mover un
+orden en que se ven: inicio, las ciudades, ¿qué te gusta oler?, destacados, lo
+que me escriben (oculto sin capturas), cómo funciona y antes de pedir.
+
+**Las cajas de "Las ciudades"** se eligen en `CIUDADES_ELEGIDAS`
+(`src/config/ajustes.js`): las más conocidas, en orden. Si una sale del ciclo o
+se marca destacada, se completa sola con otra. Mover un
 bloque es mover una línea. El catálogo completo no está ahí: vive en su propia
 página (`CatalogoScreen.jsx`), y la ficha del aroma tampoco, porque se abre
 encima de lo que haya.
 
 ## Cambiar colores, tipografías o espacios
 
-En **`src/styles/tienda.css`**, arriba de todo, están las variables: el fondo,
-los tonos de texto, el acento rosa-vino, el oro de arena, los redondeos, el
-vidrio y las duraciones. Cambiar una variable cambia toda la web de una. El
+En **`src/styles/tienda.css`**, arriba de todo, están las variables: la noche
+(vino hondo), el día (papel), el acento (rosa-vino de noche, rubí de día), las
+letras (Melodrama, Boska, Plex Mono, La Belle Aurore, Figtree), los redondeos y
+las duraciones. Una sección de papel lleva la clase `dia`. Regla de formas: lo
+que se toca es redondo, lo que se mira es recto. Cambiar una variable cambia toda la web de una. El
 sistema completo está explicado en [`DISENO.md`](DISENO.md).
 
 Tres cosas que ya costaron caro y conviene saber:

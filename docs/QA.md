@@ -209,6 +209,33 @@ ahora espera 4 con familia y 5 con notas.
 (sin cambio); `/catalogo` 81 contra 77 con dos agentes usando la CPU en paralelo
 (ruido; LCP +150 ms). Se mide de nuevo en producción después de publicar.
 
+### Rediseño D, segunda vuelta (23 de octubre de 2026)
+
+Lo que vio Sebas en la vista previa y en el iPhone de su novia, y lo que salió
+al probar en los tres navegadores. Banco local: **84 de 84**.
+`scripts/qa/motores.py` (nuevo): **90 de 90** (Safari, Chrome y Firefox; 375,
+390, 768, 1024 y 1440; portada, ciudades, catálogo, ficha, hoja y carrito).
+
+| Error | Dónde | Causa | Arreglo |
+| --- | --- | --- | --- |
+| Botón del hero corrido a la derecha | Safari | inline-flex con el ancho del trazo puesto por aspect-ratio: la caja medía 228 px y el botón se salía | grilla con anchos explícitos |
+| Foto de la ficha aplastada a 55 px | Safari, celular | grilla con max-height y scroll, foto con overflow hidden | alto mínimo explícito |
+| La barra nunca quedaba fija | todos | `.tienda > header { position: relative }` le ganaba al sticky | sticky en esa misma regla |
+| Hero borroso | iPhone 3x, monitores > 1440 | se servía la de 780 px y la de 1440 estirada | AVIF, 1170 × 2532 en 3x, 2880 desde 1601 px |
+| Costura al costado de la foto de la ficha | celular | la franja estiraba el borde de la foto | pared vacía espejada |
+| CLS 0,013 en la vista previa | celular | cajas del hero centradas que cambiaban de ancho al llegar la letra y el precio | a todo el ancho, precio con lugar reservado: 0,009 |
+
+Chequeos que cambian por decisión de Sebas (dicen el porqué en el código):
+`FOTO-1` mide la pared vino (las 133 adentro); `E3-B4 texto` cuenta palabras de
+los párrafos y no de las filas de datos (las ciudades suman "es Baccarat Rouge
+540"); `E3-B7 bandas` compara 4 px de cada lado de la unión con tolerancia 8
+(la sombra de contacto del producto llega al borde; revisado a 2x, sin
+costura).
+
+**Seguridad** (`docs/SEGURIDAD.md`): CSP y HSTS sumados, `prerender.mjs`
+controla los hashes de los scripts en línea. Con la política puesta, banco 84
+de 84, motores 90 de 90 y ningún bloqueo en la consola de los tres navegadores.
+
 ### Rediseño visual D (rama `rediseno-visual`, 22 de octubre de 2026)
 
 Sin publicar: va a `main` solo con el OK de Sebas. Plan, decisiones y porqués en

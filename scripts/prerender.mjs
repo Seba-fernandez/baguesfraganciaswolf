@@ -223,3 +223,31 @@ console.log(`  cascara de /catalogo: ${kb(marcadoCatalogo.length)} de marcado en
  * que no sea /catalogo (incluido /panel). main.jsx la vacia y monta lo que
  * corresponde.
  */
+
+/**
+ * La politica de seguridad (Content-Security-Policy en vercel.json) solo deja
+ * correr los scripts en linea cuyo hash figura ahi. Si alguien cambia uno de
+ * los <script> de index.html (el de las fuentes o el de la vuelta del ingreso
+ * con Google), el navegador lo bloquea en silencio y, por ejemplo, el ingreso
+ * al panel deja de andar. Por eso el build se frena aca y dice que hash poner.
+ */
+{
+  const { createHash } = await import('node:crypto');
+  const csp = (JSON.parse(fs.readFileSync(path.join(RAIZ, 'vercel.json'), 'utf8')).headers || [])
+    .flatMap((h) => h.headers).find((h) => h.key === 'Content-Security-Policy')?.value || '';
+  const faltan = new Set();
+  for (const archivo of ['index.html', path.join('catalogo', 'index.html')]) {
+    const html = fs.readFileSync(path.join(DIST, archivo), 'utf8');
+    for (const [, atributos, cuerpo] of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/g)) {
+      if (/type="(application\/(ld\+)?json)"/.test(atributos)) continue;
+      const hash = `'sha256-${createHash('sha256').update(cuerpo).digest('base64')}'`;
+      if (!csp.includes(hash)) faltan.add(hash);
+    }
+  }
+  if (faltan.size) {
+    console.error(`  la politica de seguridad de vercel.json no tiene estos scripts en linea: ${[...faltan].join(' ')}`);
+    console.error('  sumalos a script-src (o saca el script en linea) y volve a correr el build');
+    process.exit(1);
+  }
+  console.log('  politica de seguridad: los scripts en linea coinciden con vercel.json');
+}

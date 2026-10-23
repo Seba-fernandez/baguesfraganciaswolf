@@ -40,6 +40,9 @@ http.createServer((req, res) => {
   for (const h of config.headers || []) {
     if (patron(h.source).test(ruta)) for (const { key, value } of h.headers) cabeceras[key] = value;
   }
+  // HSTS solo tiene sentido en https. En local (http) Safari lo aplica igual y
+  // pasa todo a https://localhost, que no existe: la pagina queda vacia.
+  delete cabeceras['Strict-Transport-Security'];
   res.writeHead(200, cabeceras);
   fs.createReadStream(f).pipe(res);
 }).listen(PUERTO, () => console.log(`dist/ como en Vercel: http://localhost:${PUERTO}`));

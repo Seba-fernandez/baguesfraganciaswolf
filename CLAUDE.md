@@ -185,8 +185,10 @@ borrar cuando el ciclo esté confirmado.
 
 ## 8. Fotos
 
-Todas salen a **900 × 1200 (3:4), llenan el cuadro y viven en el mismo estudio
-espresso**, en la tarjeta y en la ficha. Lo arma `scripts/fotos/componer.mjs` a
+Todas salen a **900 × 1200 (3:4), llenan el cuadro y viven en la misma pared
+vino del hero** (rediseño D, 23/10/2026; antes, el estudio espresso), en la
+tarjeta y en la ficha. Paso extra después de componer: `docs/EDITAR.md`, "Las
+fotos en la pared vino". Lo arma `scripts/fotos/componer.mjs` a
 partir de `scripts/fotos/fuentes.json` (detalle en [`scripts/fotos/README.md`](scripts/fotos/README.md)).
 Cada entrada tiene un `"tratamiento"`:
 
@@ -254,7 +256,12 @@ nombres, cifras e itálicas (el cero de Melodrama viene cruzado: nunca en
 números), IBM Plex Mono para datos y La Belle Aurore para un rótulo a mano.
 Una sección de papel lleva la clase `.dia`, que redefine colores y apaga el
 vidrio. Portada: hero, cinta, Las ciudades, familias, destacados en banda vino,
-cómo funciona, antes de pedir, pie de noche con la marca a todo el ancho.
+(lo que me escriben, oculto), cómo funciona, antes de pedir, pie de noche con
+la marca a todo el ancho. **Regla de formas:** lo que se toca es redondo
+(botones, chips, stepper); lo que se mira es recto (fotos, tarjetas, ficha,
+cajón, filas de tamaño). Botón principal plano: crema de noche, rubí de día.
+La barra queda fija y toma la luz de la sección de abajo (`data-luz`). La ficha
+de escritorio tiene alto fijo y la foto llena la columna (alto × 3/4).
 
 **Rediseño C, "A través del vidrio"** (antecedente; detalle en
 [`docs/PORTADA-C.md`](docs/PORTADA-C.md)): el hero es una
@@ -353,6 +360,22 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
 - **El código de proveedora no es el SKU de las tiendas.** bagues.com.ar y
   unlock.com.ar usan SKU como `BNUDLINE` o `ULSAUVAH`: buscar `10282038` ahí no
   encuentra nada. No escribir que "se puede buscar en la web de Bagués".
+- **Safari calcula distinto que Chrome.** El botón del hero (inline-flex con
+  anchos por aspect-ratio) se le salía a la derecha, y en la ficha (grilla con
+  max-height y scroll) aplastaba la foto a 55 px. Chrome se veía bien. Por eso
+  existe `scripts/qa/motores.py`: Safari, Chrome y Firefox antes de publicar.
+- **`.tienda > header { position: relative }` le ganaba al sticky de la barra**:
+  nunca había quedado fija. El encabezado de la tienda no lleva `position`
+  salvo `sticky`.
+- **La CSP bloquea en silencio un script en línea que cambió.** Si se toca un
+  `<script>` de `index.html`, hay que poner su hash nuevo en `vercel.json`;
+  `prerender.mjs` frena el build si falta (detalle en `docs/SEGURIDAD.md`).
+- **HSTS y `upgrade-insecure-requests` rompen Safari en local** (http): pasa todo
+  a https://localhost. `servir.mjs` no manda HSTS y la CSP no lleva upgrade.
+- **Firefox de Playwright no conoce el certificado del proxy del contenedor**:
+  la base no contesta y parece un error de CORS. `motores.py` le pasa
+  `ignore_https_errors`; no es un problema de la tienda.
+- **El cero de Melodrama viene cruzado** (Ø): nunca en números.
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.
@@ -365,6 +388,7 @@ npm run dev     # y mirarlo
 node scripts/qa/servir.mjs &                                  # dist/ como Vercel
 python3 scripts/qa/recorrido.py --url http://localhost:4173   # sin FALLA nuevos
 node scripts/qa/busqueda.test.mjs                             # si se tocó el buscador
+python3 scripts/qa/motores.py                                 # Safari, Chrome y Firefox, 5 anchos
 ```
 
 **El banco de pruebas es obligatorio antes de publicar** (cómo y qué mide, en
@@ -435,6 +459,7 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
 | [`docs/DISENO.md`](docs/DISENO.md) | Sistema visual de la tienda y del panel |
 | [`docs/QA.md`](docs/QA.md) | Registro de errores y cómo correr el banco de pruebas |
 | [`docs/KIT.md`](docs/KIT.md) | El esqueleto reutilizable en otro proyecto |
+| [`docs/SEGURIDAD.md`](docs/SEGURIDAD.md) | Revisión de seguridad: permisos, puerta de pedidos, cabeceras y CSP, y lo que queda para autorizar |
 | [`docs/PLAN-PORTADA-D.md`](docs/PLAN-PORTADA-D.md) | Plan del rediseño D: guion de color, letra, decisiones de Sebas y cambios con su porqué |
 | [`docs/RECETA-VISUAL.md`](docs/RECETA-VISUAL.md) | De las referencias a los assets: ADN medido, letra, guion de color, pared, productos, vidrio y adorno, para calcar en otro proyecto |
 | [`scripts/fotos/README.md`](scripts/fotos/README.md) | El pipeline de fotos |

@@ -112,6 +112,14 @@ capturas no se ve nada (ni el título).
 opcional. Los textos de la sección están en `OPINIONES` de
 `src/config/contenido.js`.
 
+## Prender la sección "¿Son truchos?"
+
+Está armada y oculta (Bagués contra un perfume de vidriera, por cómo se usa).
+Para prenderla, `MOSTRAR_DUDA = true` en `src/config/ajustes.js`. Los textos
+(título, bajada, los dos lados, cierre y botón) están en `DUDA`, en
+`src/config/contenido.js`. Regla: comparar por uso y precio, nunca decir que
+"duran igual" ni nombrar marcas.
+
 ## Agregar o cambiar fotos del pipeline
 
 Cada foto tiene su fuente anotada en **`scripts/fotos/fuentes.json`**: una

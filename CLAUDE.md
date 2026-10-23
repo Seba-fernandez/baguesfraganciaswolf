@@ -88,6 +88,7 @@ src/
                     ficha, pirámide, notas cortas de la tarjeta, ahorro
     promos.js       el 2x1 por grupos
     scrollSuave.js  Lenis en escritorio y irASeccion (saltos a #seccion medidos)
+    alScroll.js     un solo oyente de scroll, una pasada por cuadro (barra, volver arriba)
     whatsapp.js     el mensaje del pedido
     vidrioLiquido.js  la lente del vidrio de la tienda
   data/           constantes y fotos.js (índice generado)
@@ -137,7 +138,9 @@ Cada presentación:
 ```
 
 - **`codigo` es sagrado.** Es con lo que Sebas carga la orden en el sistema de la
-  proveedora. Viaja de la ficha al pedido, a la base y al WhatsApp. Ningún
+  proveedora. Viaja del producto al pedido, a la base y al WhatsApp (desde el
+  23/10/2026 ya no se muestra en la ficha ni en el chat de ejemplo: a la
+  clienta no le sirve). Ningún
   cambio puede borrarlo; si algo lo pone en riesgo, se frena.
 - `linea`: `bagues` o `unlock`. Códigos Bagués empiezan con `1028`, Unlock con `2028`.
 - `nombre_proveedor`: en Bagués es el nombre de la caja (Arizona). En Unlock es
@@ -390,6 +393,22 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
 - **El teléfono de una clienta es la llave para no duplicarla.** Todo lo que
   guarda un teléfono pasa por `telefonoArgentino()` (o `telefono_ar()` en la
   base): `549` + 10 cifras. Un número guardado de otra forma crea otra clienta.
+- **Una sombra desenfocada adentro del tamaño de su objeto queda con bordes
+  rectos.** La sombra en la pared de las fotos se cortaba en el borde del
+  recorte y detrás de los frascos finos quedaba un rectángulo, como un parche.
+  `sombras_y_reflejo` ahora desenfoca con margen (3 sigmas).
+- **La hoja de una familia vive en la dirección** (`/?familia=`), encima de la
+  portada, con su capa a z 90/91: tapa la barra (30) para que tocar afuera no
+  caiga en la marca; la ficha (100/101) va por encima. Con otra capa encima
+  queda `inert` y no cierra con Escape (si no, un Escape cerraba dos).
+- **El visor de Instagram mide 664 de alto.** El botón del hero tiene que
+  terminar antes (E3-B1 664); por eso el precio del celular no baja más.
+- **Lighthouse contra una vista previa de Vercel da peor que contra
+  producción** con el mismo código (el documento llega ~100 ms más tarde y la
+  simulación lo multiplica: 2,76 contra 2,35 s). Para decidir, comparar en
+  local las dos versiones intercaladas (la otra en un `git worktree`, servida
+  con `PORT=4174 node scripts/qa/servir.mjs`) o medir producción después de
+  publicar.
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.

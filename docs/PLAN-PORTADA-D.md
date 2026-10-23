@@ -87,6 +87,34 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
   (`lib/datosCliente.js`, migración 0012; detalle en `docs/SEGURIDAD.md`).
 - **Video antes y después** para LinkedIn: `scripts/video/` (README ahí).
 
+## Cuarta vuelta (23/10, la crítica de UX y lo que decidió Sebas)
+
+- **Sin datos que no le sirven a la clienta:** la ficha ya no muestra el
+  código de la proveedora ni manda a unlock.com.ar o bagues.com.ar (era
+  invitarla a comprar directo); el chat de ejemplo va sin códigos; el aviso
+  corto del catálogo baja al final. El código sigue llegando en el WhatsApp.
+- **Ficha como carta:** sube en 0,28 s con el fondo opaco (no negro), y nunca
+  se abre vacía: arranca con la foto chica de la tarjeta y la grande se pide
+  al tocar. Tamaño y precio arriba; Familia, Salida, Corazón y Fondo en
+  líneas con rótulo en negrita, al estilo del elenco de Netflix.
+- **Familias:** abren una hoja encima de la portada (`/?familia=`), con las
+  tarjetas del catálogo. Tocar afuera o "atrás" la cierra y se queda en la
+  sección. En el celular, puntitos de posición debajo de la fila.
+- **Destacados:** sin "desde", flecha izquierda oculta al inicio y un + de
+  vidrio líquido sobre la foto.
+- **Tarjetas** con el mismo dato en todos lados: la familia olfativa.
+- **Hero:** sin sello ni segundo "Cómo funciona"; el precio en la zona
+  oscura; el vidrio rehorneado con más refracción y menos desenfoque, sin
+  costura en escritorio y con el arco más grande en el celular.
+- **Las ciudades:** el perfume pegado a su ciudad, el precio abajo y una
+  flecha. **Arena** muy fina en todas las secciones de papel.
+- **Antes de pedir:** una columna en el celular y "Pedí hasta el martes y te
+  lo entrego desde el viernes".
+- **Fotos:** las 133 recompuestas sin el rectángulo de sombra detrás.
+- **"¿Son truchos?":** armada y oculta hasta que Sebas apruebe el texto.
+- **Rendimiento:** un oyente de scroll y un IntersectionObserver para toda la
+  tienda.
+
 ## Guion de la portada
 
 | # | Sección | Luz | Qué cambia |

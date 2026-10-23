@@ -210,6 +210,39 @@ ahora espera 4 con familia y 5 con notas.
 (sin cambio); `/catalogo` 81 contra 77 con dos agentes usando la CPU en paralelo
 (ruido; LCP +150 ms). Se mide de nuevo en producción después de publicar.
 
+### Cuarta vuelta: la crítica de UX (23 de octubre de 2026)
+
+Lo que pidió Sebas después de la crítica de UX y UI (detalle en
+`docs/PLAN-PORTADA-D.md`, "Cuarta vuelta"). Banco local: **84 de 84 que
+aplican**; `motores.py`: **sin fallas**; hoja de familias probada aparte en
+Safari y Firefox (abre, tarjetas, tocar afuera cierra y queda en el mismo
+lugar).
+
+| Error o pedido | Causa | Arreglo |
+| --- | --- | --- |
+| Rectángulo detrás de los frascos finos (L'Eau d'Issey, el primero del catálogo) | la sombra en la pared se desenfocaba adentro del tamaño del recorte y se cortaba en su borde | desenfoque con margen; las 133 recompuestas |
+| La ficha aparecía con el fondo y la foto después | la foto grande recién se pedía al abrir | foto chica de la tarjeta debajo y la grande pedida al tocar |
+| Pantallazo del pie al tocar una familia | era un cambio de página | hoja encima de la portada (`/?familia=`) |
+| Tocar afuera de esa hoja caía en la marca y llevaba al inicio | la barra no quedaba tapada | capa a z 90 sobre la barra (30) |
+| Franja gris debajo de la barra en el catálogo | el papel se fundía adentro de la propia barra, sobre el fondo oscuro del body | se funde solo en los 28 px de abajo |
+| La barra se transparentaba sobre la cinta de nombres | la cinta está dentro del hero y tomaba la luz "hero" | la cinta cuenta como noche |
+| Al bajar el precio del hero, el botón quedaba fuera del visor de Instagram (697 > 664) | lo marcó `E3-B1 664` | la escena sube 20 px y el bloque se aprieta: botón en 654 |
+
+Chequeos que cambian por decisión de Sebas: `E3-A3 codigo` (la ficha ya no
+muestra el código), `E3-A3 verificar` (sin links a las proveedoras),
+`E3-B3 chat` (chat sin códigos), `E3-B1 844` (sin segundo "Cómo funciona"),
+`E3-B1 sello` (sin sello), `CONFIANZA-1 portada` (textos nuevos de Antes de
+pedir).
+
+**Lighthouse y las vistas previas de Vercel: trampa.** Contra producción, la
+vista previa nueva dio 95 contra 97 (LCP 2,76 contra 2,35 s). No es el
+código: en local, las dos versiones intercaladas cinco veces dieron LCP 3.266
+contra 3.203 ms (ruido). Las vistas previas responden el documento ~100 ms
+más tarde y la simulación de Lighthouse lo multiplica. Comparar siempre en
+local (la otra versión en un `git worktree`, servida con
+`PORT=4174 node scripts/qa/servir.mjs`) o contra producción después de
+publicar.
+
 ### Nombre y WhatsApp del pedido (23 de octubre de 2026)
 
 Pedido de Sebas: controlar los datos en todo lugar donde se escriben, sin ser

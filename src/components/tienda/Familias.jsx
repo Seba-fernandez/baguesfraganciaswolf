@@ -20,7 +20,7 @@ import s from './Familias.module.css';
 export default function Familias() {
   const ref = useReveal();
   return (
-    <section className={s.section} id="familias" ref={ref} aria-labelledby="familias-titulo">
+    <section className={`dia ${s.section}`} id="familias" ref={ref} aria-labelledby="familias-titulo">
       <div className="tw">
       <h2 id="familias-titulo" className={s.titulo}>{FAMILIAS_PORTADA.titulo}</h2>
       <p className={s.bajada}>{FAMILIAS_PORTADA.bajada}</p>

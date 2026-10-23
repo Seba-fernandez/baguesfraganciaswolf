@@ -281,9 +281,11 @@
 }
 
 /* El contenido va por encima del fondo. */
-.tienda > header, .tienda > main, .tienda > footer { position: relative; z-index: 1; }
-/* El encabezado encima del hero, que sube por detras de el. */
-.tienda > header { z-index: 5; }
+.tienda > main, .tienda > footer { position: relative; z-index: 1; }
+/* El encabezado encima del hero, que sube por detras de el, y fijo al bajar.
+   Antes esta regla le ponia position: relative y le ganaba al sticky de la
+   barra: nunca quedaba fija (visto por Sebas el 22/10). */
+.tienda > header { position: sticky; top: 0; z-index: 5; }
 
 /* ---------- lo que esta fuera de pantalla no se dibuja todavia ----------
    Con la portada pre-generada, el HTML llega con TODA la pagina escrita: el

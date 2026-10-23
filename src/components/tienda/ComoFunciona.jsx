@@ -37,7 +37,7 @@ export default function ComoFunciona({ settings, products = [] }) {
     : '';
 
   return (
-    <section className={s.section} id="como" ref={ref}>
+    <section className={`dia ${s.section}`} id="como" ref={ref}>
       <div className="tw">
       <header className={s.head}>
         <h2 className={s.titulo}>{COMO_FUNCIONA.titulo}</h2>

@@ -28,7 +28,7 @@ export default function Ciudades({ products = [], onOpen }) {
   }
 
   return (
-    <section className={s.section} id="ciudades" ref={ref} aria-labelledby="ciudades-titulo">
+    <section className={`dia ${s.section}`} id="ciudades" ref={ref} aria-labelledby="ciudades-titulo">
       <div className="tw">
         <header className={`${s.head} treveal`}>
           <h2 id="ciudades-titulo" className={s.titulo}>{CIUDADES.titulo}</h2>

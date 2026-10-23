@@ -44,17 +44,36 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
   // Y se trae el código del cajón en el primer rato libre, sin esperar a que lo
   // abran: así el primer toque no tiene espera en una conexión lenta. Es un
   // chunk de 2,5 kB y para cuando corre esto la primera pantalla ya está.
-  // Rediseño D: la barra es de noche (vino hondo, solida) salvo mientras
-  // flota sobre la escena del hero, donde queda transparente con un velo. Asi
-  // no queda un degradado oscuro manchando las secciones de papel.
+  // Rediseño D: la barra queda fija al bajar y toma la luz de lo que tiene
+  // debajo: 'hero' (velo sobre la escena), 'dia' (papel) o 'noche' (vino
+  // hondo). Se mira el elemento que esta justo abajo de la barra en cada
+  // cuadro de scroll (elementsFromPoint, una llamada por cuadro): con
+  // IntersectionObserver no alcanzaba, porque el catalogo arma sus secciones
+  // despues de que llegan los datos.
   const { pathname } = useLocation();
-  const [sobreHero, setSobreHero] = useState(pathname === '/');
+  const [luz, setLuz] = useState(pathname === '/' ? 'hero' : 'noche');
   useEffect(() => {
-    const hero = document.getElementById('inicio-hero');
-    if (!hero || !('IntersectionObserver' in window)) { setSobreHero(false); return undefined; }
-    const io = new IntersectionObserver(([e]) => setSobreHero(e.isIntersecting), { rootMargin: '-74px 0px 0px 0px', threshold: 0.12 });
-    io.observe(hero);
-    return () => io.disconnect();
+    let cuadro = 0;
+    const medir = () => {
+      cuadro = 0;
+      const barra = document.querySelector('.tienda > header');
+      const y = (barra?.offsetHeight || 74) + 2;
+      const debajo = document.elementsFromPoint(Math.min(24, innerWidth - 1), y).find((e) => !e.closest('.tienda > header'));
+      const nueva = !debajo ? 'noche'
+        : debajo.closest('#inicio-hero') ? 'hero'
+        : debajo.closest('.dia') ? 'dia'
+        : 'noche';
+      setLuz((vieja) => (vieja === nueva ? vieja : nueva));
+    };
+    const pedir = () => { if (!cuadro) cuadro = requestAnimationFrame(medir); };
+    pedir();
+    const t = setTimeout(pedir, 600); // el catalogo llega un rato despues
+    addEventListener('scroll', pedir, { passive: true });
+    addEventListener('resize', pedir);
+    return () => {
+      removeEventListener('scroll', pedir); removeEventListener('resize', pedir);
+      cancelAnimationFrame(cuadro); clearTimeout(t);
+    };
   }, [pathname]);
 
   useEffect(() => {
@@ -67,7 +86,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, sett
     <div className="tienda" ref={raiz}>
       <div className="tfondo" aria-hidden="true" />
 
-      <header className={s.bar} data-luz={sobreHero ? 'hero' : 'noche'} inert={inert}>
+      <header className={`${s.bar} ${luz === 'dia' ? 'dia' : ''}`} data-luz={luz} inert={inert}>
         <Link to="/" className={s.marca}>
           {MARCA.nombre} <span className={s.marcaWolf}>{MARCA.complemento}</span>
         </Link>

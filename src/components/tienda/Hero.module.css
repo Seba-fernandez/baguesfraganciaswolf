@@ -249,6 +249,7 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   .caja { height: 184vw; } /* 718 de 844: botón hasta 660 y el enlace abajo */
   .escena {
     background-image: url('/hero/c/hero_c_780x1688.webp');
+    background-image: image-set(url('/hero/c/hero_c_780x1688.avif') type('image/avif'), url('/hero/c/hero_c_780x1688.webp') type('image/webp'));
     background-size: 100% auto;
     background-position: 50% 0;
   }
@@ -295,6 +296,7 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   .caja { height: clamp(620px, 100svh, 1000px); }
   .escena {
     background-image: url('/hero/c/hero_c_1440x900.webp');
+    background-image: image-set(url('/hero/c/hero_c_1440x900.avif') type('image/avif'), url('/hero/c/hero_c_1440x900.webp') type('image/webp'));
     background-size: cover;
     background-position: 70% 50%;
   }
@@ -312,8 +314,25 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   .metaDesde { font-size: clamp(2.2rem, 3.2vw, 3rem); }
   .acciones { margin-top: 16px; }
 }
+/* Celular 3x (iPhone): la de 1170 x 2532. */
+@media (max-width: 599px) and (min-resolution: 2.5dppx) {
+  .escena {
+    background-image: url('/hero/c/hero_c_1170x2532.webp');
+    background-image: image-set(url('/hero/c/hero_c_1170x2532.avif') type('image/avif'), url('/hero/c/hero_c_1170x2532.webp') type('image/webp'));
+  }
+}
 @media (min-width: 600px) and (min-resolution: 1.5dppx) {
-  .escena { background-image: url('/hero/c/hero_c_2880x1800.webp'); }
+  .escena {
+    background-image: url('/hero/c/hero_c_2880x1800.webp');
+    background-image: image-set(url('/hero/c/hero_c_2880x1800.avif') type('image/avif'), url('/hero/c/hero_c_2880x1800.webp') type('image/webp'));
+  }
+}
+/* Pantallas grandes a 1x: la de 1440 estirada se veia blanda. */
+@media (min-width: 1601px) {
+  .escena {
+    background-image: url('/hero/c/hero_c_2880x1800.webp');
+    background-image: image-set(url('/hero/c/hero_c_2880x1800.avif') type('image/avif'), url('/hero/c/hero_c_2880x1800.webp') type('image/webp'));
+  }
 }
 @media (min-width: 900px) {
   .linea { white-space: nowrap; }

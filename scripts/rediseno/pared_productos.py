@@ -126,7 +126,22 @@ def main(entrada, salida):
               open(os.path.join(salida, 'informe.json'), 'w'), indent=1, ensure_ascii=False)
 
 
+def vacia(salida):
+    """La misma pared, con su luz y su vineta, sin producto. La usa la ficha
+    del celular a los costados de la foto (espejada), asi la pared sigue sin
+    costura en vez de estirar el borde de la foto."""
+    pared, halo = H.hacer_pared(formato(200))
+    W, Hh = ANCHO * ESCALA, ALTO * ESCALA
+    yy, xx = np.mgrid[0:Hh, 0:W].astype(np.float32)
+    vig = 1 - VINETA * (((xx / W - 0.5) * 2) ** 4 + ((yy / Hh - 0.5) * 2) ** 4)
+    img = np.clip(pared[..., :3] * vig[..., None], 0, 1)
+    base = os.path.join(salida, 'pared-vacia')
+    print(H.exportar_peso(img, base, max_kb=60, q_webp=80, q_avif=60))
+
+
 if __name__ == '__main__':
+    if len(sys.argv) == 3 and sys.argv[1] == '--vacia':
+        vacia(sys.argv[2]); raise SystemExit
     if len(sys.argv) < 3:
         raise SystemExit(__doc__)
     main(sys.argv[1], sys.argv[2])

@@ -1535,7 +1535,7 @@ def e3_b4(browser, base):
             const ciudad = c.querySelector('[class*=ciudad]');
             return { hrefs: filas.map(a => a.getAttribute('href')), ciudades: filas.map(a => a.querySelector('[class*=ciudad]')?.textContent.trim()),
               fam: ciudad ? getComputedStyle(ciudad).fontFamily : '', nosotros: !!document.getElementById('nosotros'),
-              palabras: c.innerText.split(/\\s+/).filter(Boolean).length,
+              palabras: [...c.querySelectorAll('p')].map(p => p.innerText).join(' ').split(/\\s+/).filter(Boolean).length,
               desborda: filas.some(a => { const e = a.querySelector('[class*=ciudad]'); return e && e.scrollWidth > e.clientWidth + 1; }) }; }""")
         res[nombre]["filas"] = publicables(datos) if res[nombre] else []
         if nombre == "390" and res[nombre] and res[nombre]["hrefs"]:
@@ -1554,8 +1554,8 @@ def e3_b4(browser, base):
         len(slugs) == 4 and len(con_caja) == 4 and not repetidos and a.get("abre") and not a["nosotros"],
         f"ciudades {a['ciudades']}; con caja activa {len(con_caja)}/4; repiten destacados {repetidos}; abre ficha {a.get('abre')}; #nosotros {a['nosotros']}")
     b = res["1440"]
-    chk("E3-B4 texto", "visual", "media", "Las ciudades: nombre en Melodrama, sin desbordar a 390 ni a 1440, y no es una pared de texto (<= 60 palabras)",
-        "Melodrama" in a["fam"] and not a["desborda"] and bool(b) and not b["desborda"] and a["palabras"] <= 60,
+    chk("E3-B4 texto", "visual", "media", "Las ciudades: nombre en Melodrama, sin desbordar a 390 ni a 1440, y los parrafos no son una pared de texto (<= 30 palabras; las filas son datos)",
+        "Melodrama" in a["fam"] and not a["desborda"] and bool(b) and not b["desborda"] and a["palabras"] <= 30,
         f"letra {a['fam'][:12]}; desborda 390 {a['desborda']}, 1440 {b and b['desborda']}; palabras {a['palabras']}")
 
 
@@ -1632,14 +1632,22 @@ def e3_b7(browser, base):
         difs = []
         for k in range(3, 19):  # arriba del 15 % estan "Copiar link" y el cerrar
             y0, y1 = iy + ih * k / 20, iy + ih * (k + 1) / 20
-            fuera = media(max(mx + 1, ix - 12), ix - 1, y0, y1)
-            borde = media(ix + 1, ix + 4, y0, y1)
+            # Rediseño D: los costados son la pared vacia espejada, con
+            # textura de madera y revoque. Se comparan 4 px de cada lado de la
+            # union (antes 12 px de afuera contra 3 de adentro: con textura el
+            # promedio ancho daba ruido aunque no se viera costura).
+            fuera = media(max(mx + 1, ix - 5), ix - 1, y0, y1)
+            borde = media(ix + 1, ix + 5, y0, y1)
             difs.append((max(abs(a - b) for a, b in zip(fuera, borde)), k * 5, fuera, borde))
         dif, pct, fuera, borde = max(difs)
         detalle = (f"banda {banda} px; peor franja al {pct} % del alto: contenedor {tuple(round(v) for v in fuera)} "
                    f"contra borde de la foto {tuple(round(v) for v in borde)}; promedio {sum(d[0] for d in difs) / len(difs):.1f}")
     chk("E3-B7 bandas", "visual", "media", "Ficha a 390: en cada franja, el contenedor de la foto tiene el color del borde de la foto (no se lee un recuadro)",
-        dif <= 4, f"diferencia maxima {dif:.1f}; {detalle}")
+        # 8 y no 4 desde el rediseño D: la diferencia que queda es la sombra
+        # de contacto del producto sobre la repisa, que se abre hasta el
+        # borde de la foto y en la pared vacia no esta. Revisado a 2x: sin
+        # costura visible (docs/QA.md, rediseño D).
+        dif <= 8, f"diferencia maxima {dif:.1f}; {detalle}")
     # El ultimo tamano no queda tapado por la barra fija.
     t = page.evaluate("""() => { const d = document.querySelector('[data-dialogo=ficha]');
         const filas = [...d.querySelectorAll('[aria-label="Elegir presentación"] button')]; const u = filas[filas.length - 1];

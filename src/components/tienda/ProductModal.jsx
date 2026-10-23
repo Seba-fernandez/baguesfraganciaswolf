@@ -110,11 +110,22 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
             linea={elegida?.linea}
             sizes="(max-width: 767px) 75vw, 640px"
           />
+          {/* Los costados en el celular. Las fotos del pipeline viven todas
+              en la misma pared: a los costados va esa pared vacia, espejada,
+              y sigue sin costura. Una foto subida a mano desde el panel no
+              tiene esa pared: ahi se estira su propio borde, como antes. */}
           {fondoFoto && (
-            <>
-              <span className={`${s.banda} ${s.bandaIzq}`} style={{ backgroundImage: `url(${fondoFoto})` }} aria-hidden="true" />
-              <span className={`${s.banda} ${s.bandaDer}`} style={{ backgroundImage: `url(${fondoFoto})` }} aria-hidden="true" />
-            </>
+            producto.imagen_url ? (
+              <>
+                <span className={`${s.banda} ${s.bandaIzq}`} style={{ backgroundImage: `url(${fondoFoto})` }} aria-hidden="true" />
+                <span className={`${s.banda} ${s.bandaDer}`} style={{ backgroundImage: `url(${fondoFoto})` }} aria-hidden="true" />
+              </>
+            ) : (
+              <>
+                <span className={`${s.banda} ${s.pared} ${s.bandaIzq}`} aria-hidden="true" />
+                <span className={`${s.banda} ${s.pared} ${s.bandaDer}`} aria-hidden="true" />
+              </>
+            )
           )}
         </div>
 

@@ -93,7 +93,7 @@ export const DESTACADOS = {
 export const CIUDADES = {
   titulo: 'Las ciudades',
   rotulo: 'cómo leer la caja',
-  bajada: 'El perfume que ya conocés viene en una caja con nombre de ciudad. Así la vas a reconocer cuando te llegue.',
+  bajada: 'El perfume que ya conocés viene en una caja con nombre de ciudad. Así la reconocés cuando te llega.',
   es: 'es',
   verTodas: 'Ver todas las cajas',
   abrir: 'Ver {perfume}, caja {ciudad}',
@@ -283,8 +283,8 @@ export const ANTES_DE_PEDIR = {
   // una frase entera, no un rotulo: mucha clientela es gente grande (pedido de
   // Sebas, 23/10). {monto} es el envio gratis.
   datos: [
-    { cifra: '50 %', titulo: 'Seña para reservar', texto: 'El resto lo pagás al retirar o al recibir. Transferencia o efectivo.' },
-    { cifra: '{monto}', titulo: 'Desde ahí, envío gratis', texto: 'A todo el país por correo. Si tu pedido es menor, el envío lo pagás vos.' },
+    { cifra: '50 %', titulo: 'Seña del 50 % para reservar', texto: 'El resto lo pagás al retirar o al recibir. Transferencia o efectivo.' },
+    { cifra: '{monto}', titulo: 'Desde ahí, envío gratis', texto: 'A todo el país por correo. Gratis desde {monto}; si tu pedido es menor, el envío lo pagás vos.' },
     { cifra: 'Córdoba', titulo: 'Retiro o envío en capital', texto: 'Lo retirás o te lo llevo. El punto de retiro te lo paso por WhatsApp.' },
     { cifra: 'Al cierre', titulo: 'Cuándo te llega', texto: 'Depende del cierre del ciclo. Te confirmo la fecha por WhatsApp.' },
   ],

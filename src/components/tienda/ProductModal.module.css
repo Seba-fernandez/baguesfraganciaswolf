@@ -94,11 +94,21 @@
 .banda {
   position: absolute; top: 0; bottom: 0; z-index: 0;
   width: max(0px, calc((100% - 34.5dvh) / 2 + 2px));
-  background-repeat: no-repeat; background-size: 3300% 100%;
+  /* 1 % del borde y no 3 %: las fotos de la pared vino traen viñeta y el
+     borde exterior es mas oscuro que el promedio de una franja ancha. */
+  background-repeat: no-repeat; background-size: 10000% 100%;
   pointer-events: none;
 }
 .bandaIzq { left: 0; background-position: left top; }
 .bandaDer { right: 0; background-position: right top; }
+/* La pared vacia (public/fondo/pared-vacia-360.webp, la hace
+   pared_productos.py --vacia): al alto de la foto y espejada, asi el borde de
+   la pared queda pegado al mismo borde de la foto. */
+.pared {
+  background-image: url('/fondo/pared-vacia-360.webp');
+  background-size: auto 100%;
+  transform: scaleX(-1);
+}
 
 /* Orden para decidir (celular): para, nombre, frase, tamanos, piramide,
    descripcion, aviso y la barra de agregar pegada abajo. */

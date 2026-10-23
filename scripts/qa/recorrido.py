@@ -387,8 +387,23 @@ def flujo_pedido(browser, base):
     # paso de datos
     page.locator("[role=dialog][aria-label='Tu pedido'] .tbtn.wide").last.click()
     page.wait_for_timeout(400)
-    page.fill("#co-nombre", "Prueba QA")
-    page.fill("#co-tel", "351 555 1234")
+    # DATOS-1: datos mal escritos no salen y cada campo dice que corregir;
+    # bien escritos de cualquier forma salen normalizados (lib/datosCliente.js).
+    llamadas = []
+    page.on("request", lambda r: llamadas.append(r.post_data or "") if "rpc/crear_pedido_web" in r.url else None)
+    enviar = page.locator("[role=dialog][aria-label='Tu pedido'] .tbtn.wide").last
+    page.fill("#co-nombre", "A")
+    page.fill("#co-tel", "555 1234")
+    enviar.click()
+    page.wait_for_timeout(300)
+    avisos_mal = page.evaluate("""() => ({
+      nombre: document.querySelector('#co-nombre-aviso')?.innerText || '',
+      tel: document.querySelector('#co-tel-aviso')?.innerText || '',
+      foco: document.activeElement?.id || '',
+      invalido: document.querySelector('#co-nombre')?.getAttribute('aria-invalid') || '' })""")
+    llamadas_mal = len(llamadas)
+    page.fill("#co-nombre", "  Prueba   QA ")
+    page.fill("#co-tel", "+54 9 0351 15 555-1234")
     boton2 = page.locator("[role=dialog][aria-label='Tu pedido'] .tbtn.wide").last.inner_text().strip()
     page.locator("[role=dialog][aria-label='Tu pedido'] .tbtn.wide").last.click()
     page.wait_for_timeout(1500)
@@ -407,6 +422,15 @@ def flujo_pedido(browser, base):
             if pr.get("codigo"):
                 validos.add(str(pr["codigo"]))
 
+    if quiere("DATOS-1"):
+        cuerpo = json.loads(llamadas[0]) if llamadas else {}
+        chk("DATOS-1 avisos", "bloqueante", "alta", "Nombre y WhatsApp mal escritos: no se envia y cada campo avisa",
+            llamadas_mal == 0 and avisos_mal["nombre"] and avisos_mal["tel"] and avisos_mal["foco"] == "co-nombre"
+            and avisos_mal["invalido"] == "true",
+            f"llamadas: {llamadas_mal}; avisos: '{avisos_mal['nombre']}' / '{avisos_mal['tel']}'; foco en {avisos_mal['foco']}")
+        chk("DATOS-1 normaliza", "bloqueante", "alta", "Un WhatsApp escrito '+54 9 0351 15 555-1234' sale como 5493515551234",
+            cuerpo.get("p_telefono") == "5493515551234" and cuerpo.get("p_nombre") == "Prueba QA",
+            f"enviado: {cuerpo.get('p_nombre')!r}, {cuerpo.get('p_telefono')!r}")
     if quiere("UX-7"):
         anticipa = "whatsapp" in boton1.lower() and "whatsapp" in boton2.lower()
         chk("UX-7 enlace", "bloqueante", "alta", "Pantalla final con <a> real a WhatsApp (sin depender de window.open)",

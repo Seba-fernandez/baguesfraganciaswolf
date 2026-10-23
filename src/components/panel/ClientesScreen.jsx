@@ -30,7 +30,7 @@ export default function ClientesScreen() {
       </div>
 
       <div className={s.search}>
-        <input className={s.searchInput} placeholder="Buscar por nombre o teléfono" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input className={s.searchInput} placeholder="Buscar por nombre o teléfono" maxLength={60} value={q} onChange={(e) => setQ(e.target.value)} />
       </div>
 
       {visibles.length === 0 ? (
@@ -93,6 +93,7 @@ function ClienteSheet({ cliente, onClose, onUpdate }) {
             className={s.textarea}
             value={notas}
             onChange={(e) => setNotas(e.target.value)}
+            maxLength={2000}
             onBlur={() => onUpdate(cliente.id, { notas })}
             placeholder="Preferencias, dirección, lo que quieras recordar"
           />

@@ -76,6 +76,9 @@ src/
     busqueda.js     el buscador del catálogo (tolerante; pruebas en scripts/qa)
     cachePanel.js   memoria compartida del panel
     compartir.js    el link de cada ficha (/catalogo?aroma=) y copiarlo
+    datosCliente.js nombre y WhatsApp del pedido: tolerante con la forma
+                    (+54 9, 0351, 15), estricto con el contenido; la base
+                    aplica lo mismo (telefono_ar, migración 0012)
     familias.js     de familia_olfativa (texto libre) a las 5 familias del filtro
     filtros.js      Para, Familia, Minis y Rebajados, leídos de la dirección
     fotos.js        qué foto le toca a cada aroma (tienda y panel)
@@ -376,6 +379,13 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
   la base no contesta y parece un error de CORS. `motores.py` le pasa
   `ignore_https_errors`; no es un problema de la tienda.
 - **El cero de Melodrama viene cruzado** (Ø): nunca en números.
+- **El conector de Supabase cancela en silencio una consulta con texto que
+  parece un ataque** (por ejemplo una prueba de inyección con `drop table`
+  adentro de un string): devuelve `cancelled`, sin error. Para probar
+  inyección, usar comillas sueltas y símbolos, no comandos.
+- **El teléfono de una clienta es la llave para no duplicarla.** Todo lo que
+  guarda un teléfono pasa por `telefonoArgentino()` (o `telefono_ar()` en la
+  base): `549` + 10 cifras. Un número guardado de otra forma crea otra clienta.
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.
@@ -388,6 +398,7 @@ npm run dev     # y mirarlo
 node scripts/qa/servir.mjs &                                  # dist/ como Vercel
 python3 scripts/qa/recorrido.py --url http://localhost:4173   # sin FALLA nuevos
 node scripts/qa/busqueda.test.mjs                             # si se tocó el buscador
+node scripts/qa/datos.test.mjs                                # si se tocó nombre o teléfono
 python3 scripts/qa/motores.py                                 # Safari, Chrome y Firefox, 5 anchos
 ```
 

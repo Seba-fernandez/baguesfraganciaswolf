@@ -123,6 +123,7 @@ export default function PedidoSheet({ pedido, onClose, onUpdate, onDelete }) {
             placeholder="Qué le dijiste: si sabe que llega el viernes, si está esperando confirmación…"
             value={notas}
             onChange={(e) => setNotas(e.target.value)}
+            maxLength={2000}
             onBlur={() => guardarCampo({ notas_conversacion: notas })}
           />
         </div>

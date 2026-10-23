@@ -21,6 +21,7 @@ tercero está acotado, con dos mejoras para autorizar.
 | Dependencias | Bien. `npm audit`: 0 vulnerabilidades |
 | Cabeceras del sitio | **Mejorado hoy**: política de contenido (CSP) y HSTS |
 | Pedidos falsos | Acotado. Las dos mejoras, **autorizadas y aplicadas el 23/10** |
+| Nombre y teléfono | **Con reglas desde el 23/10**, en la tienda, el panel y la base |
 
 ## Lo que se revisó y cómo está
 
@@ -33,7 +34,7 @@ datos que la web muestra igual) y solo el admin lo cambia.
 **2. La única puerta de escritura: `crear_pedido_web()`.** Es `SECURITY
 DEFINER` a propósito (el aviso del panel de Supabase sobre eso es esperado):
 así la tienda puede crear un pedido sin poder leer ni tocar nada más. Ya
-valida: nombre de hasta 120 caracteres, teléfono de 8 a 15 dígitos, de 1 a 40
+valida: nombre y teléfono con reglas (abajo, migración 0012), de 1 a 40
 ítems, cantidad de 1 a 20, **el precio lo busca la base** (no se puede mandar
 un precio inventado), máximo 20 pedidos web por minuto y uno cada 15 segundos
 por teléfono.
@@ -74,6 +75,53 @@ permisos de cámara, micrófono, ubicación ni pago. **Sumado hoy:**
 
 Probado con la política puesta: banco 84 de 84 y `motores.py` (Safari, Chrome y
 Firefox, 5 anchos), sin un solo bloqueo en la consola.
+
+## Nombre y teléfono con reglas (migración `20261023_0012`)
+
+Pedido de Sebas: controlar los datos en todo lugar donde se escriben, sin ser
+rígido con la forma ("+54 9 351...", "+54 351...", "351...").
+
+**Inyección SQL: no hay por dónde.** Ni la tienda ni el panel arman una
+consulta con texto. La tienda manda el nombre y el teléfono como parámetros
+de `crear_pedido_web()` y la base los usa como valores, nunca como código. El
+panel usa el cliente de Supabase, que hace lo mismo. Un nombre como
+`'; drop table` se guardaría tal cual, como texto. Las reglas no tapan un
+agujero: dejan afuera datos sucios y números que después no abren un chat.
+
+**Las reglas (iguales en la tienda y en la base):**
+
+- **Teléfono:** se aceptan espacios, guiones, puntos, paréntesis y el `+`. Se
+  saca el 54, el 9 del celular, el 0 de larga distancia y el 15 que va
+  después de la característica. Tiene que quedar una característica argentina
+  (empieza con 1, 2 o 3) más el número: 10 cifras. Se guarda como
+  `549` + esas 10, el formato de WhatsApp. Un número de otro país escrito con
+  `+` se acepta tal cual si tiene de 8 a 15 cifras. Letras o símbolos: no.
+- **Nombre:** sin espacios de más; de 2 a 60 caracteres en la tienda (80 en la
+  base); letras de cualquier idioma, espacios, apóstrofo, guion y punto, con
+  al menos dos letras. Números y símbolos (`< > ; = @`...): no.
+
+**Dónde se aplican:** el carrito de la tienda (un aviso debajo de cada campo),
+la función de la base (`telefono_ar()` y `crear_pedido_web()`), el pedido
+manual del panel (así la misma clienta no queda dos veces con el número
+escrito distinto) y el WhatsApp de Ajustes (si está mal, no se guarda: todos
+los pedidos de la web irían a otro número). Buscadores con tope de 60
+caracteres y notas de 2.000.
+
+`telefono_ar()` no se puede llamar desde afuera (permiso quitado a `anon` y
+`authenticated`); solo la usa la función del pedido. La única clienta guardada
+estaba sin el 9 y se pasó al formato nuevo.
+
+**Efecto en la tienda que está publicada hoy:** la base ya tiene las reglas y
+la tienda vieja no. Un pedido con datos válidos entra igual. Uno con datos mal
+escritos, que antes entraba, ahora recibe el aviso de error y la invitación a
+seguir por WhatsApp. Al publicar el rediseño, el aviso pasa a estar en cada
+campo.
+
+Probado: 56 casos en `scripts/qa/datos.test.mjs`; en la base, 28 teléfonos,
+7 nombres, un pedido válido y 3 teléfonos inválidos, en una transacción que se
+deshace; ya aplicado, desde afuera con la clave pública (`nombre_invalido`,
+`telefono_invalido`, `item_invalido`, y `telefono_ar` sin permiso). Banco con
+`DATOS-1`.
 
 ## Autorizado y aplicado el 23/10 (migración `20261023_0011`)
 

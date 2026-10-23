@@ -149,8 +149,20 @@ export const PEDIDO = {
   telefono: 'Tu WhatsApp',
   enviar: 'Enviar pedido por WhatsApp',
   enviando: 'Enviando…',
-  faltaNombre: 'Poné tu nombre',
-  faltaTelefono: 'Poné un WhatsApp válido',
+  // Avisos del formulario, uno por cada motivo de lib/datosCliente.js.
+  nombreAvisos: {
+    vacio: 'Poné tu nombre',
+    corto: 'Poné tu nombre, con al menos dos letras',
+    largo: 'Es un poco largo: con nombre y apellido alcanza',
+    raro: 'Usá solo letras en el nombre',
+  },
+  telefonoAvisos: {
+    vacio: 'Poné tu WhatsApp',
+    letras: 'Usá solo números en el WhatsApp',
+    sin_area: 'Sumale la característica: 351 si sos de Córdoba',
+    invalido: 'Revisá el número: son 10 cifras con la característica, como 351 555 1234',
+  },
+  telefonoEjemplo: '351 555 1234',
   errorEnvio: 'No se pudo enviar. Probá de nuevo.',
   errorBase: 'No pude registrar el pedido. Probá de nuevo o escribime directo por WhatsApp.',
   // Pantalla final. El botón es un enlace real a WhatsApp con el pedido escrito.

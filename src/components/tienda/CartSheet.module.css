@@ -134,6 +134,8 @@
   border-radius: var(--r-pill); color: var(--ink); font-family: inherit; font-size: 0.95rem;
 }
 .input:focus { outline: none; border-color: var(--amber); }
+.input[aria-invalid='true'] { border-color: var(--danger); }
+.avisoCampo { margin: 0 0 6px; padding-left: 16px; color: var(--danger); font-size: 0.84rem; line-height: 1.45; }
 
 .ayuda { font-size: 0.86rem; color: var(--ink-dim); line-height: 1.6; margin-bottom: 4px; }
 .err {

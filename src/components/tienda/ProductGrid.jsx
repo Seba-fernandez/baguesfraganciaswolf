@@ -179,6 +179,7 @@ export default function ProductGrid({
           <input
             className={s.input}
             type="search"
+            maxLength={60}
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={CATALOGO.placeholderBusqueda}

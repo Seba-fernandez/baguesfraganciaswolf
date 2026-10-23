@@ -17,6 +17,7 @@ node scripts/qa/servir.mjs &                                  # dist/ como lo si
 python3 scripts/qa/recorrido.py --url http://localhost:4173   # local
 python3 scripts/qa/recorrido.py --url https://baguesfraganciaswolf.vercel.app --lh 5   # producción + Lighthouse
 node scripts/qa/busqueda.test.mjs                             # el buscador, sin navegador
+node scripts/qa/datos.test.mjs                                # nombre y WhatsApp del pedido, sin navegador
 ```
 
 - Imprime una tabla y escribe `scripts/qa/resultado.json` (no se versiona).
@@ -208,6 +209,27 @@ ahora espera 4 con familia y 5 con notas.
 **Lighthouse (local, intercalado con `main`, cinco corridas):** `/` 88 contra 89
 (sin cambio); `/catalogo` 81 contra 77 con dos agentes usando la CPU en paralelo
 (ruido; LCP +150 ms). Se mide de nuevo en producción después de publicar.
+
+### Nombre y WhatsApp del pedido (23 de octubre de 2026)
+
+Pedido de Sebas: controlar los datos en todo lugar donde se escriben, sin ser
+rígido con la forma. Banco local: **84 de 84 que aplican (86 chequeos, 2 sin
+aplicar)**, con dos nuevos.
+
+| Antes | Ahora | Dónde |
+| --- | --- | --- |
+| Nombre: cualquier texto de 1 a 120 caracteres | 2 a 60 (80 en la base), solo letras, espacios, apóstrofo, guion y punto | `lib/datosCliente.js`, `crear_pedido_web()` |
+| WhatsApp: 8 a 15 cifras cualesquiera; "555 1234" entraba y el chat no abría | 18 formas de escribir un celular entran y quedan `549` + 10 cifras; sin característica avisa "Sumale la característica" | igual, más `telefono_ar()` en la base |
+| Un solo aviso abajo del formulario | Un aviso debajo de cada campo, `aria-invalid` y el foco en el que hay que corregir | `CartSheet.jsx` |
+| El panel guardaba el teléfono como viniera: la misma clienta podía quedar dos veces | Pedido manual con la misma regla que la web | `useOrders.js` |
+| El WhatsApp de Ajustes se guardaba aunque estuviera mal (todos los pedidos irían a otro número) | Se guarda solo si es válido, ya normalizado | `AjustesScreen.jsx` |
+| Buscadores y notas sin tope | 60 caracteres los buscadores, 2.000 las notas | tienda y panel |
+
+Chequeos nuevos: `DATOS-1 avisos` ("A" y "555 1234" no se envían, los dos campos
+avisan, el foco va al nombre) y `DATOS-1 normaliza` ("+54 9 0351 15 555-1234"
+sale como `5493515551234`). Pruebas sin navegador: `datos.test.mjs` (56
+casos). La base se probó con los mismos casos en una transacción que se
+deshace y, ya aplicada, desde afuera con la clave pública.
 
 ### Rediseño D, segunda vuelta (23 de octubre de 2026)
 

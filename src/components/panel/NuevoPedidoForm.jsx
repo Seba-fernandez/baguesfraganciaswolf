@@ -84,11 +84,11 @@ export default function NuevoPedidoForm({ products, onClose, onCreate }) {
         <div className={s.row2}>
           <div className={s.field}>
             <label className={s.label}>Cliente</label>
-            <input className={s.input} value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre y apellido" />
+            <input className={s.input} value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre y apellido" maxLength={80} autoCapitalize="words" />
           </div>
           <div className={s.field}>
             <label className={s.label}>WhatsApp</label>
-            <input className={s.input} inputMode="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="351 555 1234" />
+            <input className={s.input} inputMode="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="351 555 1234" maxLength={24} />
           </div>
         </div>
 
@@ -155,7 +155,7 @@ export default function NuevoPedidoForm({ products, onClose, onCreate }) {
 
         <div className={s.field}>
           <label className={s.label}>Detalle de la conversación (opcional)</label>
-          <textarea className={s.textarea} value={notas} onChange={(e) => setNotas(e.target.value)}
+          <textarea maxLength={2000} className={s.textarea} value={notas} onChange={(e) => setNotas(e.target.value)}
             placeholder="Ej: pagó seña de $5000, sabe que retira el viernes" />
         </div>
 

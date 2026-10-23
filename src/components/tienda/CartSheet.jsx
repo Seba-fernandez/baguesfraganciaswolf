@@ -3,7 +3,8 @@ import { useCart } from '../../contexts/CartContext';
 import useCheckoutWeb from '../../hooks/useCheckoutWeb';
 import useDialogo from '../../hooks/useDialogo';
 import { pesos } from '../../lib/format';
-import { linkWhatsApp, mensajePedidoCliente, normalizarTelefono } from '../../lib/whatsapp';
+import { linkWhatsApp, mensajePedidoCliente } from '../../lib/whatsapp';
+import { nombreCliente, telefonoArgentino, NOMBRE_MAX } from '../../lib/datosCliente.js';
 import { detalleLinea } from '../../lib/producto';
 import { envioGratis } from '../../lib/envio';
 import { PEDIDO, conDatos } from '../../config/contenido';
@@ -18,6 +19,10 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [formErr, setFormErr] = useState(null);
+  // Un aviso por campo, debajo de cada uno: así se sabe cuál corregir.
+  const [avisos, setAvisos] = useState({});
+  const refNombre = useRef(null);
+  const refTel = useRef(null);
   const [numeroPedido, setNumeroPedido] = useState(null);
   const [linkPedido, setLinkPedido] = useState(null);
   const hoja = useRef(null);
@@ -44,6 +49,7 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
       setCerrando(false);
       setPaso('carrito');
       setFormErr(null);
+      setAvisos({});
     }, 240);
     return () => clearTimeout(t);
   }, [open, montado]);
@@ -58,15 +64,25 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
 
   async function confirmar() {
     setFormErr(null);
-    if (!nombre.trim()) { setFormErr(PEDIDO.faltaNombre); return; }
-    if (normalizarTelefono(telefono).length < 8) { setFormErr(PEDIDO.faltaTelefono); return; }
+    // Se acepta el número escrito de cualquier forma (+54 9, 0351, 15...) y
+    // se manda ya normalizado; la base vuelve a controlar lo mismo.
+    const n = nombreCliente(nombre);
+    const t = telefonoArgentino(telefono);
+    const nuevos = {
+      nombre: n.ok ? null : PEDIDO.nombreAvisos[n.motivo],
+      telefono: t.ok ? null : PEDIDO.telefonoAvisos[t.motivo],
+    };
+    setAvisos(nuevos);
+    if (!n.ok) { refNombre.current?.focus(); return; }
+    if (!t.ok) { refTel.current?.focus(); return; }
+    setNombre(n.valor);
 
-    const { data, error: err } = await enviarPedido({ nombre, telefono, items });
+    const { data, error: err } = await enviarPedido({ nombre: n.valor, telefono: t.valor, items });
     if (err) { setFormErr(error || PEDIDO.errorEnvio); return; }
 
     setNumeroPedido(data?.numero ?? null);
     // El mensaje lleva el codigo de cada presentacion y el total YA con promo.
-    const msg = mensajePedidoCliente({ nombre, numero: data?.numero, items, total });
+    const msg = mensajePedidoCliente({ nombre: n.valor, numero: data?.numero, items, total });
     const link = settings?.whatsapp_owner ? linkWhatsApp(settings.whatsapp_owner, msg) : null;
     setLinkPedido(link);
     // Se intenta abrir solo, pero no se depende de eso: despues de esperar a
@@ -207,11 +223,25 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
 
             <div className={s.campo}>
               <label className="tlabel" htmlFor="co-nombre">{PEDIDO.nombre}</label>
-              <input id="co-nombre" className={s.input} value={nombre} onChange={(e) => setNombre(e.target.value)} autoComplete="name" />
+              <input
+                id="co-nombre" ref={refNombre} className={s.input} value={nombre}
+                onChange={(e) => { setNombre(e.target.value); if (avisos.nombre) setAvisos((a) => ({ ...a, nombre: null })); }}
+                autoComplete="name" autoCapitalize="words" enterKeyHint="next" maxLength={NOMBRE_MAX + 20}
+                aria-invalid={avisos.nombre ? 'true' : undefined}
+                aria-describedby={avisos.nombre ? 'co-nombre-aviso' : undefined}
+              />
+              {avisos.nombre && <p id="co-nombre-aviso" className={s.avisoCampo}>{avisos.nombre}</p>}
             </div>
             <div className={s.campo}>
               <label className="tlabel" htmlFor="co-tel">{PEDIDO.telefono}</label>
-              <input id="co-tel" className={s.input} inputMode="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="351 555 1234" autoComplete="tel" />
+              <input
+                id="co-tel" ref={refTel} className={s.input} type="tel" inputMode="tel" value={telefono}
+                onChange={(e) => { setTelefono(e.target.value); if (avisos.telefono) setAvisos((a) => ({ ...a, telefono: null })); }}
+                placeholder={PEDIDO.telefonoEjemplo} autoComplete="tel" enterKeyHint="send" maxLength={24}
+                aria-invalid={avisos.telefono ? 'true' : undefined}
+                aria-describedby={avisos.telefono ? 'co-tel-aviso' : undefined}
+              />
+              {avisos.telefono && <p id="co-tel-aviso" className={s.avisoCampo}>{avisos.telefono}</p>}
             </div>
 
             <p className={s.privacidad}>{PEDIDO.privacidad}</p>

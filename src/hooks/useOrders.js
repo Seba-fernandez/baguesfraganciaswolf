@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { normalizarTelefono } from '../lib/whatsapp';
+import { nombreCliente, telefonoArgentino } from '../lib/datosCliente.js';
+import { PEDIDO } from '../config/contenido';
 import { leerCache, guardarCache, traerConCache } from '../lib/cachePanel';
 
 const SELECT = `
@@ -60,10 +61,14 @@ export default function useOrders() {
    * items:   [{ product_id?, nombre_snapshot, ml, cantidad, precio_unitario }]
    */
   const createOrderManual = useCallback(async ({ cliente, items, estado = 'nuevo', notas_conversacion = '' }) => {
-    const nombre = (cliente?.nombre || '').trim();
-    const tel = normalizarTelefono(cliente?.telefono);
-    if (!nombre) return { error: 'Falta el nombre del cliente' };
-    if (tel.length < 8) return { error: 'Teléfono inválido' };
+    // Las mismas reglas que la tienda, así una clienta que pidió por la web y
+    // después por WhatsApp queda una sola vez (mismo teléfono normalizado).
+    const n = nombreCliente(cliente?.nombre);
+    const t = telefonoArgentino(cliente?.telefono);
+    if (!n.ok) return { error: PEDIDO.nombreAvisos[n.motivo] };
+    if (!t.ok) return { error: PEDIDO.telefonoAvisos[t.motivo] };
+    const nombre = n.valor;
+    const tel = t.valor;
     if (!items?.length) return { error: 'Agregá al menos un perfume' };
 
     const { data: customer, error: e1 } = await supabase

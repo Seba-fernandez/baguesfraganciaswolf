@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import useSettings from '../../hooks/useSettings';
-import { normalizarTelefono } from '../../lib/whatsapp';
+import { telefonoArgentino } from '../../lib/datosCliente.js';
+import { PEDIDO } from '../../config/contenido';
 import Toggle from '../ui/Toggle';
 import s from './panel.module.css';
 
@@ -16,6 +17,16 @@ export default function AjustesScreen() {
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const guardar = (k) => updateSettings({ [k]: form[k] });
+  // Un número mal guardado acá manda todos los pedidos de la web a otro
+  // WhatsApp: se guarda solo si es válido, y ya normalizado (549...).
+  const [avisoTel, setAvisoTel] = useState(null);
+  const guardarWhatsapp = () => {
+    const t = telefonoArgentino(form.whatsapp_owner);
+    if (!t.ok) { setAvisoTel(PEDIDO.telefonoAvisos[t.motivo]); return; }
+    setAvisoTel(null);
+    set('whatsapp_owner', t.valor);
+    if (t.valor !== settings?.whatsapp_owner) updateSettings({ whatsapp_owner: t.valor });
+  };
 
   if (loading) return <div className={s.loading}>Cargando ajustes…</div>;
 
@@ -43,11 +54,15 @@ export default function AjustesScreen() {
           className={s.input}
           inputMode="tel"
           value={form.whatsapp_owner || ''}
-          onChange={(e) => set('whatsapp_owner', normalizarTelefono(e.target.value))}
-          onBlur={() => guardar('whatsapp_owner')}
-          placeholder="5493511234567"
+          onChange={(e) => { set('whatsapp_owner', e.target.value); setAvisoTel(null); }}
+          onBlur={guardarWhatsapp}
+          placeholder="351 555 1234"
+          maxLength={24}
+          aria-invalid={avisoTel ? 'true' : undefined}
         />
-        <span className={s.cardMeta}>Código de país + área + número, sin “+” ni espacios.</span>
+        <span className={s.cardMeta} style={avisoTel ? { color: 'var(--danger)' } : undefined}>
+          {avisoTel || 'Escribilo como quieras (351 555 1234, +54 9 351...): se guarda en el formato de WhatsApp.'}
+        </span>
       </div>
 
       <div className={s.field}>

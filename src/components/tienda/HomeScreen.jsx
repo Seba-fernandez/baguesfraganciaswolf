@@ -6,6 +6,8 @@ import Destacados from './Destacados';
 import Opiniones from './Opiniones';
 import ComoFunciona from './ComoFunciona';
 import AntesDePedir from './AntesDePedir';
+import Duda from './Duda';
+import { MOSTRAR_DUDA } from '../../config/ajustes';
 
 /**
  * Página de inicio (rediseño D, 22/10/2026). Sigue el guion de color de
@@ -43,6 +45,8 @@ export default function HomeScreen() {
       <Ciudades products={products} onOpen={abrir} />
       <Familias onAbrir={abrirFamilia} />
       <Destacados products={products} onOpen={abrir} onElegir={elegirTamano} cargando={loading} />
+      {/* "¿Son truchos?": armada, oculta hasta que Sebas apruebe el texto. */}
+      {MOSTRAR_DUDA && <Duda />}
       <Opiniones />
       <ComoFunciona settings={settings} products={products} />
       <AntesDePedir settings={settings} />

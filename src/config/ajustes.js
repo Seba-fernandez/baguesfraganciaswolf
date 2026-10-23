@@ -29,6 +29,11 @@ export const CIUDADES_ELEGIDAS = [
  */
 export const ENVIO_GRATIS_DESDE = 60000;
 
+// La sección "¿Son truchos?" (Bagués contra un perfume de vidriera) está
+// armada pero oculta hasta que Sebas apruebe su título y su texto (23/10).
+// Se prende con true; el texto está en DUDA, en contenido.js.
+export const MOSTRAR_DUDA = false;
+
 /** Unidades maximas de un mismo aroma en un pedido. */
 export const CANTIDAD_MAXIMA = 9;
 

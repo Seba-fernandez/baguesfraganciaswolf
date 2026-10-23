@@ -74,6 +74,30 @@ export const FAMILIAS_PORTADA = {
   cerrar: 'Cerrar',
 };
 
+/**
+ * "¿Son truchos?": la charla que Sebas tiene con cada clienta que duda,
+ * puesta en la portada. OCULTA (MOSTRAR_DUDA en ajustes.js) hasta que él
+ * apruebe título y texto. Compara por cómo se usa y cuánto rinde la plata,
+ * nunca por calidad: no se nombran marcas ni se dice que "duran igual" (no se
+ * puede probar y es lo que cuida el aviso legal).
+ */
+export const DUDA = {
+  titulo: '¿Son truchos?',
+  bajada: 'No. Los hace Bagués, una casa que fabrica y rotula cada frasco con su nombre. El mismo perfil de aroma, sin la vidriera.',
+  vidriera: {
+    rotulo: 'Un perfume de vidriera',
+    cifra: '1',
+    texto: 'Uno solo, para cuidarlo. Lo usás poco para que no se termine.',
+  },
+  bagues: {
+    rotulo: 'Con Bagués',
+    cifra: '4',
+    texto: 'Varios por el precio de uno: uno para todos los días, otro para salir, otro para probar algo nuevo.',
+  },
+  cierre: 'Usá Bagués de diario y guardá el de vidriera para las ocasiones especiales. O no: muchos de los más ricos también salen de acá.',
+  boton: 'Ver el catálogo',
+};
+
 export const DESTACADOS = {
   titulo: 'Los que siempre salen',
   bajada: 'Los que vuelan cada mes. Si dudás, empezá por acá.',

@@ -274,6 +274,11 @@ deshace y, ya aplicada, desde afuera con la clave pública.
   `100dvh` como espera. Prueba (Playwright, 390 px, tocando el botón del
   hero): con red rápida y con red lenta, tocando enseguida o esperando, el
   pie no aparece en ningún cuadro.
+- **El volver arriba no se veía sobre papel:** vidrio con 5 % de tinte e
+  ícono hueso sobre papel claro. Ahora el vidrio toma la luz de lo que tiene
+  abajo (`data-luz`, medido con `elementsFromPoint` en el mismo cuadro de
+  scroll y otra vez en `scrollend`). Apareció además un borde de 2 px negro
+  (`outset`, el de fábrica del `<button>`) que nadie había sacado.
 - Banco local **86 chequeos, 0 fallan**; `motores.py` sin fallas en Safari,
   Chrome y Firefox a 5 anchos.
 

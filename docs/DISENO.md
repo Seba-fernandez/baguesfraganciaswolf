@@ -128,7 +128,8 @@ aparece después (paginación, cajón del pedido, ficha).
 
 | Clase | Dónde | Desenfoque |
 | --- | --- | --- |
-| `.tglass-clear` / `.tbtn.clear` | Controles: flechas, paginación, volver arriba, carrito | Casi nada: se ve el fondo tal cual |
+| `.tglass-clear` | Controles: flechas, paginación, volver arriba, carrito, + de destacados | Como el de iOS (23/10): cuerpo claro esmerilado, filo de luz, banda oscura por dentro y sombra abajo. Crema sobre vino, tinta sobre papel (`.dia` o `data-luz="dia"`). Al tocar crece 1,12 y se llena de blanco |
+| `.tbtn.clear` | Botón de vidrio claro | Casi nada: se ve el fondo tal cual |
 | `.tglass` | Placas con texto encima: barra de filtros, marcos | Fuerte, para que se lea |
 | `.tglass-lite` | Tarjetas del catálogo | Liviano |
 | `.tbtn` | Botón principal: el mismo cristal, teñido de rosa-vino | Mínimo |

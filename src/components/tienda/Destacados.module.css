@@ -111,16 +111,9 @@
   position: absolute; right: 12px; bottom: 12px; pointer-events: auto;
   width: 44px; height: 44px; border-radius: 50%;
   display: grid; place-items: center;
-  color: #fff; border: 0; cursor: pointer;
-  --v-tinte: rgba(255, 245, 240, 0.08);
-  --v-clear: blur(2px) saturate(1.8) brightness(1.08);
-  -webkit-backdrop-filter: var(--lente,) var(--v-clear);
-  backdrop-filter: var(--lente,) var(--v-clear);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  border: 0; cursor: pointer;
 }
 .mas svg { filter: drop-shadow(0 1px 1.5px rgba(20, 3, 5, 0.45)); }
-.mas:hover { --v-tinte: rgba(255, 245, 240, 0.16); }
-.mas:active { transform: scale(0.94); }
 .mas:focus-visible { outline: 2px solid var(--crema); outline-offset: 3px; }
 .media {
   position: relative; display: block; overflow: hidden;

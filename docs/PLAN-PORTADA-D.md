@@ -138,9 +138,15 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
 - **Títulos:** "Los más pedidos" (antes "Los que siempre salen") y "¿Con cuál
   te identificás?" con "Elegí la familia que te gusta oler, para vos o para
   regalar."
-- **Vidrio de iOS en flechas y botones:** espera las capturas de Sebas (no
-  llegaron con el mensaje). El problema sigue: sobre papel el vidrio se
-  aplana y casi no se ve (el botón de volver arriba, por ejemplo).
+- **Vidrio de iOS en los controles** (del video de Liquid Glass que mandó
+  Sebas): flechas, volver arriba, carrito, paginador y el + de los
+  destacados. Cuerpo claro y esmerilado, filo de luz, banda más oscura por
+  dentro del borde y sombra suave abajo, que lo despegan del papel. El ícono
+  cambia de color con la luz de abajo (crema sobre vino, tinta sobre papel;
+  el volver arriba la mide en cada cuadro). Al tocar crece con rebote, se
+  llena de blanco y el ícono se desenfoca. De paso: el volver arriba tenía
+  el borde negro de botón del navegador, tapado por el vidrio casi
+  transparente.
 
 ## Guion de la portada
 

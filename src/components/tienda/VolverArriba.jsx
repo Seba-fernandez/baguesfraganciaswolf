@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { VOLVER_ARRIBA } from '../../config/contenido';
 import { VOLVER_ARRIBA_DESDE } from '../../config/ajustes';
-import { alScroll } from '../../lib/alScroll.js';
+import { alScroll, medirDeNuevo } from '../../lib/alScroll.js';
 import s from './VolverArriba.module.css';
 
 /**
@@ -15,9 +15,29 @@ import s from './VolverArriba.module.css';
  */
 export default function VolverArriba({ oculto = false }) {
   const [visible, setVisible] = useState(false);
+  const [luz, setLuz] = useState('noche');
+  const ref = useRef(null);
 
-  // Una vez por cuadro, con el oyente compartido (lib/alScroll.js).
-  useEffect(() => alScroll((y) => setVisible(y > VOLVER_ARRIBA_DESDE)), []);
+  // Una vez por cuadro, con el oyente compartido (lib/alScroll.js). Ademas
+  // mira que hay debajo del boton, para que el vidrio tome esa luz: claro con
+  // icono tinta sobre papel, rosado con icono crema sobre vino (como iOS).
+  // Al terminar un salto (un link a #como, por ejemplo) se mide otra vez: la
+  // seccion de destino puede no estar dibujada todavia en el primer cuadro
+  // (content-visibility) y el vidrio quedaba con la luz de antes.
+  useEffect(() => {
+    addEventListener('scrollend', medirDeNuevo);
+    return () => removeEventListener('scrollend', medirDeNuevo);
+  }, []);
+  useEffect(() => alScroll((y) => {
+    const arriba = y > VOLVER_ARRIBA_DESDE;
+    setVisible(arriba);
+    const b = ref.current;
+    if (!arriba || !b) return;
+    const r = b.getBoundingClientRect();
+    const debajo = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2).find((e) => e !== b && !b.contains(e));
+    const nueva = debajo?.closest('.dia') ? 'dia' : 'noche';
+    setLuz((vieja) => (vieja === nueva ? vieja : nueva));
+  }), []);
 
   function subir() {
     const brusco = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -26,7 +46,9 @@ export default function VolverArriba({ oculto = false }) {
 
   return (
     <button
+      ref={ref}
       type="button"
+      data-luz={luz}
       className={`${s.boton} tglass-clear ${visible && !oculto ? s.visible : ''}`}
       onClick={subir}
       aria-label={VOLVER_ARRIBA}

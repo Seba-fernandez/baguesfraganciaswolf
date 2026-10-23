@@ -245,7 +245,8 @@ Cada entrada tiene un `"tratamiento"`:
 **Tienda:** sistema completo en [`docs/DISENO.md`](docs/DISENO.md). Lo mínimo:
 paleta Ámbar Noir (en la rama del rediseño, la noche pasó a vino hondo y la
 letra a Melodrama y Boska: ver Rediseño D abajo), Figtree para texto, vidrio con
-lente en los controles, radio cero en fotos y píldora en botones, un eyebrow cada
+lente en los controles (desde el 23/10, claro como el de iOS y toma la luz
+de abajo: `.tglass-clear` en `tienda.css`), radio cero en fotos y píldora en botones, un eyebrow cada
 tres secciones como máximo, **cero guiones largos en textos visibles**, voseo
 ("el perfume que ya conocés").
 

@@ -11,18 +11,15 @@
   width: 46px; height: 46px;
   display: grid; place-items: center;
   border-radius: var(--r-pill);
-  color: var(--ink-dim);
   cursor: pointer;
 
   /* Escondido: no ocupa lugar ni recibe toques hasta que aparece. */
   opacity: 0; transform: translateY(10px); pointer-events: none;
   transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease),
-              color var(--dur) var(--ease);
+              color var(--dur) var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 .visible { opacity: 1; transform: none; pointer-events: auto; }
 
-.boton:hover { color: var(--ink); }
-.boton:active { transform: scale(0.94); }
 
 /* En pantalla ancha se corre un poco mas adentro y queda mas discreto. */
 @media (min-width: 900px) {

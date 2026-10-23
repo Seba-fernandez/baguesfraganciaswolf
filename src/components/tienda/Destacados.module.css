@@ -35,8 +35,17 @@
   view-timeline-axis: inline;
 }
 .fila::-webkit-scrollbar { display: none; }
+/* Escritorio: la fila llega hasta el borde derecho de la pantalla (a la
+   izquierda respeta el margen de la pagina). Entran cinco a 1440 y asoma la
+   sexta, que invita a deslizar. Arriba y abajo deja aire para la sombra. */
 @media (min-width: 780px) {
-  .fila { grid-auto-columns: 260px; gap: 22px; margin-inline: 0; padding-inline: 2px; }
+  .fila {
+    --sangria: calc((100vw - var(--wrap)) / 2);
+    grid-auto-columns: clamp(220px, calc((var(--wrap) - 88px) / 5), 280px);
+    gap: 22px; margin-inline: 0 calc(-1 * var(--sangria));
+    padding: 6px var(--sangria) 30px 2px;
+    scroll-padding-inline: 2px;
+  }
 }
 
 .flecha {
@@ -48,6 +57,7 @@
 .flecha:hover { color: #fff; }
 .flechaIzq { left: -22px; }
 .flechaDer { right: -22px; }
+@media (min-width: 780px) { .flechaDer { right: 10px; } .item { scroll-snap-align: start; } }
 @media (min-width: 780px) and (hover: hover) { .flecha { display: grid; } }
 
 .item {
@@ -55,7 +65,14 @@
   display: flex; flex-direction: column; gap: 0;
   background: none; border: 0; padding: 0; text-align: left; cursor: pointer;
 }
-.media { position: relative; display: block; overflow: hidden; }
+.media {
+  position: relative; display: block; overflow: hidden;
+  /* Sombra un poco mas marcada que la de las familias: sobre el vino hace
+     falta mas para despegar (pedido de Sebas, 23/10). Bordes rectos. */
+  box-shadow: 0 2px 4px rgba(20, 3, 5, 0.3), 0 20px 36px -16px rgba(20, 3, 5, 0.75);
+  transition: box-shadow var(--dur) var(--ease);
+}
+@media (hover: hover) { .item:hover .media { box-shadow: 0 3px 6px rgba(20, 3, 5, 0.34), 0 28px 44px -18px rgba(20, 3, 5, 0.85); } }
 
 .info { display: flex; flex-direction: column; gap: 3px; padding-top: 12px; }
 .nombre { font-family: var(--f-display); font-weight: 600; font-size: 1.36rem; color: var(--crema); line-height: 1.15; }

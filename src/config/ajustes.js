@@ -10,6 +10,19 @@ export const POR_PAGINA = 12;
 export const DESTACADOS_MAXIMO = 6;
 
 /**
+ * Las ciudades de la portada (rediseño D): las cajas que enseñan el codigo
+ * "esta ciudad es tal perfume". Van las mas conocidas, en este orden. Si una
+ * no esta activa, no tiene caja Bagues o esta marcada como destacada (para no
+ * repetir la misma caja dos secciones seguidas), se completa sola con otra.
+ */
+export const CIUDADES_ELEGIDAS = [
+  'bagues-baccarat-rouge',   // Ginebra
+  'bagues-la-bomba',         // Granada
+  'unlock-one-million',      // Las Vegas
+  'unlock-la-vie-est-belle', // Paris
+];
+
+/**
  * Desde cuanto el envio es gratis, en pesos. Lo usan el bloque "Antes de
  * pedir" de la portada y la barra del cajon. Debajo de ese monto el envio lo
  * paga quien compra.

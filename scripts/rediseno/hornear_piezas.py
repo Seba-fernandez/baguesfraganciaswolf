@@ -65,7 +65,7 @@ def mascara_frasco(W, Hh, s=1.0):
     m = cv2.GaussianBlur(m.astype(np.float32) / 255, (0, 0), 0.8)
     return m, (x0, y0, cw, ch)
 
-def textura_en_frasco(tex, color_etiqueta):
+def textura_en_frasco(tex, color_etiqueta, foto_en_etiqueta=False):
     W = Hh = 1200
     m, (x0, y0, cw, ch) = mascara_frasco(W, Hh)
     # la textura vista a traves del vidrio acanalado del frasco
@@ -96,6 +96,22 @@ def textura_en_frasco(tex, color_etiqueta):
     filete = np.zeros((Hh, W), np.float32); cv2.rectangle(filete, (ex0 + 14, ey0 + eh - 46), (ex0 + ew - 14, ey0 + eh - 44), 1, -1)
     cv2.rectangle(filete, (ex0 + ew // 2 - 26, ey0 + eh - 34), (ex0 + ew // 2 + 26, ey0 + eh - 20), 1, -1)
     papel = papel * (1 - filete[..., None]) + filete[..., None] * H.ORO
+    if foto_en_etiqueta:
+        # Variante del 23/10 (pedido de Sebas): en vez del color liso, el
+        # ingrediente nitido en la etiqueta, con un marco dorado fino. Atras,
+        # el mismo ingrediente se sigue viendo borroso por el vidrio.
+        th_, tw_ = tex.shape[:2]
+        lado_ = min(th_, int(tw_ * eh / ew))
+        cy_, cx_ = th_ // 2, tw_ // 2
+        rec = tex[cy_ - lado_ // 2: cy_ + lado_ // 2, cx_ - int(lado_ * ew / eh) // 2: cx_ + int(lado_ * ew / eh) // 2]
+        rec = cv2.resize(rec, (ew, eh), interpolation=cv2.INTER_AREA)
+        rec = rec * (0.88 + 0.12 * lado[ey0:ey0 + eh, ex0:ex0 + ew, None])
+        papel = np.zeros((Hh, W, 3), np.float32); papel[ey0:ey0 + eh, ex0:ex0 + ew] = rec
+        marco = np.zeros((Hh, W), np.float32)
+        cv2.rectangle(marco, (ex0, ey0), (ex0 + ew - 1, ey0 + eh - 1), 1, 5)
+        cv2.rectangle(marco, (ex0 + 12, ey0 + 12), (ex0 + ew - 13, ey0 + eh - 13), 0.8, 2)
+        marco = cv2.GaussianBlur(marco, (0, 0), 0.6)
+        papel = papel * (1 - marco[..., None]) + marco[..., None] * H.ORO
     vid = vid * (1 - et[..., None]) + papel * et[..., None]
     rgba = np.zeros((Hh, W, 4), np.float32)
     rgba[..., :3] = np.clip(vid, 0, 1); rgba[..., 3] = m
@@ -120,6 +136,17 @@ def hacer_texturas():
         res[nombre] = dict(textura=pes, frasco_webp_kb=round(len(b.getvalue()) / 1024, 1))
         print(nombre, res[nombre], flush=True)
     return res
+
+def familias_web(foto_en_etiqueta):
+    """Los frascos de "¿Que te gusta oler?" listos para public/familias/:
+    recortados a la silueta y a 240 y 420 px de ancho."""
+    out = os.path.join(SAL, 'familias_foto' if foto_en_etiqueta else 'familias_color'); os.makedirs(out, exist_ok=True)
+    for nombre, (arch, col, grad) in FAMILIAS.items():
+        fr = a_u8(textura_en_frasco(textura_base(arch, grad), col, foto_en_etiqueta))
+        im = Image.fromarray(fr); im = im.crop(im.getchannel('A').point(lambda v: 255 if v > 8 else 0).getbbox())
+        for ancho in (240, 420):
+            im.resize((ancho, round(im.height * ancho / im.width)), Image.LANCZOS).save(os.path.join(out, f'{nombre}-{ancho}.webp'), quality=84, method=6)
+        print(nombre, im.size, flush=True)
 
 # ======================================================================= destacados
 DESTACADOS = ['bagues-la-bomba', 'bagues-baccarat-rouge', 'bagues-angels-share',
@@ -322,6 +349,8 @@ if __name__ == '__main__':
     que = sys.argv[1:] or ['texturas', 'destacados', 'hero_a', 'og', 'maquetas']
     inf = {}
     if 'texturas' in que: inf['texturas'] = hacer_texturas()
+    if 'familias_foto' in que: familias_web(True)
+    if 'familias_color' in que: familias_web(False)
     if 'destacados' in que: inf['destacados'] = hacer_destacados()
     if 'hero_a' in que: inf['hero_a'] = hacer_hero_a()
     if 'og' in que: inf['og'] = hacer_og()

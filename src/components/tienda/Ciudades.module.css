@@ -67,6 +67,7 @@
   font-family: var(--f-quote); font-style: italic; font-weight: 400;
   font-size: 1.12rem; line-height: 1.2; color: var(--tinta);
 }
+.es { font-style: normal; font-family: var(--f-body); font-size: 0.86em; color: var(--tinta-suave); }
 .precio {
   font-family: var(--f-mono); font-weight: 500;
   font-size: 0.86rem; letter-spacing: 0.02em; color: var(--tinta-suave);
@@ -101,5 +102,6 @@
   }
   .dato { flex-direction: column; align-items: flex-end; text-align: right; gap: 4px; }
   .perfume { font-size: 1.4rem; }
-  .precio { font-size: 0.92rem; }
+  .es { font-style: normal; font-family: var(--f-body); font-size: 0.86em; color: var(--tinta-suave); }
+.precio { font-size: 0.92rem; }
 }

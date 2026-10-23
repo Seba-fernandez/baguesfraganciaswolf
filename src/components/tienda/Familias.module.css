@@ -36,6 +36,10 @@
   background:
     radial-gradient(70% 55% at 50% 42%, rgba(158, 35, 53, 0.4) 0%, rgba(158, 35, 53, 0) 70%),
     linear-gradient(180deg, var(--vino) 0%, #2c0c12 100%);
+  /* Sombra casi imperceptible, en dos capas teñidas de vino (pedido de
+     Sebas, 23/10): una de contacto corta y una caida larga y muy suave. Al
+     pasar el mouse, apenas mas honda. */
+  box-shadow: 0 1px 2px rgba(42, 10, 14, 0.1), 0 14px 28px -14px rgba(42, 10, 14, 0.38);
   transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 /* La repisa: una franja más oscura abajo, donde se apoya el frasco. */
@@ -58,7 +62,7 @@
 .ejemplo { font-family: var(--f-quote); font-style: italic; font-size: 1rem; color: var(--tinta-suave); line-height: 1.35; }
 
 @media (hover: hover) {
-  .link:hover .ventana { transform: translateY(-6px); }
+  .link:hover .ventana { transform: translateY(-6px); box-shadow: 0 2px 4px rgba(42, 10, 14, 0.12), 0 22px 36px -16px rgba(42, 10, 14, 0.48); }
   .link:hover .nombre { color: var(--rubi); }
   .link:hover .frasco { transform: translateY(-3px) scale(1.02); }
 }

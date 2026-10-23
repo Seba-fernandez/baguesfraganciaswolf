@@ -2,15 +2,16 @@ import { Link } from 'react-router-dom';
 import useReveal from '../../hooks/useReveal';
 import { CIUDADES } from '../../config/contenido';
 import { ciudadesDe } from '../../lib/producto';
+import { CIUDADES_ELEGIDAS } from '../../config/ajustes';
 import { fotoDe, fotoChica } from '../../lib/fotos';
 import { pesos } from '../../lib/format';
 import s from './Ciudades.module.css';
 
 /**
- * Las ciudades (rediseño D, plano 2: de día). Después de la noche del hero,
- * papel y aire: cada caja Bagués con el nombre de su ciudad enorme, el
- * perfume que trae y el precio en mono al costado. Dice qué vendo, a cuánto y
- * con qué nombre, de un vistazo y sin un párrafo.
+ * Las ciudades (rediseño D, plano 2: de día). Para qué está: la clienta busca
+ * "Sauvage" y la caja que recibe dice "Arizona". Esta sección le enseña ese
+ * código antes de comprar, con las cajas más conocidas (CIUDADES_ELEGIDAS en
+ * ajustes.js): la ciudad enorme, "es Baccarat Rouge 540" y el precio.
  *
  * Cada fila es un link a la ficha (?aroma=); el toque normal la abre encima,
  * como la cinta del hero. Mientras no llegan los datos (y en el HTML
@@ -18,7 +19,7 @@ import s from './Ciudades.module.css';
  */
 export default function Ciudades({ products = [], onOpen }) {
   const ref = useReveal();
-  const filas = ciudadesDe(products, 4);
+  const filas = ciudadesDe(products, 4, CIUDADES_ELEGIDAS);
   const vacias = filas.length ? [] : [0, 1, 2, 3];
 
   function abrir(e, producto) {
@@ -52,7 +53,7 @@ export default function Ciudades({ products = [], onOpen }) {
                   </span>
                   <span className={s.ciudad}>{f.ciudad}</span>
                   <span className={s.dato}>
-                    <span className={s.perfume}>{f.perfume}</span>
+                    <span className={s.perfume}><span className={s.es}>{CIUDADES.es} </span>{f.perfume}</span>
                     <span className={`${s.precio} tnum`}>{f.ml} ml · {pesos(f.precio)}</span>
                   </span>
                 </a>

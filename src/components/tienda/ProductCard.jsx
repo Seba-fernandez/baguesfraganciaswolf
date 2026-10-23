@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
-import { presentacionesActivas, presentacionPorDefecto, tituloDe, notasCortas } from '../../lib/producto';
+import { presentacionesActivas, presentacionPorDefecto, tituloDe, lineaTarjeta } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import { TARJETA, conDatos } from '../../config/contenido';
 import ProductThumb from './ProductThumb';
+import { precargarFoto } from '../../lib/fotos';
 import s from './ProductCard.module.css';
 
 /**
- * Una tarjeta por AROMA: foto, nombre, dos o tres notas y un precio.
+ * Una tarjeta por AROMA: foto, nombre, su familia olfativa y un precio.
  *
  * No todas conocen "Kenzo Homme", pero todas entienden "marino, bayas de
  * enebro y abeto": las notas hacen elegir a quien no busca un nombre puntual.
@@ -34,7 +35,7 @@ export default function ProductCard({ producto, onOpen, onElegir, promos = {}, p
   const opciones = presentacionesActivas(producto);
   const base = presentacionPorDefecto(producto);
   const titulo = tituloDe(producto);
-  const notas = notasCortas(producto);
+  const notas = lineaTarjeta(producto);
   const varios = opciones.length > 1;
   const hayPromo = opciones.some((p) => p.grupo_promo && promos[p.grupo_promo]);
 
@@ -45,7 +46,11 @@ export default function ProductCard({ producto, onOpen, onElegir, promos = {}, p
   }
 
   return (
-    <article className={`${s.card} tglass-lite`}>
+    <article
+      className={`${s.card} tglass-lite`}
+      onPointerEnter={() => precargarFoto(producto, base?.linea)}
+      onPointerDown={() => precargarFoto(producto, base?.linea)}
+    >
       <button
         type="button"
         className={s.media}

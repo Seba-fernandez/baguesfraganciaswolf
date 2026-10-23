@@ -103,7 +103,7 @@
     inset 0 -14px 22px -18px rgba(20, 8, 4, 0.55),
     0 2px 3px -1px rgba(10, 5, 3, 0.45),
     0 22px 44px -22px rgba(10, 5, 3, 0.75);
-  --danger: #d98a72;
+  --danger: var(--amber);  /* el salmón de la versión anterior salió: los avisos van en el rosa */
 
   /* Alto del encabezado: el hero sube por detras. */
   --bar-h: 74px;

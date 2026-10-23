@@ -714,10 +714,10 @@ def contenido(browser, base):
     ctx.close()
 
     if quiere("CONFIANZA-1"):
-        req = {"seña 50 %": r"se[ñn]a del 50\s?%|50\s?% de se[ñn]a", "transferencia o efectivo": r"transferencia o efectivo",
-               "todo el pais": r"todo el pa[ií]s", "gratis desde $ 60.000": r"gratis desde \$\s?60\.000",
-               "Cordoba retiro o domicilio": r"retir[aá]s", "fecha por WhatsApp": r"fecha por whatsapp"}
-        faltan = [k for k, rx in req.items() if not re.search(rx, portada, re.I)]
+        req = {"seña 50 %": r"se[ñn]a del 50\s?%|50\s?% de se[ñn]a|50\s?%\s*se[ñn]a", "transferencia o efectivo": r"transferencia o efectivo",
+               "todo el pais": r"todo el pa[ií]s", "gratis desde $ 60.000": r"gratis.{0,60}desde \$\s?60\.000",
+               "Cordoba retiro o domicilio": r"retir[aá]s", "cuando llega": r"hasta el martes.{0,80}viernes"}
+        faltan = [k for k, rx in req.items() if not re.search(rx, portada, re.I | re.S)]
         chk("CONFIANZA-1 portada", "confianza", "alta", "La portada dice pago, seña, envio, Cordoba y plazo",
             not faltan, "falta: " + ", ".join(faltan) if faltan else "los cuatro datos estan")
     if quiere("CONTENIDO-1"):
@@ -951,25 +951,24 @@ def e3_a2_a3(browser, base):
     pres = pres_activas(elegido)
     cods, aho = [], []
     for fila, p in zip(filas_dom, pres):
-        cod = re.sub(r"\D", "", fila["codigo"])
-        cods.append(cod == str(p.get("codigo")) and "Código" in fila["codigo"])
+        # Desde el 23/10 el codigo NO se muestra (decision de Sebas: a la
+        # clienta no le sirve). Viaja igual al WhatsApp: lo mide REG-1.
+        cods.append(not fila["codigo"] and str(p.get("codigo")) not in fila["txt"])
         dif = (p.get("precio_anterior") or 0) - p["precio"]
         valor = int(re.sub(r"\D", "", fila["ahorro"]) or 0)
         aho.append(valor == dif if dif > 0 else not fila["ahorro"])
-    chk("E3-A3 codigo", "confianza", "alta", "Cada tamano de la ficha muestra 'Codigo NNNNNNNN' igual al de la base",
+    chk("E3-A3 codigo", "confianza", "alta", "La ficha no muestra el codigo de la proveedora (va solo al WhatsApp, decision del 23/10)",
         len(filas_dom) == len(pres) and all(cods),
-        f"{sum(cods)}/{len(pres)} codigos; base: {[p.get('codigo') for p in pres]}; ficha: {[f['codigo'] for f in filas_dom]}")
+        f"{sum(cods)}/{len(pres)} tamanos sin codigo; base: {[p.get('codigo') for p in pres]}")
     chk("E3-A3 ahorro", "confianza", "alta", "'Ahorras $ X' = precio de lista - precio, solo si hay rebaja",
         len(filas_dom) == len(pres) and all(aho),
         f"base: {[(p.get('precio_anterior') or 0) - p['precio'] for p in pres]}; ficha: {[f['ahorro'] for f in filas_dom]}")
-    ver = page.evaluate("""(dlg) => { const v = document.querySelector(dlg + ' [data-qa=verificar]');
-        const filas = [...document.querySelectorAll(dlg + ' [aria-label="Elegir presentación"] button')];
-        const on = filas.find(b => b.getAttribute('aria-pressed') === 'true');
-        return { txt: v ? v.innerText : '', href: v?.querySelector('a')?.getAttribute('href') || '', linea: on ? on.innerText : '' }; }""", dlg)
-    sitio = "unlock.com.ar" if "Unlock" in ver["linea"] else "bagues.com.ar"
-    chk("E3-A3 verificar", "confianza", "media", "Linea de la proveedora con link a la portada de su tienda, segun la linea elegida",
-        sitio in ver["txt"] and ver["href"].rstrip("/") == f"https://{sitio}",
-        f"linea elegida: {ver['linea'].splitlines()[1] if ver['linea'].count(chr(10)) else ver['linea'][:30]}; texto: '{ver['txt'][:90]}'; href {ver['href']}")
+    # Desde el 23/10 la ficha no manda a las tiendas de las proveedoras: era
+    # invitar a la clienta a comprarle directo a Unlock o a Bagues.
+    ver = page.evaluate("""(dlg) => [...document.querySelectorAll(dlg + ' a[href]')]
+        .map(a => a.getAttribute('href')).filter(h => /unlock\.com\.ar|bagues\.com\.ar/.test(h))""", dlg)
+    chk("E3-A3 verificar", "conversion", "alta", "La ficha no lleva links a las tiendas de las proveedoras",
+        not ver, f"links: {ver or 'ninguno'}")
     ctx.close()
 
 
@@ -1535,10 +1534,13 @@ def e3_b3(browser, base):
     if not m:
         chk("E3-B3 chat", "confianza", "media", "'Como funciona' existe", False, "no hay #como")
         return
-    cods = re.findall(r"\[(\d{8})\]", m["chat"])
-    chk("E3-B3 chat", "confianza", "media", "'Como funciona' muestra el mensaje real de whatsapp.js con dos aromas y codigos de la base",
-        len(cods) >= 2 and all(c in codigos for c in cods) and "Quiero hacer este pedido" in m["chat"],
-        f"codigos en el chat: {cods} (en la base: {[c in codigos for c in cods]}); texto: '{m['chat'][:80]}'")
+    # Desde el 23/10 el chat de ejemplo va sin codigos (decision de Sebas): el
+    # mensaje real de whatsapp.js con dos aromas, cada uno con su tamano.
+    cods = re.findall(r"\d{8}", m["chat"])
+    aromas = len(re.findall(r"\d+ml \(", m["chat"]))
+    chk("E3-B3 chat", "confianza", "media", "'Como funciona' muestra el mensaje real de whatsapp.js con dos aromas, sin codigos",
+        not cods and aromas >= 2 and "Quiero hacer este pedido" in m["chat"],
+        f"codigos a la vista: {cods or 'ninguno'}; aromas: {aromas}; texto: '{m['chat'][:80]}'")
     # Rediseño D (22/10, aprobado por Sebas): "el chat real y nada mas". Los
     # tres pasos numerados salieron; el chat ya cuenta el proceso.
     chk("E3-B3 pasos", "visual", "media", "Sin iconos en circulos y sin pasos numerados: solo el chat (rediseño D)",

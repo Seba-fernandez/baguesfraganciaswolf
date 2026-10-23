@@ -23,6 +23,22 @@ export function fotoDe(producto, linea) {
   return null;
 }
 
+/**
+ * Empieza a bajar la foto grande de la ficha antes de abrirla: al pasar el
+ * mouse o al apoyar el dedo en la tarjeta. La ficha pide el archivo de 900 px
+ * (su srcset lo elige en celular y escritorio), asi que cuando se abre ya esta
+ * en la memoria del navegador. Una vez por foto.
+ */
+const precargadas = new Set();
+export function precargarFoto(producto, linea) {
+  const ruta = producto?.imagen_url || fotoDe(producto, linea);
+  if (!ruta || precargadas.has(ruta) || typeof Image === 'undefined') return;
+  precargadas.add(ruta);
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = ruta;
+}
+
 /** El ancho chico (360 px) de una foto del pipeline, para miniaturas. */
 export function fotoChica(ruta) {
   return ruta && ruta.startsWith('/perfumes/') ? ruta.replace(/\.webp$/, '-360w.webp') : ruta;

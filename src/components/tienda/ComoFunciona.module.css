@@ -40,7 +40,6 @@
 .ella { align-self: flex-end; background: var(--papel-hondo); color: var(--tinta); border-radius: 16px 16px 4px 16px; }
 .yo { align-self: flex-start; background: var(--vino); color: var(--crema); border-radius: 16px 16px 16px 4px; }
 .renglon:empty { height: 6px; }
-.codigo { font-family: var(--f-mono); font-weight: 500; font-size: 0.92em; color: var(--rubi); }
 .total { font-weight: 600; margin-top: 6px; }
 .espera { width: 78%; height: 168px; opacity: 0.6; }
 

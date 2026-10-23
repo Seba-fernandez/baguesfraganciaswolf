@@ -9,12 +9,10 @@
   font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1; letter-spacing: -0.01em;
 }
 .bajada { margin-top: 12px; color: var(--ink-dim); font-size: 1rem; }
-/* Aviso legal a la vista, no escondido en el pie: acompaña al catalogo sin
-   competirle. El texto completo esta en el pie de la pagina. */
+/* Aviso legal corto, al final del catalogo y chico. El completo, en el pie. */
 .aviso {
-  margin-top: 14px; padding-left: 12px;
-  border-left: 2px solid var(--rubi);
-  font-size: 0.78rem; line-height: 1.6; color: var(--ink-faint); max-width: 62ch;
+  margin-top: clamp(32px, 5vw, 56px);
+  font-size: 0.76rem; line-height: 1.6; color: var(--ink-faint); max-width: 62ch;
 }
 
 /* La barra se queda en su lugar. Estuvo pegada al encabezado y molestaba:
@@ -53,7 +51,6 @@
   /* "Para" se entiende por sus pastillas (El, Ella, Todos); el rotulo sigue
      nombrando al grupo para el lector de pantalla (aria-labelledby). */
   .renglon:not(.renglonFamilia) > .rotulo { display: none; }
-  .aviso { margin-top: 10px; line-height: 1.5; }
   .barra { padding: 10px; gap: 10px; margin-bottom: 18px; }
   .filtros { gap: 10px; }
 }

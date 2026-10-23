@@ -16,17 +16,13 @@ import s from './ComoFunciona.module.css';
  * Al costado, una frase y el botón de WhatsApp en el acento.
  */
 
-/** Un renglón del mensaje. El código va aparte, en cifras tabulares. */
+/**
+ * Un renglón del mensaje. El código de la proveedora se saca: a mí me llega en
+ * el WhatsApp de verdad, pero a la clienta no le dice nada (Sebas, 23/10).
+ */
 function Renglon({ texto }) {
-  const m = /^\[(\d+)\]\s(.*)$/.exec(texto);
-  if (m) {
-    return (
-      <span className={s.renglon}>
-        <span className={`${s.codigo} tnum`}>[{m[1]}]</span> {m[2]}
-      </span>
-    );
-  }
-  return <span className={`${s.renglon} ${/^Total/.test(texto) ? s.total : ''}`}>{texto}</span>;
+  const limpio = texto.replace(/^\[\d+\]\s/, '');
+  return <span className={`${s.renglon} ${/^Total/.test(limpio) ? s.total : ''}`}>{limpio}</span>;
 }
 
 export default function ComoFunciona({ settings, products = [] }) {

@@ -1,8 +1,10 @@
-import { useRef } from 'react';
-import { ahorroDe, esPublicable, presentacionPorDefecto, tituloDe } from '../../lib/producto';
+import { useEffect, useRef, useState } from 'react';
+import { useCart } from '../../contexts/CartContext';
+import { ahorroDe, esPublicable, lineaTarjeta, presentacionesActivas, presentacionPorDefecto, tituloDe } from '../../lib/producto';
+import { precargarFoto } from '../../lib/fotos';
 import { pesos } from '../../lib/format';
 import useReveal from '../../hooks/useReveal';
-import { DESTACADOS } from '../../config/contenido';
+import { DESTACADOS, TARJETA, conDatos } from '../../config/contenido';
 import { DESTACADOS_MAXIMO, PROPORCION } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
 import s from './Destacados.module.css';
@@ -16,10 +18,30 @@ import s from './Destacados.module.css';
  * lado (no negociable 11).
  * En escritorio, flechas a los costados; en el celular, el dedo.
  */
-export default function Destacados({ products, onOpen, cargando = false }) {
+export default function Destacados({ products, onOpen, onElegir, cargando = false }) {
   const ref = useReveal();
   const filaRef = useRef(null);
+  const { addItem } = useCart();
   const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p)).slice(0, DESTACADOS_MAXIMO);
+  // La flecha de la izquierda aparece recien cuando hay algo para atras: al
+  // arrancar tapaba el borde de la primera foto sin llevar a ningun lado.
+  const [alInicio, setAlInicio] = useState(true);
+  useEffect(() => {
+    const el = filaRef.current;
+    if (!el) return undefined;
+    const medir = () => setAlInicio(el.scrollLeft <= 4);
+    medir();
+    el.addEventListener('scroll', medir, { passive: true });
+    return () => el.removeEventListener('scroll', medir);
+  }, [cargando]);
+
+  /** El + de la tarjeta: con un tamano agrega directo; con mas, la hoja. */
+  function mas(p) {
+    const base = presentacionPorDefecto(p);
+    if (!base) return;
+    if (presentacionesActivas(p).length > 1 && onElegir) onElegir(p);
+    else addItem(p, base, 1);
+  }
   // Mientras carga se dibuja la vidriera con su titulo y tarjetas de espera
   // del mismo tamano: en el celular empieza dentro de la primera pantalla, y
   // aparecer de golpe empujaba lo de abajo (CLS, etapa 3B). Tambien es lo que
@@ -51,7 +73,14 @@ export default function Destacados({ products, onOpen, cargando = false }) {
         </header>
 
         <div className={s.carrusel}>
-          <button type="button" className={`${s.flecha} ${s.flechaIzq} tglass-clear`} onClick={() => mover(-1)} aria-label="Anterior">
+          <button
+            type="button"
+            className={`${s.flecha} ${s.flechaIzq} ${alInicio ? s.flechaOculta : ''} tglass-clear`}
+            onClick={() => mover(-1)}
+            aria-label="Anterior"
+            tabIndex={alInicio ? -1 : undefined}
+            aria-hidden={alInicio || undefined}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="m15 18-6-6 6-6" />
             </svg>
@@ -71,27 +100,43 @@ export default function Destacados({ products, onOpen, cargando = false }) {
             {!cargando && destacados.map((p, i) => {
               const pres = presentacionPorDefecto(p);
               return (
-                <button
+                <div
                   key={p.id}
-                  type="button"
                   className={`${s.item} treveal`}
                   style={{ transitionDelay: `${Math.min(i, DESTACADOS_MAXIMO - 1) * 60}ms` }}
-                  onClick={() => onOpen(p)}
+                  onPointerEnter={() => precargarFoto(p, pres?.linea)}
+                  onPointerDown={() => precargarFoto(p, pres?.linea)}
                 >
-                  <span className={s.media}>
-                    <ProductThumb producto={p} ratio={PROPORCION.destacado} sizes="(max-width: 779px) 62vw, 260px" />
-                  </span>
-                  <span className={s.info}>
-                    <span className={s.nombre}>{tituloDe(p)}</span>
-                    {p.familia_olfativa && <span className={s.casa}>{p.familia_olfativa}</span>}
-                    {pres && (
-                      <span className={`${s.precio} tnum`}>
-                        <span className={s.desde}>{DESTACADOS.desde}</span> {pesos(pres.precio)}
-                        {ahorroDe(pres) > 0 && <s className={s.antes}>{pesos(pres.precio_anterior)}</s>}
-                      </span>
-                    )}
-                  </span>
-                </button>
+                  <button type="button" className={s.abrir} onClick={() => onOpen(p)}>
+                    <span className={s.media}>
+                      <ProductThumb producto={p} ratio={PROPORCION.destacado} sizes="(max-width: 779px) 62vw, 260px" />
+                    </span>
+                    <span className={s.info}>
+                      <span className={s.nombre}>{tituloDe(p)}</span>
+                      {lineaTarjeta(p) && <span className={s.casa}>{lineaTarjeta(p)}</span>}
+                      {pres && (
+                        <span className={`${s.precio} tnum`}>
+                          {pesos(pres.precio)}
+                          {ahorroDe(pres) > 0 && <s className={s.antes}>{pesos(pres.precio_anterior)}</s>}
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                  {/* El + en vidrio liquido, sobre la foto: deja ver el frasco
+                      a traves en vez de taparlo con un circulo de color. */}
+                  {pres && (
+                    <span className={s.sobreFoto} style={{ aspectRatio: PROPORCION.destacado }}>
+                    <button
+                      type="button"
+                      className={`${s.mas} tglass-clear`}
+                      onClick={() => mas(p)}
+                      aria-label={conDatos(TARJETA.agregar, { nombre: tituloDe(p) })}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                    </button>
+                    </span>
+                  )}
+                </div>
               );
             })}
           </div>

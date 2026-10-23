@@ -222,6 +222,18 @@ function notaCorta(nota) {
  * falta alguna, la que sigue. Sin notas cargadas, la familia en minuscula
  * ("floral oriental"): tambien es dato real. Sin nada, ''.
  */
+/**
+ * La linea de la tarjeta, la misma en el catalogo y en destacados: la familia
+ * olfativa ("Amaderada floral almizclada"). Esta en 98 de 101 aromas; las
+ * notas, en la mitad, y mezclar las dos dejaba tarjetas vecinas con datos de
+ * distinto tipo (Sebas, 23/10). Sin familia, las notas cortas.
+ */
+export function lineaTarjeta(producto) {
+  const familia = (producto?.familia_olfativa || '').trim();
+  if (familia) return familia.charAt(0).toUpperCase() + familia.slice(1);
+  return notasCortas(producto);
+}
+
 export function notasCortas(producto, maximo = 3) {
   const capas = [producto?.nota_salida, producto?.nota_corazon, producto?.nota_fondo]
     .map((t) => separarNotas(t).map(notaCorta));

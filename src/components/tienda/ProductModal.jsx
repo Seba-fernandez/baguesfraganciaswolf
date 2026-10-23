@@ -109,6 +109,8 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
             ratio="3 / 4"
             linea={elegida?.linea}
             sizes="(max-width: 767px) 75vw, 640px"
+            prioridad={2}
+            previa
           />
           {/* Los costados en el celular. Las fotos del pipeline viven todas
               en la misma pared: a los costados va esa pared vacia, espejada,
@@ -152,7 +154,6 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
                       <span className={s.opIzq}>
                         <span className={`${s.opMl} tnum`}>{p.ml} ml</span>
                         <span className={s.opProv}>{detalleLinea(p, titulo)}</span>
-                        {p.codigo && <span className={`${s.opCodigo} tnum`} data-qa="codigo">{FICHA.codigo} {p.codigo}</span>}
                       </span>
                       <span className={`${s.opPrecio} tnum`}>
                         {ahorroDe(p) > 0 && <s className={s.opAntes}>{pesos(p.precio_anterior)}</s>}
@@ -171,32 +172,29 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
             <p className={s.desc}>{FICHA.sinCiclo}</p>
           )}
 
-          {elegida && FICHA.verificar[elegida.linea] && (
-            <p className={s.verificar} data-qa="verificar">
-              {FICHA.verificar[elegida.linea].texto}
-              <a href={FICHA.verificar[elegida.linea].url} target="_blank" rel="noopener noreferrer">
-                {FICHA.verificar[elegida.linea].sitio}
-              </a>.
-            </p>
-          )}
-
           {promo && (
             <p className={`${s.promoNota} tnum`}>
               Llevando de a pares: {pesos(promo.precio_par)} el par, {pesos(Math.round(promo.precio_par / 2))} cada uno.
             </p>
           )}
 
-          {piramide.length > 0 && (
-            <div className={s.piramide} data-qa="piramide">
+          {/* Familia y notas como el elenco de una serie: rotulo en negrita y
+              los datos seguidos, sin pastillas (no se tocan, no son botones). */}
+          {(producto.familia_olfativa || piramide.length > 0) && (
+            <dl className={s.ficha} data-qa="piramide">
+              {producto.familia_olfativa && (
+                <div className={s.linea}>
+                  <dt>{FICHA.familia}</dt>
+                  <dd>{producto.familia_olfativa}</dd>
+                </div>
+              )}
               {piramide.map((f) => (
-                <div key={f.etapa} className={s.nota}>
-                  <span className={s.notaEtapa} data-qa="etapa">{f.etapa}</span>
-                  <ul className={s.pastillas}>
-                    {f.notas.map((n) => <li key={n} className={s.pastilla} data-qa="nota">{n}</li>)}
-                  </ul>
+                <div key={f.etapa} className={s.linea}>
+                  <dt data-qa="etapa">{f.etapa}</dt>
+                  <dd>{f.notas.map((n, i) => <span key={n} data-qa="nota">{i ? ', ' : ''}{n}</span>)}</dd>
                 </div>
               ))}
-            </div>
+            </dl>
           )}
 
           {producto.descripcion_larga && <p className={s.desc}>{producto.descripcion_larga}</p>}
@@ -216,8 +214,6 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
               </div>
             </section>
           )}
-
-          <p className={s.aviso}>{FICHA.aviso}</p>
 
           {elegida && (
             <div className={s.barra}>

@@ -13,8 +13,12 @@
 .img {
   width: 100%; height: 100%; display: block;
   object-fit: cover; object-position: 50% 42%;
-  transition: transform var(--dur-slow) var(--ease);
+  transition: transform var(--dur-slow) var(--ease), opacity 0.18s var(--ease);
 }
+/* La ficha: la foto chica de fondo, con el mismo encuadre que la grande, asi
+   el cambio no se nota. La grande sigue en su lugar mientras baja. */
+.conPrevia { background-size: cover; background-position: 50% 42%; }
+.oculta { opacity: 0; }
 
 /* Placeholder tipografico. Tres tonos cálidos, para que las tarjetas sin foto
    no se lean como una pared plana. */

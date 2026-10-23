@@ -1,4 +1,5 @@
-import { fotoDe } from '../../lib/fotos';
+import { useState } from 'react';
+import { fotoDe, fotoChica } from '../../lib/fotos';
 import { PROPORCION } from '../../config/ajustes';
 import s from './ProductThumb.module.css';
 
@@ -57,8 +58,15 @@ const SIZES_TARJETA = '(max-width: 767px) 46vw, (max-width: 1100px) 30vw, 310px'
  * que es la que define el LCP de /catalogo. Con lazy, el navegador esperaba a
  * tener la grilla dibujada para recien pedirla (1,2 s de demora medidos).
  */
-export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.tarjeta, linea, sizes = SIZES_TARJETA, prioridad = 0 }) {
+/**
+ * `previa`: la ficha. Debajo de la foto grande va la chica de 360 px, la misma
+ * que ya bajo la tarjeta: la ficha nunca se abre con el fondo solo. La grande
+ * aparece encima, en el mismo encuadre, apenas se termina de dibujar.
+ */
+export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.tarjeta, linea, sizes = SIZES_TARJETA, prioridad = 0, previa = false }) {
   const imagen = src ?? (producto?.imagen_url || fotoDe(producto, linea));
+  const [lista, setLista] = useState(false);
+  const chica = previa && imagen?.startsWith('/perfumes/') ? fotoChica(imagen) : null;
 
   if (imagen) {
     // Todas las fotos del pipeline salen a 3:4 y ya traen su fondo (el estudio
@@ -66,15 +74,21 @@ export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.ta
     // el cuadro. Ver scripts/fotos/componer.mjs.
     const srcSet = conVariantes(imagen);
     return (
-      <div className={s.wrap} style={{ aspectRatio: ratio }}>
+      <div
+        className={`${s.wrap} ${chica ? s.conPrevia : ''}`}
+        style={chica ? { aspectRatio: ratio, backgroundImage: `url(${chica})` } : { aspectRatio: ratio }}
+      >
         <img
+          key={imagen}
           src={imagen}
           {...(srcSet ? { srcSet, sizes } : {})}
           alt={alt ?? (producto?.inspirado_en || '')}
           loading={prioridad ? 'eager' : 'lazy'}
           {...(prioridad > 1 ? { fetchpriority: 'high' } : {})}
           decoding="async"
-          className={s.img}
+          className={`${s.img} ${chica && !lista ? s.oculta : ''}`}
+          onLoad={chica ? () => setLista(true) : undefined}
+          ref={chica ? (el) => { if (el?.complete && el.naturalWidth && !lista) setLista(true); } : undefined}
         />
       </div>
     );

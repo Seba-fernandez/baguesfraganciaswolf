@@ -20,10 +20,13 @@
 .bar::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
   inset: 0 0 -28px 0;
-  background: linear-gradient(to bottom, var(--fondo-barra) 0%, var(--fondo-barra) 62%, transparent 100%);
+  /* Llena entera la barra y se funde solo en los 28 px de abajo. Antes se
+     fundia desde el 62 %, adentro de la barra: arriba de todo, donde detras
+     esta el fondo oscuro del body, el papel quedaba gris con una franja. */
+  background: linear-gradient(to bottom, var(--fondo-barra) 0, var(--fondo-barra) calc(100% - 28px), transparent 100%);
   transition: opacity var(--dur) var(--ease);
 }
-.bar[data-luz='dia'] { --fondo-barra: rgba(246, 236, 232, 0.96); background: none; }
+.bar[data-luz='dia'] { --fondo-barra: rgb(246, 236, 232); background: none; }
 .bar[data-luz='hero'] { --fondo-barra: rgba(36, 6, 4, 0.55); }
 .bar[data-luz='dia'] .marca { color: var(--tinta); }
 .bar[data-luz='dia'] .marcaWolf { color: var(--tinta-suave); }

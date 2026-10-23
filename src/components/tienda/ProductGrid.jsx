@@ -165,7 +165,6 @@ export default function ProductGrid({
             </span>
           ))}
         </p>
-        <p className={s.aviso}>{LEGAL.corto}</p>
       </header>
 
       {/* Barra de filtros: se pega abajo del encabezado al scrollear, así se
@@ -379,6 +378,10 @@ export default function ProductGrid({
           )}
         </>
       )}
+      {/* El aviso corto va al final del catalogo, chico: arriba empujaba los
+          perfumes a la mitad de la pantalla (Sebas, 23/10). El completo sigue
+          en el pie. */}
+      <p className={s.aviso}>{LEGAL.corto}</p>
       </div>
     </section>
   );

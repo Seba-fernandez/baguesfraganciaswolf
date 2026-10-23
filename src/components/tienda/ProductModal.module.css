@@ -1,4 +1,5 @@
-.overlay { position: fixed; inset: 0; background: rgba(12, 7, 4, 0.74); z-index: 100; animation: fade 0.2s ease; }
+/* Fondo opaco, no negro (Sebas, 23/10): la pagina se apaga sin desaparecer. */
+.overlay { position: fixed; inset: 0; background: rgba(24, 5, 6, 0.52); z-index: 100; animation: fade 0.24s var(--ease); }
 /* Fondo solido, sin vidrio: la ficha tapa casi toda la pantalla, no hace falta
    ver a traves, y un backdrop-filter aca solo costaba GPU al abrir. */
 .sheet {
@@ -13,7 +14,7 @@
   background: var(--bg-2);
   box-shadow: 0 -24px 60px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transform-origin: bottom center;
-  animation: sheet-sube 0.32s var(--ease) both;
+  animation: sheet-sube 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 @keyframes sheet-sube {
   from { opacity: 0; transform: translateY(24px) scale(0.985); }
@@ -125,17 +126,13 @@
 .inspirado { font-size: 0.78rem; color: var(--ink-faint); margin-top: -2px; }
 .desc { color: var(--ink-dim); font-size: 0.95rem; }
 
-/* Piramide: tres filas, cada nota una pastilla plana. Se escanea en un
-   segundo; el parrafo de antes se leia como letra chica. */
-.piramide { display: flex; flex-direction: column; gap: 12px; padding-top: 16px; margin-top: 4px; border-top: 1px solid var(--line); }
-.nota { display: grid; grid-template-columns: 74px 1fr; gap: 10px; align-items: baseline; }
-.notaEtapa { font-size: 0.78rem; color: var(--ink-faint); }
-.pastillas { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
-.pastilla {
-  padding: 5px 11px; border-radius: var(--r-pill);
-  background: var(--bg-3); color: var(--ink-dim);
-  font-size: 0.82rem; line-height: 1.3;
-}
+/* Familia y notas, como el elenco de una serie: rotulo en negrita y los datos
+   seguidos en letra normal. Recto y sin pastillas: no se toca. */
+.ficha { display: flex; flex-direction: column; gap: 7px; padding-top: 14px; margin-top: 4px; border-top: 1px solid var(--line); }
+.linea { font-size: 0.9rem; line-height: 1.5; color: var(--ink-dim); }
+.linea dt { display: inline; font-weight: 600; color: var(--ink); }
+.linea dt::after { content: ': '; }
+.linea dd { display: inline; margin: 0; }
 
 .campo { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
 .opciones { display: flex; flex-direction: column; gap: 8px; }
@@ -157,15 +154,9 @@
 .opPrecio { font-weight: 600; color: var(--ink); display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
 .opAntes { font-weight: 400; font-size: 0.74rem; color: var(--ink-faint); text-decoration-thickness: 1px; }
 .opProv { font-size: 0.74rem; color: var(--ink-dim); letter-spacing: 0.01em; }
-/* El codigo de la proveedora, a la vista: es el dato mas solido de la tienda y
-   el mismo que viaja al WhatsApp. Chico y en cifras tabulares. */
-.opCodigo { font-size: 0.72rem; color: var(--ink-faint); margin-top: 1px; }
 /* "Ahorras $ X": precio de lista menos precio, las dos cifras de la base. Sin
    acento (es un dato, no una accion). */
 .opAhorro { font-weight: 500; font-size: 0.72rem; color: var(--ink-dim); margin-top: 2px; }
-.verificar { font-size: 0.78rem; line-height: 1.55; color: var(--ink-faint); margin-top: -2px; }
-.verificar a { color: var(--ink-dim); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--line-bright); }
-.verificar a:hover { color: var(--ink); }
 .opSello {
   padding: 3px 9px; border-radius: var(--r-pill);
   background: var(--amber); color: var(--on-amber); font-size: 0.62rem; font-weight: 600;
@@ -187,7 +178,6 @@
 .parecido:hover .parecidoNombre { color: var(--amber); }
 .parecidoRazon { font-size: 0.72rem; line-height: 1.35; color: var(--ink-faint); }
 
-.aviso { font-size: 0.8rem; line-height: 1.65; color: var(--ink-faint); margin-top: 4px; }
 
 /* La barra de agregar. Va ultima en el marcado y pegada abajo con sticky:
    mientras se baja la hoja queda a la vista ("50 ml · $ 22.499 · Agregar"),
@@ -236,13 +226,10 @@
   .media > div { position: static; height: 100%; width: 100%; aspect-ratio: auto !important; }
   .banda { display: none; }
   .info { padding: 40px 36px 0; overflow-y: auto; overscroll-behavior: contain; }
-  .para { order: 1; } .nombre { order: 2; } .frase { order: 3; } .inspirado { order: 4; }
-  .desc { order: 5; } .piramide { order: 6; } .campo { order: 7; } .verificar { order: 8; } .promoNota { order: 8; }
-  .barra { order: 9; margin: 4px -36px 0; padding: 14px 36px; box-shadow: 0 -14px 20px -16px rgba(10, 5, 3, 0.8); }
-  .aviso { padding-bottom: 32px; }
-  .parecidos { order: 19; }
-  .aviso { order: 20; }
-  .agregarResto { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
+  /* El mismo orden que en el celular (Sebas, 23/10): el tamano y el precio
+     arriba, la familia, las notas y la descripcion despues. */
+  .barra { margin: 4px -36px 0; padding: 14px 36px; box-shadow: 0 -14px 20px -16px rgba(10, 5, 3, 0.8); }
+  .info { padding-bottom: 0; }
 }
 
 @keyframes up { from { transform: translateY(100%); } to { transform: translateY(0); } }

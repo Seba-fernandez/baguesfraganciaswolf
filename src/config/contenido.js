@@ -14,7 +14,6 @@
 export const MARCA = {
   nombre: 'Bagues',
   complemento: 'Grupo Wolf',
-  ciudad: 'Córdoba',
 };
 
 export const CABECERA = {
@@ -37,10 +36,7 @@ export const INICIO = {
   // abajo, que se lee de un vistazo.
   // Rediseño C: "versiones inspiradas" en el primer pantallazo (no negociable
   // de la evaluacion: quien llega tiene que saber que compra antes de bajar).
-  bajada: 'Versiones inspiradas, hechas por la casa Bagués.',
-
-  // Etiqueta del frasco protagonista del hero.
-  showcaseEtiqueta: 'El más pedido',
+  bajada: 'Versiones inspiradas, hechas por Bagués.',
 
   // La linea de datos, arriba del boton: "Desde $ 16.499 · 100 aromas · Envio
   // a todo el pais". {desde} y {n} salen de la base al hidratar; en el HTML
@@ -79,10 +75,8 @@ export const FAMILIAS_PORTADA = {
 };
 
 export const DESTACADOS = {
-  eyebrow: 'Selección del ciclo',
   titulo: 'Los que siempre salen',
   bajada: 'Los que vuelan cada mes. Si dudás, empezá por acá.',
-  desde: 'desde',
 };
 
 /**
@@ -103,7 +97,7 @@ export const CATALOGO = {
   titulo: 'El catálogo',
   bajada: '{aromas} aromas del ciclo. Buscá por el perfume que conocés, una nota o el nombre de la caja.',
   cargando: 'Cargando el catálogo…',
-  placeholderBusqueda: 'Buscar: Sauvage, Le Male, amaderado...',
+  placeholderBusqueda: 'Buscar: Sauvage, Le Male…',
   buscarEtiqueta: 'Buscar aroma',
   quitarFiltros: 'Quitar filtros',
   vacioTitulo: 'No encontré ese aroma en este ciclo.',
@@ -209,23 +203,19 @@ export const HOJA_TAMANOS = {
 };
 
 export const FICHA = {
-  agregar: 'Agregar al pedido',
+  agregar: 'Agregar',
   // El botón de la barra fija. En el celular se ve "Agregar" (no entra más al
   // lado del precio y la cantidad); el lector de pantalla lee la frase entera.
   agregarCorto: 'Agregar',
   agregarResto: ' al pedido',
   tamano: 'Tamaño',
-  // Debajo de cada tamaño: el código con el que cargo el pedido en la
-  // proveedora y cuánto se ahorra contra su precio de lista ({monto} en pesos).
-  codigo: 'Código',
+  // Debajo de cada tamaño: cuánto se ahorra contra su precio de lista ({monto}
+  // en pesos). El código de la proveedora ya no se muestra (decisión de Sebas,
+  // 23/10/2026: a la clienta no le sirve); viaja igual en el WhatsApp.
   ahorras: 'Ahorrás {monto}',
-  // Al pie de los tamaños, según la línea elegida. Ojo: el código NO se puede
-  // buscar en esas tiendas (no es su SKU, verificado el 17/10/2026); por eso
-  // la frase dice para qué sirve y manda a conocer la marca, nada más.
-  verificar: {
-    bagues: { texto: 'El código es el del catálogo de Bagués: con ese número cargo tu pedido. Mirá la casa en ', sitio: 'bagues.com.ar', url: 'https://bagues.com.ar' },
-    unlock: { texto: 'El código es el del catálogo de Unlock: con ese número cargo tu pedido. Mirá la marca en ', sitio: 'unlock.com.ar', url: 'https://unlock.com.ar' },
-  },
+  // Las líneas de la ficha, al estilo del elenco de Netflix: rótulo en negrita
+  // y datos seguidos (Familia, y después Salida, Corazón y Fondo).
+  familia: 'Familia',
   // Arriba del nombre, chico. Unisex no lleva "para".
   para: { masculino: 'Para él', femenino: 'Para ella', unisex: 'Unisex' },
   // Debajo del nombre. La línea de cada tamaño (Unlock o Bagues) se aclara en
@@ -237,9 +227,6 @@ export const FICHA = {
   copiarLink: 'Copiar link',
   linkCopiado: 'Link copiado',
   linkManual: 'Copialo desde acá:',
-  aviso:
-    'Trabajo por encargo: el pedido me llega por WhatsApp y te confirmo stock, envío y ' +
-    'fecha según el cierre del ciclo.',
 };
 
 /**
@@ -249,9 +236,9 @@ export const FICHA = {
  */
 export const COMO_FUNCIONA = {
   titulo: 'Cómo funciona',
-  bajada: 'Así me llega tu pedido: con el código de cada caja, listo para cargarlo en Bagués.',
+  bajada: 'Así me llega tu pedido: cada perfume con su tamaño y el total, listo para confirmarte.',
   chatEtiqueta: 'Ejemplo de un pedido por WhatsApp',
-  chatContacto: 'Sebastián, Grupo Wolf',
+  chatContacto: 'Sebastián, Bagues',
   ejemploNombre: 'Caro',
   respuesta: '¡Hola! Te confirmo stock y te paso la seña para reservarlo.',
   cita: 'Trabajo por encargo. Si algo no te cierra, lo hablamos tranquilos.',
@@ -292,13 +279,14 @@ export const OPINIONES = {
 export const ANTES_DE_PEDIR = {
   titulo: 'Antes de pedir',
   // Cada dato abre con una cifra grande (lo que se lee de un vistazo) y abajo
-  // una frase entera, no un rotulo: mucha clientela es gente grande (pedido de
-  // Sebas, 23/10). {monto} es el envio gratis.
+  // una frase entera que se entiende sola: mucha clientela es gente grande
+  // (pedido de Sebas, 23/10). {monto} es el envio gratis. La entrega no lleva
+  // fecha fija: el martes es el corte de cada semana (Sebas, 23/10).
   datos: [
-    { cifra: '50 %', titulo: 'Seña del 50 % para reservar', texto: 'El resto lo pagás al retirar o al recibir. Transferencia o efectivo.' },
-    { cifra: '{monto}', titulo: 'Desde ahí, envío gratis', texto: 'A todo el país por correo. Gratis desde {monto}; si tu pedido es menor, el envío lo pagás vos.' },
+    { cifra: '50 %', titulo: 'Seña para reservar', texto: 'El resto lo pagás al retirar o al recibir. Transferencia o efectivo.' },
+    { cifra: '{monto}', titulo: 'Envío gratis a todo el país', texto: 'Por correo, en pedidos desde {monto}. Si tu pedido es menor, el envío lo pagás vos.' },
+    { cifra: 'Martes', titulo: 'Pedí hasta el martes', texto: 'Y te lo entrego desde el viernes. El día lo coordinamos por WhatsApp.' },
     { cifra: 'Córdoba', titulo: 'Retiro o envío en capital', texto: 'Lo retirás o te lo llevo. El punto de retiro te lo paso por WhatsApp.' },
-    { cifra: 'Al cierre', titulo: 'Cuándo te llega', texto: 'Depende del cierre del ciclo. Te confirmo la fecha por WhatsApp.' },
   ],
 };
 

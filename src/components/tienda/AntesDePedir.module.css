@@ -13,11 +13,13 @@
 :global(.tienda) .titulo:has(+ .ciclo) { margin-bottom: 12px; }
 .ciclo { margin-bottom: clamp(28px, 4vw, 40px); }
 
-/* 2x2 en el celular, una fila en escritorio. */
+/* Una columna en el celular (dos de 170 px dejaban el texto en tiras, y la
+   clientela es grande), dos en tableta y una fila en escritorio. */
 .grilla {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 34px 18px; margin: 0;
+  display: grid; grid-template-columns: 1fr;
+  gap: 30px; margin: 0;
 }
+@media (min-width: 600px) { .grilla { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px 24px; } }
 @media (min-width: 900px) { .grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 36px; } }
 
 .dato { border-top: 1px solid var(--filete); padding-top: 16px; }

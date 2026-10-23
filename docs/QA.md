@@ -232,6 +232,16 @@ los párrafos y no de las filas de datos (las ciudades suman "es Baccarat Rouge
 (la sombra de contacto del producto llega al borde; revisado a 2x, sin
 costura).
 
+**Lighthouse mobile, red real, intercalado, cinco corridas** (vista previa
+`ab4d11e` contra producción): 97 contra 98; LCP 2.591 contra 2.125 ms; CLS
+0,003 contra 0. Primero dio 2.681: las fotos de Las ciudades y de las familias
+(lazy, pero dentro del margen de Chrome) salían antes del LCP con 120 kB;
+`useTrasCarga` las manda después del evento load. Lo que queda es el hero
+mismo: una foto de 50 kB (AVIF de 780 px; Lighthouse emula densidad 1,75)
+contra las dos imágenes chicas del hero viejo de producción. Para bajar de
+2,5 s: una versión del hero para pantallas de menos de 2x, o un AVIF más
+comprimido. Queda para decidir con Sebas: es la imagen que pidió más nítida.
+
 **Seguridad** (`docs/SEGURIDAD.md`): CSP y HSTS sumados, `prerender.mjs`
 controla los hashes de los scripts en línea. Con la política puesta, banco 84
 de 84, motores 90 de 90 y ningún bloqueo en la consola de los tres navegadores.

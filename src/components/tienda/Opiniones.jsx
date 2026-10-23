@@ -12,13 +12,20 @@ import s from './Opiniones.module.css';
  *   { "imagen": "/opiniones/archivo.webp", "ancho": 720, "alto": 1280,
  *     "alt": "Mensaje de una clienta: ..." , "aroma": "Good Girl" }
  * "aroma" es opcional; "alt" transcribe el mensaje para el lector de pantalla.
+ *
+ * Rediseño D: lista para cuando lleguen las capturas. Va entre los destacados
+ * (el clímax vino) y cómo funciona, de día sobre papel: después del "esto es
+ * lo que más sale" llega el "y a otras les gustó". Capturas rectas con la
+ * misma sombra de las fotos, en una fila que llega al borde derecho como los
+ * destacados.
  */
 export default function Opiniones({ lista = opiniones }) {
   const ref = useReveal();
   const validas = (lista || []).filter((o) => o && o.imagen && o.alt);
   if (validas.length === 0) return null;
   return (
-    <section className={`tw ${s.section}`} id="opiniones" ref={ref} aria-labelledby="opiniones-titulo">
+    <section className={`dia ${s.section}`} id="opiniones" ref={ref} aria-labelledby="opiniones-titulo">
+      <div className="tw">
       <h2 id="opiniones-titulo" className={s.titulo}>{OPINIONES.titulo}</h2>
       <p className={s.bajada}>{OPINIONES.bajada}</p>
       <ul className={s.fila}>
@@ -37,6 +44,7 @@ export default function Opiniones({ lista = opiniones }) {
           </li>
         ))}
       </ul>
+      </div>
     </section>
   );
 }

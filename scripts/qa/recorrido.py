@@ -636,17 +636,21 @@ def foto1(browser, base):
 
 
 def ux17(browser, base):
+    # Desde el 23/10 el hero ya no muestra la cantidad de aromas: el dato que
+    # llega de la base es el precio "Desde $ X". La regla es la misma: el HTML
+    # servido no trae un numero viejo, y despues de hidratar aparece el real.
     ctx, page = nuevo(browser, MOVIL)
     html = page.request.get(base + "/").text()
-    m = re.search(r"(\d+)\s*aromas", html)
-    servido = m.group(1) if m else None
+    meta = re.search(r'data-hero="meta"[^>]*>(.*?)</p>', html, re.S)
+    servido = re.search(r"\$\s?([\d.]+)", re.sub(r"<[^>]+>", "", meta.group(1))) if meta else None
+    servido = servido.group(1) if servido else None
     page.goto(base + "/", wait_until="load")
     page.wait_for_timeout(1500)
-    page.wait_for_function("() => /\\d+\\s*aromas/.test(document.querySelector('[data-hero=meta]')?.innerText || '')", timeout=20000)
-    page.wait_for_timeout(2500)
-    vivo = page.evaluate("() => (document.querySelector('[data-hero=meta]').innerText.match(/(\\d+)\\s*aromas/) || [])[1] || null")
+    page.wait_for_function("() => /\\$\\s?[\\d.]+/.test(document.querySelector('[data-hero=meta]')?.innerText || '')", timeout=20000)
+    page.wait_for_timeout(1000)
+    vivo = page.evaluate("() => (document.querySelector('[data-hero=meta]').innerText.match(/\\$\\s?([\\d.]+)/) || [])[1] || null")
     ctx.close()
-    chk("UX-17", "contenido", "baja", "El numero de aromas del HTML servido es el mismo que despues de hidratar",
+    chk("UX-17", "contenido", "baja", "El precio 'Desde' del HTML servido es el mismo que despues de hidratar (o no viene y aparece)",
         servido is None and vivo is not None or servido == vivo,
         f"servido: {servido if servido is not None else 'sin numero (lugar reservado)'}; despues de hidratar: {vivo}")
 
@@ -1441,8 +1445,9 @@ def e3_b1(browser, base):
     txt = m["textoDatos"]
     servido = re.search(r'data-qa="hero-datos"[^>]*>(.*?)</p>', res["844"]["html"], re.S)
     servido_txt = re.sub(r"<[^>]+>", "", servido.group(1)) if servido else None
-    chk("E3-B1 datos", "conversion", "alta", "Linea 'Desde $ X · N aromas · Envio a todo el pais' con X y N reales, sin numeros escritos en el HTML",
-        bool(re.fullmatch(rf"Desde \$\s?{re.escape(desde_txt)} · {n} aromas · Envío a todo el país", txt))
+    # Desde el 23/10 sin la cantidad de aromas (Sebas: el envio pesa mas).
+    chk("E3-B1 datos", "conversion", "alta", "Linea 'Desde $ X · Envios a todo el pais' con X real, sin numeros escritos en el HTML",
+        bool(re.fullmatch(rf"Desde \$\s?{re.escape(desde_txt)} · Envíos a todo el país", txt))
         and servido_txt is not None and not re.search(r"\d", servido_txt) and m["pesoDatos"] == "600",
         f"se ve: '{txt}'; base: desde {desde_txt}, {n} aromas; HTML servido: '{(servido_txt or 'no hay')[:60]}'; peso {m['pesoDatos']}")
     sellos = {k: (v["corona"], v["coronaTops"], v["marcaPx"]) for k, v in res.items()}

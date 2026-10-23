@@ -417,6 +417,16 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
 - **Una animación con `fill-mode: both` pisa el `:hover`.** El `transform`
   final queda aplicado por la animación y le gana a la regla normal: la
   entrada de las tarjetas va con `backwards`.
+- **Animar `clip-path` o `inset` con el scroll tironea**: se repinta en cada
+  cuadro. Lo que va atado al scroll anima solo `transform` u `opacity`.
+- **`animation-timeline: view()` en un `::before` mide al seudoelemento** en
+  Chrome (Safari, a su dueño). Para que un paño siga a su sección, la sección
+  declara `view-timeline: --nombre` y el paño usa ese nombre.
+- **`document.fonts.load` antes del `@font-face` contesta enseguida y vacío.**
+  El build pega la hoja embebida después de los scripts del `<head>`: el
+  script del hero pide las fuentes en el primer cuadro.
+- **`servir.mjs` lee la CSP de `vercel.json` al arrancar.** Si cambiaste un
+  script en línea y su hash, reiniciá el servidor local o el script no corre.
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.

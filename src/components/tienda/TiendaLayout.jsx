@@ -120,12 +120,22 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
     return () => cancelIdleCallback(id);
   }, []);
 
+  // La marca de la barra, ya en la portada: sube al principio (Sebas, 23/10:
+  // al bajar, tocarla no hacia nada, porque el link iba a la misma pagina).
+  function alTocarMarca(e) {
+    if (pathname !== '/' || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
+    const brusco = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: brusco ? 'auto' : 'smooth' });
+  }
+
   return (
     <div className="tienda" ref={raiz}>
       <div className="tfondo" aria-hidden="true" />
 
       <header className={`${s.bar} ${luz === 'dia' ? 'dia' : ''}`} data-luz={luz} inert={inert}>
-        <Link to="/" className={s.marca}>
+        <Link to="/" className={s.marca} onClick={alTocarMarca}>
           {MARCA.nombre} <span className={s.marcaWolf}>{MARCA.complemento}</span>
         </Link>
         <nav className={s.nav}>

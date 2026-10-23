@@ -30,13 +30,12 @@ import s from './Hero.module.css';
  */
 export default function Hero({
   settings, promos = {}, onVerPromo, onOpen,
-  totalAromas, desde, nombresAromas = [],
+  desde, nombresAromas = [],
 }) {
   const lista = Object.values(promos);
   // El precio minimo y el numero de aromas llegan con la base. Hasta entonces
   // (y en el HTML pre-generado) su lugar queda reservado y vacio (UX-17).
   const [antesDesde, despuesDesde] = INICIO.datosDesde.split('{desde}');
-  const [antesAromas, despuesAromas] = INICIO.datosAromas.split('{n}');
 
   function abrirAroma(e, item) {
     // Con el link de verdad en el href (se puede abrir en otra pestaña); el
@@ -69,10 +68,6 @@ export default function Hero({
           <p className={`${s.meta} tnum`} data-hero="meta" data-qa="hero-datos">
             <span className={`${s.metaDato} ${s.metaDesde}`}>
               {antesDesde}<span className={`${s.metaNum} ${s.metaPrecio}`}>{desde ? pesos(desde) : ''}</span>{despuesDesde}
-            </span>
-            <span className={s.metaSep} aria-hidden="true"> · </span>
-            <span className={s.metaDato}>
-              {antesAromas}<span className={s.metaNum}>{totalAromas || ''}</span>{despuesAromas}
             </span>
             <span className={s.metaSep} aria-hidden="true"> · </span>
             <span className={s.metaDato}>{INICIO.datosEnvio}</span>

@@ -3,45 +3,61 @@
    sangre en el celular. */
 .section {
   background:
-    radial-gradient(60% 46% at 50% 18%, rgba(158, 35, 53, 0.42), rgba(158, 35, 53, 0) 72%),
+    radial-gradient(60% 46% at 50% 26%, rgba(158, 35, 53, 0.42), rgba(158, 35, 53, 0) 72%),
     var(--vino);
   color: var(--crema);
   padding-block: clamp(72px, 10vw, 140px) clamp(64px, 9vw, 120px);
 }
 .marco { position: relative; }
 
-/* La banda que se abre (Sebas, 23/10). Entre dos secciones de papel, el vino
-   entra angosto, con las esquinas redondas y un margen de papel a los
-   costados; se abre hasta el borde mientras la seccion llega al centro de la
-   pantalla y se vuelve a cerrar al irse. Se anima solo el fondo (un ::before
-   con el degrade, sin fotos adentro): el contenido no se mueve ni se recorta,
-   y el navegador no repinta mas que un degrade. Va atada al scroll
-   (animation-timeline: view()), sin JavaScript: no hay nada que se trabe ni
-   que pelee con el dedo. Donde no existe (Firefox hoy) o con movimiento
-   reducido, la banda queda abierta, como siempre. */
+/* La cortina (Sebas, 23/10, tercera version, con sus imagenes de como
+   queria que se viera). Cuando "Los mas pedidos" llena la pantalla no tienen
+   que verse las franjas de papel de arriba y abajo: dos paños del mismo vino
+   salen del borde de arriba y del de abajo de la seccion y tapan esos
+   margenes (solo el relleno de las secciones vecinas, nunca su contenido).
+   Al irse, vuelven a entrar. La barra y el volver arriba toman el vino solos:
+   miden que hay debajo y el paño cuenta como parte de esta seccion.
+   Sin lag: cada paño anima solo transform (scaleY desde su borde), atado al
+   scroll con animation-timeline: view(). Eso lo mueve el compositor, fuera
+   del hilo principal: no repinta ni depende de lo que haga la pagina. La luz
+   rosada del fondo se bajo un poco (26 %) para que el borde de arriba sea
+   vino liso y el paño empalme sin costura.
+   Sin animation-timeline (Firefox hoy) o con movimiento reducido: la banda
+   como siempre, con sus bordes. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .section {
-      position: relative; isolation: isolate;
-      background: var(--arena) 0 0 / 180px 180px, var(--papel);
+    /* Por encima de la seccion de abajo, y dibujada siempre: con
+       content-visibility (tienda.css) lo que sale de la caja se recorta. */
+    :global(.tienda) > main > section.section:not(#inicio-hero) {
+      position: relative; z-index: 2;
+      content-visibility: visible;
+      /* La linea de tiempo es la de la seccion, con nombre, y los paños la
+         usan: con view() a secas Chrome mide a cada paño por su cuenta (una
+         franja de 64 px afuera de la seccion) y nunca salian a tiempo. */
+      view-timeline: --banda block;
     }
-    .section::before {
-      content: ''; position: absolute; inset: 0; z-index: -1;
-      background:
-        radial-gradient(60% 46% at 50% 18%, rgba(158, 35, 53, 0.42), rgba(158, 35, 53, 0) 72%),
-        var(--vino);
-      animation: banda-abre linear both;
-      animation-timeline: view();
+    .section::before,
+    .section::after {
+      content: ''; position: absolute; left: 0; right: 0;
+      height: var(--cortina, 64px);
+      background: var(--vino);
+      will-change: transform;
+      animation: cortina-sale linear both;
+      animation-timeline: --banda;
       animation-range: cover 0% cover 100%;
     }
+    .section::before { bottom: 100%; transform-origin: 50% 100%; }
+    .section::after { top: 100%; transform-origin: 50% 0; }
   }
 }
-@keyframes banda-abre {
-  0%, 100% { clip-path: inset(0 var(--banda-margen, 14px) round var(--banda-radio, 26px)); }
-  32%, 68% { clip-path: inset(0 0 round 0); }
-}
-@media (min-width: 780px) {
-  .section { --banda-margen: clamp(20px, 2.6vw, 40px); --banda-radio: 36px; }
+/* El paño mide menos que el relleno de las vecinas (72 px en el celular,
+   hasta 140 en escritorio): tapa papel, nunca un texto. Sale cuando la
+   seccion ya ocupa casi toda la pantalla y entra cuando se empieza a ir. */
+.section { --cortina: clamp(64px, 9vw, 128px); }
+@keyframes cortina-sale {
+  0%, 28% { transform: scaleY(0); }
+  40%, 60% { transform: none; }
+  72%, 100% { transform: scaleY(0); }
 }
 
 .head { margin-bottom: clamp(24px, 4vw, 44px); }
@@ -82,17 +98,29 @@
   }
 }
 
+/* Las flechas tambien en el celular (Sebas, 23/10): sobre las tarjetas que
+   asoman a los costados, mas chicas. La de la izquierda aparece apenas se
+   corre la fila, con el dedo o con la otra flecha. Con pantalla tactil ancha
+   sin mouse (tablet) siguen ocultas: ahi se desliza. */
 .flecha {
-  position: absolute; top: 40%; transform: translateY(-50%); z-index: 2;
-  width: 46px; height: 46px; border-radius: 50%;
-  display: none; place-items: center;
-  color: var(--crema); border: 0; cursor: pointer;
+  position: absolute; top: 40%; translate: 0 -50%; z-index: 4; /* translate y no transform: el toque del vidrio usa transform */
+  width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 0; cursor: pointer;
 }
-.flecha:hover { color: #fff; }
-.flechaIzq { left: -22px; transition: opacity var(--dur) var(--ease); }
+.flechaIzq {
+  left: -8px;
+  transition: opacity var(--dur) var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease),
+    color var(--dur) var(--ease), transform 0.42s cubic-bezier(0.3, 1.7, 0.5, 1);
+}
 .flechaOculta { opacity: 0; pointer-events: none; }
-.flechaDer { right: -22px; }
-@media (min-width: 780px) { .flechaDer { right: 10px; } .item { scroll-snap-align: start; } }
+.flechaDer { right: -8px; }
+@media (min-width: 780px) {
+  .flecha { width: 46px; height: 46px; display: none; }
+  .flechaIzq { left: -22px; }
+  .flechaDer { right: 10px; }
+  .item { scroll-snap-align: start; }
+}
 @media (min-width: 780px) and (hover: hover) { .flecha { display: grid; } }
 
 .item { position: relative; scroll-snap-align: center; }

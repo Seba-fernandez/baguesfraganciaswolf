@@ -36,12 +36,12 @@ export const INICIO = {
   // de la evaluacion: quien llega tiene que saber que compra antes de bajar).
   bajada: 'Versiones inspiradas, hechas por Bagués.',
 
-  // La linea de datos, arriba del boton: "Desde $ 16.499 · 100 aromas · Envio
-  // a todo el pais". {desde} y {n} salen de la base al hidratar; en el HTML
-  // pre-generado su lugar queda reservado y vacio (nunca un numero viejo).
+  // La linea de datos, arriba del boton: "Desde $ 16.499 · Envíos a todo el
+  // país". {desde} sale de la base al hidratar; en el HTML pre-generado su
+  // lugar queda reservado y vacio (nunca un numero viejo). Sin la cantidad de
+  // aromas desde el 23/10 (Sebas): el envio pesa mas que el numero.
   datosDesde: 'Desde {desde}',
-  datosAromas: '{n} aromas',
-  datosEnvio: 'Envío a todo el país',
+  datosEnvio: 'Envíos a todo el país',
 
   // Rotulo de la cinta de nombres que se mueve abajo del hero.
   cintaEtiqueta: 'En este ciclo',
@@ -312,7 +312,7 @@ export const ANTES_DE_PEDIR = {
     { cifra: '50 %', titulo: 'Seña para reservar', texto: 'El resto lo pagás al retirar o al recibir. Transferencia o efectivo.' },
     { cifra: '{monto}', titulo: 'Envío gratis a todo el país', texto: 'Por correo, en pedidos desde {monto}. Si tu pedido es menor, el envío lo pagás vos.' },
     { cifra: 'Martes', titulo: 'Pedí hasta el martes', texto: 'Y te lo entrego desde el viernes. El día lo coordinamos por WhatsApp.' },
-    { cifra: 'Córdoba', titulo: 'Retiro o envío en capital', texto: 'Lo retirás o te lo llevo. El punto de retiro te lo paso por WhatsApp.' },
+    { cifra: 'Córdoba', titulo: 'Retiro o envío en capital', texto: 'Lo retirás o te lo envío. El punto de retiro te lo paso por WhatsApp.' },
   ],
 };
 

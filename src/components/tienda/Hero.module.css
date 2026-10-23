@@ -98,8 +98,11 @@
    caja tiene la altura y la linea base del numero de verdad y no salta. */
 .metaPrecio:empty::before {
   content: '$ 00.000'; color: transparent; width: auto; height: auto;
-  border-radius: 2px; background: var(--line-bright); vertical-align: baseline;
+  vertical-align: baseline;
 }
+/* Y cuando llega, aparece suave en vez de saltar (sin barra gris antes). */
+.metaPrecio:not(:empty) { animation: heroSube 0.5s var(--sal) both; }
+@media (prefers-reduced-motion: reduce) { .metaPrecio:not(:empty) { animation: none; } }
 .metaNum:not(.metaPrecio):empty::before {
   content: ''; display: inline-block; width: 100%; height: 0.7em;
   border-radius: 2px; background: var(--line-bright); vertical-align: -0.05em;
@@ -210,6 +213,12 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   .lineaWrap:nth-child(3) .linea { animation-delay: 0.28s; }
   .bajada { animation: heroSube 0.7s var(--sal) 0.42s both; }
   .compra { animation: heroSube 0.7s var(--sal) 0.55s both; }
+  /* Hasta que llegan las fuentes (clase "fe" del script de index.html), la
+     entrada queda quieta en su primer cuadro: el titulo tapado, la bajada y
+     el boton transparentes. Despues arranca todo junto, con la letra buena. */
+  :global(html.fe) .linea,
+  :global(html.fe) .bajada,
+  :global(html.fe) .compra { animation-play-state: paused; }
 }
 
 /* Parallax leve (rediseño D, pedido de Sebas): al bajar, la escena se queda

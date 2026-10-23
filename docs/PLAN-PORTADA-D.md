@@ -148,6 +148,27 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
   el borde negro de botón del navegador, tapado por el vidrio casi
   transparente.
 
+## Sexta vuelta (23/10, segundo video de Sebas y sus imágenes de la cortina)
+
+- **La banda de "Los más pedidos" es una cortina de alto**, no de ancho: a
+  todo el ancho siempre, y cuando la sección llena la pantalla dos paños del
+  mismo vino salen de su borde de arriba y de abajo y tapan las franjas de
+  papel (solo el relleno de las vecinas). La barra y el volver arriba toman
+  el vino solos. Se anima solo `transform` atado al scroll: lo mueve el
+  compositor y no tironea. La versión anterior (de ancho, con `clip-path`)
+  se repintaba en cada cuadro: ese era el lag que notaba Sebas.
+- **El inicio aparece entero y con su letra:** el título, la bajada y el
+  botón esperan a las dos fuentes del título (como mucho 0,9 s) y entran
+  juntos; antes se veía la letra de respaldo y después cambiaba. Las dos
+  fuentes van precargadas para que la espera no cueste LCP (medido
+  intercalado en local: igual que antes). El precio aparece suave al llegar.
+- **"Desde $ X · Envíos a todo el país"**: sin la cantidad de aromas.
+- **"Lo retirás o te lo envío"** en Antes de pedir (era "te lo llevo"; no
+  había otro lugar con esa idea, tampoco en la base).
+- **La marca de la barra sube al principio** estando en la portada.
+- **Flechas de "Los más pedidos" en el celular:** la derecha siempre, la
+  izquierda apenas se corre la fila; de a una tarjeta.
+
 ## Guion de la portada
 
 | # | Sección | Luz | Qué cambia |

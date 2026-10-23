@@ -264,6 +264,23 @@ sale como `5493515551234`). Pruebas sin navegador: `datos.test.mjs` (56
 casos). La base se probó con los mismos casos en una transacción que se
 deshace y, ya aplicada, desde afuera con la clave pública.
 
+### Rediseño D, sexta vuelta (23 de octubre de 2026)
+
+- **La marca de la barra no subía** al tocarla con la portada bajada: el link
+  iba a la misma página. Ahora sube.
+- **El título del inicio cambiaba de letra a la vista** (fuente de respaldo y
+  después Melodrama y Boska). Ahora la entrada espera a esas dos fuentes.
+  Costo medido con Lighthouse intercalado en local (5 + 5 corridas): sin
+  precarga, +140 ms de LCP; con las dos fuentes precargadas, igual que antes.
+- **Lag de la banda:** la primera versión animaba `clip-path` (se repinta en
+  cada cuadro). La cortina anima solo `transform`.
+- **`view()` en un `::before` mide al seudoelemento, no a la sección**, en
+  Chrome (Safari mide a la sección): los paños nunca salían. Se usa una
+  línea de tiempo con nombre en la sección (`view-timeline: --banda`).
+- **UX-17 y E3-B1 datos** pasan a mirar el precio "Desde" (ya no hay número
+  de aromas).
+- Banco local **86 chequeos, 0 fallan**; `motores.py` sin fallas.
+
 ### Rediseño D, quinta vuelta (23 de octubre de 2026)
 
 - **Pantallazo al entrar al catálogo** (visto por Sebas en el celular):

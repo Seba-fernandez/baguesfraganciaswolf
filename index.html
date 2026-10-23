@@ -28,9 +28,13 @@
          crítico: media="print" hace que el navegador la baje sin bloquear el
          dibujado, y el onload la libera. Las cuatro que sí se ven están
          declaradas en el CSS, que viaja embebido en este mismo documento.
-         Sin preload de fuentes a propósito: con el CSS embebido el navegador
-         las descubre al instante, y un preload solo les daría prioridad por
-         encima de la imagen del hero, que es la que define el LCP. -->
+         Las dos del título sí van precargadas (23/10): desde que el hero
+         espera a sus fuentes para aparecer (ver el script de abajo de todo),
+         sin precarga la espera le costaba ~140 ms de LCP a la simulación de
+         Lighthouse; con precarga quedó igual que antes (medido intercalado,
+         en local). Son 27 kB. -->
+    <link rel="preload" href="/fonts/melodrama-600.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/boska-italic-400.woff2" as="font" type="font/woff2" crossorigin />
     <script>
       // La hoja se agrega recién en el evento `load`, no con el truco de
       // media="print" + onload: ese se libera apenas baja el archivo, y medido
@@ -123,6 +127,29 @@
         if (l.pathname === '/' && vuelta) {
           l.replace('/panel' + l.search + l.hash);
         }
+      })();
+    </script>
+    <script>
+      // Las letras del inicio esperan a sus fuentes (Sebas, 23/10): con red
+      // lenta el titulo aparecia con la letra de respaldo y cambiaba a la
+      // vista. Mientras dure la clase "fe", la entrada del hero queda en su
+      // primer cuadro; cuando llegan las dos del titulo (o a los 0,9 s, lo que
+      // pase antes) arranca toda junta. Figtree no se espera: su respaldo ya
+      // tiene las mismas medidas y el cambio casi no se ve (y esperarla costaba
+      // LCP). Sin JavaScript no hay clase y se ve
+      // como siempre. Las fuentes se piden en el primer cuadro y no aca: el
+      // build pega la hoja con los @font-face mas abajo, y antes de leerla
+      // document.fonts.load no encuentra nada y contesta enseguida.
+      (function () {
+        var d = document.documentElement, f = document.fonts;
+        if (!f || !f.load || !window.requestAnimationFrame || location.pathname !== '/') return;
+        d.classList.add('fe');
+        var listo = function () { d.classList.remove('fe'); };
+        setTimeout(listo, 900);
+        requestAnimationFrame(function () {
+          Promise.all(['600 1em Melodrama', 'italic 400 1em Boska']
+            .map(function (x) { return f.load(x); })).then(listo, listo);
+        });
       })();
     </script>
   </head>

@@ -10,3 +10,14 @@
 @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 300 700; font-display: swap; src: url('/fonts/plexmono-500.woff2') format('woff2'); }
 @font-face { font-family: 'La Belle Aurore'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/belle-aurore-400.woff2') format('woff2'); }
 @font-face { font-family: 'Figtree'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/figtree-500.woff2') format('woff2'); }
+
+/* La arena del papel (ver tienda.css, "Arena"). Va aca y no en el CSS de la
+   pagina para que la baldosa se pida despues de la foto del hero: el papel
+   liso de los primeros instantes no se distingue. La dibuja
+   scripts/fondo/arena.mjs, igual en todos los navegadores (antes era un SVG
+   con feTurbulence que Safari dibujaba con la mitad de grano que Chrome). */
+.tienda main section.dia,
+.tienda .dia[role=dialog] {
+  background-image: url('/fondo/arena.webp');
+  background-size: 180px 180px;
+}

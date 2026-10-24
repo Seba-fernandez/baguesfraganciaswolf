@@ -1265,6 +1265,51 @@ def e3_a6(browser, base):
     ctx.close()
 
 
+def familias_varias(browser, base):
+    # Familia con varias a la vez (Sebas, 23/10): en el catalogo se suman, y en
+    # la hoja de la portada los chips suman o sacan sin dejarla vacia.
+    ctx, page, _ = catalogo_con_datos(browser, MOVIL)
+    abrir = page.locator("[data-qa=familia-abrir]")
+    if abrir.count() and abrir.is_visible() and abrir.get_attribute("aria-expanded") != "true":
+        abrir.click()
+        page.wait_for_timeout(200)
+    bot = page.locator("[data-qa=filtro-familia] button")
+    def tocar(i):
+        bot.nth(i).click()
+        page.wait_for_timeout(350)
+    tocar(1); a = conteo(page)[0]; tocar(1)
+    tocar(3); b = conteo(page)[0]
+    tocar(1); juntas = conteo(page)[0]
+    url = urllib.parse.unquote(page.url)
+    rotulo = page.evaluate("() => document.querySelector('[data-qa=familia-abrir]').innerText.replace('▾', '').trim()")
+    ctx.close()
+    ctx, page, _ = catalogo_con_datos(browser, MOVIL, "/catalogo?familia=amaderados,florales")
+    por_link = conteo(page)[0]
+    ctx.close()
+    chk("FAM-1 catalogo", "conversion", "media", "Catalogo: dos familias suman sus aromas, quedan las dos en la URL y entrar con ese link da lo mismo",
+        a > 0 and b > 0 and juntas == a + b and "familia=florales,amaderados" in url and por_link == juntas and "2" in rotulo,
+        f"florales {a} + amaderados {b} = {juntas}; url {url.replace(base, '')}; boton '{rotulo}'; por link {por_link}")
+
+    ctx, page = nuevo(browser, MOVIL)
+    page.goto(base + "/?familia=florales", wait_until="domcontentloaded")
+    page.wait_for_selector("[data-dialogo=familia] article", timeout=20000)
+    page.wait_for_timeout(500)
+    contar = lambda: page.evaluate("() => document.querySelectorAll('[data-dialogo=familia] article').length")
+    titulo = lambda: page.evaluate("() => document.querySelector('#hoja-familia-titulo').innerText")
+    chips = page.locator("[data-qa=hoja-familias] button")
+    n1 = contar(); hay = chips.count()
+    chips.nth(3).click(); page.wait_for_timeout(400)
+    n2, t2 = contar(), titulo()
+    chips.nth(1).click(); page.wait_for_timeout(400)
+    n3 = contar()
+    chips.nth(3).click(); page.wait_for_timeout(400)
+    n4, t4 = contar(), titulo()
+    ctx.close()
+    chk("FAM-2 hoja", "conversion", "media", "Hoja de familia: cinco chips; sumar otra agrega sus aromas, sacar la vieja la cambia y la ultima no se saca",
+        hay == 5 and n2 == n1 + n3 and "2" in t2 and n4 == n3 and t4 == "Amaderados",
+        f"chips {hay}; florales {n1}; + amaderados {n2} ('{t2}'); solo amaderados {n3}; tocar la ultima: {n4} ('{t4}')")
+
+
 def e3_a7(browser, base):
     ctx, page, datos = catalogo_con_datos(browser, MOVIL)
     page.locator("article").first.locator("button").first.click()
@@ -1872,7 +1917,7 @@ def main():
         (["E3-A6"], e3_a6), (["E3-A7"], e3_a7), (["E3-A8"], e3_a8), (["E3-A9"], e3_a9),
         (["E3-B1"], e3_b1), (["E3-B2"], e3_b2), (["E3-B3"], e3_b3), (["E3-B4"], e3_b4), (["E3-B5"], e3_b5),
         (["E3-B6"], e3_b6), (["E3-B7"], e3_b7), (["E3-B8"], e3_b8), (["E3-B9"], e3_b9),
-        (["A11Y-1"], a11y1), (["404-1"], no_encontrada),
+        (["A11Y-1"], a11y1), (["404-1"], no_encontrada), (["FAM-1", "FAM-2"], familias_varias),
     ]
     global SIN_HINTING
     with sync_playwright() as p:

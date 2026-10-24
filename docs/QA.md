@@ -264,6 +264,22 @@ sale como `5493515551234`). Pruebas sin navegador: `datos.test.mjs` (56
 casos). La base se probó con los mismos casos en una transacción que se
 deshace y, ya aplicada, desde afuera con la clave pública.
 
+### Novena vuelta (23 de octubre de 2026, noche)
+
+- **Familias combinadas:** chequeos nuevos FAM-1 (catálogo: Florales 39 +
+  Amaderados 16 = 55, las dos en la URL, el link da lo mismo, botón
+  "Familia · 2") y FAM-2 (hoja de la portada: cinco chips, sumar, cambiar y
+  la última no se saca). Pruebas sin navegador en `filtros.test.mjs`, que
+  también corre en GitHub.
+- **Arena del papel medida en un parche liso** (variación de brillo de alta
+  frecuencia): antes Safari 1,8 y Chrome 3,6; con la baldosa, Safari 2,6 y
+  Chrome 2,5.
+- **Lighthouse intercalado:** con la baldosa en el CSS de la página, una tanda
+  dio 80 ms más de LCP; pasada a la hoja diferida y repetida, 3,51 contra
+  3,50 s y 86 contra 86. Entre tandas la publicada sola varió 70 ms: una
+  tanda no alcanza para decidir.
+- Banco 90/90, motores sin fallas.
+
 ### Octava vuelta (23 de octubre de 2026, noche)
 
 - **Precio del hero:** con CPU 4x, el atributo llega a los 76 ms (antes, el

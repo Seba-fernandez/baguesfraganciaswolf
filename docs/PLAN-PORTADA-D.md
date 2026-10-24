@@ -211,6 +211,26 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
   transform): están cuando la banda llega. La traza con CPU frenada no
   mostraba cuadros perdidos; la pausa era de coreografía, no de rendimiento.
 
+## Novena vuelta (23/10, noche): varias familias y la arena pareja
+
+- **Varias familias a la vez.** En el catálogo, tocar una familia la suma o la
+  saca (`?familia=florales,amaderados`; los links de una sola siguen
+  andando). En el celular, el botón plegado dice "Familia · 2".
+- **La hoja de "¿Con cuál te identificás?"** lleva arriba de las tarjetas las
+  cinco familias: tocar otra la suma, tocar una marcada la saca y la última
+  no se puede sacar. Con más de una, el título dice "2 familias" y la bajada
+  las nombra. Van debajo de la cabecera fija para que en el celular se vayan
+  al bajar.
+- **La regla vive en `lib/filtros.js`** (`leerFamilias`, `escribirFamilias`,
+  `alternarFamilia`) con sus pruebas en `scripts/qa/filtros.test.mjs`.
+- **"En mi celu no se ve el granulado".** El grano de película de toda la
+  página es solo de escritorio desde el 2/10 (costaba casi un segundo de
+  carga en el celular), pero en la práctica las secciones lo tapan. Lo que se
+  ve es la arena del papel, y esa la dibujaba cada navegador a su manera:
+  Safari con la mitad de grano que Chrome. Ahora es una baldosa ya dibujada
+  (`scripts/fondo/arena.mjs`, 12 kB) que se ve igual en todos y se pide
+  después de la foto del hero.
+
 ## Guion de la portada
 
 | # | Sección | Luz | Qué cambia |

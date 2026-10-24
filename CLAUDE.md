@@ -81,7 +81,8 @@ src/
                     (+54 9, 0351, 15), estricto con el contenido; la base
                     aplica lo mismo (telefono_ar, migración 0012)
     familias.js     de familia_olfativa (texto libre) a las 5 familias del filtro
-    filtros.js      Para, Familia, Minis y Rebajados, leídos de la dirección
+    filtros.js      Para, Familia (varias a la vez), Minis y Rebajados, leídos
+                    de la dirección (pruebas en scripts/qa/filtros.test.mjs)
     fotos.js        qué foto le toca a cada aroma (tienda y panel)
     parecidos.js    "Si te gusta este, mirá también"
     producto.js     presentaciones, título, línea de cada tamaño, frase de la
@@ -262,7 +263,8 @@ tres secciones como máximo, **cero guiones largos en textos visibles**, voseo
 compartir, "atrás" la cierra). La tarjeta es foto, nombre, notas y un precio,
 sin pastillas: el `+` agrega directo o abre la hoja de tamaños. El cajón se
 abre solo en el primer agregado; después sube una barra con "Ver pedido".
-Filtros "Para" y "Familia" en la dirección. En el celular, "Ver 12 más" en vez
+Filtros "Para" y "Familia" en la dirección; Familia admite varias
+(`?familia=florales,amaderados`), también en la hoja de la portada. En el celular, "Ver 12 más" en vez
 del paginador. Detalle en `docs/DISENO.md`.
 
 **Rediseño D, "Cada perfume, una ciudad"** (rama `rediseno-visual`, a `main`
@@ -459,6 +461,11 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
 - **`replace` con un texto que trae `$&` lo toma como patrón.** El precio
   escapado (`$&#160;16.499`) pegaba el texto encontrado en el medio: cuando
   el reemplazo sale de datos, va con función (`() => texto`).
+- **El grano de película de la página casi no se ve:** `.tfondo` va detrás de
+  `<main>` y todas las secciones tienen fondo propio. El grano que se ve es la
+  arena del papel (`public/fondo/arena.webp`, en `fuentes-diferidas.css`).
+  Un SVG con `feTurbulence` se ve distinto en cada navegador: Safari lo
+  dibujaba con la mitad de grano que Chrome.
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.
@@ -472,6 +479,7 @@ node scripts/qa/servir.mjs &                                  # dist/ como Verce
 python3 scripts/qa/recorrido.py --url http://localhost:4173   # sin FALLA nuevos
 node scripts/qa/busqueda.test.mjs                             # si se tocó el buscador
 node scripts/qa/datos.test.mjs                                # si se tocó nombre o teléfono
+node scripts/qa/filtros.test.mjs                              # si se tocaron los filtros
 python3 scripts/qa/motores.py                                 # Safari, Chrome y Firefox, 5 anchos
 ```
 

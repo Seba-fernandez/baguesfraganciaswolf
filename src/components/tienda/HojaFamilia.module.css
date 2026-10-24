@@ -49,6 +49,27 @@
 .cerrar:hover { background: #e2d1c8; }
 .cerrar:focus-visible { outline: 2px solid var(--rubi); outline-offset: 2px; }
 
+/* Las cinco familias para sumar o cambiar, arriba de las tarjetas: las
+   mismas pastillas que el filtro del catalogo (redondas: se tocan), rubi la
+   prendida, con tilde para que no dependa solo del color. */
+.elegir { margin-bottom: 18px; }
+.rotulo { margin-bottom: 8px; font-size: 0.84rem; color: var(--tinta-suave); }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 40px; padding: 8px 15px; border-radius: var(--r-pill, 999px);
+  font-size: 0.82rem; font-weight: 500; white-space: nowrap;
+  background: none; border: 1px solid var(--filete); color: var(--tinta-suave); cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.chip:hover { color: var(--tinta); border-color: var(--tinta-suave); }
+.chip:focus-visible { outline: 2px solid var(--rubi); outline-offset: 2px; }
+/* 40 a la vista, 44 al dedo (el ::after se mide desde adentro del borde). */
+.chip::after { content: ''; position: absolute; inset: -3px -1px; }
+.chipOn, .chipOn:hover { background: var(--rubi); border-color: var(--rubi); color: var(--crema); font-weight: 600; }
+.tilde { font-size: 0.74rem; line-height: 1; }
+
 /* Las mismas columnas que el catalogo: 2, 3 y 4. */
 .grilla { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (min-width: 640px) { .grilla { gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); } }

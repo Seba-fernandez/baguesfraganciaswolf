@@ -49,3 +49,18 @@ en `y = 840` de 1000, foco en `x = 74%`); las cuentas están comentadas en
 Las líneas de `surcos.svg` no son decoración: son lo que el canto del vidrio
 refracta. Si se borran, el vidrio de la página pierde la mitad del efecto —está
 explicado en [`docs/DISENO.md`](../../docs/DISENO.md).
+
+## La arena del papel
+
+[`arena.mjs`](arena.mjs) dibuja `public/fondo/arena.webp`: una baldosa de
+ruido de 180 px, tinta vino con alfa bajo, que se repite sobre las secciones
+de papel (`.dia`). Antes era un SVG con `feTurbulence` que cada navegador
+calculaba al pintar, y Safari lo dibujaba con la mitad de grano que Chrome
+(medido el 23/10). Ahora se calcula una vez, en Chromium:
+
+```
+node scripts/fondo/arena.mjs
+```
+
+La regla que la usa vive en `public/fuentes-diferidas.css`, que llega
+después de cargar la página, para no competir con la foto del hero.

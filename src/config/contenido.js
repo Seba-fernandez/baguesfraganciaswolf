@@ -74,6 +74,11 @@ export const FAMILIAS_PORTADA = {
   // La hoja que se abre al tocar una familia (encima de la portada).
   cuenta: '{n} aromas',
   cerrar: 'Cerrar',
+  // Arriba de las tarjetas, las cinco familias para sumar otra o cambiar
+  // (Sebas, 23/10). Con mas de una, el titulo dice cuantas.
+  sumar: 'Tocá para sumar o sacar',
+  grupo: 'Familias',
+  varias: '{n} familias',
 };
 
 /**
@@ -147,6 +152,8 @@ export const CATALOGO = {
     todos: 'Todos',
     minis: 'Minis',
     familia: 'Familia',
+    // El boton plegado del celular cuando hay mas de una familia marcada.
+    familiasVarias: 'Familia · {n}',
     ademas: 'Además',
     rebajados: 'Rebajados',
     promoArabe: '2x1 árabes',

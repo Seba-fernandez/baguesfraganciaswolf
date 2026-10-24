@@ -4,6 +4,7 @@ import useDatosTienda from '../../hooks/useDatosTienda';
 import { CartProvider, useCart } from '../../contexts/CartContext';
 import { indexarPromos } from '../../lib/promos';
 import { desdeYLista, esPublicable, tituloDe } from '../../lib/producto';
+import { escribirFamilias, leerFamilias } from '../../lib/filtros';
 import { lazy, Suspense } from 'react';
 import TiendaLayout from './TiendaLayout';
 import { fotoDe } from '../../lib/fotos';
@@ -166,12 +167,21 @@ export default function TiendaShell() {
   // (/?familia=amaderados), como la ficha. Abrirla suma una entrada (marcada
   // `familia`), asi "atras" o tocar afuera la cierra y la clienta queda donde
   // estaba. La ficha que se abra desde ahi va por encima.
-  const familiaAbierta = location.pathname === '/' ? params.get('familia') : null;
+  // Admite varias (/?familia=florales,amaderados): los chips de la hoja suman
+  // o sacan con replace y conservan la marca, asi "atras" sigue cerrandola.
+  const familiaTexto = location.pathname === '/' ? params.get('familia') || '' : '';
+  const familiasAbiertas = useMemo(() => leerFamilias(familiaTexto), [familiaTexto]);
   const disparadorFamilia = useRef(null);
   const abrirFamilia = useCallback((id) => {
     disparadorFamilia.current = document.activeElement;
     setParams((prev) => { const n = new URLSearchParams(prev); n.set('familia', id); return n; },
       { state: { ...(location.state || {}), familia: true }, preventScrollReset: true });
+  }, [location.state, setParams]);
+  const cambiarFamilias = useCallback((lista) => {
+    const valor = escribirFamilias(lista);
+    if (!valor) return;
+    setParams((prev) => { const n = new URLSearchParams(prev); n.set('familia', valor); return n; },
+      { replace: true, state: location.state, preventScrollReset: true });
   }, [location.state, setParams]);
   const cerrarFamilia = useCallback(() => {
     if (location.state?.familia) navigate(-1);
@@ -197,10 +207,11 @@ export default function TiendaShell() {
       <TiendaLayout
         settings={settings}
         onVerPromo={verPromo}
-        capa={familiaAbierta && products.length > 0 && (
+        capa={familiasAbiertas.length > 0 && products.length > 0 && (
           <Suspense fallback={null}>
             <HojaFamilia
-              familiaId={familiaAbierta}
+              familias={familiasAbiertas}
+              onCambiar={cambiarFamilias}
               products={products}
               onClose={cerrarFamilia}
               onOpen={abrir}

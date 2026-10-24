@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { esPublicable, gruposPromoDe } from '../../lib/producto';
 import { FAMILIAS } from '../../lib/familias';
-import { conFiltro, esRebajado, leerFiltros, pasaFiltros, rebajadosAporta, tieneMinis } from '../../lib/filtros';
+import { alternarFamilia, conFiltro, escribirFamilias, esRebajado, leerFamilias, leerFiltros, pasaFiltros, rebajadosAporta, tieneMinis } from '../../lib/filtros';
 import { coincide, indexar, prepararConsulta } from '../../lib/busqueda';
 import { linkWhatsApp } from '../../lib/whatsapp';
 import useMedia from '../../hooks/useMedia';
@@ -56,8 +56,16 @@ export default function ProductGrid({
   // replace, para no llenar el historial de filtros.
   const [params, setParams] = useSearchParams();
   const filtros = leerFiltros(params);
-  const { para, familia, minis } = filtros;
+  const { para, minis } = filtros;
+  // Familia admite varias (?familia=amaderados,florales): tocar una la suma o
+  // la saca. La lista se memoriza por su texto, asi no cambia en cada dibujado.
+  const familiaTexto = params.get('familia') || '';
+  const familias = useMemo(() => leerFamilias(familiaTexto), [familiaTexto]);
   const poner = (clave, valor) => setParams((prev) => conFiltro(prev, clave, valor), { replace: true });
+  const alternar = (id) => setParams(
+    (prev) => conFiltro(prev, 'familia', escribirFamilias(alternarFamilia(leerFamilias(prev.get('familia')), id))),
+    { replace: true }
+  );
   const [rebaja, setRebaja] = useState(false);
   const [familiaAbierta, setFamiliaAbierta] = useState(false);
   const [q, setQ] = useState('');
@@ -75,12 +83,12 @@ export default function ProductGrid({
   const visibles = useMemo(() => {
     const consulta = prepararConsulta(q);
     return publicables.filter((p) => {
-      if (!pasaFiltros(p, { para, familia, minis })) return false;
+      if (!pasaFiltros(p, { para, familias, minis })) return false;
       if (promoActiva && !gruposPromoDe(p).includes(promoActiva)) return false;
       if (rebaja && !esRebajado(p)) return false;
       return coincide(indices.get(p.id), consulta);
     });
-  }, [publicables, indices, para, familia, minis, rebaja, q, promoActiva]);
+  }, [publicables, indices, para, familias, minis, rebaja, q, promoActiva]);
 
   // "Rebajados" se ve solo si filtra algo (si cubre mas del 80 % no sirve) y
   // "Minis" solo si hay tamanos chicos en el ciclo.
@@ -126,7 +134,7 @@ export default function ProductGrid({
   // 12 en el celular): si no, la clienta filtra y le queda una pantalla vacia
   // porque seguia parada en la pagina 4. La primera vez no: si se llega con
   // ?ver=24 (volviendo "atras"), se respeta.
-  const claveFiltros = [para, familia, minis, rebaja, q, promoActiva].join('|');
+  const claveFiltros = [para, familiaTexto, minis, rebaja, q, promoActiva].join('|');
   const filtrosPrevios = useRef(claveFiltros);
   useEffect(() => {
     if (filtrosPrevios.current === claveFiltros) return;
@@ -135,7 +143,7 @@ export default function ProductGrid({
     setParams((prev) => conFiltro(prev, 'ver', null), { replace: true });
   }, [claveFiltros]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const activos = [para, familia, promoActiva].filter(Boolean).length + (minis ? 1 : 0) + (rebaja ? 1 : 0);
+  const activos = [para, promoActiva].filter(Boolean).length + familias.length + (minis ? 1 : 0) + (rebaja ? 1 : 0);
   const limpiar = () => {
     setParams((prev) => ['para', 'familia', 'minis'].reduce((n, k) => conFiltro(n, k, null), prev), { replace: true });
     setRebaja(false); setPromoActiva(null); setQ('');
@@ -186,13 +194,17 @@ export default function ProductGrid({
           />
           <button
             type="button"
-            className={`${s.chip} ${s.plegar} ${familia ? s.chipOn : ''}`}
+            className={`${s.chip} ${s.plegar} ${familias.length ? s.chipOn : ''}`}
             aria-expanded={familiaAbierta}
             aria-controls="grupo-familia"
             onClick={() => setFamiliaAbierta((v) => !v)}
             data-qa="familia-abrir"
           >
-            {familia ? (FAMILIAS.find((f) => f.id === familia)?.nombre.split(' ')[0] || CATALOGO.filtros.familia) : CATALOGO.filtros.familia}
+            {familias.length > 1
+              ? conDatos(CATALOGO.filtros.familiasVarias, { n: familias.length })
+              : familias.length === 1
+                ? (FAMILIAS.find((f) => f.id === familias[0])?.nombre.split(' ')[0] || CATALOGO.filtros.familia)
+                : CATALOGO.filtros.familia}
             <span className={s.plegarFlecha} aria-hidden="true">▾</span>
           </button>
         </div>
@@ -223,7 +235,7 @@ export default function ProductGrid({
             <span className={s.rotulo} id="filtro-familia">{CATALOGO.filtros.familia}</span>
             <div className={s.chips} role="group" aria-labelledby="filtro-familia" data-qa="filtro-familia">
               {FAMILIAS.map((f) => (
-                <Pastilla key={f.id} activa={familia === f.id} onClick={() => poner('familia', familia === f.id ? null : f.id)}>
+                <Pastilla key={f.id} activa={familias.includes(f.id)} onClick={() => alternar(f.id)}>
                   {f.nombre}
                 </Pastilla>
               ))}

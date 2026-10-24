@@ -46,6 +46,7 @@ jobs:
           node scripts/qa/datos.test.mjs
           node scripts/qa/busqueda.test.mjs
           node scripts/qa/ciclo.test.mjs
+          node scripts/qa/filtros.test.mjs
       - name: Armar la tienda (con prerender y control de la CSP)
         run: npm run build
       - name: Sin guiones largos en textos visibles

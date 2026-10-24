@@ -1,7 +1,7 @@
 // ============================================================================
 // filtros.js — los filtros del catalogo, sin pantallas.
 //
-// Viven en la direccion (?para=el&familia=amaderados&minis=1) para que un
+// Viven en la direccion (?para=el&familia=amaderados,florales&minis=1) para que un
 // filtro se pueda compartir y sobreviva a abrir una ficha y volver "atras".
 // ============================================================================
 
@@ -20,13 +20,42 @@ export const MINI_HASTA_ML = 30;
 /** Rebajados deja de ser filtro si cubre mas que esta parte del catalogo. */
 export const REBAJADOS_TOPE = 0.8;
 
+/**
+ * Familia admite varias a la vez (Sebas, 23/10: "que puedas elegir otros
+ * filtros de familia tambien"): ?familia=amaderados,florales. Los links
+ * viejos, con una sola, se leen igual. Lo que no es una familia se ignora y
+ * el orden es siempre el de FAMILIAS, asi dos links con las mismas familias
+ * quedan iguales.
+ */
+export function leerFamilias(valor) {
+  const pedidas = String(valor || '').split(',').map((t) => t.trim());
+  return FAMILIAS.map((f) => f.id).filter((id) => pedidas.includes(id));
+}
+
+/** La lista de familias como va en la direccion ('a,b'), o null si esta vacia. */
+export function escribirFamilias(lista) {
+  const limpias = leerFamilias((lista || []).join(','));
+  return limpias.length ? limpias.join(',') : null;
+}
+
+/**
+ * Suma la familia si no estaba y la saca si estaba. Con `minimo`, no deja
+ * sacar la ultima (la hoja de la portada siempre muestra al menos una).
+ */
+export function alternarFamilia(lista, id, { minimo = 0 } = {}) {
+  const actual = leerFamilias((lista || []).join(','));
+  if (actual.includes(id)) {
+    return actual.length > minimo ? actual.filter((f) => f !== id) : actual;
+  }
+  return leerFamilias([...actual, id].join(','));
+}
+
 /** Lee los filtros de la direccion. Lo que no se reconoce se ignora. */
 export function leerFiltros(params) {
   const para = params.get('para');
-  const familia = params.get('familia');
   return {
     para: PARA[para] ? para : null,
-    familia: FAMILIAS.some((f) => f.id === familia) ? familia : null,
+    familias: leerFamilias(params.get('familia')),
     minis: params.get('minis') === '1',
   };
 }
@@ -58,9 +87,9 @@ export function rebajadosAporta(productos) {
 }
 
 /** Si el aroma pasa los filtros de la direccion. */
-export function pasaFiltros(producto, { para, familia, minis }) {
+export function pasaFiltros(producto, { para, familias = [], minis }) {
   if (para && !PARA[para].includes(producto.genero)) return false;
-  if (familia && familiaDe(producto) !== familia) return false;
+  if (familias.length && !familias.includes(familiaDe(producto))) return false;
   if (minis && !tieneMinis(producto)) return false;
   return true;
 }

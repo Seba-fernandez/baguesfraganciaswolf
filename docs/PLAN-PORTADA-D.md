@@ -231,6 +231,27 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
   (`scripts/fondo/arena.mjs`, 12 kB) que se ve igual en todos y se pide
   después de la foto del hero.
 
+## Décima vuelta (24/10, madrugada): destacados parejos y la ficha que deja volver
+
+- **Destacados en escritorio, con corte parejo.** La fila vive dentro de la
+  columna de la página y se corta a la misma distancia de los dos bordes
+  (antes llegaba al borde derecho de la pantalla). Entran tarjetas enteras:
+  tres hasta 1000 px, cuatro hasta 1240 y cinco arriba. Las flechas, simétricas,
+  pasan de a una tanda. El celular no cambia.
+- **Volver al perfume de antes.** Desde un "Si te gusta este" aparece arriba a
+  la izquierda de la foto "‹ Kenzo Homme": vuelve de a uno (hasta cinco), con
+  el tamaño que se tenía elegido. La cadena vive en el estado del historial
+  (`rastro`); "atrás" sigue cerrando la ficha entera.
+- **"Compartir" en la esquina derecha de la foto** (antes "Copiar link" a la
+  izquierda). En el teléfono abre su menú de compartir; donde no hay, copia el
+  link. En el celular va a la izquierda de la ✕, que también está arriba a la
+  derecha.
+- **"Ver más".** La familia queda a la vista y, a su lado, "Ver más" abre la
+  salida, el corazón, el fondo y la descripción. Los parecidos suben ~240 px:
+  a 1440×900 con dos tamaños entran enteros arriba de la barra de agregar (en
+  escritorio la razón va en un renglón y la columna tiene un poco menos de
+  aire entre bloques).
+
 ## Guion de la portada
 
 | # | Sección | Luz | Qué cambia |

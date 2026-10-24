@@ -257,7 +257,17 @@ export const FICHA = {
   // El link directo a la ficha, para mandar un perfume puntual por WhatsApp o
   // Instagram. Si el navegador no deja copiar solo, queda el link a la vista.
   copiarLink: 'Copiar link',
+  // Sebas, 23/10: "Compartir" en la esquina de la foto. En el celular abre el
+  // menu de compartir del telefono; donde no hay, copia el link.
+  compartir: 'Compartir',
   linkCopiado: 'Link copiado',
+  // La flecha para volver al perfume que se estaba mirando antes de tocar un
+  // "Si te gusta este" (se lee: "Volver a Kenzo Homme").
+  volverA: 'Volver a {nombre}',
+  // Las notas y la descripcion van plegadas para que los parecidos se vean
+  // antes; este boton las abre.
+  verMas: 'Ver más',
+  verMenos: 'Ver menos',
   linkManual: 'Copialo desde acá:',
 };
 

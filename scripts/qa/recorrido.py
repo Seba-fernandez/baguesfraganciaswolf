@@ -923,13 +923,15 @@ def e3_a1(browser, base):
     page.goto(base + f"/catalogo?aroma={slug}", wait_until="domcontentloaded")
     copiado, boton = "", False
     if esperar_ficha(page, 20000):
-        b = page.locator(f"{FICHA} button:has-text('Copiar link')")
+        # Desde el 24/10 dice "Compartir" (en el telefono abre el menu propio;
+        # en Chromium de escritorio, sin ese menu, copia el link).
+        b = page.locator(f"{FICHA} [data-qa=ficha-compartir]")
         boton = b.count() > 0
         if boton:
             b.first.click()
             page.wait_for_timeout(500)
             copiado = page.evaluate("() => navigator.clipboard.readText().catch(() => '')")
-    chk("E3-A1 copiar", "conversion", "media", "La ficha tiene 'Copiar link' y copia /catalogo?aroma=<slug>",
+    chk("E3-A1 copiar", "conversion", "media", "La ficha tiene 'Compartir' y, sin menu de compartir, copia /catalogo?aroma=<slug>",
         boton and copiado.endswith(f"/catalogo?aroma={slug}"), f"boton: {boton}; copiado: {copiado or 'nada'}")
     ctx.close()
 
@@ -1308,6 +1310,66 @@ def familias_varias(browser, base):
     chk("FAM-2 hoja", "conversion", "media", "Hoja de familia: cinco chips; sumar otra agrega sus aromas, sacar la vieja la cambia y la ultima no se saca",
         hay == 5 and n2 == n1 + n3 and "2" in t2 and n4 == n3 and t4 == "Amaderados",
         f"chips {hay}; florales {n1}; + amaderados {n2} ('{t2}'); solo amaderados {n3}; tocar la ultima: {n4} ('{t4}')")
+
+
+def ficha_volver_mas(browser, base):
+    # La ficha (Sebas, 24/10): desde un "Si te gusta este" se puede volver al
+    # perfume de antes, de a uno y con el tamano que tenia; las notas van
+    # plegadas detras de "Ver mas" para que los parecidos se vean antes.
+    ctx, page, _ = catalogo_con_datos(browser, MOVIL)
+    page.locator("article").nth(3).locator("button").first.evaluate("e => e.click()")
+    esperar_ficha(page)
+    datos = lambda: page.evaluate(f"""() => {{ const d = document.querySelector('{FICHA}');
+        return {{ titulo: d.querySelector('h2').innerText, volver: !!d.querySelector('[data-qa=ficha-volver]'),
+                 ml: [...d.querySelectorAll('[aria-pressed=true]')].map(b => b.innerText.split('\\n')[0]).join('|') }}; }}""")
+    primero = datos()
+    ops = page.locator(f"{FICHA} [class*=opciones] button")
+    if ops.count() > 1:
+        ops.nth(1).evaluate("e => e.click()")
+        page.wait_for_timeout(200)
+    elegido = datos()["ml"]
+    page.locator(f"{FICHA} [data-qa=parecido]").nth(0).evaluate("e => e.click()")
+    page.wait_for_timeout(700)
+    segundo = datos()
+    page.locator(f"{FICHA} [data-qa=parecido]").nth(1).evaluate("e => e.click()")
+    page.wait_for_timeout(700)
+    tercero = datos()
+    page.locator(f"{FICHA} [data-qa=ficha-volver]").evaluate("e => e.click()")
+    page.wait_for_timeout(600)
+    vuelta1 = datos()
+    page.locator(f"{FICHA} [data-qa=ficha-volver]").evaluate("e => e.click()")
+    page.wait_for_timeout(600)
+    vuelta2 = datos()
+    page.go_back()
+    page.wait_for_timeout(700)
+    cerrada = page.locator(FICHA).count() == 0
+    ctx.close()
+    chk("FICHA-1 volver", "conversion", "media", "Desde un parecido aparece 'volver'; vuelve de a uno, con el tamano elegido, y 'atras' cierra la ficha",
+        not primero["volver"] and segundo["volver"] and vuelta1["titulo"] == segundo["titulo"]
+        and vuelta2["titulo"] == primero["titulo"] and not vuelta2["volver"] and vuelta2["ml"] == elegido and cerrada,
+        f"{primero['titulo']} ({elegido}) -> {segundo['titulo']} -> {tercero['titulo']}; volver: {vuelta1['titulo']}, "
+        f"{vuelta2['titulo']} ({vuelta2['ml']}, flecha {vuelta2['volver']}); atras cierra: {cerrada}")
+
+    ctx, page, _ = catalogo_con_datos(browser, ESCRITORIO)
+    page.locator("article").nth(3).locator("button").first.evaluate("e => e.click()")
+    esperar_ficha(page)
+    m = page.evaluate(f"""() => {{ const d = document.querySelector('{FICHA}');
+        const r = (s) => d.querySelector(s)?.getBoundingClientRect();
+        const mas = d.querySelector('[data-qa=ficha-mas]');
+        return {{ tam: d.querySelectorAll('[class*=opciones] button').length, filaAbajo: Math.round(r('[class*=parecidosFila]')?.bottom || 0),
+                 barra: Math.round(r('[class*=barra]')?.top || 0), plegadoAlto: Math.round(mas?.getBoundingClientRect().height ?? -1),
+                 inert: mas?.hasAttribute('inert') }}; }}""")
+    page.locator(f"{FICHA} [data-qa=ficha-ver-mas]").evaluate("e => e.click()")
+    page.wait_for_timeout(500)
+    abierto = page.evaluate(f"""() => {{ const d = document.querySelector('{FICHA}'); const mas = d.querySelector('[data-qa=ficha-mas]');
+        return [Math.round(mas.getBoundingClientRect().height), mas.hasAttribute('inert'), d.querySelectorAll('[data-qa=piramide] [data-qa=nota]').length,
+                d.querySelector('[data-qa=ficha-ver-mas]').getAttribute('aria-expanded')]; }}""")
+    ctx.close()
+    chk("FICHA-2 ver mas", "conversion", "media", "Notas plegadas detras de 'Ver mas' (abre y cierra) y, a 1440x900 con dos tamanos, los parecidos enteros arriba de la barra",
+        m["plegadoAlto"] == 0 and m["inert"] and abierto[0] > 40 and not abierto[1] and abierto[2] > 0 and abierto[3] == "true"
+        and (m["tam"] > 2 or 0 < m["filaAbajo"] <= m["barra"]),
+        f"plegado {m['plegadoAlto']} px (inert {m['inert']}); abierto {abierto[0]} px con {abierto[2]} notas; "
+        f"{m['tam']} tamanos, parecidos terminan en {m['filaAbajo']} y la barra arranca en {m['barra']}")
 
 
 def e3_a7(browser, base):
@@ -1769,7 +1831,7 @@ def e3_b7(browser, base):
         dif, detalle = 0, "la foto ocupa todo el ancho"
     else:
         difs = []
-        for k in range(3, 19):  # arriba del 15 % estan "Copiar link" y el cerrar
+        for k in range(3, 19):  # arriba del 15 % estan volver, compartir y el cerrar
             y0, y1 = iy + ih * k / 20, iy + ih * (k + 1) / 20
             # Rediseño D: los costados son la pared vacia espejada, con
             # textura de madera y revoque. Se comparan 4 px de cada lado de la
@@ -1918,6 +1980,7 @@ def main():
         (["E3-B1"], e3_b1), (["E3-B2"], e3_b2), (["E3-B3"], e3_b3), (["E3-B4"], e3_b4), (["E3-B5"], e3_b5),
         (["E3-B6"], e3_b6), (["E3-B7"], e3_b7), (["E3-B8"], e3_b8), (["E3-B9"], e3_b9),
         (["A11Y-1"], a11y1), (["404-1"], no_encontrada), (["FAM-1", "FAM-2"], familias_varias),
+        (["FICHA-1", "FICHA-2"], ficha_volver_mas),
     ]
     global SIN_HINTING
     with sync_playwright() as p:

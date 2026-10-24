@@ -264,6 +264,23 @@ sale como `5493515551234`). Pruebas sin navegador: `datos.test.mjs` (56
 casos). La base se probó con los mismos casos en una transacción que se
 deshace y, ya aplicada, desde afuera con la clave pública.
 
+### Décima vuelta (24 de octubre de 2026, madrugada)
+
+- **Destacados:** a 1024, 1440 y 1920 la fila queda a 41, 80 y 320 px de cada
+  borde, con tarjetas enteras; la flecha deja la siguiente pegada al corte.
+- **Chequeos nuevos:** FICHA-1 (Kenzo a 100 ml → Le Male → Sauvage, volver dos
+  veces: vuelve a Kenzo a 100 ml sin flecha, y "atrás" cierra) y FICHA-2
+  (notas plegadas, inert, abren y cierran; a 1440×900 con dos tamaños los
+  parecidos terminan en 765 y la barra arranca en 769). E3-A1 copiar pasa a
+  buscar "Compartir".
+- **Primera medición de la ficha en escritorio:** con "Ver más" debajo de la
+  familia, los parecidos quedaban 22 px debajo de la barra; al lado de la
+  familia y con menos aire entre bloques, entran.
+- **Lighthouse:** contra lo publicado dio 55 y 100 ms más en dos tandas;
+  contra la versión anterior de la rama, empate; las tres intercaladas,
+  3,51 / 3,50 / 3,52 s. Era ruido.
+- Banco 92/92, motores sin fallas.
+
 ### Novena vuelta (23 de octubre de 2026, noche)
 
 - **Familias combinadas:** chequeos nuevos FAM-1 (catálogo: Florales 39 +

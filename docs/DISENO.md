@@ -308,7 +308,9 @@ el ícono es chico.
   cierran). Cada tamaño es una fila grande (ml, línea, precio con el de lista
   tachado); abajo, "Agregar 50 ml" y "Ver la ficha completa".
 - **Ficha del aroma** — se abre encima y tiene su link (`?aroma=<slug>`, con
-  "Copiar link" arriba a la izquierda de la foto). En el celular va ordenada
+  "Compartir" arriba a la derecha de la foto y, si se llegó desde un parecido,
+  la flecha para volver al anterior a la izquierda; las notas y la
+  descripción se pliegan detrás de "Ver más", al lado de la familia). En el celular va ordenada
   para decidir: foto contenida a 46dvh (a los costados, la pared del estudio),
   "Para él / Para ella / Unisex" chico, el nombre, una frase en Cormorant
   itálica armada desde la familia y el momento ("Aromático. Todo el año.",

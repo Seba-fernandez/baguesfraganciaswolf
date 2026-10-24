@@ -26,31 +26,60 @@ import s from './ProductModal.module.css';
  * baja y se apoya en su lugar al llegar al final. En escritorio se conserva el
  * orden que ya andaba (entra entera en 900 px), con `order` en el CSS.
  */
-export default function ProductModal({ producto, onClose, promos = {}, disparador = null, todos = [], onAbrir }) {
+export default function ProductModal({
+  producto, onClose, promos = {}, disparador = null, todos = [], onAbrir, previo = null, onVolver, mlInicial = null,
+}) {
   const { addItem } = useCart();
   const opciones = presentacionesActivas(producto);
-  const [ml, setMl] = useState(() => presentacionPorDefecto(producto)?.ml ?? null);
+  // El tamano con que arranca: el que se tenia elegido si se vuelve con la
+  // flecha (y sigue en el ciclo); si no, el de siempre.
+  const tamanoInicial = (p) => {
+    const activas = presentacionesActivas(p);
+    return (mlInicial != null && activas.some((x) => x.ml === mlInicial)) ? mlInicial : presentacionPorDefecto(p)?.ml ?? null;
+  };
+  const [ml, setMl] = useState(() => tamanoInicial(producto));
   const [cant, setCant] = useState(1);
   const hoja = useRef(null);
   const cerrarRef = useRef(null);
   const copiarRef = useRef(null);
+  const infoRef = useRef(null);
+  // Las notas y la descripcion, plegadas hasta tocar "Ver mas".
+  const [masAbierto, setMasAbierto] = useState(false);
   // '' sin tocar, 'ok' copiado, 'manual' el navegador no dejo copiar.
   const [copia, setCopia] = useState('');
   const link = linkDeAroma(producto.slug);
 
-  // Si cambia el aroma con la ficha abierta (un "mira tambien"), se arranca de
-  // cero: tamano por defecto, una unidad y la hoja arriba de todo.
+  // Si cambia el aroma con la ficha abierta (un "mira tambien" o la flecha de
+  // volver), se arranca de cero: tamano por defecto (o el que se tenia, al
+  // volver), una unidad, notas plegadas y la hoja arriba de todo, asi la
+  // flecha queda a la vista. En escritorio lo que se desplaza es la columna
+  // del texto, por eso se suben las dos.
   const anterior = useRef(producto.id);
   useEffect(() => {
     if (anterior.current === producto.id) return;
     anterior.current = producto.id;
-    setMl(presentacionPorDefecto(producto)?.ml ?? null);
+    setMl(tamanoInicial(producto));
     setCant(1);
     setCopia('');
+    setMasAbierto(false);
     if (hoja.current) hoja.current.scrollTop = 0;
-  }, [producto]);
+    if (infoRef.current) infoRef.current.scrollTop = 0;
+    // Si el boton que se toco desaparecio (la flecha, al volver al primero),
+    // el foco no se pierde: pasa al cerrar.
+    if (hoja.current && !hoja.current.contains(document.activeElement)) cerrarRef.current?.focus({ preventScroll: true });
+  }, [producto]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function copiarLink() {
+  // Compartir: en el telefono, el menu propio (WhatsApp, Instagram...); donde
+  // no existe, o si falla, copia el link. Cancelar el menu no hace nada.
+  async function compartir() {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: tituloDe(producto), url: link });
+        return;
+      } catch (e) {
+        if (e?.name === 'AbortError') return;
+      }
+    }
     const ok = await copiarTexto(link);
     copiarRef.current?.focus();
     setCopia(ok ? 'ok' : 'manual');
@@ -67,6 +96,7 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
   const promo = elegida?.grupo_promo ? promos[elegida.grupo_promo] : null;
   const frase = fraseDe(producto);
   const piramide = piramideDe(producto);
+  const hayMas = piramide.length > 0 || Boolean(producto.descripcion_larga);
   const sugeridos = parecidos(producto, todos, 3);
   // Los costados de la foto en el celular: su propio borde, estirado a lo
   // ancho, asi el estudio sigue hasta el filo de la hoja (E3-B7).
@@ -88,14 +118,6 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
       <div className={s.overlay} onClick={onClose} />
       <div ref={hoja} className={s.sheet} role="dialog" aria-modal="true" aria-label={titulo} data-dialogo="ficha">
         <button ref={cerrarRef} className={s.cerrar} onClick={onClose} aria-label="Cerrar">✕</button>
-        <button ref={copiarRef} type="button" className={s.copiar} onClick={copiarLink}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            {copia === 'ok'
-              ? <path d="M5 12.5l4.5 4.5L19 7.5" />
-              : <><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1" /><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1" /></>}
-          </svg>
-          <span aria-live="polite">{copia === 'ok' ? FICHA.linkCopiado : FICHA.copiarLink}</span>
-        </button>
         {copia === 'manual' && (
           <div className={s.linkManual}>
             <label htmlFor="ficha-link">{FICHA.linkManual}</label>
@@ -104,6 +126,30 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
         )}
 
         <div className={s.media} data-qa="ficha-media">
+          {/* Sobre la foto: a la izquierda, volver al perfume de antes (solo si
+              se llego desde un "Si te gusta este"); a la derecha, compartir. */}
+          {previo && onVolver && (
+            <button
+              type="button"
+              className={s.volver}
+              onClick={onVolver}
+              aria-label={conDatos(FICHA.volverA, { nombre: tituloDe(previo) })}
+              data-qa="ficha-volver"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+              <span className={s.volverNombre} aria-hidden="true">{tituloDe(previo)}</span>
+            </button>
+          )}
+          <button ref={copiarRef} type="button" className={s.compartir} onClick={compartir} data-qa="ficha-compartir">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {copia === 'ok'
+                ? <path d="M5 12.5l4.5 4.5L19 7.5" />
+                : <><path d="M12 15V3" /><path d="m7.5 7.5 4.5-4.5 4.5 4.5" /><path d="M8 10.5H6.5A1.5 1.5 0 0 0 5 12v7.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V12a1.5 1.5 0 0 0-1.5-1.5H16" /></>}
+            </svg>
+            <span aria-live="polite">{copia === 'ok' ? FICHA.linkCopiado : FICHA.compartir}</span>
+          </button>
           <ProductThumb
             producto={producto}
             ratio="3 / 4"
@@ -131,7 +177,7 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
           )}
         </div>
 
-        <div className={s.info}>
+        <div className={s.info} ref={infoRef}>
           {FICHA.para[producto.genero] && <p className={s.para}>{FICHA.para[producto.genero]}</p>}
           <h2 className={s.nombre}>{titulo}</h2>
           {frase && <p className={s.frase} data-qa="frase">{frase}</p>}
@@ -179,32 +225,72 @@ export default function ProductModal({ producto, onClose, promos = {}, disparado
           )}
 
           {/* Familia y notas como el elenco de una serie: rotulo en negrita y
-              los datos seguidos, sin pastillas (no se tocan, no son botones). */}
-          {(producto.familia_olfativa || piramide.length > 0) && (
-            <dl className={s.ficha} data-qa="piramide">
-              {producto.familia_olfativa && (
-                <div className={s.linea}>
-                  <dt>{FICHA.familia}</dt>
-                  <dd>{producto.familia_olfativa}</dd>
+              los datos seguidos, sin pastillas (no se tocan, no son botones).
+              La familia queda a la vista; las notas y la descripcion se
+              pliegan detras de "Ver mas" (Sebas, 23/10), asi los parecidos
+              suben unos 240 px: en escritorio entran sin bajar. Plegadas
+              siguen en la pagina (inert, para que el teclado no entre). */}
+          {(producto.familia_olfativa || piramide.length > 0 || producto.descripcion_larga) && (
+            <div className={s.ficha}>
+              {/* La familia y, a su lado, "Ver mas": en un renglon, asi el
+                  boton no suma alto (medido: con los dos tamanos de Kenzo, los
+                  parecidos quedaban 75 px debajo de la barra en escritorio). */}
+              <div className={s.familiaFila}>
+                {producto.familia_olfativa && (
+                  <dl className={s.lineas}>
+                    <div className={s.linea}>
+                      <dt>{FICHA.familia}</dt>
+                      <dd>{producto.familia_olfativa}</dd>
+                    </div>
+                  </dl>
+                )}
+                {hayMas && (
+                  <button
+                    type="button"
+                    className={s.verMas}
+                    onClick={() => setMasAbierto((v) => !v)}
+                    aria-expanded={masAbierto}
+                    aria-controls="ficha-mas"
+                    data-qa="ficha-ver-mas"
+                  >
+                    {masAbierto ? FICHA.verMenos : FICHA.verMas}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              {hayMas && (
+                <div
+                  id="ficha-mas"
+                  className={`${s.plegable} ${masAbierto ? s.plegableAbierto : ''}`}
+                  inert={masAbierto ? undefined : ''}
+                  data-qa="ficha-mas"
+                >
+                  <div className={s.plegableDentro}>
+                    {piramide.length > 0 && (
+                      <dl className={s.lineas} data-qa="piramide">
+                        {piramide.map((f) => (
+                          <div key={f.etapa} className={s.linea}>
+                            <dt data-qa="etapa">{f.etapa}</dt>
+                            <dd>{f.notas.map((n, i) => <span key={n} data-qa="nota">{i ? ', ' : ''}{n}</span>)}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    )}
+                    {producto.descripcion_larga && <p className={s.desc}>{producto.descripcion_larga}</p>}
+                  </div>
                 </div>
               )}
-              {piramide.map((f) => (
-                <div key={f.etapa} className={s.linea}>
-                  <dt data-qa="etapa">{f.etapa}</dt>
-                  <dd>{f.notas.map((n, i) => <span key={n} data-qa="nota">{i ? ', ' : ''}{n}</span>)}</dd>
-                </div>
-              ))}
-            </dl>
+            </div>
           )}
-
-          {producto.descripcion_larga && <p className={s.desc}>{producto.descripcion_larga}</p>}
 
           {onAbrir && sugeridos.length > 0 && (
             <section className={s.parecidos} aria-labelledby="parecidos-titulo">
               <h3 id="parecidos-titulo" className={s.parecidosTitulo}>{PARECIDOS.titulo}</h3>
               <div className={s.parecidosFila}>
                 {sugeridos.map((r) => (
-                  <button key={r.producto.id} type="button" className={s.parecido} onClick={() => onAbrir(r.producto)} data-qa="parecido">
+                  <button key={r.producto.id} type="button" className={s.parecido} onClick={() => onAbrir(r.producto, { desdeMl: ml })} data-qa="parecido">
                     {/* alt vacio: el nombre va al lado; si no, el lector lo dice dos veces. */}
                     <ProductThumb producto={r.producto} ratio="3 / 4" sizes="(max-width: 767px) 30vw, 130px" alt="" />
                     <span className={s.parecidoNombre}>{tituloDe(r.producto)}</span>

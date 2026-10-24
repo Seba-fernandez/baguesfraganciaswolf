@@ -5,6 +5,7 @@ import { CartProvider, useCart } from '../../contexts/CartContext';
 import { indexarPromos } from '../../lib/promos';
 import { desdeYLista, esPublicable, tituloDe } from '../../lib/producto';
 import { escribirFamilias, leerFamilias } from '../../lib/filtros';
+import { RASTRO_MAXIMO } from '../../config/ajustes';
 import { lazy, Suspense } from 'react';
 import TiendaLayout from './TiendaLayout';
 import { fotoDe } from '../../lib/fotos';
@@ -125,15 +126,35 @@ export default function TiendaShell() {
   // Abrir suma una entrada al historial (marcada `ficha` en el estado): por eso
   // "atras" la cierra. Si ya hay una ficha abierta (un "mira tambien"), la
   // reemplaza: "atras" sigue cerrando la ficha y no recorre cada perfume visto.
-  const abrir = useCallback((producto) => {
+  //
+  // Para volver de a uno sin cerrar (Sebas, 23/10: "pueda volver al que habia
+  // elegido antes"), el estado de la entrada guarda la cadena de los que se
+  // vieron (`rastro`, hasta RASTRO_MAXIMO), cada uno con el tamano que tenia
+  // elegido. La flecha de la ficha saca el ultimo y lo vuelve a abrir.
+  const rastro = useMemo(() => (Array.isArray(location.state?.rastro) ? location.state.rastro : []), [location.state]);
+  const previo = useMemo(() => {
+    const ultimo = rastro[rastro.length - 1];
+    return (ultimo && products.find((p) => p.slug === ultimo.slug && p.activo && esPublicable(p))) || null;
+  }, [rastro, products]);
+  const abrir = useCallback((producto, { desdeMl = null } = {}) => {
     if (!producto?.slug) return;
     if (abierto) {
-      setParams(conAroma(producto.slug), { replace: true, state: location.state });
+      if (producto.slug === abierto.slug) return;
+      const nuevo = [...rastro, { slug: abierto.slug, ml: desdeMl }].slice(-RASTRO_MAXIMO);
+      setParams(conAroma(producto.slug), { replace: true, state: { ...(location.state || {}), rastro: nuevo, mlVuelta: null } });
       return;
     }
     disparador.current = document.activeElement;
-    setParams(conAroma(producto.slug), { state: { ...(location.state || {}), ficha: true } });
-  }, [abierto, location.state, setParams]);
+    setParams(conAroma(producto.slug), { state: { ...(location.state || {}), ficha: true, rastro: [], mlVuelta: null } });
+  }, [abierto, rastro, location.state, setParams]);
+  const volver = useCallback(() => {
+    const ultimo = rastro[rastro.length - 1];
+    if (!ultimo) return;
+    setParams(conAroma(ultimo.slug), {
+      replace: true,
+      state: { ...(location.state || {}), rastro: rastro.slice(0, -1), mlVuelta: ultimo.ml ?? null },
+    });
+  }, [rastro, location.state, setParams]);
   // Cerrar deshace esa entrada. Si se entro directo con el link (no hay
   // entrada nuestra que deshacer), se saca el parametro sin dejar historial:
   // "atras" no puede llevar fuera de la tienda.
@@ -242,6 +263,9 @@ export default function TiendaShell() {
               disparador={disparador.current}
               todos={products}
               onAbrir={abrir}
+              previo={previo}
+              onVolver={volver}
+              mlInicial={location.state?.mlVuelta ?? null}
             />
           </Suspense>
         )}

@@ -260,7 +260,10 @@ tres secciones como máximo, **cero guiones largos en textos visibles**, voseo
 ("el perfume que ya conocés").
 
 **Tienda desde la etapa 3A:** la ficha se abre con `?aroma=<slug>` (link para
-compartir, "atrás" la cierra). La tarjeta es foto, nombre, notas y un precio,
+compartir, "atrás" la cierra). Desde un parecido, una flecha sobre la foto
+vuelve al perfume anterior (cadena en `location.state.rastro`); "Compartir"
+va en la esquina derecha de la foto y las notas se pliegan detrás de "Ver
+más". La tarjeta es foto, nombre, notas y un precio,
 sin pastillas: el `+` agrega directo o abre la hoja de tamaños. El cajón se
 abre solo en el primer agregado; después sube una barra con "Ver pedido".
 Filtros "Para" y "Familia" en la dirección; Familia admite varias

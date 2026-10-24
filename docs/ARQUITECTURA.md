@@ -137,9 +137,12 @@ La ficha de un aroma se abre con `?aroma=<slug>` (`TiendaShell.jsx`). Abrirla
 suma una entrada al historial, así el gesto de "atrás" del celular la cierra en
 vez de sacar a la clienta de la tienda; cerrarla con la ✕ deshace esa entrada.
 Si se entró directo con el link, cerrar saca el parámetro sin dejar historial.
-Un slug que no existe se ignora y se borra de la dirección. El link que copia el
-botón "Copiar link" apunta siempre a `/catalogo?aroma=<slug>`
-(`lib/compartir.js`), que tiene su propia cáscara y carga rápido.
+Un slug que no existe se ignora y se borra de la dirección. El link que comparte
+el botón "Compartir" (menú del teléfono o, si no hay, copiado) apunta siempre a
+`/catalogo?aroma=<slug>` (`lib/compartir.js`), que tiene su propia cáscara y
+carga rápido. Tocar un parecido con la ficha abierta reemplaza la entrada y
+anota el perfume de antes en `location.state.rastro` (hasta `RASTRO_MAXIMO`,
+con su tamaño): la flecha de la ficha vuelve de a uno.
 
 ### La frontera entre la tienda y el panel
 

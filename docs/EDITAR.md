@@ -28,7 +28,7 @@ Están agrupados por dónde aparecen:
 | `TARJETA` | el pie de la tarjeta ("3 tamaños · desde") y el nombre del `+` para el lector de pantalla |
 | `PARECIDOS` | "Si te gusta este, mirá también" en la ficha y cómo se dice la razón |
 | `HOJA_TAMANOS` | la hoja chica que abre el `+` cuando el aroma tiene más de un tamaño |
-| `FICHA` | la ventana que se abre al tocar un aroma: "Para él/ella", tamaño, código, "Ahorrás", la línea de la proveedora, "Copiar link" y el botón de agregar |
+| `FICHA` | la ventana que se abre al tocar un aroma: "Para él/ella", tamaño, código, "Ahorrás", la línea de la proveedora, "Compartir", "Volver a…", "Ver más" y el botón de agregar |
 | `COMO_FUNCIONA` | los tres pasos y la frase de cierre |
 | `ANTES_DE_PEDIR` | el bloque de la portada con el pago, la seña, el envío, Córdoba y cuándo llega |
 | `PEDIDO` | los textos del cajón: botones, campos, la línea de la seña, la barra de envío gratis y la pantalla final |

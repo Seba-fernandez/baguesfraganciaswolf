@@ -48,18 +48,35 @@
 }
 .cerrar:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
-/* Copiar el link de la ficha: la misma placa oscura que el cerrar, del otro
-   lado de la foto. Chica a proposito: la usa mas Sebas que la clienta. */
-.copiar {
-  position: absolute; top: 12px; left: 12px; z-index: 5;
+/* Sobre la foto, con la misma placa oscura que el cerrar (Sebas, 23/10): a la
+   izquierda, volver al perfume de antes; a la derecha, compartir. En el
+   celular el cerrar tambien esta arriba a la derecha (la foto ocupa todo el
+   ancho), asi que compartir se corre a su izquierda; en escritorio el cerrar
+   vive en la columna del texto y compartir va en la esquina de la foto.
+   Redondas: se tocan. */
+.compartir, .volver {
+  position: absolute; top: 12px; z-index: 5;
   display: inline-flex; align-items: center; gap: 7px;
-  min-height: 44px; padding: 0 15px 0 13px; border-radius: var(--r-pill);
+  min-height: 44px; border-radius: var(--r-pill);
   background: rgba(36, 6, 4, 0.72); color: var(--ink);
   border: 1px solid var(--line-bright); cursor: pointer;
   font-size: 0.78rem; font-weight: 500;
 }
-.copiar:hover { background: rgba(36, 6, 4, 0.9); }
-.copiar:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.compartir { right: 64px; padding: 0 15px 0 13px; }
+.volver {
+  left: 12px; padding: 0 15px 0 9px;
+  /* El nombre del perfume de antes, cortado con puntos si no entra entre la
+     flecha y compartir. */
+  max-width: calc(100% - 64px - 132px - 20px);
+}
+.volverNombre { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.volver svg { flex-shrink: 0; }
+.compartir:hover, .volver:hover { background: rgba(36, 6, 4, 0.9); }
+.compartir:focus-visible, .volver:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+@media (min-width: 820px) {
+  .compartir { right: 12px; }
+  .volver { max-width: calc(100% - 12px - 132px - 20px); }
+}
 .linkManual {
   position: absolute; top: 64px; left: 12px; right: 68px; z-index: 5;
   display: flex; flex-direction: column; gap: 6px;
@@ -129,6 +146,39 @@
 /* Familia y notas, como el elenco de una serie: rotulo en negrita y los datos
    seguidos en letra normal. Recto y sin pastillas: no se toca. */
 .ficha { display: flex; flex-direction: column; gap: 7px; padding-top: 14px; margin-top: 4px; border-top: 1px solid var(--line); }
+.lineas { display: flex; flex-direction: column; gap: 7px; margin: 0; }
+
+/* Las notas y la descripcion, plegadas (Sebas, 23/10: "ver mas"). Se abren
+   animando el alto de la fila de la grilla de 0fr a 1fr: un toque, no algo
+   atado al scroll, asi que no traba. */
+.familiaFila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.familiaFila > .lineas { min-width: 0; }
+.plegable {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows 0.32s var(--ease), margin-top 0.32s var(--ease);
+  margin-top: -7px; /* plegada no deja el hueco de la grilla */
+}
+.plegableAbierto { grid-template-rows: 1fr; margin-top: 4px; }
+.plegableDentro {
+  min-height: 0; overflow: hidden;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.plegableDentro .desc { margin-top: 6px; }
+@media (prefers-reduced-motion: reduce) { .plegable { transition: none; } }
+/* "Ver mas": redondo porque se toca. 40 px a la vista, 44 al dedo. */
+.verMas {
+  position: relative; flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 40px; padding: 8px 14px 8px 16px; margin-left: auto; border-radius: var(--r-pill);
+  background: none; border: 1px solid var(--line-bright); color: var(--ink);
+  font-size: 0.84rem; font-weight: 500; cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.verMas::after { content: ''; position: absolute; inset: -3px -1px; }
+.verMas:hover { background: rgba(250, 239, 234, 0.06); }
+.verMas:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.verMas svg { transition: transform 0.32s var(--ease); }
+.verMas[aria-expanded=true] svg { transform: rotate(180deg); }
 .linea { font-size: 0.9rem; line-height: 1.5; color: var(--ink-dim); }
 .linea dt { display: inline; font-weight: 600; color: var(--ink); }
 .linea dt::after { content: ': '; }
@@ -177,6 +227,11 @@
 .parecidoNombre { font-family: var(--f-display); font-weight: 600; font-size: 0.98rem; line-height: 1.15; color: var(--ink); }
 .parecido:hover .parecidoNombre { color: var(--amber); }
 .parecidoRazon { font-size: 0.72rem; line-height: 1.35; color: var(--ink-faint); }
+/* En escritorio la razon va en un renglon (con puntos si no entra): asi la
+   fila de parecidos entra entera arriba de la barra de agregar. */
+@media (min-width: 820px) {
+  .parecidoRazon { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
 
 
 /* La barra de agregar. Va ultima en el marcado y pegada abajo con sticky:
@@ -225,7 +280,11 @@
   .media { align-items: stretch; padding: 0; overflow: hidden; min-height: 0; }
   .media > div { position: static; height: 100%; width: 100%; aspect-ratio: auto !important; }
   .banda { display: none; }
-  .info { padding: 40px 36px 0; overflow-y: auto; overscroll-behavior: contain; }
+  /* Un poco menos de aire entre bloques que en el celular: con dos tamanos,
+     la fila de parecidos entra entera arriba de la barra a 900 px de alto. */
+  .info { padding: 32px 36px 0; gap: 10px; overflow-y: auto; overscroll-behavior: contain; }
+  .parecidos { gap: 10px; padding-top: 14px; margin-top: 2px; }
+  .ficha { padding-top: 12px; margin-top: 2px; }
   /* El mismo orden que en el celular (Sebas, 23/10): el tamano y el precio
      arriba, la familia, las notas y la descripcion despues. */
   .barra { margin: 4px -36px 0; padding: 14px 36px; box-shadow: 0 -14px 20px -16px rgba(10, 5, 3, 0.8); }

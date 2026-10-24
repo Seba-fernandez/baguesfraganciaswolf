@@ -9,6 +9,10 @@ export const POR_PAGINA = 12;
 /** Cuantos destacados entran en la fila de arriba (se marcan en el panel). */
 export const DESTACADOS_MAXIMO = 6;
 
+// Cuantos perfumes recuerda la flecha de volver de la ficha ("Si te gusta este"
+// y de ahi a otro): se vuelve de a uno, hasta este numero.
+export const RASTRO_MAXIMO = 5;
+
 /**
  * Las ciudades de la portada (rediseño D): las cajas que enseñan el codigo
  * "esta ciudad es tal perfume". Van las mas conocidas, en este orden. Si una

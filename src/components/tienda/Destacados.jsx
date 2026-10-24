@@ -50,12 +50,16 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
     const el = filaRef.current;
     if (!el) return;
     // En el celular, de a una tarjeta (la centrada pasa a ser la siguiente);
-    // en escritorio, una tanda.
+    // en escritorio, una tanda entera: las que entran en la ventana, asi la
+    // que llega queda pegada al corte izquierdo, nunca a medias.
     const primera = el.firstElementChild;
     const hueco = parseFloat(getComputedStyle(el).columnGap) || 14;
-    const paso = window.innerWidth < 780 && primera
-      ? primera.getBoundingClientRect().width + hueco
-      : Math.max(220, el.clientWidth * 0.8);
+    const ancho = primera ? primera.getBoundingClientRect().width + hueco : 0;
+    const paso = !ancho
+      ? el.clientWidth * 0.8
+      : window.innerWidth < 780
+        ? ancho
+        : ancho * Math.max(1, Math.floor((el.clientWidth + hueco) / ancho));
     const max = el.scrollWidth - el.clientWidth;
     const borde = 4;
     if (dir > 0) {

@@ -96,18 +96,24 @@
   view-timeline-axis: inline;
 }
 .fila::-webkit-scrollbar { display: none; }
-/* Escritorio: la fila llega hasta el borde derecho de la pantalla (a la
-   izquierda respeta el margen de la pagina). Entran cinco a 1440 y asoma la
-   sexta, que invita a deslizar. Arriba y abajo deja aire para la sombra. */
+/* Escritorio: la fila vive dentro de la columna de la pagina y se corta a
+   la misma distancia de los dos bordes (Sebas, 23/10: "que haya un corte al
+   mismo tamano que en la izquierda"). Antes llegaba hasta el borde derecho de
+   la pantalla y se veia despareja. Entran tarjetas enteras, nunca una
+   cortada: tres hasta 1000 px, cuatro hasta 1240 y cinco arriba. Las flechas
+   pasan de a una tanda. Los 2 px de relleno son para que el foco del teclado
+   no quede recortado contra el corte. Arriba y abajo, aire para la sombra. */
 @media (min-width: 780px) {
   .fila {
-    --sangria: calc((100vw - var(--wrap)) / 2);
-    grid-auto-columns: clamp(220px, calc((var(--wrap) - 88px) / 5), 280px);
-    gap: 22px; margin-inline: 0 calc(-1 * var(--sangria));
-    padding: 6px var(--sangria) 30px 2px;
+    --tarjetas: 3;
+    grid-auto-columns: calc((100% - (var(--tarjetas) - 1) * 22px) / var(--tarjetas));
+    gap: 22px; margin-inline: 0;
+    padding: 6px 2px 30px;
     scroll-padding-inline: 2px;
   }
 }
+@media (min-width: 1000px) { .fila { --tarjetas: 4; } }
+@media (min-width: 1240px) { .fila { --tarjetas: 5; } }
 
 /* Las flechas tambien en el celular (Sebas, 23/10): sobre las tarjetas que
    asoman a los costados, mas chicas. La de la izquierda aparece apenas se
@@ -129,7 +135,7 @@
 @media (min-width: 780px) {
   .flecha { width: 46px; height: 46px; display: none; }
   .flechaIzq { left: -22px; }
-  .flechaDer { right: 10px; }
+  .flechaDer { right: -22px; }
   .item { scroll-snap-align: start; }
 }
 @media (min-width: 780px) and (hover: hover) { .flecha { display: grid; } }

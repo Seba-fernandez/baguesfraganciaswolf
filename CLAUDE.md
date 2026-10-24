@@ -444,6 +444,15 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
   borra dejarlo en `supabase/manual/` para Sebas.
 - **No se puede escribir en las variables de GitHub Actions desde acá** (el
   proxy lo bloquea): las carga Sebas en Settings > Secrets and variables.
+- **`.tienda h1` le gana a una clase de módulo en el h1** (`.titulo`): el
+  título del hero usa Boska recta por eso. Para cambiarle algo, la regla va
+  con `:global(.tienda) .titulo`.
+- **Lighthouse cuenta cada fuente embebida (`data:`) como un pedido.** Con
+  cinco recortes embebidos el FCP observado mejoraba y el simulado empeoraba
+  300 ms: solo va la recta del título.
+- **La captura de Playwright espera a `document.fonts.ready`.** Con las
+  fuentes frenadas, `screenshot()` saca la foto recién cuando llegan: para ver
+  el primer cuadro, grabar con `Page.startScreencast` (CDP).
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.

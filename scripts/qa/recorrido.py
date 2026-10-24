@@ -722,7 +722,9 @@ def ux14(browser, base):
     page.route("**/fonts/*.woff2", demorar)
     page.add_init_script("""
       window.__anchos = {};
-      const medir = () => [...document.querySelectorAll('#inicio-hero .tbtn')].map(b => b.getBoundingClientRect().width);
+      // offsetWidth y no getBoundingClientRect: desde el 23/10 el boton entra
+      // creciendo (scale 0,86 a 1) y el rectangulo medido incluye esa escala.
+      const medir = () => [...document.querySelectorAll('#inicio-hero .tbtn')].map(b => b.offsetWidth);
       document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(() => {
         window.__anchos.antes = medir();
         window.__anchos.estado = document.fonts.status;

@@ -66,7 +66,7 @@
 /* El giro del titular en la italica de Boska (Melodrama no trae italica). Un
    punto mas chica: Boska es mas ancha y de ojo mas alto. */
 .lineaItalica {
-  font-family: 'Boska Primera', var(--f-quote); font-style: italic; font-weight: 400;
+  font-family: var(--f-quote); font-style: italic; font-weight: 400;
   font-size: 0.86em; letter-spacing: -0.005em;
 }
 
@@ -90,7 +90,7 @@
   display: block;
   /* En la italica de Boska, la misma del giro del titulo: el cero de
      Melodrama viene cruzado y un precio puede tenerlo. */
-  font-family: 'Boska Primera', var(--f-quote); font-style: italic; font-weight: 400;
+  font-family: var(--f-quote); font-style: italic; font-weight: 400;
   font-size: 2rem; line-height: 1; letter-spacing: -0.005em;
   margin-bottom: 8px;
   font-variant-numeric: lining-nums tabular-nums;
@@ -101,7 +101,9 @@
 }
 .metaNum { display: inline-block; min-width: 3ch; text-align: right; }
 .metaPrecio { min-width: 0; text-align: left; }
-.metaPrecio:empty { min-width: 4.4em; }
+/* Sin min-width: el texto invisible de abajo ya mide lo mismo que un precio
+   de cinco cifras (cifras tabulares). Con 4,4em quedaba 40 px mas ancho y,
+   al llegar el precio, "Desde" se corria (visto el 23/10). */
 /* El precio que todavia no llego: un texto invisible del mismo largo, asi la
    caja tiene la altura y la linea base del numero de verdad y no salta. */
 .metaPrecio:empty::before {
@@ -220,8 +222,29 @@ a.cintaItem:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px
   .lineaWrap:nth-child(2) .linea { animation-delay: 0.2s; }
   .lineaWrap:nth-child(3) .linea { animation-delay: 0.28s; }
   .bajada { animation: heroSube 0.7s var(--sal) 0.42s both; }
-  .compra { animation: heroSube 0.7s var(--sal) 0.55s both; }
+  /* Hasta que llegan las fuentes (clase "fe" del script de index.html), la
+     entrada queda quieta en su primer cuadro. La recta del titulo ya viene
+     dentro del HTML; se espera a Melodrama (la marca) y a la itálica. */
+  :global(html.fe) .linea,
+  :global(html.fe) .bajada,
+  :global(html.fe) .metaDesde,
+  :global(html.fe) .meta > .metaDato,
+  :global(html.fe) .carta a.cta,
+  :global(html.fe) .trazo { animation-play-state: paused; }
+  /* El resto entra de a uno, con el mismo ritmo (Sebas, 23/10): el precio y
+     la linea de envio suben como la bajada; el boton aparece desde su centro
+     (crece de 0,86 a 1, con la propiedad scale para no pisar el transform del
+     toque); los trazos se dibujan desde el boton hacia afuera (clip-path: el
+     de la derecha esta espejado, asi que el mismo recorte lo abre hacia su
+     lado). Solo opacidad, scale y un recorte de 0,7 s en dos lineas finas:
+     nada mueve la pagina ni se repinta al bajar. */
+  .metaDesde { animation: heroSube 0.7s var(--sal) 0.55s both; }
+  .meta > .metaDato:not(.metaDesde) { display: inline-block; animation: heroSube 0.7s var(--sal) 0.64s both; }
+  :global(.tienda) .carta a.cta { animation: heroBoton 0.75s var(--sal) 0.74s both; }
+  .trazo { animation: heroTrazo 0.8s var(--sal) 0.86s both; }
 }
+@keyframes heroBoton { from { opacity: 0; scale: 0.86; } to { opacity: 1; scale: 1; } }
+@keyframes heroTrazo { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
 
 /* Parallax leve (rediseño D, pedido de Sebas): al bajar, la escena se queda
    un poco atras, 9 % de su alto en la primera pantalla de scroll. Movimiento

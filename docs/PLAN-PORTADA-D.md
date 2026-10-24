@@ -176,6 +176,26 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
 - **Flechas de "Los más pedidos" en el celular:** la derecha siempre, la
   izquierda apenas se corre la fila; de a una tarjeta.
 
+## Séptima vuelta (23/10, noche): la letra del título y la entrada de a uno
+
+- **Por qué cambiaba la letra del título:** "Cada perfume," usa Boska recta
+  (la regla `.tienda h1` le ganaba a `.titulo` y así quedó aprobado), y esa
+  letra llegaba última, en `fuentes-diferidas.css`, después de cargar la
+  página. La espera de fuentes del hero aguardaba a Melodrama y a la itálica,
+  no a esta. Ahora la recta va recortada a los caracteres del título y viaja
+  dentro del HTML (1,6 kB, `scripts/prerender.mjs`); la regla del título
+  la nombra a propósito.
+- **Se probó embeber las cinco letras del primer pantallazo** (marca, título,
+  itálica, Figtree 400 y 600): todo salía perfecto, pero Lighthouse bajaba 3
+  puntos porque cuenta cada letra embebida como un pedido más. Con solo la
+  recta empata con lo publicado (86 contra 86, intercalado 5 y 5).
+- **Entrada de a uno:** el título sube desde abajo, después la bajada, el
+  precio y la línea de envío; el botón aparece desde su centro y los trazos
+  se dibujan desde el botón hacia afuera. Todo con opacidad, `scale` y un
+  recorte corto en los trazos.
+- **"Desde" ya no se corre al llegar el precio:** el lugar reservado medía
+  40 px de más.
+
 ## Guion de la portada
 
 | # | Sección | Luz | Qué cambia |

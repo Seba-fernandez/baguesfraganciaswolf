@@ -264,6 +264,20 @@ sale como `5493515551234`). Pruebas sin navegador: `datos.test.mjs` (56
 casos). La base se probó con los mismos casos en una transacción que se
 deshace y, ya aplicada, desde afuera con la clave pública.
 
+### Séptima vuelta (23 de octubre de 2026, noche)
+
+- **La letra del título cambiaba a la vista** porque usaba Boska recta y esa
+  fuente llegaba después del evento `load`. Embebida recortada: con las
+  fuentes frenadas 3 s, la primera línea sale igual píxel a píxel. Con
+  conexiones de más de 0,9 s, la segunda línea y la marca todavía pueden
+  cambiar al final de la espera.
+- **Lighthouse intercalado (5 y 5):** publicada 86 / FCP 2,77 s; cinco letras
+  embebidas 83 / 3,12 s; solo la recta 86 / 2,76 s. Lantern cuenta cada
+  `data:` de fuente como un pedido: el FCP observado mejoraba, el simulado no.
+- **UX-14** medía el botón con `getBoundingClientRect`, que incluye la escala
+  de la entrada nueva: pasa a `offsetWidth`.
+- Banco 88/88 en local; motores sin fallas.
+
 ### Calidad (23 de octubre de 2026, tarde)
 
 - **Chequeos nuevos del banco (88 en total):** `A11Y-1` corre axe-core

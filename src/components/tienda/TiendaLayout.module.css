@@ -43,12 +43,12 @@
 .marca {
   /* Melodrama: la misma cara del titulo, que ya viaja en la primera carga.
      Asi la marca no trae una quinta fuente al primer pantallazo. */
-  font-family: 'Melodrama Primera', var(--f-titulo); font-weight: 600;
+  font-family: var(--f-titulo); font-weight: 600;
   font-size: 1.25rem; letter-spacing: 0.02em;
   color: var(--crema); white-space: nowrap; flex-shrink: 0;
   transition: color 0.45s var(--ease);
 }
-.marcaWolf { transition: color 0.45s var(--ease); color: var(--crema-suave); font-family: 'Boska Primera', var(--f-quote); font-style: italic; font-weight: 400; letter-spacing: 0; }
+.marcaWolf { transition: color 0.45s var(--ease); color: var(--crema-suave); font-family: var(--f-quote); font-style: italic; font-weight: 400; letter-spacing: 0; }
 @media (max-width: 619px) {
   .marca { font-size: 1.12rem; }
   .marcaWolf { display: none; }

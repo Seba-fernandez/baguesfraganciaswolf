@@ -39,7 +39,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-VbrqGls985GJ9eTsGNrOrV/8kP9sc1wochlIrkivhWw=' 'sha256-3Tjk+sIGwtvhuwKgPOPvz/r36bUxYGc6NI0bddfKQhU='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://wynownataftnompltsok.supabase.co; font-src 'self' data:; connect-src 'self' https://wynownataftnompltsok.supabase.co wss://wynownataftnompltsok.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+          "value": "default-src 'self'; script-src 'self' 'sha256-VbrqGls985GJ9eTsGNrOrV/8kP9sc1wochlIrkivhWw=' 'sha256-3Tjk+sIGwtvhuwKgPOPvz/r36bUxYGc6NI0bddfKQhU=' 'sha256-XJ8MYzzzkMRqYdRZIaHA0vxwraV8BENteL6GznvC/o8='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://wynownataftnompltsok.supabase.co; font-src 'self' data:; connect-src 'self' https://wynownataftnompltsok.supabase.co wss://wynownataftnompltsok.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
         },
         {
           "key": "Strict-Transport-Security",

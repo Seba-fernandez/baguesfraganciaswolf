@@ -45,7 +45,22 @@
       animation-timeline: --banda;
       animation-range: cover 0% cover 100%;
     }
+    /* Las tarjetas entran con la banda (Sebas, 23/10: "destacados tiene
+       como una pausa"). Antes esperaban a estar casi enteras en pantalla y
+       recien ahi hacian un fundido de medio segundo: la banda llegaba, el
+       titulo estaba y las fotos tardaban. Ahora suben atadas al mismo scroll
+       que la banda (--banda): aparecen a medida que se baja, sin esperar a
+       nada, y si se sube vuelven. Solo opacidad y transform. */
+    .item {
+      animation: tarjeta-entra linear both;
+      animation-timeline: --banda;
+      animation-range: entry 15% entry 65%;
+    }
   }
+}
+@keyframes tarjeta-entra {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: none; }
 }
 /* 1,18 en el alto de la seccion: unos 60 px de mas arriba y abajo en el
    celular y unos 85 en escritorio, siempre menos que el relleno de las

@@ -3,7 +3,6 @@ import { useCart } from '../../contexts/CartContext';
 import { ahorroDe, esPublicable, lineaTarjeta, presentacionesActivas, presentacionPorDefecto, tituloDe } from '../../lib/producto';
 import { precargarFoto } from '../../lib/fotos';
 import { pesos } from '../../lib/format';
-import useReveal from '../../hooks/useReveal';
 import { DESTACADOS, TARJETA, conDatos } from '../../config/contenido';
 import { DESTACADOS_MAXIMO, PROPORCION } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
@@ -19,7 +18,6 @@ import s from './Destacados.module.css';
  * En escritorio, flechas a los costados; en el celular, el dedo.
  */
 export default function Destacados({ products, onOpen, onElegir, cargando = false }) {
-  const ref = useReveal();
   const filaRef = useRef(null);
   const { addItem } = useCart();
   const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p)).slice(0, DESTACADOS_MAXIMO);
@@ -71,7 +69,7 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
   }
 
   return (
-    <section className={s.section} ref={ref}>
+    <section className={s.section}>
       <div className={`tw ${s.marco}`}>
         <header className={s.head}>
           <h2 className={s.titulo}>{DESTACADOS.titulo}</h2>
@@ -103,13 +101,12 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
                 </span>
               </span>
             ))}
-            {!cargando && destacados.map((p, i) => {
+            {!cargando && destacados.map((p) => {
               const pres = presentacionPorDefecto(p);
               return (
                 <div
                   key={p.id}
-                  className={`${s.item} treveal`}
-                  style={{ transitionDelay: `${Math.min(i, DESTACADOS_MAXIMO - 1) * 60}ms` }}
+                  className={s.item}
                   onPointerEnter={() => precargarFoto(p, pres?.linea)}
                   onPointerDown={() => precargarFoto(p, pres?.linea)}
                 >

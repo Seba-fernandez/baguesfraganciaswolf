@@ -112,6 +112,13 @@
 }
 /* Y cuando llega, aparece suave en vez de saltar (sin barra gris antes). */
 .metaPrecio:not(:empty) { animation: heroSube 0.5s var(--sal) both; }
+/* El precio escrito en el build (Sebas, 23/10: "el precio aparece despues").
+   scripts/prerender.mjs lo deja en data-precio y este ::before lo muestra:
+   entra con su linea, en la misma secuencia que el titulo y el boton. React
+   no mira ese atributo, asi que no hay choque al hidratar; cuando pone el
+   texto de verdad no se vuelve a animar. */
+.metaPrecio[data-precio]:empty::before { content: attr(data-precio); color: inherit; }
+.metaPrecio[data-precio]:not(:empty) { animation: none; }
 @media (prefers-reduced-motion: reduce) { .metaPrecio:not(:empty) { animation: none; } }
 .metaNum:not(.metaPrecio):empty::before {
   content: ''; display: inline-block; width: 100%; height: 0.7em;

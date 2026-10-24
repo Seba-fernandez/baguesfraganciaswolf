@@ -67,7 +67,7 @@ export default function Hero({
           {/* El precio es lo que la clienta busca primero: grande y en tinta. */}
           <p className={`${s.meta} tnum`} data-hero="meta" data-qa="hero-datos">
             <span className={`${s.metaDato} ${s.metaDesde}`}>
-              {antesDesde}<span className={`${s.metaNum} ${s.metaPrecio}`}>{desde ? pesos(desde) : ''}</span>{despuesDesde}
+              {antesDesde}<span className={`${s.metaNum} ${s.metaPrecio}`} data-hero="precio">{desde ? pesos(desde) : ''}</span>{despuesDesde}
             </span>
             <span className={s.metaSep} aria-hidden="true"> · </span>
             <span className={s.metaDato}>{INICIO.datosEnvio}</span>

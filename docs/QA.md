@@ -264,6 +264,20 @@ sale como `5493515551234`). Pruebas sin navegador: `datos.test.mjs` (56
 casos). La base se probó con los mismos casos en una transacción que se
 deshace y, ya aplicada, desde afuera con la clave pública.
 
+### Octava vuelta (23 de octubre de 2026, noche)
+
+- **Precio del hero:** con CPU 4x, el atributo llega a los 76 ms (antes, el
+  texto a los 1.318 ms); al hidratar no se vuelve a animar y la consola queda
+  limpia. UX-17 sigue pasando: el número del HTML es el mismo que el vivo.
+- **Destacados:** traza bajando la portada con CPU 4x, con scroll por script y
+  con gesto táctil: sin cuadros perdidos, igual que lo publicado. La pausa era
+  el fundido tardío de las tarjetas (umbral 12 % y margen -8 %, 560 ms).
+- **Trampa nueva:** `String.replace` con un texto que trae `$&` (el precio
+  escapado: `$&#160;`) lo toma como patrón y pega lo encontrado. El reemplazo
+  va con función.
+- Banco 88/88, motores sin fallas, Lighthouse intercalado 5 y 5: 86 contra 86,
+  LCP 3,50 contra 3,50 s.
+
 ### Séptima vuelta (23 de octubre de 2026, noche)
 
 - **La letra del título cambiaba a la vista** porque usaba Boska recta y esa

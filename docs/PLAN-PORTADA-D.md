@@ -196,6 +196,21 @@ quedan la imagen del hero, las herramientas (`scripts/rediseno/`,
 - **"Desde" ya no se corre al llegar el precio:** el lugar reservado medía
   40 px de más.
 
+## Octava vuelta (23/10, noche): el precio a tiempo y Destacados sin pausa
+
+- **El precio aparecía después** de toda la entrada del hero: sale de la base
+  y la base contesta un segundo más tarde (el viaje hasta la base, no el
+  momento de pedirlo: adelantar el pedido ganó 48 ms). Ahora el build lo
+  pide una vez y lo deja escrito en el HTML (`data-precio`, en
+  `scripts/prerender.mjs`); entra con su línea, antes del botón. Si Sebas
+  cambia precios sin publicar, React lo corrige cuando llega la base, y un
+  deploy lo deja al día.
+- **Destacados tenía una pausa:** la banda llegaba y las tarjetas esperaban a
+  estar casi enteras en pantalla para hacer un fundido de medio segundo. Ahora
+  suben atadas al mismo scroll que la banda (`--banda`, solo opacidad y
+  transform): están cuando la banda llega. La traza con CPU frenada no
+  mostraba cuadros perdidos; la pausa era de coreografía, no de rendimiento.
+
 ## Guion de la portada
 
 | # | Sección | Luz | Qué cambia |

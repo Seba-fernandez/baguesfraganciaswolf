@@ -27,7 +27,7 @@ if (!fs.existsSync(ENTRADA)) {
   process.exit(1);
 }
 
-const { render } = await import(pathToFileURL(ENTRADA).href);
+const { render, precioDesde } = await import(pathToFileURL(ENTRADA).href);
 
 let html = fs.readFileSync(PLANTILLA, 'utf8');
 // La plantilla limpia, antes de pegarle la portada: de aca sale /catalogo.
@@ -46,6 +46,53 @@ if (!html.includes(ANCLA)) {
 }
 
 html = html.replace(ANCLA, `<div id="root">${marcado}</div>`);
+
+/**
+ * El precio "Desde" del hero, escrito en el build (Sebas, 23/10: "el precio
+ * aparece despues").
+ *
+ * El precio sale de la base, y la base contesta cuando ya termino la entrada
+ * del hero: el titulo, la bajada y el boton aparecian de a uno y el precio
+ * llegaba solo, un segundo despues. Pedirlo antes no alcanzaba: lo que tarda es
+ * el viaje hasta la base, no el momento en que se pide.
+ *
+ * Aca se pide una vez, en el build, y el precio queda en un atributo
+ * (data-precio) del lugar reservado; el CSS lo muestra y entra con el resto de
+ * su linea. React no mira ese atributo, asi que hidratar no choca. Cuando la
+ * base contesta, React escribe el precio de verdad: si es el mismo no se nota
+ * nada, y si Sebas cambio precios desde el ultimo build (un ciclo nuevo cargado
+ * por SQL), se cambia por el nuevo. Un deploy lo deja al dia.
+ *
+ * Sin base (el build de las pruebas en GitHub no tiene las claves) o si tarda,
+ * sigue como antes: lugar reservado y el precio aparece al llegar.
+ */
+{
+  const { loadEnv } = await import('vite');
+  const env = loadEnv('production', RAIZ, 'VITE_');
+  const url = env.VITE_SUPABASE_URL;
+  const clave = env.VITE_SUPABASE_ANON_KEY;
+  let precio = null;
+  if (url && clave) {
+    try {
+      const r = await fetch(`${url}/rest/v1/products?select=*`, {
+        headers: { apikey: clave, Authorization: `Bearer ${clave}` },
+        signal: AbortSignal.timeout(10000),
+      });
+      if (r.ok) precio = precioDesde(await r.json());
+    } catch (e) {
+      console.warn(`  precio del hero: la base no contesto (${e.message}); sale sin precio`);
+    }
+  }
+  const lugar = 'data-hero="precio"';
+  if (precio && html.split(lugar).length === 2) {
+    const valor = precio.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/ /g, '&#160;');
+    // Con funcion: el "$&" del precio es un patron especial de replace.
+    html = html.replace(lugar, () => `${lugar} data-precio="${valor}"`);
+    console.log(`  precio del hero en el HTML: ${precio.replace(/ /g, ' ')}`);
+  } else if (!precio) {
+    console.log('  precio del hero: sin precio en el HTML (llega con la base)');
+  }
+}
 
 /**
  * La letra del titulo, adentro del HTML (Sebas, 23/10).

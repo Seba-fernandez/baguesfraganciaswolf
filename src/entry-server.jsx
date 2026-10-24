@@ -4,6 +4,18 @@ import { renderToString } from 'react-dom/server';
 // desde el paquete principal.
 import { StaticRouter } from 'react-router-dom';
 import App, { precargarCatalogo } from './App.jsx';
+import { desdeYLista, esPublicable } from './lib/producto';
+import { pesos } from './lib/format';
+
+/**
+ * El precio "Desde" del hero a partir de las filas de la base, con la misma
+ * regla que TiendaShell (solo lo activo y publicable). Lo usa el prerender
+ * para escribirlo en el HTML; devuelve null si no hay precio.
+ */
+export function precioDesde(filas = []) {
+  const { desde } = desdeYLista((filas || []).filter((p) => p.activo && esPublicable(p)));
+  return desde ? pesos(desde) : null;
+}
 
 /**
  * Entrada de servidor: existe solo para el build.

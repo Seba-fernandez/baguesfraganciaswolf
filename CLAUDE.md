@@ -197,6 +197,9 @@ borrar cuando el ciclo esté confirmado.
 7. **Fotos** de lo nuevo (sección 8): las de Unlock con su `"tratamiento"`, y
    la hoja de contacto antes de publicar.
 8. Ajustar `settings.ciclo_nombre`, `ciclo_hasta` y `promos_ciclo`.
+9. **Publicar de nuevo** (un deploy, aunque no cambie código): el precio
+   "Desde" del hero se escribe en el build. Sin eso se ve el viejo hasta que
+   contesta la base y React lo cambia.
 
 ## 8. Fotos
 
@@ -453,6 +456,9 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
 - **La captura de Playwright espera a `document.fonts.ready`.** Con las
   fuentes frenadas, `screenshot()` saca la foto recién cuando llegan: para ver
   el primer cuadro, grabar con `Page.startScreencast` (CDP).
+- **`replace` con un texto que trae `$&` lo toma como patrón.** El precio
+  escapado (`$&#160;16.499`) pegaba el texto encontrado en el medio: cuando
+  el reemplazo sale de datos, va con función (`() => texto`).
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.

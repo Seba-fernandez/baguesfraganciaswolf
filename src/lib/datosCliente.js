@@ -29,7 +29,7 @@ export function telefonoArgentino(entrada) {
   const texto = String(entrada ?? '').trim();
   if (!texto) return { ok: false, motivo: 'vacio' };
   // Solo cifras y lo que la gente usa para separarlas.
-  if (/[^\d\s+\-().\/]/.test(texto)) return { ok: false, motivo: 'letras' };
+  if (/[^\d\s+\-()./]/.test(texto)) return { ok: false, motivo: 'letras' };
 
   let d = texto.replace(/\D/g, '');
   if (!d) return { ok: false, motivo: 'vacio' };
@@ -86,7 +86,7 @@ export function nombreCliente(entrada) {
   const valor = String(entrada ?? '').normalize('NFC').replace(/\s+/g, ' ').trim();
   if (!valor) return { ok: false, motivo: 'vacio' };
   if (valor.length > NOMBRE_MAX) return { ok: false, motivo: 'largo' };
-  if (!/^[\p{L}\p{M}][\p{L}\p{M} '’.\-]*$/u.test(valor)) return { ok: false, motivo: 'raro' };
+  if (!/^[\p{L}\p{M}][\p{L}\p{M} '’.-]*$/u.test(valor)) return { ok: false, motivo: 'raro' };
   if ((valor.match(/\p{L}/gu) || []).length < NOMBRE_MIN) return { ok: false, motivo: 'corto' };
   return { ok: true, valor };
 }

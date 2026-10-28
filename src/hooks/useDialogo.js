@@ -63,6 +63,8 @@ export default function useDialogo({ abierto, onCerrar, refInicial, refRespaldo,
         antes.focus();
         if (document.activeElement === antes) return;
       }
+      // Se lee al cerrar a proposito: el respaldo que este montado en ese momento.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       refRespaldo?.current?.focus();
     };
   }, [abierto]); // eslint-disable-line react-hooks/exhaustive-deps

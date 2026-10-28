@@ -261,7 +261,7 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
             {/* Un enlace de verdad, no window.open: funciona siempre, aunque el
                 navegador haya bloqueado la ventana que se intentó abrir sola. */}
             {linkPedido && (
-              <a className="tbtn wide" href={linkPedido} target="_blank" rel="noopener">
+              <a className="tbtn wide" href={linkPedido} target="_blank" rel="noopener noreferrer">
                 {PEDIDO.abrirWhatsapp}
               </a>
             )}

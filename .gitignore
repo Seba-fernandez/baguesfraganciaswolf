@@ -30,3 +30,9 @@ scripts/rediseno/salida/
 scripts/qa/atencion/salida/
 scripts/qa/atencion/despues/
 videos/
+
+# Capturas y salidas sueltas de pruebas: van en la carpeta de trabajo, nunca
+# en el repo (el 23/10 se subieron 15 por error en banda/).
+/banda/
+/cuadros/
+*.trace.json

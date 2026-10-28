@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import useCustomers from '../../hooks/useCustomers';
-import { ESTADOS_PEDIDO, PAGO } from '../../data/constants';
+import { ESTADOS_PEDIDO } from '../../data/constants';
 import { pesos, desdeAhora } from '../../lib/format';
 import { linkWhatsApp } from '../../lib/whatsapp';
 import Avatar from '../ui/Avatar';

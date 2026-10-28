@@ -29,7 +29,7 @@ import s from './Hero.module.css';
  * ficha de cada aroma (E3-B5).
  */
 export default function Hero({
-  settings, promos = {}, onVerPromo, onOpen,
+  promos = {}, onVerPromo, onOpen,
   desde, nombresAromas = [],
 }) {
   const lista = Object.values(promos);

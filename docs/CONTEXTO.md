@@ -228,7 +228,7 @@ de proveedora y el botón en el primer pantallazo del celular, la tarjeta dice
 notas en vez de "versión inspirada", los tamaños se eligen en una hoja chica,
 el cajón se abre solo la primera vez, hay filtros por familia olfativa en la
 dirección, "Si te gusta este, mirá también" y "Ver 12 más" en el celular.
-Registro y mediciones en [`QA.md`](QA.md#etapa-3a-ficha-tarjeta-filtros-y-link-por-perfume-17-de-octubre-de-2026).
+Registro y mediciones en [`historial/QA-registro.md`](historial/QA-registro.md#etapa-3a-ficha-tarjeta-filtros-y-link-por-perfume-17-de-octubre-de-2026).
 
 ## Estado al 16 de octubre de 2026
 

@@ -62,7 +62,7 @@ export default function ComoFunciona({ settings, products = [] }) {
           <p className={s.cita}>{COMO_FUNCIONA.cita}</p>
 
           {settings?.whatsapp_owner && (
-            <a className={`tbtn ${s.boton}`} href={linkWhatsApp(settings.whatsapp_owner, COMO_FUNCIONA.mensajeConsulta)} target="_blank" rel="noopener">
+            <a className={`tbtn ${s.boton}`} href={linkWhatsApp(settings.whatsapp_owner, COMO_FUNCIONA.mensajeConsulta)} target="_blank" rel="noopener noreferrer">
               {COMO_FUNCIONA.boton}
             </a>
           )}

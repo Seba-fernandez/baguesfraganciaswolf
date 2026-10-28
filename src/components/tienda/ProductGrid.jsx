@@ -49,7 +49,7 @@ function Pastilla({ activa, onClick, children, tono = '', qa }) {
 }
 
 export default function ProductGrid({
-  products, onOpen, onElegir, abiertoId, promos = {}, promoActiva, setPromoActiva, whatsapp = '', cargando = false, settings = null,
+  products, onOpen, onElegir, promos = {}, promoActiva, setPromoActiva, whatsapp = '', cargando = false, settings = null,
 }) {
   // Para, Familia y Minis viven en la direccion (lib/filtros.js): se pueden
   // compartir y sobreviven a abrir una ficha y volver "atras". Se cambian con
@@ -296,7 +296,7 @@ export default function ProductGrid({
                 className="tbtn"
                 href={linkWhatsApp(whatsapp, conDatos(CATALOGO.vacioMensaje, { busqueda: buscado }))}
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
               >
                 {CATALOGO.vacioWhatsapp}
               </a>

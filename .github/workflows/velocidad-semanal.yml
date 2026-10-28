@@ -1,0 +1,90 @@
+# Mide la velocidad de la tienda publicada una vez por semana (Lighthouse en
+# modo celular, la misma prueba que usa PageSpeed) y avisa por mail si baja.
+#
+# Corre tres veces cada pagina y mira la mediana: una sola corrida varia 4 o 5
+# puntos. Los umbrales tienen margen sobre lo medido el 27/10/2026 (portada 97,
+# catalogo 90) porque las maquinas de GitHub no son siempre iguales: avisa si la
+# portada baja de 92 o el catalogo de 85, que ya es una caida real y no ruido.
+#
+# Si baja, abre un aviso en GitHub (issue) con los numeros, y GitHub te lo
+# manda por mail. Si vuelve a estar bien, lo cierra solo.
+name: Velocidad semanal
+
+on:
+  schedule:
+    - cron: '17 11 * * 1'   # los lunes, 8:17 de Argentina
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  medir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Medir portada y catalogo (3 corridas cada una)
+        id: medir
+        run: |
+          set -e
+          medir() {
+            for i in 1 2 3; do
+              npx -y lighthouse@13.5.0 "$1" --only-categories=performance --output=json --output-path="lh-$2-$i.json" \
+                --quiet --chrome-flags="--headless=new --no-sandbox" >/dev/null 2>&1 || true
+            done
+            node -e '
+              const fs = require("fs");
+              const r = [1,2,3].map((i) => { try { return JSON.parse(fs.readFileSync(`lh-${process.argv[1]}-${i}.json`)); } catch { return null; } }).filter(Boolean);
+              const med = (xs) => { const s = [...xs].sort((a,b) => a-b); return s[Math.floor(s.length/2)]; };
+              const puntaje = med(r.map((x) => Math.round(x.categories.performance.score * 100)));
+              const lcp = med(r.map((x) => Math.round(x.audits["largest-contentful-paint"].numericValue)));
+              console.log(`${puntaje} ${lcp} ${r.length}`);
+            ' "$2"
+          }
+          read -r P_PUNTAJE P_LCP P_N <<< "$(medir https://baguesfraganciaswolf.vercel.app/ portada)"
+          read -r C_PUNTAJE C_LCP C_N <<< "$(medir https://baguesfraganciaswolf.vercel.app/catalogo catalogo)"
+          echo "Portada: $P_PUNTAJE (LCP $P_LCP ms, $P_N corridas). Catalogo: $C_PUNTAJE (LCP $C_LCP ms, $C_N corridas)."
+          {
+            echo "portada=$P_PUNTAJE"; echo "portada_lcp=$P_LCP"
+            echo "catalogo=$C_PUNTAJE"; echo "catalogo_lcp=$C_LCP"
+          } >> "$GITHUB_OUTPUT"
+          echo "### Velocidad de la tienda publicada" >> "$GITHUB_STEP_SUMMARY"
+          echo "Portada **$P_PUNTAJE** (LCP $P_LCP ms) · Catalogo **$C_PUNTAJE** (LCP $C_LCP ms)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Avisar si bajo (o cerrar el aviso si se recupero)
+        uses: actions/github-script@v7
+        env:
+          PORTADA: ${{ steps.medir.outputs.portada }}
+          PORTADA_LCP: ${{ steps.medir.outputs.portada_lcp }}
+          CATALOGO: ${{ steps.medir.outputs.catalogo }}
+          CATALOGO_LCP: ${{ steps.medir.outputs.catalogo_lcp }}
+        with:
+          script: |
+            const UMBRAL = { portada: 92, catalogo: 85 };
+            const p = Number(process.env.PORTADA), c = Number(process.env.CATALOGO);
+            const titulo = 'Aviso: la tienda esta mas lenta';
+            const { data: abiertos } = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'vigilancia' });
+            const previo = abiertos.find((i) => i.title === titulo);
+            const bajo = !p || !c || p < UMBRAL.portada || c < UMBRAL.catalogo;
+            const cuerpo = [
+              `**Medicion de esta semana** (Lighthouse celular, mediana de 3):`,
+              `- Portada: **${p || 'no se pudo medir'}** (aviso si baja de ${UMBRAL.portada}), LCP ${process.env.PORTADA_LCP} ms`,
+              `- Catalogo: **${c || 'no se pudo medir'}** (aviso si baja de ${UMBRAL.catalogo}), LCP ${process.env.CATALOGO_LCP} ms`,
+              '',
+              'Referencia: el 27/10/2026 daba portada 97 y catalogo 90.',
+              '',
+              '**Que hacer:** probalo una vez en https://pagespeed.web.dev con la direccion de la tienda. Si da parecido, pedile a Claude que lo revise con este aviso (docs/QA.md explica como se mide).',
+              '',
+              `Corrida: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            ].join('\n');
+            if (bajo) {
+              if (previo) await github.rest.issues.createComment({ ...context.repo, issue_number: previo.number, body: cuerpo });
+              else await github.rest.issues.create({ ...context.repo, title: titulo, body: cuerpo, labels: ['vigilancia'] });
+            } else if (previo) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: previo.number, body: `Se recupero.\n\n${cuerpo}` });
+              await github.rest.issues.update({ ...context.repo, issue_number: previo.number, state: 'closed' });
+            }

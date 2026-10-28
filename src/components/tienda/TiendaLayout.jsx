@@ -56,7 +56,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
   useAntesDePintar(() => {
     if (primera.current) { primera.current = false; return; }
     if (tipoNavegacion !== 'POP' && !hash) window.scrollTo(0, 0);
-  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   // Scroll suave con la ruedita, solo en escritorio y despues de cargar.
   useEffect(() => montarScrollSuave(), []);
@@ -170,16 +170,16 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
             <Link to="/catalogo">{CABECERA.catalogo}</Link>
             <a href="/#como">{CABECERA.como}</a>
             {settings?.link_catalogo && (
-              <a href={settings.link_catalogo} target="_blank" rel="noopener">{PIE.catalogoPdf}</a>
+              <a href={settings.link_catalogo} target="_blank" rel="noopener noreferrer">{PIE.catalogoPdf}</a>
             )}
           </div>
           <div className={s.fcol}>
             <h4 className={s.ftitulo}>{PIE.contacto}</h4>
             {settings?.whatsapp_owner && (
-              <a href={linkWhatsApp(settings.whatsapp_owner, COMO_FUNCIONA.mensajeConsulta)} target="_blank" rel="noopener">WhatsApp</a>
+              <a href={linkWhatsApp(settings.whatsapp_owner, COMO_FUNCIONA.mensajeConsulta)} target="_blank" rel="noopener noreferrer">WhatsApp</a>
             )}
             {settings?.instagram_user && (
-              <a href={`https://instagram.com/${settings.instagram_user}`} target="_blank" rel="noopener">Instagram</a>
+              <a href={`https://instagram.com/${settings.instagram_user}`} target="_blank" rel="noopener noreferrer">Instagram</a>
             )}
           </div>
           <p className={s.copy}>

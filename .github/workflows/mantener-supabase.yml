@@ -1,0 +1,69 @@
+# Mantiene despierta la base (Supabase gratis se pausa si pasa una semana sin
+# pedidos). Cada dos dias hace una lectura chica a la base, la misma que hace
+# la tienda al abrir. Si la base no contesta, abre un aviso en GitHub (issue),
+# y GitHub te lo manda por mail.
+#
+# Las claves: si estan cargadas las variables del repo (VITE_SUPABASE_URL y
+# VITE_SUPABASE_ANON_KEY, Settings > Secrets and variables > Actions >
+# Variables), usa esas. Si no, las lee de la tienda publicada: son las claves
+# publicas que ya viajan a cada navegador, no hay ningun secreto en este archivo.
+name: Mantener la base despierta
+
+on:
+  schedule:
+    - cron: '23 13 */2 * *'   # cada dos dias, 10:23 de Argentina
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  despertar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Leer la base
+        id: leer
+        env:
+          URL_BASE: ${{ vars.VITE_SUPABASE_URL }}
+          CLAVE: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          TIENDA: https://baguesfraganciaswolf.vercel.app
+        run: |
+          set -u
+          if [ -z "${URL_BASE}" ] || [ -z "${CLAVE}" ]; then
+            js=$(curl -fsS "$TIENDA/" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
+            codigo=$(curl -fsS "$TIENDA$js")
+            URL_BASE=$(printf '%s' "$codigo" | grep -oE 'https://[a-z0-9]+\.supabase\.co' | head -1)
+            CLAVE=$(printf '%s' "$codigo" | grep -oE 'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+' | head -1)
+          fi
+          if [ -z "${URL_BASE}" ] || [ -z "${CLAVE}" ]; then
+            echo "motivo=No encontre la direccion o la clave publica de la base" >> "$GITHUB_OUTPUT"; exit 1
+          fi
+          estado=$(curl -sS -o respuesta.json -w '%{http_code}' --max-time 30 \
+            "$URL_BASE/rest/v1/settings?select=id&limit=1" \
+            -H "apikey: $CLAVE" -H "Authorization: Bearer $CLAVE")
+          echo "La base contesto $estado"
+          if [ "$estado" != "200" ]; then
+            echo "motivo=La base contesto $estado (puede estar pausada)" >> "$GITHUB_OUTPUT"; exit 1
+          fi
+
+      - name: Avisar por mail si fallo
+        if: failure()
+        uses: actions/github-script@v7
+        env:
+          MOTIVO: ${{ steps.leer.outputs.motivo }}
+        with:
+          script: |
+            const titulo = 'Aviso: la base de la tienda no contesta';
+            const cuerpo = [
+              `**Que paso:** ${process.env.MOTIVO || 'la lectura de la base fallo'}.`,
+              '',
+              '**Que hacer:** entra a https://supabase.com/dashboard, abri el proyecto de la tienda y, si dice "Paused", toca "Restore project". Tarda unos minutos.',
+              '',
+              `Corrida: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            ].join('\n');
+            const { data: abiertos } = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'vigilancia' });
+            const previo = abiertos.find((i) => i.title === titulo);
+            if (previo) await github.rest.issues.createComment({ ...context.repo, issue_number: previo.number, body: cuerpo });
+            else await github.rest.issues.create({ ...context.repo, title: titulo, body: cuerpo, labels: ['vigilancia'] });

@@ -75,8 +75,8 @@ producción después de publicar los bloques 3.1 y 3.2 (commit `0e6b566`).
 | CONTENIDO-1 (UX-16) | contenido | media | "Retiro los viernes" contra "llega los viernes"; "escribinos", "nosotros" y "un asesor" en la interfaz | Leer portada, ficha, catálogo y cajón | `CONTENIDO-1` | FALLA | PASA (ver pendiente 1) | `b7dd547`, `6d4ec93` |
 | PANEL-1 | contenido | baja | El pie público enlazaba al panel | Mirar el pie | `PANEL-1` | FALLA | PASA | `0e6b566` |
 | REG-1 | bloqueante | alta | Regresión: el código de proveedor en el WhatsApp, la suma del cajón y la escena del hero | Pedido de dos aromas con la base simulada | `REG-1 codigo`, `REG-1 suma`, `REG-1 portada` | PASA | PASA | ninguno |
-| MEDIDAS-1 | conversión | alta | Desde 768 px el botón "Familia" del celular se veía encima de los chips de familia y el buscador se estiraba: a 1024 la familia quedaba en 4 renglones (`.chip` le ganaba a `.plegar` por orden) | Abrir `/catalogo` a 768, 1024 o 1440 px | `MEDIDAS-1 filtros` | FALLA (también en producción) | PASA | rama `catalogo-panel` |
-| MEDIDAS-2 | visual | media | A 768 y 834 px "Amaderados" se metía en la ventana de "Ámbar y especiados" | Portada a 768 px, sección de familias | `MEDIDAS-2 portada` | FALLA | PASA | rama `catalogo-panel` |
+| MEDIDAS-1 | conversión | alta | Desde 768 px el botón "Familia" del celular se veía encima de los chips de familia y el buscador se estiraba: a 1024 la familia quedaba en 4 renglones (`.chip` le ganaba a `.plegar` por orden) | Abrir `/catalogo` a 768, 1024 o 1440 px | `MEDIDAS-1 filtros` | FALLA (también en producción) | PASA (producción, 28/10) | `16fb1c6` |
+| MEDIDAS-2 | visual | media | A 768 y 834 px "Amaderados" se metía en la ventana de "Ámbar y especiados" | Portada a 768 px, sección de familias | `MEDIDAS-2 portada` | FALLA | PASA (producción, 28/10) | `16fb1c6` |
 | RENDIMIENTO | rendimiento | alta | Lighthouse mobile, mediana de 5 | `--lh 5` | `RENDIMIENTO /`, `RENDIMIENTO /catalogo` | `/` 97; `/catalogo` 76, CLS 0,924 | `/` 99; `/catalogo` 88, CLS 0 | varios |
 
 El detalle de cada etapa y de cada vuelta del rediseño (qué se encontró, cómo

@@ -183,10 +183,10 @@ La parte que más me enseñó. Casi ninguno se veía mirando la pantalla.
 En producción con el ciclo 10 de 2026: 101 aromas, 148 tamaños y 100 aromas con
 foto, todos en la misma escena.
 
-En ramas, esperando mi revisión antes de publicar: el rediseño de la ficha y los
-filtros (`fuentes-en-linea`), el orden del repo con el revisor y la vigilancia
-(`orden`), y la carga del ciclo desde el panel con la auditoría de medidas
-(`catalogo-panel`). Están encadenadas: `catalogo-panel` trae las otras dos.
+Desde el 28/10/2026 está publicado todo lo último: la ficha con "volver" y
+"Compartir", varias familias a la vez, el revisor de código, la vigilancia por
+mail, la carga del ciclo desde el panel y los arreglos de medidas en tablet y
+escritorio.
 
 Pendiente: la foto de Manhattan (no está en la web de la proveedora), fotos
 propias de seis frascos de Unlock que hoy se ven blandas, y la primera carga real

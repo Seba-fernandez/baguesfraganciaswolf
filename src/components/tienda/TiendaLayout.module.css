@@ -50,7 +50,9 @@
   /* 44 px al dedo, como los links de al lado (medida del 28/10: tenia 28). */
   display: inline-flex; align-items: center; min-height: 44px;
 }
-.marcaWolf { transition: color 0.45s var(--ease); color: var(--crema-suave); font-family: var(--f-quote); font-style: italic; font-weight: 400; letter-spacing: 0; }
+/* margin y no un espacio: .marca es inline-flex y el flex se come el espacio
+   entre "Bagues" y "Grupo Wolf" (se veia "BaguesGrupo Wolf"). */
+.marcaWolf { margin-left: 0.32em; transition: color 0.45s var(--ease); color: var(--crema-suave); font-family: var(--f-quote); font-style: italic; font-weight: 400; letter-spacing: 0; }
 @media (max-width: 619px) {
   .marca { font-size: 1.12rem; }
   .marcaWolf { display: none; }

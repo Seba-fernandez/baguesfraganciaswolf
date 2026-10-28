@@ -45,7 +45,7 @@ que llevar menos de media hora.
 | Tienda en producción | https://baguesfraganciaswolf.vercel.app |
 | Panel | https://baguesfraganciaswolf.vercel.app/panel |
 | Repo | `github.com/Seba-fernandez/baguesfraganciaswolf` (antes `CRM-de-Alquileres-de-vajilla`; GitHub redirige el nombre viejo) |
-| Vercel | proyecto `baguesfraganciaswolf`, publica solo desde `main`. Sin dominio viejo: se borró el 2/10/2026 |
+| Vercel | proyecto `crm-de-alquileres-de-vajilla` (id `prj_1tOwex3XQVFMAiSjKwVSnhMlcS55`, se llama así por el nombre viejo del repo; el dominio es `baguesfraganciaswolf.vercel.app`), publica solo desde `main`; cada rama tiene su vista previa. Sin dominio viejo: se borró el 2/10/2026 |
 | Supabase | proyecto `wynownataftnompltsok` (us-west-2) |
 | Catálogos del ciclo | Google Drive de Sebas: `Catálogo_Unlock_C10.pdf` y `Catálogo_Bagues_C10.pdf` |
 | Tiendas de las proveedoras | `unlock.com.ar` y `bagues.com.ar`, las dos Shopify con `/products.json` público |

@@ -78,7 +78,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci   # el banco usa axe-core de node_modules
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Playwright y Chrome

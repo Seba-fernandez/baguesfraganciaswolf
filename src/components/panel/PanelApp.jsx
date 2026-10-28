@@ -7,6 +7,7 @@ import Layout from '../layout/Layout';
 import '../../styles/global.css';
 import PedidosScreen from './PedidosScreen';
 import ProductosScreen from './ProductosScreen';
+import CicloScreen from './ciclo/CicloScreen';
 import ClientesScreen from './ClientesScreen';
 import AjustesScreen from './AjustesScreen';
 import { precargarPedidos } from '../../hooks/useOrders';
@@ -56,6 +57,7 @@ export default function PanelApp() {
           <Routes>
             <Route index element={<Layout title="Pedidos"><PedidosScreen /></Layout>} />
             <Route path="productos" element={<Layout title="Catálogo"><ProductosScreen /></Layout>} />
+            <Route path="productos/ciclo" element={<Layout title="Cargar ciclo"><CicloScreen /></Layout>} />
             <Route path="clientes" element={<Layout title="Clientes"><ClientesScreen /></Layout>} />
             <Route path="ajustes" element={<Layout title="Ajustes"><AjustesScreen /></Layout>} />
             <Route path="*" element={<Navigate to="/panel" replace />} />

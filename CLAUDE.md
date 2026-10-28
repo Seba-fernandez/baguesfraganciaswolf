@@ -4,9 +4,9 @@ Contexto de trabajo para Claude Code en este repo. Se lee entero antes de tocar
 nada. El porqué del proyecto está en [`docs/CONTEXTO.md`](docs/CONTEXTO.md); acá
 está lo que hace falta para trabajar bien desde el primer cambio.
 
-*Última actualización: 22 de octubre de 2026, después de la etapa 3B de la
-auditoría (tira del ciclo, chat de WhatsApp, ficha del celular, datos de la
-base; registro en [`docs/QA.md`](docs/QA.md)).*
+*Última actualización: 28 de octubre de 2026: carga del ciclo desde el panel
+([`docs/CICLO.md`](docs/CICLO.md)), revisor de código, prerender en piezas y
+vigilancia por mail (Supabase despierto y velocidad semanal).*
 
 ---
 
@@ -91,6 +91,9 @@ src/
     scrollSuave.js  Lenis en escritorio y irASeccion (saltos a #seccion medidos)
     alScroll.js     un solo oyente de scroll, una pasada por cuadro (barra, volver arriba)
     whatsapp.js     el mensaje del pedido
+    ciclo/          cargar un ciclo desde los PDF (ver docs/CICLO.md): pdf.js,
+                    leerUnlock, leerBagues, comparar (la propuesta), panel (las
+                    decisiones), fotoPared (la foto en canvas), servidor (base)
     errores.js      anota en la base los errores de una clienta (panel > Ajustes)
     metricas.js     Vercel Analytics y Speed Insights, despues de cargar
     vidrioLiquido.js  la lente del vidrio de la tienda
@@ -102,11 +105,16 @@ scripts/
   rediseno/       hero horneado, previa del hero, pared de productos, og.jpg
   video/          graba la tienda cuadro por cuadro y arma el antes/después
   prerender.mjs   pega la portada en dist/index.html y la cáscara de /catalogo
-                  en dist/catalogo/index.html
-supabase/migrations/  esquema, RLS, la función de pedido, errores_web (0013) y
-                      la copia semanal (0014)
+                  en dist/catalogo/index.html; las piezas viven en prerender/
+                  (html, precio, letra, csp, paginas) y se prueban solas
+supabase/migrations/  esquema, RLS, la función de pedido, errores_web (0013),
+                      la copia semanal (0014) y aplicar_ciclo (0015, 0016)
+supabase/functions/   tiendas: lee bagues.com.ar y unlock.com.ar para el panel
+supabase/pruebas/     SQL que prueba funciones y se deshace solo
 supabase/manual/      SQL para que Sebas corra a mano (borrar respaldos viejos)
-.github/              pruebas automáticas en cada push y Dependabot
+.github/              pruebas en cada push (lint, npm test, build, banco),
+                      Dependabot, Supabase despierto cada 2 días y velocidad
+                      semanal: si algo falla abren un issue (llega por mail)
 ```
 
 **Dos fronteras que no se cruzan:**
@@ -177,7 +185,14 @@ borrar cuando el ciclo esté confirmado.
 - El aviso legal (`LEGAL` en `contenido.js`).
 - Borrar filas de la base: el conector pide confirmación; preferí desactivar.
 
-## 7. Cargar un ciclo nuevo (así se cargó el 10/26)
+## 7. Cargar un ciclo nuevo
+
+**Desde el 28/10/2026 se hace desde el panel:** Catálogo > "Cargar ciclo nuevo
+desde los PDF". Lee los dos catálogos, compara por código, muestra la propuesta
+y aplica con `aplicar_ciclo()` (respaldo, todo o nada, nunca borra). Cómo
+funciona, sus defensas y lo que no está probado: [`docs/CICLO.md`](docs/CICLO.md).
+
+Lo de abajo es el **plan B a mano** (así se cargó el 10/26):
 
 1. **Respaldo** de `products` en el esquema `respaldo` con la fecha.
 2. **Unlock:** bajar el PDF del Drive (pesa ~5 MB, el conector baja hasta 10 MB)
@@ -472,6 +487,21 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
 - **Medir fuentes en Linux engaña:** Chromium redondea el avance de cada letra
   de las fuentes del sistema con hinting. Para comparar anchos como en un
   teléfono, `--font-render-hinting=none`.
+- **pdf.js rechaza un `Buffer` de Node** ("Please provide binary data as
+  Uint8Array"): `leerPdf` copia siempre con `new Uint8Array(datos)`.
+- **Probar una función de la base sin tocar datos:** un bloque `do` que la
+  llama, revisa el resultado y termina con `raise exception` a propósito: corre
+  todo y se deshace solo (`supabase/pruebas/`). `aplicar_ciclo` está escrita sin
+  `drop` ni `delete` para que el conector no pida confirmación al aplicarla.
+- **`ctx.filter` del canvas no anda en Safari.** La sombra de la foto armada en el
+  panel usa `shadowBlur` con la caja dibujada fuera del cuadro. Si `toBlob` no
+  devuelve webp (Safari puede no saber hacerlo), se pide jpeg.
+- **Un servidor en segundo plano lanzado en el mismo comando que un `pkill` se
+  mata a sí mismo.** Primero matar, después `exec node scripts/qa/servir.mjs` en
+  otra llamada. Y `servir.mjs` guarda en memoria lo comprimido: después de un
+  build, reiniciarlo.
+- **Las tareas programadas de GitHub solo corren desde `main`** y GitHub las
+  apaga tras 60 días sin actividad en el repo (avisa por mail antes).
 
 ## 11. Antes de dar algo por hecho
 
@@ -483,6 +513,8 @@ python3 scripts/qa/recorrido.py --url http://localhost:4173   # sin FALLA nuevos
 node scripts/qa/busqueda.test.mjs                             # si se tocó el buscador
 node scripts/qa/datos.test.mjs                                # si se tocó nombre o teléfono
 node scripts/qa/filtros.test.mjs                              # si se tocaron los filtros
+node scripts/qa/catalogo.test.mjs                             # si se tocó src/lib/ciclo
+npm run lint && npm test                                      # todo lo anterior y el revisor
 python3 scripts/qa/motores.py                                 # Safari, Chrome y Firefox, 5 anchos
 ```
 
@@ -514,8 +546,12 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
   nada más grande. Una foto propia de cada frasco, subida desde el panel, las
   resuelve.
 - **Foto de Manhattan (Bagués, 212 VIP).** Está solo en el PDF general del
-  ciclo. Sebas puede subirla desde el panel, o se agrega a `fuentes.json` con
-  `archivo` y se corre `npm run fotos`.
+  ciclo (no en bagues.com.ar). Sebas puede subirla desde Cargar ciclo > Fotos
+  que faltan, o se agrega a `fuentes.json` con `archivo` y se corre
+  `npm run fotos`.
+- **Primera carga real del PDF de Bagués desde el panel:** el lector se probó
+  con el texto del PDF, no con el archivo de 29 MB entero (ver `docs/CICLO.md`).
+  Mirar la propuesta con calma; lo leído queda en `ciclo_cargas`.
 - **Ajustes de Supabase que hace Sebas a mano** (Authentication): URL del sitio
   `https://baguesfraganciaswolf.vercel.app` con `/panel` en las redirecciones;
   "Allow new users to sign up" apagado; proveedor Email apagado; Captcha
@@ -557,6 +593,7 @@ Commits en castellano, en `main`, con mensaje que diga el porqué.
 | [`docs/SEGURIDAD.md`](docs/SEGURIDAD.md) | Revisión de seguridad: permisos, puerta de pedidos, cabeceras y CSP, y lo que queda para autorizar |
 | [`docs/PLAN-PORTADA-D.md`](docs/PLAN-PORTADA-D.md) | Plan del rediseño D: guion de color, letra, decisiones de Sebas y cambios con su porqué |
 | [`docs/RECETA-VISUAL.md`](docs/RECETA-VISUAL.md) | De las referencias a los assets: ADN medido, letra, guion de color, pared, productos, vidrio y adorno, para calcar en otro proyecto |
+| [`docs/CICLO.md`](docs/CICLO.md) | Cargar un ciclo desde el panel: cómo funciona, defensas, pruebas y límites |
 | [`scripts/fotos/README.md`](scripts/fotos/README.md) | El pipeline de fotos |
 
 Si cambiás algo de lo que describen, actualizalos en el mismo commit.

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import useProducts from '../../hooks/useProducts';
 import { pesos } from '../../lib/format';
 import Toggle from '../ui/Toggle';
@@ -47,6 +48,10 @@ export default function ProductosScreen() {
         <h2 className={s.title}>Catálogo</h2>
         <span className={s.subtitle}>{activos} activos · {products.length} en total</span>
       </div>
+
+      <Link to="/panel/productos/ciclo" className={`${s.btn} ${s.btnGhost}`} style={{ alignSelf: 'flex-start' }}>
+        Cargar ciclo nuevo desde los PDF
+      </Link>
 
       <div className={s.cardRow}>
         <div className={s.chips} style={{ flex: 1 }}>

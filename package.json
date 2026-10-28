@@ -18,7 +18,7 @@
     "fotos:mascaras": "python3 scripts/fotos/mascaras.py",
     "fotos:contacto": "node scripts/fotos/contacto.mjs",
     "lint": "eslint .",
-    "test": "node scripts/qa/datos.test.mjs && node scripts/qa/busqueda.test.mjs && node scripts/qa/ciclo.test.mjs && node scripts/qa/filtros.test.mjs && node scripts/qa/prerender.test.mjs"
+    "test": "node scripts/qa/datos.test.mjs && node scripts/qa/busqueda.test.mjs && node scripts/qa/ciclo.test.mjs && node scripts/qa/filtros.test.mjs && node scripts/qa/catalogo.test.mjs && node scripts/qa/prerender.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

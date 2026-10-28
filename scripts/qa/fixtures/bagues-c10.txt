@@ -1,0 +1,329 @@
+# Texto real del catalogo Bagues ciclo 10/2026 (solo las paginas con perfumes),
+# como lo lee Google Drive. Cada "@@pagina" separa una hoja del PDF.
+# Sirve para probar src/lib/ciclo/leerBagues.js sin el PDF (29 MB).
+@@pagina 2
+COMPRANDO UNA FRAGANCIA DE LAS PÁGINAS 3, 99 Y DE 80 A 95, LLEVÁ LA CAJA A SOLO
+PRECIO ESPECIAL
+ARMÁ TU REGALO PARA MAMÁ
+HASTA AGOTAR STOCK
+$499
+Precio sin impuestos nacionales: $412
+99971028
+Regalale a mamá una fragancia irresistible NIZA
+Una fragancia magnética y chispeante que combina el encanto de la pera con la delicadeza de la rosa y los almizcles.
+LANZAMIENTO
+Niza Eau de parfum femenino 50 ml Type Irresistible by Bagués
+10281135
+Familia olfativa FLORAL AMADERADA ALMIZCLADA
+Salida Pera, Semillas de Ambreta
+Corazón Rosa, Iris
+Fondo Cedro, Almizcles blancos
+$29.999 $16.499 Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+45%off
+@@pagina 34
+Eau de parfum 50 ml
+67 66
+$32.599 $19.599 c/u
+Precio sin impuestos nacionales: $16.198
+HASTA AGOTAR STOCK
+Sahara Type Poison Girl by Bagués
+10281110
+FLORAL ORIENTAL FRUTAL
+40%off
+Eau de parfum 50 ml
+FRAGANCIAS CÁLIDAS Y MAGNÉTICAS
+Body Lotion Sahara 100 ml
+19282016 $13.499 $7.999
+Precio sin impuestos nacionales: $6.611
+Shali Type Vanilla Candy by Bagués
+10281116
+FLORAL FRUTAL GOURMAND
+Body Lotion Shali 100 ml
+19282017 $13.499 $7.999
+Precio sin impuestos nacionales: $6.611
+@@pagina 35
+EL LUJO DE HACERSE NOTAR
+Zayed Type Angel Nova by Bagués 10281124
+ÁMBAR FLORAL
+Doha Type Eden Juicy Apple by Bagués 10281111
+AMADERADA AROMÁTICA GOURMAND
+$32.599 $19.599 c/u
+Precio sin impuestos nacionales: $16.198
+HASTA AGOTAR STOCK
+69 68
+@@pagina 36
+AROMAS QUE IMPACTAN Y PERDURAN
+Eau de parfum 50 ml $32.599 $24.599 c/u
+Precio sin impuestos nacionales: $20.330
+Al Hamra Type Angel Share by Bagués
+10282115
+ORIENTAL
+Dubai Type Atomic Rose by Bagués
+10282076
+FLORAL ORIENTAL
+Abu Dabi Type Oud for greatness by Bagués
+10282080
+ORIENTAL AMADERADO
+@@pagina 37
+NOTAS PROFUNDAS, PRESENCIA INOLVIDABLE
+Jeddah Type 9PM by Bagués
+10281129
+ORIENTAL
+Eau de parfum 50 ml $32.599 $24.599 c/u
+Precio sin impuestos nacionales: $20.330
+Marrakech
+Body Lotion Marrakech Type Erba Pura
+100 ml by Bagués
+19282018 10282107
+ORIENTAL
+$13.499 $7.999
+Precio sin impuestos nacionales: $6.611
+71 70
+@@pagina 38
+Eau de parfum masculino 50 ml $29.999 $22.499 c/u
+Precio sin impuestos nacionales: $18.594
+Bellagio Type Code by Bagués 10282109 AMADERADA ORIENTAL ESPECIADA
+MÁS QUE UN AROMA, UNA DECLARACIÓN
+Esparta Type Invictus by Bagués 10282042 AMADERADA
+Lyon Type Scandal Absolu by Bagués 10282077 AMADERADA
+Barcelona Type Allure Homme Sport Eau Extreme by Bagués 10282072 ESPECIADA AMADERADA FRESCA
+EL DETALLE QUE DEFINE TU ESTILO
+Singapur Type Phantom by Bagués
+10282099 AMADERADA
+Eau de parfum masculino 50 ml $29.999 $22.499 c/u
+Precio sin impuestos nacionales: $18.594
+Las Vegas Type One Million by Bagués 10282036 AMADERADA
+73 72
+@@pagina 39
+Eau de parfum masculino 50 ml $29.999 $22.499 c/u
+Precio sin impuestos nacionales: $18.594
+Oxford Type Gentleman Society by Bagués 10282110 AMADERADA AROMÁTICA
+Amalfi Profondo Type Acqua di Gio Profondo by Bagués 10282116 AROMÁTICA ACUÁTICA
+CREADAS PARA DESTACAR EL AROMA DE LA PRIMERA IMPRESIÓN
+Londres Type Bottled by Bagués 10282075 AMADERADA
+Torino Type Stronger with you intensely by Bagués 10282078 ORIENTAL FOUGÈRE
+Arizona Type Sauvage by Bagués 10282038 FOUGÈRE
+Eau de parfum masculino 50 ml $29.999 $22.499 c/u
+Precio sin impuestos nacionales: $18.594
+Río Type CK One by Bagués 10282040 CÍTRICA
+UNISEX
+75 74
+@@pagina 40
+Eau de parfum masculino 50 ml $29.999 $22.499 c/u
+Precio sin impuestos nacionales: $18.594
+Hawai Masc Type Le Male Elixir by Bagués 10282074 FOUGÈRE
+DESAFIÁ LAS REGLAS DEL JUEGO
+York Why not? Type Y YSL by Bagués 10282081 AROMÁTICA FOUGÈRE
+Miami Type Million Gold by Bagués 10282111 AMADERADA ESPECIADA
+New York Men Heroes Type 212 Heroes by Bagués 10282060 FOUGÈRE
+CADA PERFUME, UNA ACTITUD
+Río Be Type CK Be by Bagués 10282079 ALMIZCLE FLORAL AMADERADA
+UNISEX
+Eau de parfum masculino 50 ml $29.999 $22.499 c/u
+Precio sin impuestos nacionales: $18.594
+Manhattan Black Red Type 212 Vip Black Red by Bagués 10282068 AMADERADA
+77 76
+@@pagina 41
+Eau de parfum masculino 50 ml $29.999 $22.499 c/u
+Precio sin impuestos nacionales: $18.594
+Mónaco Blue
+Detroit
+Esparta Victory Type Polo Blue
+Type Bad Boy
+Type Invictus Victory by Bagués
+by Bagués
+by Bagués 10282050
+10282035
+10282065 CÍTRICA
+ORIENTAL
+AMADERADA
+AQUÍ NACEN LAS MEJORES HISTORIAS
+Santorini Type Le Beau by Bagués 10282054 AMADERADA
+EL PLACER DE UN AROMA ENVOLVENTE
+Blois Type Bleu by Bagués 10282083 AMADERADA
+Eau de parfum masculino 50 ml $29.999 $22.499 c/u
+Precio sin impuestos nacionales: $18.594
+New York Homme Type 212 by Bagués 10282039 FOUGÈRE
+79 78
+@@pagina 42
+Eau de parfum masculino 50 ml $29.999 $22.499 c/u
+Precio sin impuestos nacionales: $18.594
+Manhattan Black Type 212 VIP Black by Bagués 10282045 FOUGÈRE
+TU PERFUME CREA RECUERDOS
+Amsterdam Homme Type Pure XS by Bagués 10282046 ORIENTAL
+Tokio Type KZO Masc by Bagués 10282048 AMADERADA
+EL PODER DE LA ATRACCIÓN
+Amalfi Type Acqua Di Gio by Bagués 10282049 CÍTRICA
+Brooklyn Type Creed Aventus by Bagués 10282082 CHIPRE
+Eau de parfum masculino 50 ml $29.999 $22.499 c/u
+Precio sin impuestos nacionales: $18.594
+@@pagina 43
+45%off
+Eau de parfum femenino 50 ml
+Verona Type Chloé by Bagués 10281109
+FLORAL
+Hawai Fem Type La Belle Paradise Garden by Bagués 10281106 AMBARADA
+FLORAL
+80
+81
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+SECRETOS DE AMOR
+Charlotte Type Good Girl by Bagués 10281065 FLORAL ORIENTAL
+LLEVÁ LA CAJA A SOLO $499
+CON LA COMPRA DE UNA FRAGANCIA FEM99971028
+Atenas Type Olympea by Bagués 10281063 ORIENTAL
+EL REGALO MÁS DULCE
+Eau de parfum femenino 50 ml
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+París Type La vida es bella by Bagués 10281067 FLORAL ORIENTAL
+45%off
+@@pagina 44
+LLEVÁ LA CAJA A SOLO $499
+CON LA COMPRA DE UNA FRAGANCIA FEMENINA DE 50 ML
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+99971028
+45%off
+Capri Type Acqua Di Gioia by Bagués 10281080 FLORAL
+UNA ENERGÍA FEMENINA Y CAUTIVANTE
+Eau de parfum femenino 50 ml
+Positano Type Light Blue by Bagués 10281088 FLORAL
+París Cristal Type La vida es bella cristal by Bagués 10281093 FLORAL FRUTAL
+EL AROMA DE LOS MOMENTOS INOLVIDABLES
+New York Fem Heroes Type 212 Heroes Forever Young by Bagués 10281096 FLORAL FRUTAL
+Prades Type Paradoxe by Bagués 10281119 ORIENTAL FLORAL
+Eau de parfum femenino 50 ml
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+Shangai Type Fame by Bagués
+10281097 FLORAL FRUTAL
+45%off
+45%off
+@@pagina 45
+85 CONQUISTÁ CON TU ESENCIA Eau de parfum femenino 50 ml
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+Brujas Type Halloween by Bagués 10281071 FLORAL FRUTAL
+Tokio Flower Type KZO Flower by Bagués 10281076 FLORAL
+LLEVÁ LA CAJA A SOLO $499
+CON LA COMPRA DE UNA FRAGANCIA FEM99971028
+Ginebra Type Baccarat Rouge by Bagués 10281101 AMADERADA AMBARADA GOURMAND
+SIMPLEMENTE MAGNÉTICA
+Milán Type Only One by Bagués 10281078 FLORAL ORIENTAL
+Eau de parfum femenino 50 ml
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+Atenas Intense Type Olympea intense by Bagués 10281069 ORIENTAL
+45%off
+@@pagina 46
+LLEVÁ LA CAJA A SOLO $499
+CON LA COMPRA DE UNA FRAGANCIA FEMENINA DE 50 ML
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+99971028
+45%off
+Manhattan Rosé Type 212 Vip Rosé by Bagués 10281072 FLORAL
+SENTÍ INTENSO, VIVÍ A TU MANERA PARA LAS QUE BRILLAN CON LUZ PROPIA
+Eau de parfum femenino 50 ml
+Venecia Type Amor Amor by Bagués 10281077 FLORAL ORIENTAL
+Brescia Crystalline Type Omnia Crystalline by Bagués 10281131 FLORAL FRUTAL
+Siena Type Sí Passione by Bagués 10281117 FLORAL FRUTAL
+Marsella Type Scandal by Night by Bagués 10281070 FLORAL
+Eau de parfum femenino 50 ml
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+Versalles Type Chance by Bagués 10281103 FLORAL
+45%off
+45%off
+@@pagina 47
+TU CONFIANZA ENAMORA
+Eau de parfum femenino 50 ml Granada Type La Bomba by Bagués 10281126 ORIENTAL FLORAL
+88
+89
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+LLEVÁ LA CAJA A SOLO $499
+CON LA COMPRA DE UNA FRAGANCIA FEMENINA DE 50 ML
+Body lotion Granada 100 ml 19282019 $13.499 $7.999
+Precio sin impuestos nacionales: $6.611
+99971028
+Bangkok Type Black Opium by Bagués 10281108 ORIENTAL
+UN AROMA VIBRANTE, COMO VOS
+Sidney Type Libre by Bagués 10281107 ORIENTAL FOUGÈRE
+Eau de parfum femenino 50 ml
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+Mykonos l'Or Type J'adore l'or by Bagués 10281118 FLORAL
+45%off
+@@pagina 48
+LLEVÁ LA CAJA A SOLO $499
+CON LA COMPRA DE UNA FRAGANCIA FEMENINA DE 50 ML
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+45%off
+99971028
+Praga Luna Type Nina Luna
+by Bagués 10281086 FLORAL
+FRAGANCIAS QUE ABRAZAN LOS SENTIDOS
+Eau de parfum femenino 50 ml
+Creta Type Versace Eros Pour Femme by Bagués 10281125 AMADERADA ALMIZCLADA
+Reine Type Idóle by Bagués 10281091 FLORAL
+New York Sexy Type 212 Sexy by Bagués 10281075 ORIENTAL
+TU ESTILO TIENE ALGO FASCINANTE
+Tokio Flower Elixir Type KZO Flower Elixir by Bagués 10281127 FLORAL FRUTAL
+Eau de parfum femenino 50 ml
+Mumbai Type My Way by Bagués 10281092 FLORAL ORIENTAL
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+45%off
+@@pagina 49
+DESTACAN TU ELEGANCIA NATURAL
+Eau de parfum femenino 50 ml
+París Rosé Type La vida es bella rosé by Bagués 10281087 FLORAL
+Angers Type Ange Ou Demon by Bagués 10281079 FLORAL ORIENTAL
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+45%off
+LLEVÁ LA CAJA A SOLO $499
+CON LA COMPRA DE UNA FRAGANCIA FEM99971028
+DECILO CON TU PERFUME
+Hollywood Type Divine by Bagués 10281102 ÁMBAR FLORAL
+Berlín Type L'Interdit by Bagués 10281064 FLORAL ORIENTAL
+Eau de parfum femenino 50 ml
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+Amsterdam Type Pure XS Femme by Bagués 10281074 ORIENTAL
+45%off
+45%off
+@@pagina 50
+95 NO SIGAS TENDENCIAS, CREALAS Eau de parfum femenino 50 ml
+Viena Type Venus by Bagués 10281128 CHIPRE FLORAL
+Mykonos Type J'Adore by Bagués 10281083 FLORAL
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+LLEVÁ LA CAJA A SOLO $499
+Eau de parfum femenino 50 ml
+New York Type 212 Fem by Bagués 10281066 FLORAL FRUTAL
+POR SIEMPRE, ROMÁNTICA
+Queens Type Very Irresistible by Bagués 10281089 FLORAL ORIENTAL
+Manhattan Type 212 VIP Fem by Bagués 10281084 FLORAL ORIENTAL
+$29.999 $16.499 c/u Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+45%off
+@@pagina 52
+MADISON DÍA DE LA MADRE
+REGALALE UN MOMENTO SOLO PARA ELLA
+Familia olfativa FRUTAL FLORAL
+Salida Flor de Plátano
+Corazón Jazmín, Macadamia
+Fondo Notas amaderadas, Vetiver, Sándalo
+LANZAMIENTO
+Madison Eau de parfum femenino 50 ml Type Daisy Wild by Bagués
+10281134
+$29.999 $16.499 Precio sin impuestos nacionales: $13.636
+HASTA AGOTAR STOCK
+$12.999 $7.999 c/u
+Precio sin impuestos nacionales: $6.610

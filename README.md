@@ -5,6 +5,8 @@ en Córdoba.
 
 **En producción:** https://baguesfraganciaswolf.vercel.app
 
+![La tienda en escritorio y en el celular: portada y catálogo](.github/capturas.jpg)
+
 ## El problema
 
 Vendo por catálogo y el catálogo cambia todos los meses: más de cien perfumes,

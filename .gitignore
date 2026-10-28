@@ -36,3 +36,7 @@ videos/
 /banda/
 /cuadros/
 *.trace.json
+
+# Documentación interna: vive en el proyecto de Claude, no en el repo público
+/CLAUDE.md
+/docs/

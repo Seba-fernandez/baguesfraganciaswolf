@@ -53,7 +53,7 @@
    ("50 ml") o cuantos hay ("3 tamaños · desde"). El tachado y el ahorro van
    en la ficha, donde se decide. */
 .precioWrap { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; line-height: 1.1; }
-.pieMeta { font-size: 0.72rem; color: var(--ink-faint); white-space: nowrap; }
+.pieMeta { font-size: 0.75rem; color: var(--ink-faint); white-space: nowrap; }
 .precio { font-family: var(--f-mono); font-weight: 500; color: var(--ink); font-size: 1rem; line-height: 1; }
 @media (min-width: 560px) {
   .precio { font-size: 1.05rem; }

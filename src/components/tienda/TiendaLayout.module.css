@@ -47,6 +47,8 @@
   font-size: 1.25rem; letter-spacing: 0.02em;
   color: var(--crema); white-space: nowrap; flex-shrink: 0;
   transition: color 0.45s var(--ease);
+  /* 44 px al dedo, como los links de al lado (medida del 28/10: tenia 28). */
+  display: inline-flex; align-items: center; min-height: 44px;
 }
 .marcaWolf { transition: color 0.45s var(--ease); color: var(--crema-suave); font-family: var(--f-quote); font-style: italic; font-weight: 400; letter-spacing: 0; }
 @media (max-width: 619px) {
@@ -99,7 +101,7 @@
 .fcols { display: grid; gap: 32px; grid-template-columns: 1fr; }
 @media (min-width: 720px) { .fcols { grid-template-columns: repeat(2, auto) 1fr; gap: 48px; } }
 
-.fcol { display: flex; flex-direction: column; gap: 8px; }
+.fcol { display: flex; flex-direction: column; gap: 4px; }
 /* Titulos del pie en Cormorant y en caja normal: la portada guarda una sola
    etiqueta en mayusculas espaciadas (E3-B8); el pie no compite con ella. */
 .ftitulo {
@@ -108,7 +110,8 @@
   color: var(--crema); text-shadow: none;
 }
 .fcol h4 { margin-bottom: 4px; }
-.fcol a { font-size: 0.95rem; color: var(--crema-suave); min-height: 32px; display: inline-flex; align-items: center; }
+/* 40 px de alto y 4 de aire: el mismo renglon que antes (32 + 8), mas facil de tocar. */
+.fcol a { font-size: 0.95rem; color: var(--crema-suave); min-height: 40px; display: inline-flex; align-items: center; }
 .fcol a:hover { color: var(--crema); }
 
 .copy { font-size: 0.84rem; line-height: 1.7; color: var(--crema-suave); }
@@ -123,4 +126,4 @@
   display: flex; flex-direction: column; gap: 10px;
   max-width: 78ch;
 }
-.legal p { font-size: 0.8rem; line-height: 1.72; color: var(--crema-suave); }
+.legal p { font-size: 0.8rem; line-height: 1.72; color: var(--crema-suave); max-width: 75ch; }

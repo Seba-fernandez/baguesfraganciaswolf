@@ -1267,6 +1267,62 @@ def e3_a6(browser, base):
     ctx.close()
 
 
+
+def medidas(browser, base):
+    # Medidas en tablet y escritorio (28/10/2026). El boton "Familia" del
+    # celular se veia en todos los anchos desde 768 (una regla de .chip le
+    # ganaba al display: none) y el buscador se estiraba; en la portada, a 768
+    # los nombres de las familias se pisaban ("Amaderados" con "Ambar y
+    # especiados"). Ademas: nada se sale del ancho en ninguna pantalla.
+    filas = []
+    sobra = []
+    for ancho in (768, 1024, 1440):
+        op = dict(viewport={"width": ancho, "height": 900}, device_scale_factor=1, locale="es-AR")
+        ctx, page, _ = catalogo_con_datos(browser, op)
+        m = page.evaluate("""() => {
+          const b = document.querySelector('[data-qa=familia-abrir]');
+          const visible = b ? getComputedStyle(b).display !== 'none' && b.getBoundingClientRect().width > 0 : false;
+          const input = document.querySelector('input[type=search], input[placeholder^=Buscar]');
+          const fam = [...document.querySelectorAll('[aria-labelledby] button, [role=group] button')]
+            .filter(x => /Frescos|Florales|Dulces|Amaderados|especiados/.test(x.innerText) && x.getBoundingClientRect().width);
+          const renglones = new Set(fam.map(x => Math.round(x.getBoundingClientRect().top))).size;
+          return { visible, input: input ? Math.round(input.getBoundingClientRect().width) : null, renglones, doc: document.documentElement.scrollWidth };
+        }""")
+        filas.append(f"{ancho}: boton {m['visible']}, buscador {m['input']} px, familia en {m['renglones']} renglones")
+        if m["visible"] or (ancho >= 900 and (m["input"] or 0) > 320) or m["renglones"] > 2 or m["doc"] > ancho:
+            sobra.append(ancho)
+        ctx.close()
+    chk("MEDIDAS-1 filtros", "visual", "alta", "Catalogo en tablet y escritorio: sin el boton Familia del celular, buscador de ancho fijo, familia en 2 renglones como mucho",
+        not sobra, "; ".join(filas))
+
+    pisados = []
+    detalle = []
+    for ancho in (360, 390, 768, 834, 1024, 1280, 1920):
+        op = dict(viewport={"width": ancho, "height": 900}, device_scale_factor=1, locale="es-AR")
+        ctx, page = nuevo(browser, op)
+        page.goto(BASE + "/", wait_until="domcontentloaded")
+        page.wait_for_timeout(600)
+        fam = page.locator("#familias")
+        if fam.count():
+            fam.scroll_into_view_if_needed()
+            page.wait_for_timeout(500)
+        m = page.evaluate("""() => {
+          const ns = [...document.querySelectorAll('#familias li')].map(li => li.querySelector('span'));
+          const cajas = [...document.querySelectorAll('#familias li a > span:nth-child(2)')].map(e => e.getBoundingClientRect());
+          let choque = 0;
+          for (let i = 1; i < cajas.length; i++) if (cajas[i].top < cajas[i-1].bottom && cajas[i].left < cajas[i-1].right - 1 && cajas[i].left > cajas[i-1].left) choque++;
+          const lis = [...document.querySelectorAll('#familias li a')];
+          let sale = 0;
+          for (const a of lis) { const n = a.children[1]; if (n && n.scrollWidth > a.getBoundingClientRect().width + 1) sale++; }
+          return { choque, sale, doc: document.documentElement.scrollWidth };
+        }""")
+        detalle.append(f"{ancho}: {m['sale']} nombres mas anchos que su ventana, ancho {m['doc']}")
+        if m["sale"] or m["choque"] or m["doc"] > ancho:
+            pisados.append(ancho)
+        ctx.close()
+    chk("MEDIDAS-2 portada", "visual", "media", "Portada de 360 a 1920: los nombres de las familias entran en su ventana y nada se sale del ancho",
+        not pisados, "; ".join(detalle))
+
 def familias_varias(browser, base):
     # Familia con varias a la vez (Sebas, 23/10): en el catalogo se suman, y en
     # la hoja de la portada los chips suman o sacan sin dejarla vacia.
@@ -1980,7 +2036,7 @@ def main():
         (["E3-B1"], e3_b1), (["E3-B2"], e3_b2), (["E3-B3"], e3_b3), (["E3-B4"], e3_b4), (["E3-B5"], e3_b5),
         (["E3-B6"], e3_b6), (["E3-B7"], e3_b7), (["E3-B8"], e3_b8), (["E3-B9"], e3_b9),
         (["A11Y-1"], a11y1), (["404-1"], no_encontrada), (["FAM-1", "FAM-2"], familias_varias),
-        (["FICHA-1", "FICHA-2"], ficha_volver_mas),
+        (["FICHA-1", "FICHA-2"], ficha_volver_mas), (["MEDIDAS-1", "MEDIDAS-2"], medidas),
     ]
     global SIN_HINTING
     with sync_playwright() as p:

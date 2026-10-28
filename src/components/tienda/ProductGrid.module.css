@@ -36,9 +36,13 @@
 .plegar { flex-shrink: 0; }
 .plegarFlecha { font-size: 0.7rem; line-height: 1; }
 .plegar[aria-expanded="true"] .plegarFlecha { transform: rotate(180deg); }
+/* .chip.plegar y no .plegar solo: .chip viene despues en este archivo con
+   display: inline-flex y le ganaba. El boton se veia en tablet y escritorio
+   (encima de los chips de familia) y el buscador se estiraba (28/10/2026). */
 @media (min-width: 768px) {
   .busqueda { display: contents; }
-  .plegar { display: none; }
+  .chip.plegar { display: none; }
+  .busqueda .input { flex: none; }
 }
 @media (max-width: 767px) {
   .renglonFamilia:not(.abierta) { display: none; }

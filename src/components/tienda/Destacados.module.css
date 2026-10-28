@@ -96,6 +96,11 @@
   view-timeline-axis: inline;
 }
 .fila::-webkit-scrollbar { display: none; }
+/* Tablet parada (600 a 779): con 62vw la tarjeta medía 476 px y la foto
+   ocupaba la pantalla entera. Más chica, con las de al lado asomando. */
+@media (min-width: 600px) and (max-width: 779px) {
+  .fila { grid-auto-columns: 42vw; padding-inline: 29vw; }
+}
 /* Escritorio: la fila vive dentro de la columna de la pagina y se corta a
    la misma distancia de los dos bordes (Sebas, 23/10: "que haya un corte al
    mismo tamano que en la izquierda"). Antes llegaba hasta el borde derecho de

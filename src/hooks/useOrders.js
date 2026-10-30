@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { nombreCliente, telefonoArgentino } from '../lib/datosCliente.js';
 import { PEDIDO } from '../config/contenido';
-import { leerCache, guardarCache, traerConCache } from '../lib/cachePanel';
+import { leerCache, guardarCache, traerConCache, suscribirCache } from '../lib/cachePanel';
+import { registrarEdicion } from '../lib/cambiosPanel';
 
 const SELECT = `
   *,
@@ -28,6 +29,7 @@ export default function useOrders() {
   const [orders, setOrders] = useState(() => leerCache(CLAVE) || []);
   const [loading, setLoading] = useState(() => !leerCache(CLAVE));
   const [error, setError] = useState(null);
+  const ordersRef = useRef(orders);
 
   const load = useCallback(async () => {
     const { data, error } = await traerConCache(CLAVE, buscar);
@@ -37,7 +39,9 @@ export default function useOrders() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
-  useEffect(() => { if (!loading) guardarCache(CLAVE, orders); }, [orders, loading]);
+  useEffect(() => { ordersRef.current = orders; if (!loading) guardarCache(CLAVE, orders); }, [orders, loading]);
+  // Deshacer / rehacer cambia pedidos por fuera de esta pantalla.
+  useEffect(() => suscribirCache(CLAVE, setOrders), []);
 
   // Realtime: cuando entra un pedido de la web, refrescamos.
   useEffect(() => {
@@ -49,9 +53,14 @@ export default function useOrders() {
   }, [load]);
 
   const updateOrder = useCallback(async (id, patch) => {
+    const previo = ordersRef.current.find((x) => x.id === id);
+    ordersRef.current = ordersRef.current.map((x) => (x.id === id ? { ...x, ...patch } : x));
     setOrders((o) => o.map((x) => (x.id === id ? { ...x, ...patch } : x)));
     const { error } = await supabase.from('orders').update(patch).eq('id', id);
-    if (error) { setError(error.message); load(); }
+    if (error) { setError(error.message); load(); } else {
+      const n = previo?.numero ? `#${previo.numero}` : '';
+      registrarEdicion({ tabla: 'orders', id, previo, patch, etiqueta: patch.estado ? `Pedido ${n}: ${patch.estado}` : `Editar pedido ${n}`.trim() });
+    }
     return { error };
   }, [load]);
 

@@ -38,6 +38,26 @@ export function traerConCache(clave, buscar) {
   return p;
 }
 
+const oyentes = new Map();
+
+/**
+ * Para que una pantalla abierta se entere cuando el historial (deshacer /
+ * rehacer) cambia datos por fuera de ella. Devuelve la funcion para dejar de escuchar.
+ */
+export function suscribirCache(clave, fn) {
+  if (!oyentes.has(clave)) oyentes.set(clave, new Set());
+  oyentes.get(clave).add(fn);
+  return () => oyentes.get(clave)?.delete(fn);
+}
+
+/** Cambia lo guardado con `cambiar(valorActual)` y avisa a las pantallas abiertas. */
+export function actualizarCache(clave, cambiar) {
+  const nuevo = cambiar(datos.get(clave));
+  datos.set(clave, nuevo);
+  for (const fn of oyentes.get(clave) || []) fn(nuevo);
+  return nuevo;
+}
+
 /** Al cerrar sesión no queda nada de la cuenta anterior en memoria. */
 export function vaciarCache() {
   datos.clear();

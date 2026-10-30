@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
+import Historial from './Historial';
 import s from './TopBar.module.css';
 
 const SunIcon = () => (
@@ -36,6 +37,7 @@ export default function TopBar({ title = 'Bagues Grupo Wolf' }) {
     <header className={`${s.bar} glass`}>
       <div className={s.title}>{title}</div>
       <div className={s.clock}>{time}</div>
+      <Historial />
       <button
         className={s.toggle}
         onClick={toggle}

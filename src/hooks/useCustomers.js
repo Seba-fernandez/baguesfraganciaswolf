@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { leerCache, guardarCache, traerConCache } from '../lib/cachePanel';
+import { leerCache, guardarCache, traerConCache, suscribirCache } from '../lib/cachePanel';
+import { registrarEdicion } from '../lib/cambiosPanel';
 
 const CLAVE = 'customers';
 
@@ -27,6 +28,7 @@ export default function useCustomers() {
   const [customers, setCustomers] = useState(() => leerCache(CLAVE) || []);
   const [loading, setLoading] = useState(() => !leerCache(CLAVE));
   const [error, setError] = useState(null);
+  const customersRef = useRef(customers);
 
   const load = useCallback(async () => {
     const { data, error } = await traerConCache(CLAVE, buscar);
@@ -36,12 +38,16 @@ export default function useCustomers() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
-  useEffect(() => { if (!loading) guardarCache(CLAVE, customers); }, [customers, loading]);
+  useEffect(() => { customersRef.current = customers; if (!loading) guardarCache(CLAVE, customers); }, [customers, loading]);
+  // Deshacer / rehacer cambia clientes por fuera de esta pantalla.
+  useEffect(() => suscribirCache(CLAVE, setCustomers), []);
 
   const updateCustomer = useCallback(async (id, patch) => {
+    const previo = customersRef.current.find((x) => x.id === id);
+    customersRef.current = customersRef.current.map((x) => (x.id === id ? { ...x, ...patch } : x));
     setCustomers((c) => c.map((x) => (x.id === id ? { ...x, ...patch } : x)));
     const { error } = await supabase.from('customers').update(patch).eq('id', id);
-    if (error) { setError(error.message); load(); }
+    if (error) { setError(error.message); load(); } else registrarEdicion({ tabla: 'customers', id, previo, patch, etiqueta: `Editar cliente ${previo?.nombre || ''}`.trim() });
     return { error };
   }, [load]);
 

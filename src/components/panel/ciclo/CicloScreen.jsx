@@ -5,7 +5,8 @@ import useSettings from '../../../hooks/useSettings';
 import { compararCiclo } from '../../../lib/ciclo/comparar.js';
 import { nuevosParaAplicar } from '../../../lib/ciclo/panel.js';
 import { leerArchivo, aplicarCiclo } from '../../../lib/ciclo/servidor.js';
-import { guardarCache } from '../../../lib/cachePanel';
+import { guardarCache, leerCache } from '../../../lib/cachePanel';
+import { registrarCiclo } from '../../../lib/cambiosPanel';
 import Propuesta from './Propuesta';
 import FotosFaltantes from './FotosFaltantes';
 import s from '../panel.module.css';
@@ -71,6 +72,8 @@ export default function CicloScreen() {
     if (etapa === 'revisar') { setEtapa('confirmar'); return; }
     setEtapa('aplicando');
     setError(null);
+    const catalogoAntes = products;
+    const ajustesAntes = settings;
     try {
       const r = await aplicarCiclo({
         archivos: Object.values(archivos).filter(Boolean).map((a) => ({ nombre: a.nombre, linea: a.linea, paginas: a.paginas, tamano: a.tamano })),
@@ -86,6 +89,14 @@ export default function CicloScreen() {
       setArchivos({ unlock: null, bagues: null });
       setDecisiones({});
       await reload();
+      // La carga entera queda como un paso del deshacer de la barra de arriba.
+      registrarCiclo({
+        antes: catalogoAntes,
+        despues: leerCache('products') || [],
+        ajustesAntes,
+        ajustesDespues: r?.ciclo ? { ciclo_nombre: r.ciclo.nombre, ciclo_hasta: r.ciclo.hasta ?? ajustesAntes.ciclo_hasta } : null,
+        nombre: `Cargar ciclo${ciclo?.nombre ? ` ${ciclo.nombre}` : ''}`,
+      });
     } catch (err) {
       setError(err.message);
       setEtapa('revisar');

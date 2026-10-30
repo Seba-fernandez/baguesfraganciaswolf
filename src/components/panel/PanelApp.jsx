@@ -14,6 +14,7 @@ import { precargarPedidos } from '../../hooks/useOrders';
 import { precargarProductos } from '../../hooks/useProducts';
 import { precargarClientes } from '../../hooks/useCustomers';
 import { precargarAjustes } from '../../hooks/useSettings';
+import { limpiar as limpiarHistorial } from '../../lib/historialPanel';
 
 /**
  * El panel entero, en un solo chunk que la tienda pública nunca descarga.
@@ -44,6 +45,8 @@ function Precarga() {
     precargarProductos();
     precargarClientes();
     precargarAjustes();
+    // Al salir del panel (o cerrar sesión) el historial de deshacer vuelve a cero.
+    return () => limpiarHistorial();
   }, []);
   return null;
 }

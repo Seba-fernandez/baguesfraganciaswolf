@@ -6,6 +6,7 @@
   margin: 16px 16px 0;
   border-radius: var(--r-sm);
   flex-shrink: 0;
+  position: relative;
 }
 
 @media (min-width: 960px) {
@@ -44,4 +45,81 @@
 .toggle:hover {
   background: rgba(255, 255, 255, 0.18);
   transform: scale(1.05);
+}
+
+/* Flechas de deshacer / rehacer */
+.historial {
+  display: flex;
+  gap: 6px;
+}
+
+.flecha {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: background 0.2s, transform 0.2s, opacity 0.2s;
+}
+
+.flecha:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(1.05);
+}
+
+.flecha:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.cuenta {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--accent, #c8a064);
+  color: #1a1410;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.avisoHistorial {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  max-width: min(420px, 100%);
+  z-index: 95;
+  pointer-events: none;
+}
+
+.avisoOk,
+.avisoError {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  line-height: 1.35;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+}
+
+.avisoOk {
+  background: rgba(30, 26, 22, 0.94);
+  color: #f4ece0;
+}
+
+.avisoError {
+  background: #7a2630;
+  color: #fff;
 }

@@ -12,6 +12,7 @@
 // Salida: { operaciones, grupos, alertas, bloqueos, resumen }
 import { PREFIJO_UNLOCK } from './leerUnlock.js';
 import { PREFIJO_BAGUES, PRECIO_MINIMO, PRECIO_MAXIMO } from './leerBagues.js';
+import { sugerirPerfume } from './resolverNombre.js';
 
 /** Si el ciclo desactiva mas que esta parte de una linea, se frena: puede ser el PDF equivocado. */
 export const TOPE_DESACTIVAR = 1 / 3;
@@ -58,7 +59,7 @@ export function compararCiclo(filas, leidos) {
   // Los bloqueos que Sebas puede pasar por alto a conciencia (un ciclo que de
   // verdad saca muchos perfumes). Un PDF vacio o de la otra linea, nunca.
   const forzables = [];
-  const grupos = { precios: [], reactivar: [], desactivar: [], nuevos: [], cajas: [], types: [], descartados: [] };
+  const grupos = { precios: [], reactivar: [], desactivar: [], nuevos: [], cajas: [], types: [], descartados: [], revisar: [] };
 
   // Indice de la base por codigo.
   const enBase = new Map();
@@ -103,8 +104,11 @@ export function compararCiclo(filas, leidos) {
             .sort((a, b) => b.puntos - a.puntos);
           destino = candidatos[0]?.f || null;
         }
-        const nuevo = { linea, codigo, leido: p, sumarA: destino ? { id: destino.id, nombre: destino.nombre } : null };
+        // Unlock tapa letras con estrellas: el nombre no se usa, solo se sugiere a que perfume se parece.
+        const sugeridos = linea === 'unlock' ? sugerirPerfume(p.titulo, filas) : [];
+        const nuevo = { linea, codigo, leido: p, sumarA: destino ? { id: destino.id, nombre: destino.nombre } : null, sugeridos };
         grupos.nuevos.push(nuevo);
+        if (p.revisar) grupos.revisar.push({ linea, codigo, nombre: p.titulo || codigo, ml: p.ml, motivo: p.revisar, lista: p.precio_anterior ?? null });
         if (linea === 'unlock' || !p.type) {
           alertas.push(`Código nuevo ${codigo} (${p.titulo || p.caja || 'sin nombre legible'}): elegí a qué perfume corresponde antes de aplicar.`);
         }
@@ -116,21 +120,28 @@ export function compararCiclo(filas, leidos) {
         continue;
       }
       const base = { productoId: producto.id, nombre: producto.nombre, codigo, linea, ml: pres.ml };
+      // Si el catalogo no muestra el precio de lista (`conservarAnterior`), se deja el que ya tenia:
+      // mandar null le sacaria el tachado a un codigo que lo tenia.
+      const anterior = p.conservarAnterior ? (pres.precio_anterior ?? null) : (p.precio_anterior ?? null);
       if (pres.activo === false) {
-        grupos.reactivar.push({ ...base, precio: p.precio, precio_anterior: p.precio_anterior ?? null });
+        grupos.reactivar.push({ ...base, precio: p.precio, precio_anterior: anterior });
         operaciones.push({ tipo: 'activar', codigo });
       }
-      const cambiaPrecio = Number(pres.precio) !== p.precio || (pres.precio_anterior ?? null) !== (p.precio_anterior ?? null);
+      const cambiaAnterior = (pres.precio_anterior ?? null) !== anterior;
+      const cambiaPrecio = Number(pres.precio) !== p.precio || cambiaAnterior;
+      if (p.revisar && (cambiaAnterior || pres.activo === false)) {
+        grupos.revisar.push({ ...base, motivo: p.revisar, lista: anterior });
+      }
       if (cambiaPrecio) {
         const relacion = pres.precio ? p.precio / Number(pres.precio) : 1;
         const sospechoso = relacion < SALTO_SOSPECHOSO.baja || relacion > SALTO_SOSPECHOSO.sube;
         grupos.precios.push({
           ...base,
           antes: { precio: Number(pres.precio), precio_anterior: pres.precio_anterior ?? null },
-          despues: { precio: p.precio, precio_anterior: p.precio_anterior ?? null },
+          despues: { precio: p.precio, precio_anterior: anterior },
           sospechoso,
         });
-        operaciones.push({ tipo: 'precio', codigo, precio: p.precio, precio_anterior: p.precio_anterior ?? null });
+        operaciones.push({ tipo: 'precio', codigo, precio: p.precio, precio_anterior: anterior });
         if (sospechoso) alertas.push(`${producto.nombre} (${codigo}): el precio pasa de ${pesos(pres.precio)} a ${pesos(p.precio)}. Revisalo.`);
       }
       if (linea === 'unlock' && p.ml && pres.ml && p.ml !== pres.ml) {
@@ -172,7 +183,12 @@ export function compararCiclo(filas, leidos) {
     alertas.push(`${d.linea === 'unlock' ? 'Unlock' : 'Bagués'} ${d.codigo}${d.titulo ? ` (${d.titulo})` : ''}: no se usa, ${d.motivo}${d.pagina ? ` (página ${d.pagina})` : ''}.`);
   }
 
+  if (grupos.revisar.length) {
+    alertas.push(`${grupos.revisar.length} ${grupos.revisar.length === 1 ? 'precio de lista no se pudo leer' : 'precios de lista no se pudieron leer'} de la imagen: confirmalos en "Precios de lista para confirmar".`);
+  }
+
   const resumen = {
+    revisar: grupos.revisar.length,
     precios: grupos.precios.length,
     reactivar: grupos.reactivar.length,
     desactivar: grupos.desactivar.length,

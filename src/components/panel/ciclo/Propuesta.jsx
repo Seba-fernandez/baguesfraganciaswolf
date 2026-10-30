@@ -43,7 +43,19 @@ function CodigoNuevo({ nuevo, decision, cambiar, productos, falta }) {
           <span className={c.mono}>{nuevo.codigo}</span> · {pesos(p.precio)}{p.precio_anterior ? ` (lista ${pesos(p.precio_anterior)})` : ''} · página {p.pagina}
         </div>
         {nuevo.linea === 'unlock' && (
-          <div className={c.filaDato}>El PDF de Unlock tapa letras con estrellas: el nombre puede venir cambiado. Fijate la foto en la página {p.pagina}.</div>
+          <div className={c.filaDato}>Unlock tapa letras con estrellas: el nombre puede venir cambiado.{p.pagina ? ` Fijate la foto en la página ${p.pagina}.` : ''}</div>
+        )}
+        {nuevo.linea === 'unlock' && (nuevo.sugeridos || []).length > 0 && (
+          <div className={c.filaDato}>
+            Se parece a:{' '}
+            {nuevo.sugeridos.map((x) => (
+              <button key={x.id} type="button" className={`${c.modo} ${d.modo === 'sumar' && d.id === x.id ? c.modoOn : ''}`}
+                aria-pressed={d.modo === 'sumar' && d.id === x.id}
+                onClick={() => cambiar({ ...d, modo: 'sumar', id: x.id })}>
+                {x.nombre} · sumar
+              </button>
+            ))}
+          </div>
         )}
       </div>
       <div className={c.modos} role="group" aria-label={`Qué hacer con ${nuevo.codigo}`}>
@@ -109,6 +121,12 @@ export default function Propuesta({ propuesta, productos, decisiones, setDecisio
         </details>
       )}
 
+      <Grupo titulo="Precios de lista para confirmar" cuenta={grupos.revisar.length} abierto>
+        {grupos.revisar.map((x) => (
+          <Fila key={x.codigo} nombre={x.nombre} dato={<>{x.ml ? `${x.ml} ml · ` : ''}<span className={c.mono}>{x.codigo}</span> · {x.motivo}</>}
+            valor={<span className={c.sospechoso}>lista {precio(x.lista)}</span>} />
+        ))}
+      </Grupo>
       <Grupo titulo="Precios que cambian" cuenta={grupos.precios.length} abierto={haySospechosos}>
         {grupos.precios.map((x) => (
           <Fila key={x.codigo} nombre={x.nombre} dato={<>{tamano(x)} · <span className={c.mono}>{x.codigo}</span></>}

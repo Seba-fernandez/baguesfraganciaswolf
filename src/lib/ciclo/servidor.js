@@ -11,6 +11,7 @@ import { supabase } from '../supabase';
 import { leerPdf } from './pdf.js';
 import { leerUnlock } from './leerUnlock.js';
 import { leerBagues } from './leerBagues.js';
+import { leerTabla, TAMANO_MAXIMO_TABLA } from './leerTabla.js';
 import { lineaDePaginas } from './panel.js';
 import { cicloDelPdf } from './comparar.js';
 
@@ -35,13 +36,39 @@ function cargarPdfjs() {
 }
 
 /**
- * Lee un PDF del ciclo. Devuelve
+ * Lee la tabla del ciclo (CSV) cuando no hay PDF. Devuelve un archivo por linea
+ * que traiga filas, con la misma forma que `leerArchivo` de un PDF.
+ */
+async function leerArchivoTabla(archivo) {
+  if (archivo.size > TAMANO_MAXIMO_TABLA) throw new Error(`${archivo.name} pesa más de ${TAMANO_MAXIMO_TABLA / 1048576} MB: no parece una tabla del ciclo.`);
+  const t = leerTabla(await archivo.text());
+  const lineas = ['unlock', 'bagues'].filter((l) => t[l].length);
+  if (!lineas.length) throw new Error(`En ${archivo.name} no hay ninguna fila usable.${t.ignoradas[0] ? ` Primera fila ignorada: ${t.ignoradas[0].donde}, ${t.ignoradas[0].motivo}.` : ''}`);
+  return lineas.map((linea) => ({
+    nombre: archivo.name,
+    tamano: archivo.size,
+    paginas: null,
+    linea,
+    leidos: t[linea],
+    ciclo: t.ciclo,
+    ignoradas: t.ignoradas,
+    cuentas: { unlock: t.unlock.length, bagues: t.bagues.length },
+  }));
+}
+
+/**
+ * Lee un PDF del ciclo o, si no hay PDF, la tabla (.csv). Devuelve
  *   { nombre, tamano, paginas: n, linea, leidos, ciclo, cuentas }
+ * (la tabla devuelve una lista, un archivo por linea).
  * `linea` sale de los codigos que trae (no del nombre del archivo).
  */
 export async function leerArchivo(archivo, alAvanzar) {
+  if (/\.(csv|tsv)$/i.test(archivo.name) || /^text\/(csv|tab-separated-values)$/.test(archivo.type)) return leerArchivoTabla(archivo);
+  if (/\.mht(ml)?$/i.test(archivo.name)) {
+    throw new Error(`${archivo.name} es una página guardada del visor: trae solo 3 imágenes y no sirve para cargar el ciclo. Usá la tabla del ciclo (.csv) o el PDF.`);
+  }
   if (!/\.pdf$/i.test(archivo.name) && archivo.type !== 'application/pdf') {
-    throw new Error(`${archivo.name} no es un PDF.`);
+    throw new Error(`${archivo.name} no es un PDF ni una tabla (.csv).`);
   }
   if (archivo.size > TAMANO_MAXIMO_PDF) {
     throw new Error(`${archivo.name} pesa ${Math.round(archivo.size / 1048576)} MB; el tope es ${TAMANO_MAXIMO_PDF / 1048576} MB.`);

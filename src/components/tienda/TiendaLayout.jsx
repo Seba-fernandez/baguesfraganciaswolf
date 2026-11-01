@@ -169,6 +169,17 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
     window.scrollTo({ top: 0, behavior: brusco ? 'auto' : 'smooth' });
   }
 
+  // "Catálogo" estando ya en el catálogo: el reseteo de arriba mira solo el
+  // pathname, y de /catalogo?ver=36 a /catalogo no cambia. La lista volvía a
+  // 12, la página se achicaba y el scroll quedaba recortado en el pie (Sebas,
+  // 31/10). Acá se vuelve arriba a mano.
+  function alTocarCatalogo(e) {
+    if (pathname !== '/catalogo' || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    navigate('/catalogo');
+    window.scrollTo(0, 0);
+  }
+
   return (
     <div className="tienda" ref={raiz}>
       <div className="tfondo" aria-hidden="true" />
@@ -178,7 +189,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
           {MARCA.nombre} <span className={s.marcaWolf}>{MARCA.complemento}</span>
         </Link>
         <nav className={s.nav}>
-          <Link to="/catalogo">{CABECERA.catalogo}</Link>
+          <Link to="/catalogo" onClick={alTocarCatalogo}>{CABECERA.catalogo}</Link>
           <a href="/#como">{CABECERA.como}</a>
         </nav>
         <button
@@ -206,7 +217,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
         <div className={`tw ${s.fcols}`}>
           <div className={s.fcol}>
             <h4 className={s.ftitulo}>{PIE.tienda}</h4>
-            <Link to="/catalogo">{CABECERA.catalogo}</Link>
+            <Link to="/catalogo" onClick={alTocarCatalogo}>{CABECERA.catalogo}</Link>
             <a href="/#como">{CABECERA.como}</a>
             {settings?.link_catalogo && (
               <a href={settings.link_catalogo} target="_blank" rel="noopener noreferrer">{PIE.catalogoPdf}</a>

@@ -302,8 +302,14 @@
    contain-intrinsic-size es el alto que asume mientras tanto: sin ese dato la
    barra de scroll saltaria al ir apareciendo cada seccion. Con `auto`, ademas,
    recuerda el alto real una vez que la midio. El hero queda afuera: es
-   justamente lo que hay que dibujar primero. */
-.tienda > main > section:not(#inicio-hero),
+   justamente lo que hay que dibujar primero.
+
+   El catalogo tambien queda afuera: es la pagina entera, no una seccion de
+   mas abajo. Volviendo con "adelante", Safari restauraba el scroll antes de
+   dibujarlo; la seccion quedaba fuera de la pantalla, media los 700 px
+   supuestos y la pagina se recortaba en el pie (Sebas, 31/10). Sus tarjetas
+   siguen con content-visibility propio (ProductCard.module.css). */
+.tienda > main > section:not(#inicio-hero):not(#catalogo),
 .tienda > footer {
   content-visibility: auto;
   contain-intrinsic-size: auto 700px;

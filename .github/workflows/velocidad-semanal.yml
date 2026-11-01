@@ -56,7 +56,7 @@ jobs:
           echo "Portada **$P_PUNTAJE** (LCP $P_LCP ms) · Catalogo **$C_PUNTAJE** (LCP $C_LCP ms)" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Avisar si bajo (o cerrar el aviso si se recupero)
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           PORTADA: ${{ steps.medir.outputs.portada }}
           PORTADA_LCP: ${{ steps.medir.outputs.portada_lcp }}

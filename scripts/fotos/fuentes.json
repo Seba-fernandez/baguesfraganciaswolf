@@ -424,7 +424,7 @@
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/Creed_8cb6bfef-7903-4868-ace0-3910b9cde143.png",
       "origen": "unlock.com.ar CR**D AV*NT*S MINI",
       "tratamiento": "espresso",
-      "corte": 0.89,
+      "corte": 0.87,
       "ampliacionMax": 1.5
     },
     "bagues": {
@@ -701,7 +701,8 @@
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/pur___s_fem_90ml_-_3_14e8deb2-9d2f-46f3-84cc-58618650ffc7.webp",
       "origen": "unlock.com.ar PUR* *S FEM",
-      "tratamiento": "estudio"
+      "tratamiento": "estudio",
+      "corte": 0.895
     },
     "bagues": {
       "url": "https://cdn.shopify.com/s/files/1/0621/1944/4614/files/Productos_0016_Amsterdan.png",
@@ -746,7 +747,8 @@
     "unlock": {
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/15_9e5e2ce1-ba35-4dc4-a4af-6f5431d90102.png",
       "origen": "unlock.com.ar R*B*NNE PH*NTOM BL*CK",
-      "tratamiento": "estudio"
+      "tratamiento": "estudio",
+      "corte": 0.74
     }
   },
   "unlock-sauvage-hom": {
@@ -772,7 +774,7 @@
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/18.png",
       "origen": "unlock.com.ar SC*ND*L HOM",
       "tratamiento": "espresso",
-      "corte": 0.775
+      "corte": 0.71
     }
   },
   "unlock-scandal-intense-fem": {
@@ -780,7 +782,7 @@
       "url": "https://cdn.shopify.com/s/files/1/0665/4456/6445/files/12.png",
       "origen": "unlock.com.ar SC*ND*L INT*NSE FEM",
       "tratamiento": "estudio",
-      "corte": 0.7
+      "corte": 0.74
     }
   },
   "unlock-tom-ford-oud-wood": {

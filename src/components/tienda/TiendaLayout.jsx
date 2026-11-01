@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Link, useLocation, useNavigationType } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import { precargarCatalogoCuandoConvenga } from './precargaCatalogo.js';
 // En el prerender no hay pantalla: ahi va el useEffect comun, que no avisa.
 const useAntesDePintar = typeof window === 'undefined' ? useEffect : useLayoutEffect;
@@ -17,6 +17,11 @@ import { MARCA, CABECERA, LEGAL, PIE, COMO_FUNCIONA } from '../../config/conteni
 import { linkWhatsApp } from '../../lib/whatsapp';
 import '../../styles/tienda.css';
 import s from './TiendaLayout.module.css';
+
+// Marca de esta carga de la pagina para la entrada del cajon en el historial
+// (mismo criterio que SESION en TiendaShell): el estado de una entrada
+// sobrevive a recargar y sin la marca el cajon se tomaria por abierto.
+const SESION_PEDIDO = Math.random().toString(36).slice(2);
 
 const CartIcon = () => (
   <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -42,8 +47,42 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
   // Chromium de escritorio; ver src/lib/vidrioLiquido.js).
   useEffect(() => montarVidrioLiquido(raiz.current), []);
 
-  const { pathname, hash } = useLocation();
+  const ubicacion = useLocation();
+  const { pathname, hash } = ubicacion;
   const tipoNavegacion = useNavigationType();
+  const navigate = useNavigate();
+
+  // El cajon con su entrada en el historial, como la ficha y la hoja de
+  // tamanos: "atras" lo cierra (Sebas, 31/10: con el cajon abierto, el gesto
+  // de atras del celular sacaba de la pagina y dejaba el cajon encima de la
+  // anterior). La entrada se suma recien cuando no queda otro dialogo: al
+  // agregar desde la ficha o la hoja, esas se cierran con un "atras" que
+  // todavia no termino, y empujar antes haria que ese "atras" se coma la
+  // entrada del cajon.
+  const enEntradaPedido = ubicacion.state?.pedido === SESION_PEDIDO;
+  const otroDialogo = Boolean(ficha) || Boolean(hoja);
+  const empujado = useRef(false);
+  useEffect(() => {
+    if (!open || otroDialogo || enEntradaPedido || empujado.current) return;
+    empujado.current = true;
+    navigate(
+      { pathname: ubicacion.pathname, search: ubicacion.search, hash: ubicacion.hash },
+      { state: { ...(ubicacion.state?.familia ? { familia: true } : {}), pedido: SESION_PEDIDO }, preventScrollReset: true }
+    );
+  }, [open, otroDialogo, enEntradaPedido, ubicacion, navigate]);
+  // Se salio de la entrada con "atras": se cierra.
+  useEffect(() => {
+    if (open && empujado.current && !enEntradaPedido) {
+      empujado.current = false;
+      setOpen(false);
+    }
+  }, [enEntradaPedido]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Se cerro con la X, tocando afuera o con Escape: se deshace la entrada.
+  useEffect(() => {
+    if (open || !empujado.current) return;
+    empujado.current = false;
+    if (enEntradaPedido) navigate(-1);
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // El catalogo se trae antes de que lo pidan (ver precargaCatalogo.js).
   useEffect(() => precargarCatalogoCuandoConvenga(), []);

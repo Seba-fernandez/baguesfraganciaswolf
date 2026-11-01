@@ -69,7 +69,11 @@ export default function ProductGrid({
   const [rebaja, setRebaja] = useState(false);
   const [familiaAbierta, setFamiliaAbierta] = useState(false);
   const [q, setQ] = useState('');
-  const [pagina, setPagina] = useState(0);
+  // La pagina del paginador de escritorio tambien vive en la direccion
+  // (?pagina=3): recargar la deja donde estaba y "atras" vuelve a la anterior
+  // en vez de salir del catalogo (Sebas, 31/10). En la direccion va contada
+  // desde 1, como la lee una persona; aca adentro, desde 0.
+  const pagina = Math.max(0, (Math.floor(Number(params.get('pagina'))) || 1) - 1);
   const tope = useRef(null);
 
   const publicables = useMemo(
@@ -139,8 +143,7 @@ export default function ProductGrid({
   useEffect(() => {
     if (filtrosPrevios.current === claveFiltros) return;
     filtrosPrevios.current = claveFiltros;
-    setPagina(0);
-    setParams((prev) => conFiltro(prev, 'ver', null), { replace: true });
+    setParams((prev) => conFiltro(conFiltro(prev, 'ver', null), 'pagina', null), { replace: true });
   }, [claveFiltros]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activos = [para, promoActiva].filter(Boolean).length + familias.length + (minis ? 1 : 0) + (rebaja ? 1 : 0);
@@ -149,8 +152,10 @@ export default function ProductGrid({
     setRebaja(false); setPromoActiva(null); setQ('');
   };
 
+  // Cambiar de pagina suma una entrada al historial (sin replace): "atras"
+  // vuelve a la pagina anterior.
   function irA(n) {
-    setPagina(n);
+    setParams((prev) => conFiltro(prev, 'pagina', n > 0 ? n + 1 : null));
     tope.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 

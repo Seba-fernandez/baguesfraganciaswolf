@@ -5,6 +5,11 @@
 # Cada PR pasa por las pruebas automaticas (.github/workflows/pruebas.yml):
 # si queda en verde, se puede aceptar. Los avisos de seguridad llegan aparte y
 # en el momento.
+#
+# 2/11/2026: Vite y su plugin de React no suben de version mayor solos. Vite 8
+# no instala con @vitejs/plugin-react 4.x (npm frena con ERESOLVE) y el plugin
+# 4.7 llega hasta Vite 7. Pasar de Vite 5 a 7 es una tarea planificada, con el
+# banco de pruebas completo, no un PR automatico. Parches y menores siguen.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -18,6 +23,11 @@ updates:
     groups:
       menores:
         update-types: [minor, patch]
+    ignore:
+      - dependency-name: vite
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@vitejs/plugin-react"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "deps"
   - package-ecosystem: github-actions

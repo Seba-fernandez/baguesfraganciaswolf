@@ -142,6 +142,21 @@ export async function ponerFoto(producto, url) {
 }
 
 /**
+ * Cambia de una vez el precio de las minis (ver lib/minis.js). Usa la misma
+ * funcion que el ciclo: todo o nada y copia del catalogo antes de tocar nada.
+ */
+export async function aplicarPreciosMinis(operaciones) {
+  const { data, error } = await supabase.rpc('aplicar_ciclo', {
+    p_carga: null,
+    p_operaciones: operaciones,
+    p_nuevos: [],
+    p_ciclo: null,
+  });
+  if (error) throw new Error(`La base no cambió nada: ${error.message}`);
+  return data;
+}
+
+/**
  * Registra la carga (que se leyo y que se propuso) y aplica. Todo o nada: si
  * la base rechaza una operacion, no cambia ninguna y devuelve el motivo.
  */

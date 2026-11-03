@@ -8,6 +8,7 @@ import { IconBottle } from '../ui/Icon';
 import { fotoDe, fotoChica } from '../../lib/fotos';
 import ProductoEditor from './ProductoEditor';
 import ProductosTabla from './ProductosTabla';
+import PreciosMinis from './PreciosMinis';
 import s from './panel.module.css';
 import p from './ProductosScreen.module.css';
 
@@ -27,7 +28,8 @@ const TableIcon = () => (
 );
 
 export default function ProductosScreen() {
-  const { products, loading, createProduct, updateProduct, toggleActivo, deleteProduct } = useProducts();
+  const { products, loading, reload, createProduct, updateProduct, toggleActivo, deleteProduct } = useProducts();
+  const [minis, setMinis] = useState(false);
   const [filtro, setFiltro] = useState('todos');
   const [editando, setEditando] = useState(null); // producto | 'nuevo' | null
   const [vista, setVista] = useState('tarjetas'); // tarjetas | tabla
@@ -49,9 +51,14 @@ export default function ProductosScreen() {
         <span className={s.subtitle}>{activos} activos · {products.length} en total</span>
       </div>
 
-      <Link to="/panel/productos/ciclo" className={`${s.btn} ${s.btnGhost}`} style={{ alignSelf: 'flex-start' }}>
-        Cargar ciclo nuevo desde los PDF
-      </Link>
+      <div className={p.acciones}>
+        <Link to="/panel/productos/ciclo" className={`${s.btn} ${s.btnGhost}`}>
+          Cargar ciclo nuevo
+        </Link>
+        <button type="button" className={`${s.btn} ${s.btnGhost}`} onClick={() => setMinis(true)}>
+          Precio de las minis
+        </button>
+      </div>
 
       <div className={s.cardRow}>
         <div className={s.chips} style={{ flex: 1 }}>
@@ -109,6 +116,8 @@ export default function ProductosScreen() {
       )}
 
       <FAB onClick={() => setEditando('nuevo')} ariaLabel="Agregar perfume" fixed />
+
+      {minis && <PreciosMinis products={products} onClose={() => setMinis(false)} onAplicado={reload} />}
 
       {editando && (
         <ProductoEditor

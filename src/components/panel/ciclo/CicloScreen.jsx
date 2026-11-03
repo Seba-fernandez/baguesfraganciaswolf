@@ -27,6 +27,7 @@ export default function CicloScreen() {
   const [error, setError] = useState(null);
   const [decisiones, setDecisiones] = useState({});
   const [forzar, setForzar] = useState(false);
+  const [reviseListas, setReviseListas] = useState(false);
   const [tocarCiclo, setTocarCiclo] = useState(true);
   const [etapa, setEtapa] = useState('revisar'); // revisar | confirmar | aplicando | hecho
   const [resultado, setResultado] = useState(null);
@@ -38,11 +39,12 @@ export default function CicloScreen() {
     for (const archivo of lista) {
       setLeyendo({ nombre: archivo.name, n: 0, total: 1 });
       try {
-        const leido = await leerArchivo(archivo, (n, total) => setLeyendo({ nombre: archivo.name, n, total }));
-        setArchivos((a) => ({ ...a, [leido.linea]: leido }));
+        const leidoLista = [].concat(await leerArchivo(archivo, (n, total) => setLeyendo({ nombre: archivo.name, n, total })));
+        setArchivos((a) => Object.assign({}, a, ...leidoLista.map((l) => ({ [l.linea]: l }))));
         setEtapa('revisar');
         setResultado(null);
         setForzar(false);
+        setReviseListas(false);
       } catch (err) {
         setError(`${archivo.name}: ${err.message}`);
       }
@@ -65,7 +67,9 @@ export default function CicloScreen() {
   const types = propuesta ? propuesta.operaciones.filter((o) => o.tipo === 'type').length : 0;
   const visibles = propuesta ? propuesta.operaciones.length - types + nuevos.lista.length + (cicloNuevo && tocarCiclo ? 1 : 0) : 0;
   const cambios = visibles + types;
-  const puedeAplicar = propuesta && !bloqueosFirmes.length && (!necesitaForzar || forzar) && !nuevos.faltan.length && cambios > 0;
+  // Los precios de lista que no se leyeron de la imagen no se aplican sin que Sebas los mire.
+  const porConfirmar = propuesta ? propuesta.grupos.revisar.length : 0;
+  const puedeAplicar = propuesta && !bloqueosFirmes.length && (!necesitaForzar || forzar) && (!porConfirmar || reviseListas) && !nuevos.faltan.length && cambios > 0;
 
   async function aplicar() {
     if (etapa === 'revisar') { setEtapa('confirmar'); return; }
@@ -103,16 +107,17 @@ export default function CicloScreen() {
       </div>
 
       <section className={c.paso} aria-labelledby="paso-pdf">
-        <h3 id="paso-pdf" className={c.pasoTitulo}>1. Subí los PDF del ciclo</h3>
+        <h3 id="paso-pdf" className={c.pasoTitulo}>1. Subí los PDF o la tabla del ciclo</h3>
         <p className={c.ayuda}>
-          Los dos catálogos del Drive, o uno solo: <b>solo se toca la línea del PDF que subas</b>. Se compara por
-          código: los precios que cambiaron se actualizan, lo que no está en el ciclo se desactiva (no se borra) y
-          lo nuevo te lo muestro para que decidas. Nada se guarda hasta que confirmes.
+          Los dos catálogos del Drive, o uno solo: <b>solo se toca la línea que subas</b>. Si el ciclo no tiene PDF
+          (solo visor online), subí la tabla del ciclo (.csv). Se compara por código: los precios que cambiaron se
+          actualizan, lo que no está en el ciclo se desactiva (no se borra) y lo nuevo te lo muestro para que decidas.
+          Nada se guarda hasta que confirmes.
         </p>
         <label className={c.subir}>
-          <input type="file" accept="application/pdf,.pdf" multiple onChange={alElegir} disabled={Boolean(leyendo) || etapa === 'aplicando'} />
-          <strong>{leyendo ? 'Leyendo…' : 'Elegir PDF'}</strong>
-          <small>Catálogo de Unlock y catálogo general de Bagués. Se reconoce solo cuál es cuál.</small>
+          <input type="file" accept="application/pdf,.pdf,text/csv,.csv,.tsv" multiple onChange={alElegir} disabled={Boolean(leyendo) || etapa === 'aplicando'} />
+          <strong>{leyendo ? 'Leyendo…' : 'Elegir PDF o tabla'}</strong>
+          <small>Catálogo de Unlock y catálogo general de Bagués, o la tabla (.csv). Se reconoce solo cuál es cuál.</small>
         </label>
         {leyendo && (
           <div aria-live="polite">
@@ -124,8 +129,9 @@ export default function CicloScreen() {
           <div key={linea} className={c.archivo}>
             <span className={c.archivoNombre}>{NOMBRE[linea]} · {archivos[linea].nombre}</span>
             <span className={c.archivoDato}>
-              {archivos[linea].paginas} páginas · {archivos[linea].leidos.length} perfumes leídos
+              {archivos[linea].paginas ? `${archivos[linea].paginas} páginas` : 'tabla'} · {archivos[linea].leidos.length} perfumes leídos
               {archivos[linea].ciclo ? ` · ${archivos[linea].ciclo.nombre}` : ''}
+              {archivos[linea].ignoradas?.length ? ` · ${archivos[linea].ignoradas.length} filas ignoradas (${archivos[linea].ignoradas.slice(0, 2).map((x) => `${x.donde}: ${x.motivo}`).join('; ')})` : ''}
             </span>
             <button type="button" className={c.quitar} onClick={() => setArchivos((a) => ({ ...a, [linea]: null }))}>Quitar</button>
           </div>
@@ -169,7 +175,16 @@ export default function CicloScreen() {
               {propuesta.forzables.map((b) => <p key={b}>{b}</p>)}
               <label className={c.check} style={{ marginTop: 10 }}>
                 <input type="checkbox" checked={forzar} onChange={(e) => setForzar(e.target.checked)} />
-                Revisé el PDF: es el del ciclo nuevo, está completo y de verdad salen tantos perfumes.
+                Revisé el catálogo: es el del ciclo nuevo, está completo y de verdad salen tantos perfumes.
+              </label>
+            </div>
+          )}
+          {porConfirmar > 0 && (
+            <div className={c.bloqueo}>
+              <p>Hay {porConfirmar} {porConfirmar === 1 ? 'precio de lista' : 'precios de lista'} que no se {porConfirmar === 1 ? 'leyó' : 'leyeron'} de la imagen (están arriba, en “Precios de lista para confirmar”).</p>
+              <label className={c.check} style={{ marginTop: 10 }}>
+                <input type="checkbox" checked={reviseListas} onChange={(e) => setReviseListas(e.target.checked)} />
+                Los miré contra el catálogo y están bien.
               </label>
             </div>
           )}

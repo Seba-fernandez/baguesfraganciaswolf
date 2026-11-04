@@ -36,3 +36,32 @@
 
 /* Botones de arriba: cargar el ciclo y precio de las minis. */
 .acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Buscador y abecedario (lib/buscarPanel.js). */
+.buscador { position: relative; }
+.buscador input { padding-right: 44px; }
+.buscador input::-webkit-search-cancel-button { display: none; }
+.limpiar {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; display: grid; place-items: center; border-radius: var(--r-xs);
+  font-size: 20px; line-height: 1; color: var(--text-tertiary);
+}
+.limpiar:hover { color: var(--text-primary); }
+.letras {
+  display: flex; gap: 4px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+  scrollbar-width: none; margin: 0 -2px; padding: 2px;
+}
+.letras::-webkit-scrollbar { display: none; }
+@media (min-width: 768px) { .letras { flex-wrap: wrap; overflow: visible; } }
+.letra {
+  flex: none; min-width: 34px; height: 34px; padding: 0 6px; border-radius: var(--r-xs);
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+}
+.letra:disabled { opacity: 0.3; cursor: default; }
+.letraTodas { padding: 0 10px; font-weight: 500; }
+.letraOn { background: var(--accent-bg); border-color: var(--accent-rim); color: var(--text-primary); }
+.cuenta { font-size: 12px; color: var(--text-tertiary); margin: -4px 0 0; }
+/* En el celular no entraban Pausados y las vistas en una fila y Pausados
+   quedaba escondido a la derecha: ahora la fila baja. */
+.filaFiltros { flex-wrap: wrap; row-gap: 8px; }

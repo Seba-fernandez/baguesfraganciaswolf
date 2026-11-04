@@ -22,7 +22,7 @@ import { ErrorDePagina, kb } from './prerender/html.mjs';
 import { armar404, armarCatalogo, armarPortada, dependenciasDelChunk, linkDeCss } from './prerender/paginas.mjs';
 import { traerFilas } from './prerender/precio.mjs';
 import { estiloDeLetra } from './prerender/letra.mjs';
-import { cspDe, scriptsSinPermiso } from './prerender/csp.mjs';
+import { cspsDe, scriptsSinPermiso } from './prerender/csp.mjs';
 
 const RAIZ = path.resolve(import.meta.dirname, '..');
 const DIST = path.join(RAIZ, 'dist');
@@ -70,8 +70,9 @@ async function principal() {
   // /panel recibe la portada (regla de vercel.json): main.jsx la vacia y monta el panel.
 
   // La politica de seguridad, al final, contra las paginas ya escritas.
-  const csp = cspDe(JSON.parse(leer(RAIZ, 'vercel.json')));
-  const faltan = new Set(['index.html', 'catalogo/index.html', '404.html'].flatMap((f) => scriptsSinPermiso(leer(DIST, f), csp)));
+  const csps = cspsDe(JSON.parse(leer(RAIZ, 'vercel.json')));
+  if (!csps.length) throw new ErrorDePagina('vercel.json no tiene Content-Security-Policy');
+  const faltan = new Set(csps.flatMap((csp) => ['index.html', 'catalogo/index.html', '404.html'].flatMap((f) => scriptsSinPermiso(leer(DIST, f), csp))));
   if (faltan.size) {
     throw new ErrorDePagina(`la politica de seguridad de vercel.json no tiene estos scripts en linea: ${[...faltan].join(' ')}. Sumalos a script-src (o saca el script en linea)`);
   }

@@ -77,7 +77,7 @@ export default function ProductoEditor({ producto, onClose, onCreate, onUpdate, 
 
         <div className={s.field}>
           <label className={s.label}>Foto del frasco</label>
-          <ImageUpload value={form.imagen_url} onChange={(url) => set('imagen_url', url)} bucket="productos" respaldo={fotoChica(fotoDe(form))} />
+          <ImageUpload value={form.imagen_url} onChange={(url) => set('imagen_url', url)} bucket="productos" respaldo={fotoChica(fotoDe(form))} fondo />
         </div>
 
         <div className={s.row2}>

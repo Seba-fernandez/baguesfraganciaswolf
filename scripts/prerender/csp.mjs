@@ -12,6 +12,18 @@ export function cspDe(config) {
     .find((h) => h.key === 'Content-Security-Policy')?.value || '';
 }
 
+/**
+ * Todas las CSP de vercel.json. Desde el 3/11/2026 hay dos: la general y la del
+ * panel (/panel), que ademas deja compilar WebAssembly para el recorte de
+ * fondo. Un hash nuevo tiene que estar en las dos.
+ */
+export function cspsDe(config) {
+  return (config.headers || [])
+    .flatMap((h) => h.headers)
+    .filter((h) => h.key === 'Content-Security-Policy')
+    .map((h) => h.value);
+}
+
 /** Los hashes de los scripts en linea del HTML que la CSP no permite. Pura. */
 export function scriptsSinPermiso(html, csp) {
   const faltan = [];

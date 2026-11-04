@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { ErrorDePagina, reemplazarUna, sacarPrecargas, cambiarTitulo, paraAtributo } from '../prerender/html.mjs';
 import { ponerPrecio, LUGAR_PRECIO } from '../prerender/precio.mjs';
 import { textoDelTitulo } from '../prerender/letra.mjs';
-import { scriptsSinPermiso, cspDe } from '../prerender/csp.mjs';
+import { scriptsSinPermiso, cspDe, cspsDe } from '../prerender/csp.mjs';
 import { armarPortada, armarCatalogo, armar404, dependenciasDelChunk, ANCLA, SITIO } from '../prerender/paginas.mjs';
 import { createHash } from 'node:crypto';
 
@@ -51,6 +51,10 @@ ok('scriptsSinPermiso: pasa con el hash en la CSP, avisa sin el', () => {
   assert.deepEqual(scriptsSinPermiso(html, `script-src 'self' ${hash}`), []);
   assert.deepEqual(scriptsSinPermiso(html, "script-src 'self'"), [hash]);
   assert.equal(cspDe({ headers: [{ headers: [{ key: 'Content-Security-Policy', value: 'x' }] }] }), 'x');
+  assert.deepEqual(cspsDe({ headers: [
+    { headers: [{ key: 'Content-Security-Policy', value: 'general' }, { key: 'X-Frame-Options', value: 'DENY' }] },
+    { headers: [{ key: 'Content-Security-Policy', value: 'panel' }] },
+  ] }), ['general', 'panel']);
 });
 ok('dependenciasDelChunk: los imports relativos, sin el principal', () => {
   assert.deepEqual(dependenciasDelChunk('import a from"./familias-AB12.js";import b from "./index-ZZ.js";import c from"./familias-AB12.js"'), ['familias-AB12.js']);

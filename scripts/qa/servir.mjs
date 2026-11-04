@@ -22,10 +22,10 @@ const PUERTO = Number(process.env.PORT || 4173);
 const TIPOS = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css',
   '.json': 'application/json', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png',
-  '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml',
+  '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.wasm': 'application/wasm', '.onnx': 'application/octet-stream', '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml',
 };
 
-const COMPRIMIBLE = new Set(['.html', '.js', '.css', '.json', '.svg', '.txt', '.xml']);
+const COMPRIMIBLE = new Set(['.html', '.js', '.css', '.json', '.svg', '.txt', '.xml', '.wasm']);
 // Lo comprimido se guarda por archivo y fecha de cambio: comprimir con brotli
 // al maximo en cada pedido haria lento el servidor y la medicion.
 const memoria = new Map();

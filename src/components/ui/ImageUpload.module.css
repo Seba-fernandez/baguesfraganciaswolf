@@ -12,3 +12,23 @@
 
 .clear { font-size: 11px; color: var(--text-tertiary); text-decoration: underline; }
 .error { font-size: 11px; color: var(--danger); }
+
+/* Fondo automático: la original y la armada, para elegir. */
+.fila { display: flex; gap: 14px; }
+.nota { font-size: 11px; color: var(--text-tertiary); max-width: 240px; }
+.comparar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 300px; }
+.opcion { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.opcion img {
+  width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: var(--r-sm);
+  border: 1px solid var(--glass-border); background: var(--glass-bg);
+}
+.opcion figcaption { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: var(--text-tertiary); text-transform: uppercase; }
+.opcionNueva img { border-color: var(--accent-rim); }
+.aviso { font-size: 12px; color: var(--text-secondary); max-width: 300px; }
+.acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.usar, .dejar {
+  padding: 10px 14px; border-radius: var(--r-sm); font-size: 13px; font-weight: 600;
+  border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-secondary);
+}
+.usar { background: var(--accent-bg); border-color: var(--accent-rim); color: var(--text-primary); }
+.usar:disabled, .dejar:disabled, .clear:disabled { opacity: 0.6; }

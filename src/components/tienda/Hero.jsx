@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
-import { INICIO } from '../../config/contenido';
+import { INICIO, INICIO_NAVIDAD } from '../../config/contenido';
+import { HERO_NAVIDAD, NAVIDAD_PRECIOS } from '../../config/ajustes';
 import { pesos } from '../../lib/format';
 import Flecha from './Flecha';
 import s from './Hero.module.css';
+import n from './HeroNavidad.module.css';
 
 /**
  * Hero D, "Cada perfume, una ciudad." (22/10/2026), sobre la escena del C.
@@ -24,6 +26,12 @@ import s from './Hero.module.css';
  * en el medio, precio y botón abajo, dentro del visor de Instagram (664). En
  * escritorio el texto va en la franja izquierda y la ventana queda a la derecha.
  *
+ * HERO_NAVIDAD (src/config/ajustes.js): mientras esta en true, la escena es la
+ * de Navidad (scripts/rediseno/hornear_hero_navidad.py), en cuatro capas que
+ * entran una por una, y la compra es una placa con el precio del 2x1. En false
+ * se ve el hero de siempre, sin otra diferencia. Todo lo de Navidad vive en
+ * HeroNavidad.module.css y en las ramas `NAV ?` de abajo.
+ *
  * Se conservan los ganchos que mide el banco (data-hero, data-qa): el sello,
  * la línea de datos, el botón y la cinta de nombres, que ahora son links a la
  * ficha de cada aroma (E3-B5).
@@ -32,6 +40,8 @@ export default function Hero({
   promos = {}, onVerPromo, onOpen,
   desde, nombresAromas = [],
 }) {
+  const NAV = HERO_NAVIDAD;
+  const T = NAV ? INICIO_NAVIDAD : INICIO;
   const lista = Object.values(promos);
   // El precio minimo y el numero de aromas llegan con la base. Hasta entonces
   // (y en el HTML pre-generado) su lugar queda reservado y vacio (UX-17).
@@ -46,25 +56,59 @@ export default function Hero({
   }
 
   return (
-    <section className={s.hero} id="inicio-hero">
-      <div className={s.caja}>
-      <div className={s.escena} data-hero="escena" aria-hidden="true" />
+    <section className={`${s.hero} ${NAV ? n.navidad : ''}`} id="inicio-hero">
+      <div className={`${s.caja} ${NAV ? n.caja : ''}`}>
+      {NAV ? (
+        // Las capas, de atras para adelante y en el orden en que entran. El
+        // lienzo tiene la proporcion de la imagen y se acomoda como un cover.
+        <div className={n.lienzo} data-hero="escena" aria-hidden="true">
+          <div className={n.fondo} />
+          <div className={`${n.capa} ${n.luces}`} />
+          <div className={`${n.capa} ${n.lucesB}`} />
+          <div className={`${n.capa} ${n.frascos}`} />
+          <div className={`${n.capa} ${n.destello}`} />
+        </div>
+      ) : (
+        <div className={s.escena} data-hero="escena" aria-hidden="true" />
+      )}
 
-      <div className={`tw ${s.inner}`}>
-        <div className={s.texto}>
-          <h1 className={s.titulo}>
-            {INICIO.titulo.map((linea, i) => (
+      <div className={`tw ${s.inner} ${NAV ? n.inner : ''}`}>
+        <div className={`${s.texto} ${NAV ? n.texto : ''}`}>
+          <h1 className={`${s.titulo} ${NAV ? n.titulo : ''}`}>
+            {T.titulo.map((linea, i) => (
               <span key={linea} className={s.lineaWrap}>
-                <span className={`${s.linea} ${i === INICIO.titulo.length - 1 ? s.lineaItalica : ''}`} data-hero="linea">{linea}</span>
+                <span className={`${s.linea} ${i === T.titulo.length - 1 ? s.lineaItalica : ''}`} data-hero="linea">{linea}</span>
               </span>
             ))}
           </h1>
 
-          <p className={s.bajada} data-hero="bajada">{INICIO.bajada}</p>
+          <p className={`${s.bajada} ${NAV ? n.bajada : ''}`} data-hero="bajada">{T.bajada}</p>
         </div>
 
-        <div className={s.compra}>
+        <div className={`${s.compra} ${NAV ? n.compra : ''}`}>
           {/* El precio es lo que la clienta busca primero: grande y en tinta. */}
+          {NAV ? (
+            // La placa de Navidad: texto de verdad (no viene en la imagen).
+            // Es lo ultimo que entra, pero se ve legible desde el primer
+            // cuadro: solo se mueve, nunca se desvanece.
+            <div className={`${n.placa} tnum`} data-hero="meta" data-qa="hero-datos">
+              <p className={n.precios}>
+                <span className={n.antes}>
+                  <span className={n.leer}>{INICIO_NAVIDAD.antes} </span>
+                  <del>{pesos(NAVIDAD_PRECIOS.lista)}</del>
+                </span>
+                <span className={n.ahora}>
+                  <span className={n.ahoraNum} data-hero="precio">{pesos(NAVIDAD_PRECIOS.cadaUno)}</span>
+                  <span className={n.cu}> {INICIO_NAVIDAD.porUno}</span>
+                </span>
+              </p>
+              <p className={n.oferta}>
+                <span className={n.dos}>{INICIO_NAVIDAD.oferta}</span>
+                <span className={n.ocasion}>{INICIO_NAVIDAD.ocasion}</span>
+                <span className={n.combina}>{INICIO_NAVIDAD.combina}</span>
+              </p>
+            </div>
+          ) : (
           <p className={`${s.meta} tnum`} data-hero="meta" data-qa="hero-datos">
             <span className={`${s.metaDato} ${s.metaDesde}`}>
               {antesDesde}<span className={`${s.metaNum} ${s.metaPrecio}`} data-hero="precio">{desde ? pesos(desde) : ''}</span>{despuesDesde}
@@ -72,8 +116,9 @@ export default function Hero({
             <span className={s.metaSep} aria-hidden="true"> · </span>
             <span className={s.metaDato}>{INICIO.datosEnvio}</span>
           </p>
+          )}
 
-          <div className={s.acciones}>
+          <div className={`${s.acciones} ${NAV ? n.acciones : ''}`}>
             <span className={s.carta}>
               <span className={s.trazo} aria-hidden="true" />
               <Link to="/catalogo" className={`tbtn ${s.cta}`} data-hero="cta" data-qa="hero-cta">
@@ -84,7 +129,7 @@ export default function Hero({
             </span>
           </div>
 
-          {lista.length > 0 && (
+          {!NAV && lista.length > 0 && (
             <div className={s.promos} data-hero="promos">
               {lista.map((p) => (
                 <button key={p.grupo} type="button" className={`${s.promo} tbtn clear`} onClick={() => onVerPromo?.(p.grupo)}>

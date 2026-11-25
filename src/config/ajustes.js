@@ -67,3 +67,25 @@ export const CARPETA_FOTOS = {
   unlock: '/perfumes',
   bagues: '/perfumes/bagues',
 };
+
+/**
+ * HERO DE NAVIDAD (campana de diciembre 2026).
+ *
+ * El interruptor. true: la portada muestra la escena navidena que entra en
+ * capas, con el precio del 2x1. false: vuelve al hero de siempre ("Cada
+ * perfume, una ciudad."), sin tocar nada mas. Para apagarlo despues de Navidad:
+ * cambiar esta linea a false y publicar. Las imagenes y el CSS de Navidad
+ * quedan en el repo (no se piden si esta apagado) por si se usan el ano que viene.
+ * El paso a paso esta en scripts/rediseno/README.md.
+ */
+export const HERO_NAVIDAD = true;
+
+/**
+ * Los precios de la placa del hero de Navidad, en pesos. Son los de la pieza
+ * del dueno (2x1 especial Navidad). NO salen de la base: si cambia el precio
+ * del 2x1, se cambia aca tambien. Con HERO_NAVIDAD en false no se usan.
+ */
+export const NAVIDAD_PRECIOS = {
+  lista: 30999,     // el precio de uno, tachado
+  cadaUno: 15499,   // lo que sale cada uno llevando dos
+};

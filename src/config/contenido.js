@@ -52,6 +52,23 @@ export const INICIO = {
 };
 
 /**
+ * Los textos del hero de Navidad (ver HERO_NAVIDAD en ajustes.js). Voseo y
+ * primera persona; nada de "originales": son versiones inspiradas, y la bajada
+ * lo dice en el primer pantallazo.
+ */
+export const INICIO_NAVIDAD = {
+  // La frase de la pieza del dueño, partida en tres renglones. El ultimo va
+  // en la italica de Boska, como el giro del hero de siempre.
+  titulo: ['La Navidad', 'se regala', 'con Bagués'],
+  bajada: 'Regalá fragancias únicas. Versiones inspiradas, hechas por Bagués.',
+  antes: 'Antes',
+  porUno: 'c/u',
+  oferta: '2x1',
+  ocasion: 'Especial Navidad',
+  combina: 'Combinalos como quieras',
+};
+
+/**
  * "¿Qué te gusta oler?" de la portada (rediseño C): las cinco familias del
  * filtro como puerta al catálogo filtrado. "archivo" es el nombre de la imagen
  * en public/familias/ (sin el ancho).

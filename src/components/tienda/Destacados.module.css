@@ -1,75 +1,101 @@
-/* Los más pedidos (antes "Los que siempre salen"; rediseño D, plano 4): el clímax. Banda vino entera,
-   con una sola luz arriba, como la pared del hero. Una fila sin marco, a
-   sangre en el celular. */
+/* Los mas pedidos (rediseño D, plano 4): el climax. Una banda vino que, al
+   llegar, TAPA LA PANTALLA ENTERA (Sebas, 25/11: "como slime", arriba y abajo,
+   sin importar el dispositivo) y se despega del borde de abajo recien cuando
+   se sigue bajando.
+
+   Como esta hecho, y por que:
+   - La banda es real, no un truco: la pista mide una pantalla chica (svh,
+     estable aunque la barra del navegador suba y baje: cero saltos) mas una
+     pausa. La escena va pegada (position: sticky) durante esa pausa. Es el
+     sticky nativo: lo hace el compositor, no se secuestra el scroll y se puede
+     pasar de largo a toda velocidad.
+   - Los bordes curvos vienen DIBUJADOS (svg con la onda trazada, dos capas:
+     vino y vino hondo). Lo unico que se anima es transform (translate y
+     scaleY) de la hoja que los lleva. Nada de clip-path, filter ni border-radius.
+   - Dos caminos. Con animation-timeline (Chrome reciente, Safari 26): las hojas
+     van atadas al scroll, se estiran y se asientan a la medida del dedo. Sin
+     el (casi todo celular hoy): dos centinelas con IntersectionObserver
+     prenden clases y las mismas hojas se asientan con una transicion corta.
+     Sin movimiento o sin JS: la banda queda quieta, con sus bordes ondulados.
+   - --onda es lo que sobresale arriba y abajo. Es menos que el relleno de las
+     secciones vecinas (72 a 140 px): tapa papel, nunca un texto. La seccion
+     lo resta con margen negativo: no empuja nada (cero CLS). */
 .section {
-  background:
-    radial-gradient(60% 46% at 50% 26%, rgba(158, 35, 53, 0.42), rgba(158, 35, 53, 0) 72%),
-    var(--vino);
+  --onda: clamp(52px, 10vw, 140px);
+  --pausa: 26svh;
+  position: relative; z-index: 2;
+  margin-block: calc(var(--onda) * -1);
+  padding-block: var(--onda);
   color: var(--crema);
-  padding-block: clamp(72px, 10vw, 140px) clamp(64px, 9vw, 120px);
+  /* Tapa el recorte de content-visibility (tienda.css): las hojas sobresalen. */
+  content-visibility: visible;
+}
+:global(.tienda) > main > section.section:not(#inicio-hero) {
+  content-visibility: visible; contain-intrinsic-size: none;
+}
+.pista {
+  position: relative;
+  min-height: calc(100svh + var(--pausa));
+  display: grid; align-items: start;
+  background: var(--vino);
+}
+.escena {
+  position: sticky; top: 0; z-index: 1;
+  min-height: 100svh;
+  display: grid; align-content: center;
+  /* La barra fija arriba no tapa el titulo: se centra en lo que queda. */
+  padding-block: calc(var(--bar-h, 74px) + 12px) 28px;
+  /* La luz de rubi, lejos de los bordes para que las ondas no tengan costura. */
+  background: radial-gradient(60% 30% at 50% 40%, rgba(158, 35, 53, 0.42), rgba(158, 35, 53, 0) 72%);
 }
 .marco { position: relative; }
+.centinela { position: absolute; left: 0; top: 0; width: 1px; height: 1px; pointer-events: none; }
+.centinelaBase { top: auto; bottom: 0; }
 
-/* La banda se estira (Sebas, 23/10, cuarta version). Cuando "Los mas
-   pedidos" llega a la pantalla, su fondo entero (el mismo degrade, una sola
-   pieza, sin costura) se estira de alto mas alla de los bordes de la seccion
-   y tapa las franjas de papel de arriba y abajo; al irse vuelve a su tamaño.
-   El contenido no se mueve: lo que se estira es un ::before detras.
-   Sin lag: se anima solo transform (scaleY), atado al scroll con una linea
-   de tiempo de la seccion (--banda). Lo mueve el compositor, fuera del hilo
-   principal, sin repintar. El degrade estirado un 18 % no se nota.
-   La barra y el volver arriba toman el vino solos: miden lo que tienen
-   debajo y el fondo estirado cuenta como parte de esta seccion.
-   Sin animation-timeline (Firefox hoy) o con movimiento reducido: la banda
-   como siempre. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    /* Por encima de la seccion de abajo, y dibujada siempre: con
-       content-visibility (tienda.css) lo que sale de la caja se recorta.
-       La linea de tiempo es la de la seccion, con nombre: con view() a secas
-       Chrome mediria al ::before por su cuenta. */
-    :global(.tienda) > main > section.section:not(#inicio-hero) {
-      position: relative; z-index: 2; isolation: isolate;
-      content-visibility: visible;
-      view-timeline: --banda block;
-      background: transparent;
-    }
-    .section::before {
-      content: ''; position: absolute; inset: 0; z-index: -1;
-      background:
-        radial-gradient(60% 46% at 50% 26%, rgba(158, 35, 53, 0.42), rgba(158, 35, 53, 0) 72%),
-        var(--vino);
-      transform-origin: 50% 50%;
-      will-change: transform;
-      animation: banda-estira linear both;
-      animation-timeline: --banda;
-      animation-range: cover 0% cover 100%;
-    }
-    /* Las tarjetas entran con la banda (Sebas, 23/10: "destacados tiene
-       como una pausa"). Antes esperaban a estar casi enteras en pantalla y
-       recien ahi hacian un fundido de medio segundo: la banda llegaba, el
-       titulo estaba y las fotos tardaban. Ahora suben atadas al mismo scroll
-       que la banda (--banda): aparecen a medida que se baja, sin esperar a
-       nada, y si se sube vuelven. Solo opacidad y transform. */
-    .item {
-      animation: tarjeta-entra linear both;
-      animation-timeline: --banda;
-      animation-range: entry 15% entry 65%;
-    }
+/* Las hojas: arriba y abajo, fuera de la pista, dentro del relleno. */
+.hoja { position: absolute; left: 0; right: 0; height: var(--onda); pointer-events: none; z-index: 0; }
+.hoja svg {
+  position: absolute; top: 0; left: 50%; translate: -50% 0;
+  width: max(100%, 900px); height: 100%; display: block;
+}
+.topeFrente, .topeFondo { top: 0; transform-origin: 50% 100%; }
+.baseFrente, .baseFondo { bottom: 0; transform-origin: 50% 0; }
+.baseFrente svg, .baseFondo svg { rotate: 180deg; }
+.topeFrente path, .baseFrente path { fill: var(--vino); }
+.topeFondo path, .baseFondo path { fill: var(--vino-hondo); }
+/* El canto hondo asoma 16 px mas alla del vino. */
+.topeFondo { top: -16px; height: calc(var(--onda) + 16px); }
+.baseFondo { bottom: -16px; height: calc(var(--onda) + 16px); }
+.topeFondo svg, .baseFondo svg { height: 100%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ---- Camino nativo: atado al scroll, sin hilo principal ---- */
+  @supports (animation-timeline: view()) {
+    .section { view-timeline: --banda block; }
+    .hoja { will-change: transform; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: --banda; }
+    .topeFrente { animation-name: llega-frente; animation-range: entry 0% entry 75%; }
+    .topeFondo { animation-name: llega-fondo; animation-range: entry 0% entry 75%; }
+    .baseFrente { animation-name: sale-frente; animation-range: exit 0% exit 55%; }
+    .baseFondo { animation-name: sale-fondo; animation-range: exit 0% exit 55%; }
   }
+  /* ---- Camino alternativo: IntersectionObserver + transicion ---- */
+  [data-liquido='io'] .topeFrente, [data-liquido='io'] .topeFondo,
+  [data-liquido='io'] .baseFrente, [data-liquido='io'] .baseFondo {
+    will-change: transform;
+    transition: transform 0.7s cubic-bezier(0.22, 1.25, 0.4, 1);
+  }
+  [data-liquido='io'] .topeFondo { transition-duration: 0.56s; }
+  [data-liquido='io']:not(.llego) .topeFrente { transform: translate3d(0, 62%, 0) scaleY(1.45); }
+  [data-liquido='io']:not(.llego) .topeFondo { transform: translate3d(0, 18%, 0) scaleY(1.8); }
+  [data-liquido='io']:not(.sale) .baseFrente { transform: translate3d(0, -60%, 0) scaleY(0.25); }
+  [data-liquido='io']:not(.sale) .baseFondo { transform: translate3d(0, -30%, 0) scaleY(0.15); }
 }
-@keyframes tarjeta-entra {
-  from { opacity: 0; transform: translateY(32px); }
-  to { opacity: 1; transform: none; }
-}
-/* 1,18 en el alto de la seccion: unos 60 px de mas arriba y abajo en el
-   celular y unos 85 en escritorio, siempre menos que el relleno de las
-   secciones vecinas (72 a 140 px): tapa papel, nunca un texto. */
-@keyframes banda-estira {
-  0%, 26% { transform: none; }
-  40%, 60% { transform: scaleY(1.18); }
-  74%, 100% { transform: none; }
-}
+/* La onda sale estirada y chorreando, y se asienta: la de adelante (vino)
+   llega rezagada, la honda va delante y deja el canto. Solo transform. */
+@keyframes llega-frente { from { transform: translate3d(0, 62%, 0) scaleY(1.45); } to { transform: none; } }
+@keyframes llega-fondo { from { transform: translate3d(0, 18%, 0) scaleY(1.8); } to { transform: none; } }
+@keyframes sale-frente { from { transform: translate3d(0, -60%, 0) scaleY(0.25); } to { transform: none; } }
+@keyframes sale-fondo { from { transform: translate3d(0, -30%, 0) scaleY(0.15); } to { transform: none; } }
 
 .head { margin-bottom: clamp(24px, 4vw, 44px); }
 :global(.tienda) .titulo {

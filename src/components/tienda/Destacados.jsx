@@ -9,6 +9,23 @@ import ProductThumb from './ProductThumb';
 import s from './Destacados.module.css';
 
 /**
+ * Los bordes liquidos. La curva viene DIBUJADA (nunca se calcula por cuadro):
+ * lo unico que se mueve es la hoja que la lleva, con transform. `frente` es el
+ * vino de la banda; `fondo` es una segunda onda en vino hondo que asoma como
+ * un canto mas espeso. Los de abajo son los mismos trazos girados 180 grados.
+ */
+const ONDA_FRENTE = 'M0 100V46C90 18 170 8 270 34C370 60 420 74 540 52C660 30 720 6 850 22C980 38 1030 80 1150 64C1260 50 1330 14 1440 30V100Z';
+const ONDA_FONDO = 'M0 100V62C110 40 200 22 320 42C430 60 520 84 650 60C770 38 860 10 960 26C1080 46 1150 80 1260 56C1340 40 1400 42 1440 48V100Z';
+
+function Hoja({ clase, d }) {
+  return (
+    <div className={`${s.hoja} ${clase}`} aria-hidden="true">
+      <svg viewBox="0 0 1440 100" preserveAspectRatio="none" focusable="false"><path d={d} /></svg>
+    </div>
+  );
+}
+
+/**
  * Los más pedidos (antes "Los que siempre salen"; rediseño D, plano 4: el clímax). La sección entera
  * del vino de la marca, como la banda roja de NOIR, con las fotos de producto
  * sobre la misma pared del hero. El vidrio sobre las tarjetas del rediseño C
@@ -19,6 +36,9 @@ import s from './Destacados.module.css';
  */
 export default function Destacados({ products, onOpen, onElegir, cargando = false }) {
   const filaRef = useRef(null);
+  const seccionRef = useRef(null);
+  const topeRef = useRef(null);
+  const baseRef = useRef(null);
   const { addItem } = useCart();
   const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p));
   // La flecha de la izquierda aparece recien cuando hay algo para atras: al
@@ -32,6 +52,31 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
     el.addEventListener('scroll', medir, { passive: true });
     return () => el.removeEventListener('scroll', medir);
   }, [cargando]);
+
+  // Camino alternativo del efecto liquido: donde no hay animation-timeline
+  // (casi todos los celulares hoy) dos centinelas con IntersectionObserver
+  // prenden y apagan clases, y las curvas se acomodan con una transicion de
+  // transform. Sin oyente de scroll. Donde el navegador si tiene linea de
+  // tiempo de scroll, o con movimiento reducido, no hace nada: lo resuelve el
+  // CSS (o queda la banda quieta, con sus bordes dibujados).
+  const hay = cargando || destacados.length > 0;
+  useEffect(() => {
+    const sec = seccionRef.current;
+    if (!hay || !sec || typeof IntersectionObserver === 'undefined') return undefined;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    if (window.CSS?.supports?.('animation-timeline: view()')) return undefined;
+    sec.dataset.liquido = 'io';
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        // Visto o ya pasado por arriba = prendido; todavia abajo = apagado.
+        const prendido = e.isIntersecting || e.boundingClientRect.top < 0;
+        sec.classList.toggle(e.target === topeRef.current ? s.llego : s.sale, prendido);
+      });
+    }, { rootMargin: '0px 0px -6% 0px' });
+    io.observe(topeRef.current);
+    io.observe(baseRef.current);
+    return () => { io.disconnect(); delete sec.dataset.liquido; };
+  }, [hay]);
 
   /** El + de la tarjeta: con un tamano agrega directo; con mas, la hoja. */
   function mas(p) {
@@ -73,7 +118,15 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
   }
 
   return (
-    <section className={s.section}>
+    <section className={s.section} ref={seccionRef}>
+      <Hoja clase={s.topeFondo} d={ONDA_FONDO} />
+      <Hoja clase={s.topeFrente} d={ONDA_FRENTE} />
+      <Hoja clase={s.baseFondo} d={ONDA_FONDO} />
+      <Hoja clase={s.baseFrente} d={ONDA_FRENTE} />
+      <div className={s.pista}>
+        <span className={s.centinela} ref={topeRef} aria-hidden="true" />
+        <span className={`${s.centinela} ${s.centinelaBase}`} ref={baseRef} aria-hidden="true" />
+        <div className={s.escena}>
       <div className={`tw ${s.marco}`}>
         <header className={s.head}>
           <h2 className={s.titulo}>{DESTACADOS.titulo}</h2>
@@ -153,6 +206,8 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
               <path d="m9 18 6-6-6-6" />
             </svg>
           </button>
+        </div>
+      </div>
         </div>
       </div>
     </section>

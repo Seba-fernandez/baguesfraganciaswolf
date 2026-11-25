@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { INICIO, INICIO_NAVIDAD } from '../../config/contenido';
-import { HERO_NAVIDAD, NAVIDAD_PRECIOS } from '../../config/ajustes';
+import { HERO_NAVIDAD } from '../../config/ajustes';
 import { pesos } from '../../lib/format';
 import Flecha from './Flecha';
 import s from './Hero.module.css';
@@ -43,6 +43,16 @@ export default function Hero({
   const NAV = HERO_NAVIDAD;
   const T = NAV ? INICIO_NAVIDAD : INICIO;
   const lista = Object.values(promos);
+  // La placa de Navidad NO lleva precios escritos a mano: sale del 2x1 que
+  // esta cargado en el ciclo (settings.promos_ciclo). Pagas el par y te llevas
+  // dos, asi que el tachado es el precio del par y el "c/u" es su mitad, para
+  // abajo, como lo imprime el catalogo (30.999 -> 15.499).
+  // Mientras la base no contesto, el lugar queda reservado y vacio (UX-17).
+  // Y si el ciclo se queda sin 2x1, la placa se apaga sola y vuelve la linea
+  // de siempre: el hero nunca puede prometer una promo que ya no existe.
+  const parNavidad = Math.max(0, ...lista.map((p) => Number(p?.precio_par) || 0));
+  const datosListos = desde != null;
+  const NAV_PLACA = NAV && (!datosListos || parNavidad > 0);
   // El precio minimo y el numero de aromas llegan con la base. Hasta entonces
   // (y en el HTML pre-generado) su lugar queda reservado y vacio (UX-17).
   const [antesDesde, despuesDesde] = INICIO.datosDesde.split('{desde}');
@@ -87,7 +97,7 @@ export default function Hero({
 
         <div className={`${s.compra} ${NAV ? n.compra : ''}`}>
           {/* El precio es lo que la clienta busca primero: grande y en tinta. */}
-          {NAV ? (
+          {NAV_PLACA ? (
             // La placa de Navidad: texto de verdad (no viene en la imagen).
             // Es lo ultimo que entra, pero se ve legible desde el primer
             // cuadro: solo se mueve, nunca se desvanece.
@@ -95,10 +105,10 @@ export default function Hero({
               <p className={n.precios}>
                 <span className={n.antes}>
                   <span className={n.leer}>{INICIO_NAVIDAD.antes} </span>
-                  <del>{pesos(NAVIDAD_PRECIOS.lista)}</del>
+                  <del>{parNavidad ? pesos(parNavidad) : ''}</del>
                 </span>
                 <span className={n.ahora}>
-                  <span className={n.ahoraNum} data-hero="precio">{pesos(NAVIDAD_PRECIOS.cadaUno)}</span>
+                  <span className={n.ahoraNum} data-hero="precio">{parNavidad ? pesos(Math.floor(parNavidad / 2)) : ''}</span>
                   <span className={n.cu}> {INICIO_NAVIDAD.porUno}</span>
                 </span>
               </p>

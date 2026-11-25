@@ -4,7 +4,7 @@ import { ahorroDe, esPublicable, lineaTarjeta, presentacionesActivas, presentaci
 import { precargarFoto } from '../../lib/fotos';
 import { pesos } from '../../lib/format';
 import { DESTACADOS, TARJETA, conDatos } from '../../config/contenido';
-import { DESTACADOS_MAXIMO, PROPORCION } from '../../config/ajustes';
+import { PROPORCION } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
 import s from './Destacados.module.css';
 
@@ -20,7 +20,7 @@ import s from './Destacados.module.css';
 export default function Destacados({ products, onOpen, onElegir, cargando = false }) {
   const filaRef = useRef(null);
   const { addItem } = useCart();
-  const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p)).slice(0, DESTACADOS_MAXIMO);
+  const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p));
   // La flecha de la izquierda aparece recien cuando hay algo para atras: al
   // arrancar tapaba el borde de la primera foto sin llevar a ningun lado.
   const [alInicio, setAlInicio] = useState(true);

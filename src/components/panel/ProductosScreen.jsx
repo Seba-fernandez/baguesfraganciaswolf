@@ -6,6 +6,7 @@ import Toggle from '../ui/Toggle';
 import FAB from '../ui/FAB';
 import { IconBottle } from '../ui/Icon';
 import { fotoDe, fotoChica } from '../../lib/fotos';
+import { esPublicable } from '../../lib/producto';
 import ProductoEditor from './ProductoEditor';
 import ProductosTabla from './ProductosTabla';
 import PreciosMinis from './PreciosMinis';
@@ -50,6 +51,12 @@ export default function ProductosScreen() {
   const filtrando = Boolean(texto.trim() || letra);
 
   const activos = products.filter((x) => x.activo).length;
+  // Los que de verdad salen en la fila "Los más pedidos" de la portada (la misma
+  // regla que components/tienda/Destacados.jsx) y los que están marcados pero
+  // no se ven porque están pausados o sin precio.
+  const marcados = products.filter((x) => x.destacado);
+  const enPortada = marcados.filter((x) => x.activo && esPublicable(x)).length;
+  const sinVerse = marcados.length - enPortada;
 
   if (loading) return <div className={s.loading}>Cargando catálogo…</div>;
 
@@ -59,6 +66,10 @@ export default function ProductosScreen() {
         <h2 className={s.title}>Catálogo</h2>
         <span className={s.subtitle}>{activos} activos · {products.length} en total</span>
       </div>
+      <p className={p.destacadosCuenta} aria-live="polite">
+        <strong>{enPortada}</strong> {enPortada === 1 ? 'destacado' : 'destacados'} en la portada
+        {sinVerse > 0 && ` (${sinVerse} marcado${sinVerse === 1 ? '' : 's'} que no se ve${sinVerse === 1 ? '' : 'n'}: pausado o sin precio)`}
+      </p>
 
       <div className={p.acciones}>
         <Link to="/panel/productos/ciclo" className={`${s.btn} ${s.btnGhost}`}>

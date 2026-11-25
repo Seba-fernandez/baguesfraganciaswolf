@@ -6,8 +6,12 @@
 /** Aromas por pantalla en el catalogo. Mas alto, mas scroll. */
 export const POR_PAGINA = 12;
 
-/** Cuantos destacados entran en la fila de arriba (se marcan en el panel). */
-export const DESTACADOS_MAXIMO = 6;
+/**
+ * Cuantos destacados se sugieren cuando una busqueda no encuentra nada
+ * (ProductGrid). La fila de la portada NO tiene tope: muestra todos los que se
+ * marcan en el panel, porque se desliza.
+ */
+export const DESTACADOS_SIN_RESULTADOS = 4;
 
 // Cuantos perfumes recuerda la flecha de volver de la ficha ("Si te gusta este"
 // y de ahi a otro): se vuelve de a uno, hasta este numero.

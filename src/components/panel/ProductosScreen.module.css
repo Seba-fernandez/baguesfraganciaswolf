@@ -62,6 +62,9 @@
 .letraTodas { padding: 0 10px; font-weight: 500; }
 .letraOn { background: var(--accent-bg); border-color: var(--accent-rim); color: var(--text-primary); }
 .cuenta { font-size: 12px; color: var(--text-tertiary); margin: -4px 0 0; }
+/* Cuantos perfumes salen en la fila de destacados de la portada: dato de control, texto plano. */
+.destacadosCuenta { font-size: 13px; color: var(--text-secondary); margin: -6px 0 12px; }
+.destacadosCuenta strong { color: var(--text-primary); font-weight: 600; }
 /* En el celular no entraban Pausados y las vistas en una fila y Pausados
    quedaba escondido a la derecha: ahora la fila baja. */
 .filaFiltros { flex-wrap: wrap; row-gap: 8px; }

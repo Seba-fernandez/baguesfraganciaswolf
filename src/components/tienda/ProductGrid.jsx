@@ -7,7 +7,7 @@ import { coincide, indexar, prepararConsulta } from '../../lib/busqueda';
 import { linkWhatsApp } from '../../lib/whatsapp';
 import useMedia from '../../hooks/useMedia';
 import { CATALOGO, LEGAL, conDatos } from '../../config/contenido';
-import { DESTACADOS_MAXIMO, POR_PAGINA } from '../../config/ajustes';
+import { DESTACADOS_SIN_RESULTADOS, POR_PAGINA } from '../../config/ajustes';
 import ProductCard from './ProductCard';
 import TiraCiclo from './TiraCiclo';
 import Flecha from './Flecha';
@@ -102,7 +102,7 @@ export default function ProductGrid({
   // Sin resultados: abajo del mensaje, los que mas salen, para no dejar a la
   // clienta frente a una pantalla vacia.
   const destacados = useMemo(
-    () => publicables.filter((p) => p.destacado).slice(0, Math.min(DESTACADOS_MAXIMO, 4)),
+    () => publicables.filter((p) => p.destacado).slice(0, DESTACADOS_SIN_RESULTADOS),
     [publicables]
   );
   const buscado = q.trim();

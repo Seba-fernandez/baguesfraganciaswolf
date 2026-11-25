@@ -257,7 +257,11 @@ export default function ProductGrid({
                     activa={promoActiva === p.grupo}
                     onClick={() => setPromoActiva(promoActiva === p.grupo ? null : p.grupo)}
                   >
-                    {p.grupo === 'arabe' ? CATALOGO.filtros.promoArabe : CATALOGO.filtros.promoDisenador}
+                    {/* El nombre que le puso el ciclo a la promo ("2x1 Navidad"):
+                        "disenador" y "arabe" son como agrupa el proveedor, no
+                        algo que le diga nada a la clienta. Si el ciclo no le
+                        puso nombre, queda el de siempre. */}
+                    {p.titulo || (p.grupo === 'arabe' ? CATALOGO.filtros.promoArabe : CATALOGO.filtros.promoDisenador)}
                   </Pastilla>
                 ))}
                 {conRebajados && (

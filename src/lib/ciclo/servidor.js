@@ -6,8 +6,8 @@
 //   imagenDeTienda  baja la foto por la misma funcion (el navegador no puede directo)
 //   subirFoto       guarda la foto armada en Storage y la pone en el perfume
 //   ponerFoto       pone una foto ya subida (desde el celular) en el perfume
-//   aplicarCiclo    registra la carga y llama a aplicar_ciclo()
-//   aplicarPromos   escribe settings.promos_ciclo (y grupo_promo) de las promos que Sebas confirmo
+//   aplicarCiclo    registra la carga y llama a aplicar_ciclo() UNA sola vez: precios, ciclo y
+//                   promos 2x1 (settings.promos_ciclo y grupo_promo) entran juntos o no entra nada
 import { supabase } from '../supabase';
 import { leerPdf } from './pdf.js';
 import { leerUnlock } from './leerUnlock.js';
@@ -16,6 +16,7 @@ import { leerTabla, TAMANO_MAXIMO_TABLA } from './leerTabla.js';
 import { lineaDePaginas } from './panel.js';
 import { cicloDelPdf } from './comparar.js';
 import { promosDelPdf } from './leerPromos.js';
+import { paramsDeAplicar } from './llamada.js';
 
 export const TAMANO_MAXIMO_PDF = 60 * 1024 * 1024;
 
@@ -150,12 +151,7 @@ export async function ponerFoto(producto, url) {
  * funcion que el ciclo: todo o nada y copia del catalogo antes de tocar nada.
  */
 export async function aplicarPreciosMinis(operaciones) {
-  const { data, error } = await supabase.rpc('aplicar_ciclo', {
-    p_carga: null,
-    p_operaciones: operaciones,
-    p_nuevos: [],
-    p_ciclo: null,
-  });
+  const { data, error } = await supabase.rpc('aplicar_ciclo', paramsDeAplicar({ operaciones }));
   if (error) throw new Error(`La base no cambió nada: ${error.message}`);
   return data;
 }
@@ -163,51 +159,21 @@ export async function aplicarPreciosMinis(operaciones) {
 /**
  * Registra la carga (que se leyo y que se propuso) y aplica. Todo o nada: si
  * la base rechaza una operacion, no cambia ninguna y devuelve el motivo.
+ *   promosCiclo   el settings.promos_ciclo completo que queda (ver promosCicloResultantes), o null
+ *   cambiosGrupo  [{ codigo, a, ... }]: presentaciones cuyo grupo_promo cambia
+ * Las promos van en la MISMA llamada que el ciclo: la base copia products y
+ * settings antes de tocar nada y, si un codigo no existe, frena todo.
  */
-export async function aplicarCiclo({ archivos, lectura, propuesta, operaciones, nuevos, ciclo }) {
+export async function aplicarCiclo({ archivos, lectura, propuesta, operaciones = [], nuevos = [], ciclo = null, promosCiclo = null, cambiosGrupo = [] }) {
+  // Se arman los parametros ANTES de registrar la carga: si algo esta mal, no queda nada a medias.
+  const params = paramsDeAplicar({ operaciones, nuevos, ciclo, promosCiclo, cambiosGrupo });
   const { data: carga, error: e1 } = await supabase
     .from('ciclo_cargas')
     .insert({ archivos, lectura, propuesta })
     .select('id')
     .single();
   if (e1) throw new Error(`No se pudo registrar la carga: ${e1.message}`);
-  const { data, error } = await supabase.rpc('aplicar_ciclo', {
-    p_carga: carga.id,
-    p_operaciones: operaciones,
-    p_nuevos: nuevos,
-    p_ciclo: ciclo,
-  });
+  const { data, error } = await supabase.rpc('aplicar_ciclo', { ...params, p_carga: carga.id });
   if (error) throw new Error(`La base no aplicó nada: ${error.message}`);
   return data;
-}
-
-/**
- * Escribe las promos que Sebas confirmo, DESPUES de aplicar el ciclo.
- *   promosCiclo   el settings.promos_ciclo completo que queda (ver promosCicloResultantes)
- *   cambiosGrupo  [{ productoId, codigo, a }]: presentaciones cuyo grupo_promo cambia
- *
- * No pasa por aplicar_ciclo() (que no sabe de promos y no se toca desde aca):
- * por eso NO es atomico con el ciclo ni deja copia previa. Se cuida asi: relee
- * cada perfume ya con los precios nuevos, cambia SOLO grupo_promo de los
- * codigos listados y comprueba que los codigos queden iguales antes de guardar.
- */
-export async function aplicarPromos({ promosCiclo, cambiosGrupo = [] }) {
-  const porProducto = new Map();
-  for (const c of cambiosGrupo) porProducto.set(c.productoId, [...(porProducto.get(c.productoId) || []), c]);
-  for (const [id, cambios] of porProducto) {
-    const { data: fila, error } = await supabase.from('products').select('id, presentaciones').eq('id', id).single();
-    if (error) throw new Error(`No se pudo releer el perfume para cambiarle el grupo de promo: ${error.message}`);
-    const antes = (fila.presentaciones || []).map((x) => x?.codigo);
-    const nuevoGrupo = new Map(cambios.map((c) => [String(c.codigo), c.a]));
-    const presentaciones = (fila.presentaciones || []).map((x) => (nuevoGrupo.has(String(x?.codigo)) ? { ...x, grupo_promo: nuevoGrupo.get(String(x.codigo)) } : x));
-    const despues = presentaciones.map((x) => x?.codigo);
-    if (antes.length !== despues.length || antes.some((c, i) => c !== despues[i])) {
-      throw new Error('Se frenó: el cambio de grupo de promo alteraba los códigos de un perfume. No se guardó nada de eso.');
-    }
-    const { error: e2 } = await supabase.from('products').update({ presentaciones }).eq('id', id);
-    if (e2) throw new Error(`No se pudo cambiar el grupo de promo: ${e2.message}`);
-  }
-  const { error } = await supabase.from('settings').update({ promos_ciclo: promosCiclo }).eq('id', 1);
-  if (error) throw new Error(`El ciclo se aplicó, pero no se pudieron guardar las promos: ${error.message}`);
-  return promosCiclo;
 }

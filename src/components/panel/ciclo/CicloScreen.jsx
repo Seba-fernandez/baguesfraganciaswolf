@@ -5,7 +5,7 @@ import useSettings from '../../../hooks/useSettings';
 import { compararCiclo } from '../../../lib/ciclo/comparar.js';
 import { nuevosParaAplicar } from '../../../lib/ciclo/panel.js';
 import { propuestaDePromos, promosCicloResultantes } from '../../../lib/ciclo/leerPromos.js';
-import { leerArchivo, aplicarCiclo, aplicarPromos } from '../../../lib/ciclo/servidor.js';
+import { leerArchivo, aplicarCiclo } from '../../../lib/ciclo/servidor.js';
 import { guardarCache } from '../../../lib/cachePanel';
 import Propuesta from './Propuesta';
 import FotosFaltantes from './FotosFaltantes';
@@ -87,7 +87,9 @@ export default function CicloScreen() {
     setEtapa('aplicando');
     setError(null);
     try {
-      const hayCiclo = propuesta.operaciones.length + nuevos.lista.length > 0 || (cicloNuevo && tocarCiclo);
+      const promosCiclo = promosConfirmadas.length ? promosCicloResultantes(settings.promos_ciclo, promosConfirmadas) : null;
+      const hayCiclo = propuesta.operaciones.length + nuevos.lista.length > 0 || (cicloNuevo && tocarCiclo) || promosConfirmadas.length > 0;
+      // Una sola llamada: precios, ciclo y promos entran juntos (todo o nada, con respaldo).
       const r = hayCiclo ? await aplicarCiclo({
         archivos: Object.values(archivos).filter(Boolean).map((a) => ({ nombre: a.nombre, linea: a.linea, paginas: a.paginas, tamano: a.tamano })),
         lectura: leidos,
@@ -95,13 +97,12 @@ export default function CicloScreen() {
         operaciones: propuesta.operaciones,
         nuevos: nuevos.lista,
         ciclo: cicloNuevo && tocarCiclo ? ciclo : null,
+        promosCiclo,
+        cambiosGrupo: promosConfirmadas.flatMap((x) => x.cambiosGrupo),
       }) : { precios: 0, desactivados: 0, activados: 0, nuevos: 0 };
-      if (promosConfirmadas.length) {
-        // Despues del ciclo: asi los perfumes ya tienen los precios nuevos cuando se les toca el grupo.
-        const promosCiclo = promosCicloResultantes(settings.promos_ciclo, promosConfirmadas);
-        await aplicarPromos({ promosCiclo, cambiosGrupo: promosConfirmadas.flatMap((x) => x.cambiosGrupo) });
-        guardarCache('settings', { ...settings, promos_ciclo: promosCiclo, ...(r?.ciclo ? { ciclo_nombre: r.ciclo.nombre, ciclo_hasta: r.ciclo.hasta ?? settings.ciclo_hasta } : {}) });
-      } else if (r?.ciclo) guardarCache('settings', { ...settings, ciclo_nombre: r.ciclo.nombre, ciclo_hasta: r.ciclo.hasta ?? settings.ciclo_hasta });
+      if (promosCiclo || r?.ciclo) {
+        guardarCache('settings', { ...settings, ...(promosCiclo ? { promos_ciclo: promosCiclo } : {}), ...(r?.ciclo ? { ciclo_nombre: r.ciclo.nombre, ciclo_hasta: r.ciclo.hasta ?? settings.ciclo_hasta } : {}) });
+      }
       setResultado({ ...r, promos: promosConfirmadas.length });
       setEtapa('hecho');
       setArchivos({ unlock: null, bagues: null });

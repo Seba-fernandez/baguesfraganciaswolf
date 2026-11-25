@@ -309,27 +309,58 @@ def a_straight(premult):
     rgb = np.where(a > 1e-4, premult[..., :3] / np.maximum(a, 1e-4), 0)
     return np.clip(np.concatenate([rgb, a], -1), 0, 1)
 
-# Presupuesto de peso: bits por pixel de cada capa en AVIF (el WebP, de respaldo,
-# tiene el doble). El hero de siempre pesa 0,33 bpp en AVIF; estas capas son mas
-# densas (pliegues de papel, vidrio, agujas de pino) pero se bajan hasta entrar.
-BPP_AVIF = dict(fondo=None, frascos=1.15, destello=1.5, luces=0.95, lucesb=0.95)
+# Calidad y escala de cada capa, medidas (no a ojo) contra la pieza sin comprimir:
+# (escala_de_la_imagen, q_avif, q_webp). La escala 1 es el recorte a la resolucion
+# horneada; 0.667 es un tercio menos de pixeles (el navegador la estira a su caja).
+#
+#  - frascos: siempre a escala 1. Es el producto (etiqueta, vidrio, vetas de la
+#    tapa) y a 0.75 ya se ve blando. q_avif parejo con la calidad (PSNR) que tenian.
+#  - luces: escala 1 (las agujas del pino y la estrella se ablandan si se baja).
+#    Un poco menos de calidad que antes: es resplandor con poco alfa.
+#  - destello: a 3x y 2x de escritorio (1170 y 2880) va a 2/3: son 1,5 y 1,33 px por
+#    pixel de la pieza, no hay detalle real que perder, y sin diferencia a la vista.
+#  - fondo: no entra aca. Es el LCP, queda con la misma q de siempre (60 y 86).
+CAPAS_COD = {
+    'frascos':  {'780x1688': (1, 35, 50), '1170x2532': (1, 35, 50), '1440x900': (1, 35, 50), '2880x1800': (1, 44, 71)},
+    'luces':    {'780x1688': (1, 38, 64), '1170x2532': (1, 38, 71), '1440x900': (1, 30, 45), '2880x1800': (1, 30, 70)},
+    'lucesb':   {'1440x900': (1, 44, 72), '2880x1800': (1, 52, 75)},
+    'destello': {'780x1688': (1, 54, 72), '1170x2532': (0.667, 54, 64), '1440x900': (1, 54, 72), '2880x1800': (0.667, 54, 71)},
+}
 
-def codificar(arr, ruta_base, rgba, q_webp=86, q_avif=62, bpp=None):
+def rellenar_color(straight, umbral=0.04, sigma=4):
+    """Donde la capa es casi transparente el color no se ve, pero comprimirlo cuesta
+    (es ruido de dividir por un alfa chiquito). Se reemplaza por el color vecino,
+    suavizado: mismo resultado a la vista, menos bits y sin bordes oscuros."""
+    a = straight[..., 3]
+    num = cv2.GaussianBlur(straight[..., :3] * a[..., None], (0, 0), sigma)
+    den = cv2.GaussianBlur(a, (0, 0), sigma)[..., None]
+    relleno = num / np.maximum(den, 1e-4)
+    w = np.clip(1 - a / umbral, 0, 1)[..., None]
+    return np.concatenate([straight[..., :3] * (1 - w) + relleno * w, straight[..., 3:]], -1)
+
+def codificar(arr, ruta_base, rgba, q_webp=86, q_avif=62):
+    """Guarda arr (float 0..1) como avif y webp. Esfuerzo maximo del codificador
+    (speed 0 / method 6): tarda mas al hornear, pesa menos y no cuesta nada al cargar."""
     modo = 'RGBA' if rgba else 'RGB'
     img = Image.fromarray(np.clip(arr * 255 + 0.5, 0, 255).astype(np.uint8), modo)
-    px = img.size[0] * img.size[1]
     res = {}
-    for ext, q0, kw, mult in (('webp', q_webp, dict(method=4), 2.0), ('avif', q_avif, dict(speed=6), 1.0)):
-        q = q0
-        max_kb = None if not bpp else bpp * mult * px / 8 / 1024
-        while True:
-            b = io.BytesIO(); img.save(b, ext.upper(), quality=q, **kw)
-            kb = len(b.getvalue()) / 1024
-            if max_kb is None or kb <= max_kb or q <= 28: break
-            q -= 8
+    for ext, kw in (('webp', dict(quality=q_webp, method=6, alpha_quality=q_webp)), ('avif', dict(quality=q_avif, speed=0))):
+        b = io.BytesIO(); img.save(b, ext.upper(), **kw)
         open(f'{ruta_base}.{ext}', 'wb').write(b.getvalue())
-        res[ext] = round(kb, 1)
+        res[ext] = round(len(b.getvalue()) / 1024, 1)
     return res
+
+def codificar_capa(lienzo, capa, tag, ruta_base):
+    """Recorta la capa a su caja real, la baja a la escala que le toca (sobre el
+    premultiplicado, para no sangrar color en los bordes), rellena el color de lo
+    transparente y la guarda. Devuelve (pesos, caja_css_px, px)."""
+    x0, y0, x1, y1 = bbox(lienzo)
+    esc_img, qa, qw = CAPAS_COD[capa][tag]
+    rec = lienzo[y0:y1, x0:x1]
+    if esc_img != 1:
+        rec = cv2.resize(rec, (max(2, round((x1 - x0) * esc_img)), max(2, round((y1 - y0) * esc_img))), interpolation=cv2.INTER_AREA)
+    st = rellenar_color(a_straight(rec))
+    return codificar(st, ruta_base, True, q_webp=qw, q_avif=qa), (x0, y0, x1, y1), list(st.shape[1::-1])
 
 def hornear(rapido=False):
     os.makedirs(SALIDA, exist_ok=True)
@@ -356,15 +387,12 @@ def hornear(rapido=False):
             info = {}
             info['fondo'] = codificar(fondo, os.path.join(SALIDA, f'fondo_{tag}'), False, q_avif=60)
             for capa, lienzo in salida.items():
-                bb = bbox(lienzo)
-                if bb is None: continue
-                x0, y0, x1, y1 = bb
-                # el recorte se alinea a 2 px para que la posicion en % sea exacta
-                rec_ = a_straight(lienzo[y0:y1, x0:x1])
+                if bbox(lienzo) is None: continue
+                pesos, (x0, y0, x1, y1), px = codificar_capa(lienzo, capa, tag, os.path.join(SALIDA, f'{capa}_{tag}'))
                 info[capa] = dict(
-                    pesos_kb=codificar(rec_, os.path.join(SALIDA, f'{capa}_{tag}'), True, bpp=BPP_AVIF[capa]),
+                    pesos_kb=pesos,
                     caja_css=[round(x0 / esc, 2), round(y0 / esc, 2), round((x1 - x0) / esc, 2), round((y1 - y0) / esc, 2)],
-                    px=[x1 - x0, y1 - y0])
+                    px=px)
             # la escena completa (para mirar y para medir contraste), no se publica
             esc_img = np.concatenate([fondo, np.ones_like(fondo[..., :1])], -1)
             for capa in ('luces', 'lucesb', 'frascos', 'destello'):

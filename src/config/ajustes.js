@@ -79,13 +79,3 @@ export const CARPETA_FOTOS = {
  * El paso a paso esta en scripts/rediseno/README.md.
  */
 export const HERO_NAVIDAD = true;
-
-/**
- * Los precios de la placa del hero de Navidad, en pesos. Son los de la pieza
- * del dueno (2x1 especial Navidad). NO salen de la base: si cambia el precio
- * del 2x1, se cambia aca tambien. Con HERO_NAVIDAD en false no se usan.
- */
-export const NAVIDAD_PRECIOS = {
-  lista: 30999,     // el precio de uno, tachado
-  cadaUno: 15499,   // lo que sale cada uno llevando dos
-};

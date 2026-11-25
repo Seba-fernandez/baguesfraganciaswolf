@@ -47,3 +47,35 @@ python3 hornear_hero.py ciclo.json            # completo, unos 3 minutos
 - Escritorio 1440x900: texto en x 96 a 620, ventana centrada en x 980.
 
 Si cambian estas zonas, hay que tocar también `Hero.module.css`.
+
+## Hero de Navidad (campaña de diciembre 2026)
+
+`hornear_hero_navidad.py` parte de la pieza del dueño (`fuentes/navidad-c12.png`,
+1774x887), le saca el texto quemado (BAGUÉS, bajada, "La Navidad se regala con
+Bagués", banda roja con el precio) y la desarma en capas: `fondo` (cortina y
+terciopelo vacíos, es el LCP), `luces`/`lucesb` (pino y luces de las esquinas),
+`frascos` y `destello`. Las capas salen como diferencia contra la cortina vacía,
+así el vidrio queda transparente de verdad. El titular, la placa del precio y el
+botón son texto del DOM (`Hero.jsx`, `HeroNavidad.module.css`).
+
+```bash
+cd scripts/rediseno
+python3 hornear_hero_navidad.py --rapido     # prueba (780 y 1440)
+python3 hornear_hero_navidad.py --publicar   # hornea, copia a public/hero/navidad/ y
+                                             # reescribe el bloque CAPAS de HeroNavidad.module.css
+```
+
+Color: la cortina verde de la pieza se lleva a vino hondo (la marca manda; verde
+más rubí más oro juntos son tres acentos). El verde queda en el brillo de los
+pliegues y en el pino.
+
+Precios de la placa: `NAVIDAD_PRECIOS` en `src/config/ajustes.js` (no salen de la
+base). Textos: `INICIO_NAVIDAD` en `contenido.js`.
+
+### Apagarlo después de Navidad
+
+En `src/config/ajustes.js`: `export const HERO_NAVIDAD = false;` y publicar.
+Vuelve el hero de siempre ("Cada perfume, una ciudad."), con su imagen y su
+precarga (`vite.config.js` solo cambia la precarga cuando está en true). Nada más
+que tocar; las imágenes de Navidad quedan en `public/hero/navidad/` por si se
+reusan. (`docs/EDITAR.md` no existe en este repo.)

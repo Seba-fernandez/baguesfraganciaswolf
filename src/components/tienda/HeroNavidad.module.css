@@ -1,0 +1,168 @@
+/* ============================================================================
+   Hero de Navidad (campaña de diciembre 2026). Se prende y se apaga con
+   HERO_NAVIDAD en src/config/ajustes.js; con false nada de esto se aplica.
+
+   La escena son cuatro capas horneadas por scripts/rediseno/hornear_hero_navidad.py
+   (fondo, luces, frascos, destello) en un "lienzo" con la proporción de la
+   imagen: 390 x 844 en el celular, 1440 x 900 en escritorio, que se acomoda
+   como un cover. Cada capa se posiciona en % del lienzo. El titular, la placa
+   del precio y el botón son texto de verdad encima.
+
+   Entrada (por tiempo, no atada al scroll, sin animation-timeline): fondo,
+   luces, frascos, destello, titular y, última, la placa con el botón. Solo
+   transform y opacity. La placa y el botón NUNCA arrancan transparentes: el
+   precio se lee desde el primer cuadro aunque la animación no termine.
+
+   El celular manda: todo se pensó a 390 px. El precio y el botón terminan antes
+   de los 664 px de alto (el visor de Instagram).
+   ============================================================================ */
+
+.navidad { --sal: cubic-bezier(0.16, 1, 0.3, 1); }
+.caja { overflow: clip; }
+
+.lienzo { position: absolute; z-index: 0; pointer-events: none; }
+.fondo, .capa { position: absolute; background-repeat: no-repeat; background-size: 100% 100%; }
+.fondo { inset: 0; background-color: #2a0d13; }
+
+/* Celular: el lienzo mide 390 x 844 de diseño y la caja lo corta a 718. */
+@media (max-width: 599px) {
+  .lienzo { top: 0; left: 0; width: 100%; aspect-ratio: 390 / 844; }
+}
+/* Escritorio: cover a mano, con la misma ancla (70 % / 50 %) que el hero de
+   siempre. El lienzo es de 1440 x 900; crece hasta cubrir la caja. */
+@media (min-width: 600px) {
+  .lienzo {
+    --cajah: clamp(620px, 100svh, 1000px);
+    --lw: max(100vw, calc(var(--cajah) * 1.6));
+    width: var(--lw); aspect-ratio: 1440 / 900;
+    left: calc((100vw - var(--lw)) * 0.7);
+    top: calc((var(--cajah) - var(--lw) / 1.6) * 0.5);
+  }
+}
+
+/* >>> CAPAS */
+/* CAPAS (generado por hornear_hero_navidad.py: no se edita a mano) */
+/* La previa del fondo (195 x 422) va embebida: se pinta al instante y la nitida la tapa. */
+.fondo { --previa: url('data:image/webp;base64,UklGRqAEAABXRUJQVlA4IJQEAADwMgCdASrDAKYBPnk6mEokoyKiIpCaCJAPCWdu8B5vaPcmelQ7jv20BugE7sABKb3u3+M6mvZoROpiTcJbOYE8pt2VMKBn0ryNbu0VBvcnBunHllyBo805UBdoju1AdXEy5xhyAlUNAjLZfBAbE98Z4K5VxjQEx4jaiLk918RwVxzPzVVxr7E1K+I4KXIGjzTnEAEb1I3S6IuJaP4NigediFiIQ38SsOCQAbecQ382KO1SPppbpMlXWPa6pszJLo7qcpsubvurlqZe77sJVTiBhhXhJY91KoFvF1WYzlRh5xioEbAUl/fBOt6GoNdGrL4IDYnvjPBXKisYA5ZpzlqcLCll+XxihAUBF4Jo7REptwy+RM5vsEMs2O6f9CgCgnDMJKKJdcEVhvMFNAbiNTifq/ycTJjSIN/p3QxVrQT/bGPbjKOzveVqWlJ46r1cKK7Y4QWZvKCqXTYrK8Xem02neng9zgXFywjN/WjdWQq1K6V+CrxH+48Hbz4JfMOMKVoNHlIyLUbRpK04SzpJNYSxYpWg0eT687u7u7u7u7uYAAD++W2f9VN+rSaRed+003XXYNQp4JXZes6yNnht/La7gXjRBNxUyUCLb6O4V800g4G8wLC/eKbwCu05KG87/h1sJEhOr3vquM4V3Aoml87fVkGdb4bKAUAoAv5V/twYO0YEwRQ1u3FVHnbB1YlkEt0TTRkHk4LW0XCnpu/YcMWwCVXwnaB0rs95hj+MdIJgJnA5LFJPabm13vljdnveDC4bx30F3j+kS6bVJKGBiXFmw9N56Rr9RUTPExRTUA7x2FokUlyk0pJeUSr065ZYbBWxpCTfEzSxZCDJdHoR5NM/f4gJrr3UVuLXVBQUqudXrtyFbxr52wXLUkslPaz/D0xtcqHVLkTboEJ+2HTZVrdLiOOOJtgsSfqyaYK/o5jsTm2Y4GRpY1FjuTwZJA2E1bl8qe8q491yQi+1dZZSSwofcF6qubIfMo5K8SDsZmlB6KHhAr1Wiy0tIl8Hdj5FbdrTZRAx71W20CQHeehbt2lF3JOgDz4YKA6HZtn+eJmNVFbyUMQ4/oftYNhl2jb0pKdfeoeReDocTmIXSOEBbq5un70DmqDVzpmxg/oogR2Zn9B0sPx8wN/mhWQXO8UzARkDFNSz+iqJNSqmPi3Q/my8BT47eib/M6T5yNybUG3/kPM6pbbS/PU5qz8XYuo52kdvsrNn/g7EvdXEKpigg6QF3GPcBIV34y7+SUGe8Lx8fHg18PuFHNO7tLEXXcj5GdEpkxob3zK9bVsl/Ed22zAfLZuad6AutDf7nmUuVPBLzg273rqBPS+iXqhMX4+IrW2tuLv3ypcZOTnPwdf/PAIXkj0+JlcxF49R/vfveDqlpJ+yHhK+t/O7eLsgNxB/MH2K9R6a+1ErMmF0tDXd+WtgPFHK8NEd9EEVMClu9jCyubwspnzaoqRbL2yQ5pOUwdDc3ZpazOrgh53wJGbaKaM6gXLUO3G8RsT9IB4WkxkH9gtv6l7vOYH6fvmrmG04B7cgT7ZLLghBAAAAAAAAAAAAAAAAAA=='); }
+@media (max-width: 599px) {
+  .luces { left: 0.0%; top: 0.0%; width: 100.0%; height: 14.633%; }
+  .lucesB { display: none; }
+  .frascos { left: 0.0%; top: 33.709%; width: 100.0%; height: 25.178%; }
+  .destello { left: 0.0%; top: 33.709%; width: 100.0%; height: 12.737%; }
+}
+@media (min-width: 600px) {
+  .luces { left: 0.0%; top: 0.0%; width: 26.806%; height: 24.556%; }
+  .lucesB { left: 80.972%; top: 0.0%; width: 19.028%; height: 22.222%; }
+  .frascos { left: 34.861%; top: 34.778%; width: 65.139%; height: 43.889%; }
+  .destello { left: 44.583%; top: 34.778%; width: 55.417%; height: 25.0%; }
+}
+@media (max-width: 599px) {
+  .fondo { background-image: url('/hero/navidad/fondo_780x1688.webp'), var(--previa); background-image: image-set(url('/hero/navidad/fondo_780x1688.avif') type('image/avif'), url('/hero/navidad/fondo_780x1688.webp') type('image/webp')), var(--previa); }
+  .luces { background-image: url('/hero/navidad/luces_780x1688.webp'); background-image: image-set(url('/hero/navidad/luces_780x1688.avif') type('image/avif'), url('/hero/navidad/luces_780x1688.webp') type('image/webp')); }
+  .frascos { background-image: url('/hero/navidad/frascos_780x1688.webp'); background-image: image-set(url('/hero/navidad/frascos_780x1688.avif') type('image/avif'), url('/hero/navidad/frascos_780x1688.webp') type('image/webp')); }
+  .destello { background-image: url('/hero/navidad/destello_780x1688.webp'); background-image: image-set(url('/hero/navidad/destello_780x1688.avif') type('image/avif'), url('/hero/navidad/destello_780x1688.webp') type('image/webp')); }
+}
+@media (max-width: 599px) and (min-resolution: 2.5dppx) {
+  .fondo { background-image: url('/hero/navidad/fondo_1170x2532.webp'), var(--previa); background-image: image-set(url('/hero/navidad/fondo_1170x2532.avif') type('image/avif'), url('/hero/navidad/fondo_1170x2532.webp') type('image/webp')), var(--previa); }
+  .luces { background-image: url('/hero/navidad/luces_1170x2532.webp'); background-image: image-set(url('/hero/navidad/luces_1170x2532.avif') type('image/avif'), url('/hero/navidad/luces_1170x2532.webp') type('image/webp')); }
+  .frascos { background-image: url('/hero/navidad/frascos_1170x2532.webp'); background-image: image-set(url('/hero/navidad/frascos_1170x2532.avif') type('image/avif'), url('/hero/navidad/frascos_1170x2532.webp') type('image/webp')); }
+  .destello { background-image: url('/hero/navidad/destello_1170x2532.webp'); background-image: image-set(url('/hero/navidad/destello_1170x2532.avif') type('image/avif'), url('/hero/navidad/destello_1170x2532.webp') type('image/webp')); }
+}
+@media (min-width: 600px) {
+  .fondo { background-image: url('/hero/navidad/fondo_1440x900.webp'); background-image: image-set(url('/hero/navidad/fondo_1440x900.avif') type('image/avif'), url('/hero/navidad/fondo_1440x900.webp') type('image/webp')); }
+  .luces { background-image: url('/hero/navidad/luces_1440x900.webp'); background-image: image-set(url('/hero/navidad/luces_1440x900.avif') type('image/avif'), url('/hero/navidad/luces_1440x900.webp') type('image/webp')); }
+  .lucesB { background-image: url('/hero/navidad/lucesb_1440x900.webp'); background-image: image-set(url('/hero/navidad/lucesb_1440x900.avif') type('image/avif'), url('/hero/navidad/lucesb_1440x900.webp') type('image/webp')); }
+  .frascos { background-image: url('/hero/navidad/frascos_1440x900.webp'); background-image: image-set(url('/hero/navidad/frascos_1440x900.avif') type('image/avif'), url('/hero/navidad/frascos_1440x900.webp') type('image/webp')); }
+  .destello { background-image: url('/hero/navidad/destello_1440x900.webp'); background-image: image-set(url('/hero/navidad/destello_1440x900.avif') type('image/avif'), url('/hero/navidad/destello_1440x900.webp') type('image/webp')); }
+}
+@media (min-width: 600px) and (min-resolution: 1.5dppx) {
+  .fondo { background-image: url('/hero/navidad/fondo_2880x1800.webp'); background-image: image-set(url('/hero/navidad/fondo_2880x1800.avif') type('image/avif'), url('/hero/navidad/fondo_2880x1800.webp') type('image/webp')); }
+  .luces { background-image: url('/hero/navidad/luces_2880x1800.webp'); background-image: image-set(url('/hero/navidad/luces_2880x1800.avif') type('image/avif'), url('/hero/navidad/luces_2880x1800.webp') type('image/webp')); }
+  .lucesB { background-image: url('/hero/navidad/lucesb_2880x1800.webp'); background-image: image-set(url('/hero/navidad/lucesb_2880x1800.avif') type('image/avif'), url('/hero/navidad/lucesb_2880x1800.webp') type('image/webp')); }
+  .frascos { background-image: url('/hero/navidad/frascos_2880x1800.webp'); background-image: image-set(url('/hero/navidad/frascos_2880x1800.avif') type('image/avif'), url('/hero/navidad/frascos_2880x1800.webp') type('image/webp')); }
+  .destello { background-image: url('/hero/navidad/destello_2880x1800.webp'); background-image: image-set(url('/hero/navidad/destello_2880x1800.avif') type('image/avif'), url('/hero/navidad/destello_2880x1800.webp') type('image/webp')); }
+}
+@media (min-width: 1601px) {
+  .fondo { background-image: url('/hero/navidad/fondo_2880x1800.webp'); background-image: image-set(url('/hero/navidad/fondo_2880x1800.avif') type('image/avif'), url('/hero/navidad/fondo_2880x1800.webp') type('image/webp')); }
+  .luces { background-image: url('/hero/navidad/luces_2880x1800.webp'); background-image: image-set(url('/hero/navidad/luces_2880x1800.avif') type('image/avif'), url('/hero/navidad/luces_2880x1800.webp') type('image/webp')); }
+  .lucesB { background-image: url('/hero/navidad/lucesb_2880x1800.webp'); background-image: image-set(url('/hero/navidad/lucesb_2880x1800.avif') type('image/avif'), url('/hero/navidad/lucesb_2880x1800.webp') type('image/webp')); }
+  .frascos { background-image: url('/hero/navidad/frascos_2880x1800.webp'); background-image: image-set(url('/hero/navidad/frascos_2880x1800.avif') type('image/avif'), url('/hero/navidad/frascos_2880x1800.webp') type('image/webp')); }
+  .destello { background-image: url('/hero/navidad/destello_2880x1800.webp'); background-image: image-set(url('/hero/navidad/destello_2880x1800.avif') type('image/avif'), url('/hero/navidad/destello_2880x1800.webp') type('image/webp')); }
+}
+/* <<< CAPAS */
+
+/* ---------- texto: la misma estructura que el hero de siempre ---------- */
+.navidad .titulo { text-wrap: balance; }
+
+/* La placa del precio: el rubí (el único acento) con dos filos finos de crema,
+   como la banda de la pieza. Texto de verdad: Boska para las cifras (el cero
+   de Melodrama viene cruzado), Melodrama para el 2x1, Figtree para lo chico. */
+.placa {
+  width: 100%; box-sizing: border-box;
+  display: grid; grid-template-columns: auto 1fr; align-items: center;
+  column-gap: 14px; text-align: left;
+  padding: 10px 16px;
+  background: var(--rubi); color: var(--crema);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(250, 239, 234, 0.4), inset 0 -1px 0 rgba(250, 239, 234, 0.4);
+}
+.precios, .oferta { margin: 0; }
+.precios { display: flex; flex-direction: column; align-items: flex-start; padding-right: 14px; border-right: 1px solid rgba(250, 239, 234, 0.35); }
+.antes {
+  font-family: var(--f-quote); font-style: italic; font-weight: 400;
+  font-size: 0.82rem; line-height: 1.1; color: var(--crema-suave);
+}
+.antes del { text-decoration-thickness: 1px; }
+.ahora { font-family: var(--f-quote); font-style: italic; font-weight: 400; line-height: 1; white-space: nowrap; }
+.ahoraNum { font-size: 2.05rem; letter-spacing: -0.01em; font-variant-numeric: lining-nums tabular-nums; }
+.cu { font-size: 0.85rem; color: var(--crema-suave); }
+.oferta { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.dos { font-family: var(--f-titulo); font-weight: 600; font-size: 2.2rem; line-height: 0.95; letter-spacing: -0.01em; }
+.ocasion { font-family: var(--f-body); font-weight: 600; font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; line-height: 1.2; }
+.combina { font-family: var(--f-quote); font-style: italic; font-weight: 400; font-size: 0.86rem; line-height: 1.15; color: var(--crema-suave); }
+.leer { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+@media (max-width: 599px) {
+  .navidad .inner { padding-bottom: 15vw; }          /* 718 - 659: el boton termina antes de 664 */
+  .navidad .titulo { font-size: 11vw; }               /* 43 px a 390 */
+  .navidad .bajada { margin-top: 2.4vw; font-size: 3.6vw; max-width: 17.5em; }
+  .placa { padding: 2.4vw 4vw; column-gap: 3.4vw; }
+  .precios { padding-right: 3.4vw; }
+  .antes { font-size: 3.3vw; }
+  .ahoraNum { font-size: 8.2vw; }
+  .cu { font-size: 3.4vw; }
+  .dos { font-size: 8.6vw; }
+  .ocasion { font-size: 2.6vw; }
+  .combina { font-size: 3.5vw; }
+  .navidad .acciones { margin-top: 2.4vw; }
+}
+@media (min-width: 600px) {
+  .navidad .titulo { font-size: clamp(2.6rem, 4.6vw, 4.8rem); }
+  .navidad .bajada { margin-top: 16px; font-size: clamp(1rem, 1.3vw, 1.1rem); max-width: 30em; }
+  .navidad .texto, .navidad .compra { max-width: min(460px, 42vw); }
+  .navidad .compra { margin-top: 26px; }
+  .placa { padding: 12px 20px; column-gap: 18px; }
+  .precios { padding-right: 18px; }
+}
+
+/* ---------- entrada por capas ---------- */
+@keyframes navFondo { from { transform: scale(1.035); } to { transform: none; } }
+@keyframes navLuces { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+@keyframes navFrascos { from { opacity: 0; transform: translateY(26px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes navDestello { from { opacity: 0; transform: scale(0.93); } to { opacity: 1; transform: none; } }
+/* La placa solo sube: sin opacidad, el precio y el botón se leen en el primer cuadro. */
+@keyframes navPlaca { from { transform: translateY(16px); } to { transform: none; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* El fondo NO se desvanece (es el LCP): solo se acerca, como la escena de siempre. */
+  .fondo { animation: navFondo 1.6s var(--sal) backwards; transform-origin: 50% 45%; }
+  .luces, .lucesB { animation: navLuces 0.9s var(--sal) 0.18s backwards; transform-origin: 50% 0; }
+  .frascos { animation: navFrascos 1s var(--sal) 0.4s backwards; transform-origin: 50% 100%; }
+  .destello { animation: navDestello 1.1s var(--sal) 0.85s backwards; transform-origin: 50% 60%; }
+  /* backwards y no both: con both, la animacion pisa el :hover del boton. */
+  .navidad .compra { animation: navPlaca 0.7s var(--sal) 1s backwards; }
+  /* El boton y sus trazos no tienen entrada propia: entran con la placa y se
+     ven desde el primer cuadro (en el hero de siempre empiezan transparentes). */
+  :global(.tienda) .navidad span a[data-hero='cta'] { animation: none; }
+  .navidad span[aria-hidden='true'][class] { animation: none; }
+}

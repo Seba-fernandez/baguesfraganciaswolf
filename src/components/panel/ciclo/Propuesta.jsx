@@ -98,7 +98,83 @@ function CodigoNuevo({ nuevo, decision, cambiar, productos, falta }) {
   );
 }
 
-export default function Propuesta({ propuesta, productos, decisiones, setDecisiones, faltan, children }) {
+/** Un precio que no se pudo leer: Sebas lo escribe mirando el catalogo, o deja el actual a conciencia. */
+function SinPrecio({ x, decision, cambiar }) {
+  const id = `sinprecio-${x.codigo}`;
+  const d = decision || {};
+  return (
+    <li className={c.nuevo} aria-labelledby={id}>
+      <div>
+        <span id={id} className={c.filaNombre}>{x.nombre || x.caja || 'Perfume sin nombre legible'}</span>
+        <div className={c.filaDato}>
+          <span className={c.mono}>{x.codigo}</span> · {LINEA[x.linea]}{x.pagina ? ` · página ${x.pagina}` : ''} · {x.motivo}
+          {x.enBase ? ` · hoy en la tienda ${pesos(x.precioActual)}` : ' · todavía no está en la tienda'}
+        </div>
+      </div>
+      <div className={c.campos}>
+        <label>
+          Precio según el catálogo
+          <input className={s.input} inputMode="numeric" placeholder="Ej: 30999" value={d.modo === 'precio' ? d.precio ?? '' : ''}
+            onChange={(e) => {
+              const n = e.target.value.replace(/\D/g, '');
+              cambiar(n ? { modo: 'precio', precio: Number(n) } : null);
+            }} />
+        </label>
+        {x.enBase && (
+          <button type="button" aria-pressed={d.modo === 'mantener'} className={`${c.modo} ${d.modo === 'mantener' ? c.modoOn : ''}`}
+            onClick={() => cambiar(d.modo === 'mantener' ? null : { modo: 'mantener' })}>
+            Dejar el precio actual ({pesos(x.precioActual)})
+          </button>
+        )}
+      </div>
+    </li>
+  );
+}
+
+/** Las promos 2x1 que trae el catalogo: se proponen y Sebas marca cuales cargar. */
+function PromosDelCatalogo({ promos, aceptadas, setAceptadas }) {
+  if (!promos || (!promos.reglas.length && !promos.avisos.length && !promos.otras.length)) return null;
+  return (
+    <details className={c.grupo} open>
+      <summary>Promos del catálogo<span className={c.grupoCuenta}>{promos.reglas.length}</span></summary>
+      <ul className={c.filas}>
+        {promos.reglas.map((r) => {
+          const marcada = Boolean(aceptadas[r.clave]);
+          return (
+            <li key={r.clave} className={c.nuevo}>
+              <div>
+                <span className={c.filaNombre}>{r.promo.titulo}: se paga {pesos(r.promo.precio_par)} y te llevás dos</span>
+                <div className={c.filaDato}>
+                  Páginas {r.regla.desde} a {r.regla.hasta} · {r.codigos.length} códigos de perfume · grupo “{r.promo.grupo}”
+                  {r.actual ? ` · hoy la tienda cobra el par a ${pesos(r.actual.precio_par)}` : ' · hoy la tienda no tiene esta promo'}
+                </div>
+                {r.cambiosGrupo.length > 0 && <div className={c.filaDato}>Al confirmar, {r.cambiosGrupo.length} {r.cambiosGrupo.length === 1 ? 'tamaño pasa' : 'tamaños pasan'} al grupo “{r.promo.grupo}”.</div>}
+                {r.sinCambios && <div className={c.filaDato}>Ya está cargada así: no hay nada que cambiar.</div>}
+                {r.bloqueos.map((b) => <p key={b} className={c.bloqueo}>{b}</p>)}
+                {r.avisos.map((a) => <div key={a} className={c.sospechoso}>{a}</div>)}
+              </div>
+              {!r.bloqueos.length && !r.sinCambios && (
+                <label className={c.check}>
+                  <input type="checkbox" checked={marcada} onChange={(e) => setAceptadas((p) => ({ ...p, [r.clave]: e.target.checked }))} />
+                  Cargar esta promo en la tienda
+                </label>
+              )}
+            </li>
+          );
+        })}
+        {promos.otras.map((o) => (
+          <li key={`${o.desde}-${o.hasta}-${o.precio_1}`} className={c.fila}>
+            <span className={c.filaNombre}>Llevá 1 por {pesos(o.precio_1)} o 2 a {pesos(o.precio_c_u_llevando_2)} c/u (páginas {o.desde} a {o.hasta})</span>
+            <span className={c.filaDato}>No es un 2x1: la tienda no sabe cobrarla, cargala a mano si la querés.</span>
+          </li>
+        ))}
+        {promos.avisos.map((a) => <li key={a} className={c.fila}><span className={c.filaNombre}>{a}</span></li>)}
+      </ul>
+    </details>
+  );
+}
+
+export default function Propuesta({ propuesta, productos, decisiones, setDecisiones, faltan, decisionesPrecio = {}, setDecisionesPrecio = () => {}, promos = null, promosAceptadas = {}, setPromosAceptadas = () => {}, children }) {
   const { grupos, resumen, alertas } = propuesta;
   const ordenados = [...productos].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
   const faltaDe = new Map(faltan.map((f) => [f.codigo, f]));
@@ -120,6 +196,20 @@ export default function Propuesta({ propuesta, productos, decisiones, setDecisio
           <ul className={c.filas}>{alertas.map((a) => <li key={a} className={c.fila}><span className={c.filaNombre}>{a}</span></li>)}</ul>
         </details>
       )}
+
+      {grupos.sinPrecio.length > 0 && (
+        <details className={c.grupo} open>
+          <summary>Precios que no pude leer<span className={c.grupoCuenta}>{grupos.sinPrecio.length}</span></summary>
+          <ul className={c.filas}>
+            {grupos.sinPrecio.map((x) => (
+              <SinPrecio key={x.codigo} x={x} decision={decisionesPrecio[x.codigo]}
+                cambiar={(d) => setDecisionesPrecio((prev) => { const { [x.codigo]: _quitado, ...resto } = prev; return d ? { ...resto, [x.codigo]: d } : resto; })} />
+            ))}
+          </ul>
+        </details>
+      )}
+
+      <PromosDelCatalogo promos={promos} aceptadas={promosAceptadas} setAceptadas={setPromosAceptadas} />
 
       <Grupo titulo="Precios de lista para confirmar" cuenta={grupos.revisar.length} abierto>
         {grupos.revisar.map((x) => (

@@ -145,16 +145,31 @@ ok('Frena con un PDF vacio o de la otra linea', () => {
   assert.ok(otra.bloqueos.some((b) => b.includes('otra línea')));
   assert.deepEqual(otra.forzables, [], 'el PDF equivocado no se fuerza nunca');
 });
-ok('Descarta lo que no tiene sentido (sin precio, lista menor, precio fuera de rango) y lo dice', () => {
+ok('Un precio ilegible (sin precio, lista menor, fuera de rango) FRENA y dice cual perfume y codigo; ya no se conserva el viejo en silencio', () => {
   const u = copia(unlock);
   u[0].precio = null;
   u[1].precio_anterior = 1000;
   u[2].precio = 999999;
   const r = compararCiclo(base, { unlock: u, bagues: null });
-  assert.equal(r.resumen.descartados, 3);
+  assert.equal(r.resumen.sinPrecio, 3);
+  assert.equal(r.resumen.descartados, 0);
+  assert.ok(r.bloqueos.some((b) => /No pude leer el precio de 3 perfumes/.test(b) && b.includes(u[0].codigo)));
+  assert.deepEqual(r.forzables, [], 'un precio ilegible no se fuerza: se decide codigo por codigo');
   assert.ok(!r.operaciones.some((o) => [u[0], u[1], u[2]].some((x) => x.codigo === o.codigo && o.tipo === 'precio')));
-  assert.ok(!r.grupos.desactivar.some((d) => [u[0], u[1], u[2]].some((x) => x.codigo === d.codigo)), 'un descartado no se desactiva');
-  assert.equal(r.alertas.filter((a) => /no se usa/.test(a)).length, 3);
+  assert.ok(!r.grupos.desactivar.some((d) => [u[0], u[1], u[2]].some((x) => x.codigo === d.codigo)), 'un ilegible no se desactiva');
+  // Con la decision de Sebas se destraba: precio escrito a mano, o dejar el actual a conciencia.
+  const actual = enBase.get(u[1].codigo);
+  const r2 = compararCiclo(base, { unlock: u, bagues: null }, { decisionesPrecio: {
+    [u[0].codigo]: { modo: 'precio', precio: 31000 },
+    [u[1].codigo]: { modo: 'mantener' },
+    [u[2].codigo]: { modo: 'precio', precio: 5 }, // fuera de rango: no cuenta
+  } });
+  assert.equal(r2.resumen.sinPrecio, 1);
+  assert.ok(r2.operaciones.some((o) => o.tipo === 'precio' && o.codigo === u[0].codigo && o.precio === 31000));
+  assert.equal(r2.grupos.mantenidos.length, 1);
+  assert.ok(r2.alertas.some((a) => a.includes(actual.producto.nombre) && /dejar el actual/.test(a)));
+  const r3 = compararCiclo(base, { unlock: u, bagues: null }, { decisionesPrecio: { [u[2].codigo]: { modo: 'precio', precio: 31000 }, [u[0].codigo]: { modo: 'precio', precio: 31000 }, [u[1].codigo]: { modo: 'mantener' } } });
+  assert.deepEqual(r3.bloqueos, [], 'resueltos los tres, ya no bloquea');
 });
 ok('Avisa un salto de precio raro', () => {
   const u = copia(unlock);

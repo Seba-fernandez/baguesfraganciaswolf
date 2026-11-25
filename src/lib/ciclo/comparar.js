@@ -52,14 +52,28 @@ export function problemaDeLeido(p, linea) {
   return null;
 }
 
-export function compararCiclo(filas, leidos) {
+/**
+ * Motivos por los que un perfume leido NO tiene un precio en el que se pueda
+ * confiar. Con cualquiera de ellos el codigo no se aplica solo, y tampoco se
+ * deja con el precio viejo en silencio: queda como decision pendiente.
+ */
+const MOTIVOS_DE_PRECIO = [/^sin precio$/, /^precio fuera de rango/, /^el precio de lista es menor/];
+const esProblemaDePrecio = (motivo) => MOTIVOS_DE_PRECIO.some((re) => re.test(motivo));
+
+/**
+ * `opciones.decisionesPrecio`: { [codigo]: { modo: 'precio', precio } | { modo: 'mantener' } }
+ * lo que Sebas decidio para los codigos cuyo precio no se pudo leer. Sin una
+ * decision, el codigo bloquea la carga.
+ */
+export function compararCiclo(filas, leidos, opciones = {}) {
+  const decisionesPrecio = opciones.decisionesPrecio || {};
   const operaciones = [];
   const alertas = [];
   const bloqueos = [];
   // Los bloqueos que Sebas puede pasar por alto a conciencia (un ciclo que de
   // verdad saca muchos perfumes). Un PDF vacio o de la otra linea, nunca.
   const forzables = [];
-  const grupos = { precios: [], reactivar: [], desactivar: [], nuevos: [], cajas: [], types: [], descartados: [], revisar: [] };
+  const grupos = { precios: [], reactivar: [], desactivar: [], nuevos: [], cajas: [], types: [], descartados: [], revisar: [], sinPrecio: [], mantenidos: [] };
 
   // Indice de la base por codigo.
   const enBase = new Map();
@@ -85,8 +99,38 @@ export function compararCiclo(filas, leidos) {
     }
 
     const leidosValidos = new Map();
-    for (const p of lista) {
-      const motivo = problemaDeLeido(p, linea);
+    const leidosPendientes = new Set(); // codigos que Sebas decidio mantener tal cual
+    for (const original of lista) {
+      let p = original;
+      let motivo = problemaDeLeido(p, linea);
+      if (motivo && esProblemaDePrecio(motivo) && lineaDeCodigo(p.codigo) === linea && /^\d{8}$/.test(String(p.codigo))) {
+        // Un precio que no se pudo leer NUNCA se resuelve solo ni conserva el
+        // viejo en silencio (asi se cobraron precios de noviembre todo un ciclo).
+        const d = decisionesPrecio[p.codigo];
+        const actual = enBase.get(String(p.codigo));
+        const manual = d?.modo === 'precio' ? Math.round(Number(d.precio)) : null;
+        if (manual && manual >= PRECIO_MINIMO && manual <= PRECIO_MAXIMO) {
+          // Lo escribio Sebas mirando el catalogo: vale como leido, sin precio de lista.
+          p = { ...p, precio: manual, precio_anterior: null, conservarAnterior: false };
+          motivo = problemaDeLeido(p, linea);
+        } else if (d?.modo === 'mantener' && actual) {
+          grupos.mantenidos.push({ linea, codigo: String(p.codigo), nombre: actual.producto.nombre, precio: Number(actual.pres.precio), pagina: p.pagina });
+          leidosPendientes.add(String(p.codigo));
+          continue;
+        } else {
+          grupos.sinPrecio.push({
+            linea,
+            codigo: String(p.codigo),
+            nombre: actual?.producto.nombre || p.caja || p.titulo || '',
+            caja: p.caja || p.titulo || '',
+            motivo,
+            pagina: p.pagina,
+            enBase: Boolean(actual),
+            precioActual: actual ? Number(actual.pres.precio) : null,
+          });
+          continue;
+        }
+      }
       if (motivo) { grupos.descartados.push({ linea, codigo: p.codigo, motivo, titulo: p.caja || p.titulo || '', pagina: p.pagina }); continue; }
       leidosValidos.set(String(p.codigo), p);
     }
@@ -167,7 +211,7 @@ export function compararCiclo(filas, leidos) {
 
     // Lo activo de esta linea que no vino en el PDF: se desactiva.
     const activosLinea = [...enBase.entries()].filter(([, { pres }]) => (pres.linea || lineaDeCodigo(pres.codigo)) === linea && pres.activo !== false);
-    const salen = activosLinea.filter(([codigo]) => !leidosValidos.has(codigo) && !lista.some((p) => String(p.codigo) === codigo));
+    const salen = activosLinea.filter(([codigo]) => !leidosValidos.has(codigo) && !leidosPendientes.has(codigo) && !lista.some((p) => String(p.codigo) === codigo));
     for (const [codigo, { producto, pres }] of salen) {
       grupos.desactivar.push({ productoId: producto.id, nombre: producto.nombre, codigo, linea, ml: pres.ml, caja: pres.nombre_proveedor || '' });
       operaciones.push({ tipo: 'desactivar', codigo });
@@ -177,6 +221,21 @@ export function compararCiclo(filas, leidos) {
       bloqueos.push(aviso);
       forzables.push(aviso);
     }
+  }
+
+  // Un precio ilegible frena la carga: se dice cual perfume y cual codigo.
+  if (grupos.sinPrecio.length) {
+    const nombreDe = (x) => `${x.nombre || x.caja || 'sin nombre legible'} (código ${x.codigo}${x.pagina ? `, página ${x.pagina}` : ''})`;
+    const primeros = grupos.sinPrecio.slice(0, 5).map(nombreDe).join('; ');
+    const resto = grupos.sinPrecio.length - 5;
+    bloqueos.push(
+      grupos.sinPrecio.length === 1
+        ? `No pude leer el precio de ${nombreDe(grupos.sinPrecio[0])}. Escribilo mirando el catálogo${grupos.sinPrecio[0].enBase ? ' o elegí dejar el actual' : ''} y recién ahí se puede aplicar.`
+        : `No pude leer el precio de ${grupos.sinPrecio.length} perfumes: ${primeros}${resto > 0 ? ` y ${resto} más` : ''}. Están en “Precios que no pude leer”: escribí cada precio mirando el catálogo o elegí dejar el actual, y recién ahí se puede aplicar.`,
+    );
+  }
+  for (const m of grupos.mantenidos) {
+    alertas.push(`${m.nombre} (código ${m.codigo}): no se pudo leer el precio y elegiste dejar el actual, ${pesos(m.precio)}.`);
   }
 
   for (const d of grupos.descartados) {
@@ -196,6 +255,8 @@ export function compararCiclo(filas, leidos) {
     cajas: grupos.cajas.length,
     types: grupos.types.length,
     descartados: grupos.descartados.length,
+    sinPrecio: grupos.sinPrecio.length,
+    mantenidos: grupos.mantenidos.length,
   };
   return { operaciones, grupos, alertas, bloqueos, forzables, resumen };
 }

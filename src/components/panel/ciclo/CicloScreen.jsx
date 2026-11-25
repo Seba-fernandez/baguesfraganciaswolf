@@ -4,7 +4,8 @@ import useProducts from '../../../hooks/useProducts';
 import useSettings from '../../../hooks/useSettings';
 import { compararCiclo } from '../../../lib/ciclo/comparar.js';
 import { nuevosParaAplicar } from '../../../lib/ciclo/panel.js';
-import { leerArchivo, aplicarCiclo } from '../../../lib/ciclo/servidor.js';
+import { propuestaDePromos, promosCicloResultantes } from '../../../lib/ciclo/leerPromos.js';
+import { leerArchivo, aplicarCiclo, aplicarPromos } from '../../../lib/ciclo/servidor.js';
 import { guardarCache } from '../../../lib/cachePanel';
 import Propuesta from './Propuesta';
 import FotosFaltantes from './FotosFaltantes';
@@ -28,6 +29,8 @@ export default function CicloScreen() {
   const [decisiones, setDecisiones] = useState({});
   const [forzar, setForzar] = useState(false);
   const [reviseListas, setReviseListas] = useState(false);
+  const [decisionesPrecio, setDecisionesPrecio] = useState({}); // precios que no se pudieron leer
+  const [promosAceptadas, setPromosAceptadas] = useState({}); // { [clave]: true }
   const [tocarCiclo, setTocarCiclo] = useState(true);
   const [etapa, setEtapa] = useState('revisar'); // revisar | confirmar | aplicando | hecho
   const [resultado, setResultado] = useState(null);
@@ -45,6 +48,8 @@ export default function CicloScreen() {
         setResultado(null);
         setForzar(false);
         setReviseListas(false);
+        setDecisionesPrecio({});
+        setPromosAceptadas({});
       } catch (err) {
         setError(`${archivo.name}: ${err.message}`);
       }
@@ -55,7 +60,13 @@ export default function CicloScreen() {
   const leidos = { unlock: archivos.unlock?.leidos ?? null, bagues: archivos.bagues?.leidos ?? null };
   const hayArchivo = Boolean(archivos.unlock || archivos.bagues);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const propuesta = useMemo(() => (hayArchivo && products.length ? compararCiclo(products, leidos) : null), [products, archivos]);
+  const propuesta = useMemo(() => (hayArchivo && products.length ? compararCiclo(products, leidos, { decisionesPrecio }) : null), [products, archivos, decisionesPrecio]);
+  // Las promos 2x1 del catalogo: se proponen, y solo se cargan las que Sebas marca.
+  const propuestaPromos = useMemo(
+    () => (archivos.bagues?.promos ? propuestaDePromos(archivos.bagues.promos, products, settings.promos_ciclo, archivos.bagues.leidos) : null),
+    [products, archivos, settings.promos_ciclo],
+  );
+  const promosConfirmadas = (propuestaPromos?.reglas || []).filter((r) => promosAceptadas[r.clave] && !r.bloqueos.length && !r.sinCambios);
   const ciclo = archivos.unlock?.ciclo || archivos.bagues?.ciclo || null;
   const cicloNuevo = ciclo && (ciclo.nombre !== settings.ciclo_nombre || (ciclo.hasta && ciclo.hasta !== settings.ciclo_hasta));
   const nuevos = useMemo(() => (propuesta ? nuevosParaAplicar(propuesta.grupos.nuevos, decisiones) : { lista: [], faltan: [] }), [propuesta, decisiones]);
@@ -66,7 +77,7 @@ export default function CicloScreen() {
   // cambia nada en la tienda: no se cuenta como cambio.
   const types = propuesta ? propuesta.operaciones.filter((o) => o.tipo === 'type').length : 0;
   const visibles = propuesta ? propuesta.operaciones.length - types + nuevos.lista.length + (cicloNuevo && tocarCiclo ? 1 : 0) : 0;
-  const cambios = visibles + types;
+  const cambios = visibles + types + promosConfirmadas.length;
   // Los precios de lista que no se leyeron de la imagen no se aplican sin que Sebas los mire.
   const porConfirmar = propuesta ? propuesta.grupos.revisar.length : 0;
   const puedeAplicar = propuesta && !bloqueosFirmes.length && (!necesitaForzar || forzar) && (!porConfirmar || reviseListas) && !nuevos.faltan.length && cambios > 0;
@@ -76,19 +87,27 @@ export default function CicloScreen() {
     setEtapa('aplicando');
     setError(null);
     try {
-      const r = await aplicarCiclo({
+      const hayCiclo = propuesta.operaciones.length + nuevos.lista.length > 0 || (cicloNuevo && tocarCiclo);
+      const r = hayCiclo ? await aplicarCiclo({
         archivos: Object.values(archivos).filter(Boolean).map((a) => ({ nombre: a.nombre, linea: a.linea, paginas: a.paginas, tamano: a.tamano })),
         lectura: leidos,
         propuesta: { resumen: propuesta.resumen, alertas: propuesta.alertas, bloqueos: propuesta.bloqueos, forzado: forzar },
         operaciones: propuesta.operaciones,
         nuevos: nuevos.lista,
         ciclo: cicloNuevo && tocarCiclo ? ciclo : null,
-      });
-      if (r?.ciclo) guardarCache('settings', { ...settings, ciclo_nombre: r.ciclo.nombre, ciclo_hasta: r.ciclo.hasta ?? settings.ciclo_hasta });
-      setResultado(r);
+      }) : { precios: 0, desactivados: 0, activados: 0, nuevos: 0 };
+      if (promosConfirmadas.length) {
+        // Despues del ciclo: asi los perfumes ya tienen los precios nuevos cuando se les toca el grupo.
+        const promosCiclo = promosCicloResultantes(settings.promos_ciclo, promosConfirmadas);
+        await aplicarPromos({ promosCiclo, cambiosGrupo: promosConfirmadas.flatMap((x) => x.cambiosGrupo) });
+        guardarCache('settings', { ...settings, promos_ciclo: promosCiclo, ...(r?.ciclo ? { ciclo_nombre: r.ciclo.nombre, ciclo_hasta: r.ciclo.hasta ?? settings.ciclo_hasta } : {}) });
+      } else if (r?.ciclo) guardarCache('settings', { ...settings, ciclo_nombre: r.ciclo.nombre, ciclo_hasta: r.ciclo.hasta ?? settings.ciclo_hasta });
+      setResultado({ ...r, promos: promosConfirmadas.length });
       setEtapa('hecho');
       setArchivos({ unlock: null, bagues: null });
       setDecisiones({});
+      setDecisionesPrecio({});
+      setPromosAceptadas({});
       await reload();
     } catch (err) {
       setError(err.message);
@@ -152,6 +171,7 @@ export default function CicloScreen() {
             {resultado.aromas_nuevos ? `${resultado.aromas_nuevos} perfumes nuevos. ` : ''}
             {resultado.aromas_apagados ? `${resultado.aromas_apagados} perfumes quedaron pausados (no les queda ningún tamaño). ` : ''}
             {resultado.ciclo ? `La tira de la tienda ahora dice ${resultado.ciclo.nombre}. ` : ''}
+            {resultado.promos ? `Se cargaron ${resultado.promos} ${resultado.promos === 1 ? 'promo' : 'promos'} (ajustes de la tienda). ` : ''}
             Antes de aplicar se guardó una copia del catálogo entero.
           </p>
           <p className={c.aviso}>
@@ -168,6 +188,11 @@ export default function CicloScreen() {
           decisiones={decisiones}
           setDecisiones={setDecisiones}
           faltan={nuevos.faltan}
+          decisionesPrecio={decisionesPrecio}
+          setDecisionesPrecio={setDecisionesPrecio}
+          promos={propuestaPromos}
+          promosAceptadas={promosAceptadas}
+          setPromosAceptadas={setPromosAceptadas}
         >
           {bloqueosFirmes.map((b) => <p key={b} className={c.bloqueo}>{b}</p>)}
           {necesitaForzar && (

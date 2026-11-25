@@ -14,6 +14,15 @@
 //   2. a cada codigo se le busca hacia atras su "Caja Type Perfume by Bagués";
 //   3. el precio es el par "$lista $precio" de la pagina; si hay mas de uno, el
 //      mas cercano al codigo (en la hoja, o en el texto si no hay posiciones).
+//   4. las paginas con cartel de 2x1 no traen ese par: traen el precio de lista
+//      de UNO ($30.999) y aparte "$15.499 c/u" (la mitad, lo que sale cada uno
+//      llevando dos). El precio del perfume es la lista; el c/u es de la promo
+//      y lo resuelve la regla (leerPromos.js), no el producto. Se reconoce
+//      porque lista = 2 x c/u (con 1 peso de redondeo). Va a la cuenta de
+//      "cual es el mas cercano": una hoja con 2x1 a la izquierda y otra cosa a
+//      la derecha no se mezclan.
+//   Un codigo sin precio sale con precio null Y un aviso: quien compara tiene
+//   que frenar, nunca conservar el precio viejo (ver comparar.js).
 //
 // Devuelve [{ codigo, caja, type, familia, genero, ml, precio, precio_anterior, pagina, avisos }].
 import { precioDeTexto } from './pdf.js';
@@ -26,6 +35,8 @@ export const PRECIO_MAXIMO = 200000;
 const CODIGO = /(?<![\d])(1028\d{4})(?![\d])/g;
 const TYPE = /Type\s+(.{1,70}?)\s+by\s+Bagu[ée]s/gi;
 const ENCABEZADO = /Eau de (?:parfum|toilette)(?:\s+(femenino|masculino))?\s+(\d{2,3})\s?ml/gi;
+const PRECIO_SUELTO = /\$\s?(\d{1,3}(?:\.\d{3})+)/g;
+const PRECIO_C_U = /\$\s?(\d{1,3}(?:\.\d{3})+)\s?c\/u/gi;
 const PAR = /\$\s?(\d{1,3}(?:\.\d{3})+)\s+\$\s?(\d{1,3}(?:\.\d{3})+)/g;
 
 /** Una pagina como texto continuo, con el lugar (x, y) de cada letra. */
@@ -83,6 +94,26 @@ export function piramideCerca(texto) {
   };
 }
 
+/**
+ * Los precios de lista de un 2x1: un "$lista" suelto que es el doble (+-1) de
+ * algun "$x c/u" de la misma pagina. "Precio sin impuestos nacionales: $12.809"
+ * no es un precio al publico y queda afuera.
+ */
+function listasDe2x1(texto, lugar) {
+  const cus = [...texto.matchAll(PRECIO_C_U)].map((m) => ({ pos: m.index, valor: precioDeTexto(`$${m[1]}`) }));
+  if (!cus.length) return [];
+  const enCu = new Set(cus.map((c) => c.pos));
+  const listas = [];
+  for (const m of texto.matchAll(PRECIO_SUELTO)) {
+    if (enCu.has(m.index) || /:\s*$/.test(texto.slice(Math.max(0, m.index - 3), m.index))) continue;
+    const valor = precioDeTexto(`$${m[1]}`);
+    if (valor < PRECIO_MINIMO || valor > PRECIO_MAXIMO) continue;
+    const cu = cus.find((c) => c.valor !== valor && Math.abs(valor - 2 * c.valor) <= 1);
+    if (cu) listas.push({ lista: null, precio: valor, cu: cu.valor, pos: m.index, item: lugar[m.index], promo: '2x1' });
+  }
+  return listas;
+}
+
 const distancia = (a, b) => (a && b ? Math.hypot(a.x - b.x, a.y - b.y) : Infinity);
 
 export function leerBagues(paginas) {
@@ -94,7 +125,12 @@ export function leerBagues(paginas) {
 
     const pares = [...texto.matchAll(PAR)]
       .map((m) => ({ lista: precioDeTexto(`$${m[1]}`), precio: precioDeTexto(`$${m[2]}`), pos: m.index, item: lugar[m.index] }))
-      .filter((p) => p.precio >= PRECIO_MINIMO && p.precio <= PRECIO_MAXIMO && p.lista > p.precio);
+      .filter((p) => p.precio >= PRECIO_MINIMO && p.precio <= PRECIO_MAXIMO && p.lista > p.precio
+        // "$30.999 $15.499 c/u" (la lista y la mitad pegadas) es un 2x1, no un par lista/precio:
+        // el precio del perfume es la lista. Lo resuelve listasDe2x1.
+        && Math.abs(p.lista - 2 * p.precio) > 1);
+    // Los de lista de una promo 2x1 compiten con los pares por "el mas cercano".
+    pares.push(...listasDe2x1(texto, lugar));
     const encabezados = [...texto.matchAll(ENCABEZADO)].map((m) => ({ genero: m[1]?.toLowerCase() || null, ml: Number(m[2]), pos: m.index, item: lugar[m.index] }));
     const types = [...texto.matchAll(TYPE)].map((m) => ({ type: m[1].replace(/\b\d{2,3}\s?ml\b/gi, '').replace(/\s+/g, ' ').trim(), pos: m.index, fin: m.index + m[0].length }));
 
@@ -118,9 +154,14 @@ export function leerBagues(paginas) {
       }
       // Precio: el unico par de la pagina, o el mas cercano.
       let par = null;
-      if (pares.length === 1) par = pares[0];
-      else if (pares.length > 1) {
-        par = [...pares].sort((a, b) => {
+      // La hoja tiene dos paginas lado a lado: si hay precios de las dos, los de
+      // la mitad del codigo van primero. Sin posiciones no se puede separar.
+      const mitad = (it) => (it && pagina.ancho ? (it.x < pagina.ancho / 2 ? 0 : 1) : null);
+      const delLado = item ? pares.filter((p) => mitad(p.item) === mitad(item)) : [];
+      const candidatos = delLado.length ? delLado : pares;
+      if (candidatos.length === 1) par = candidatos[0];
+      else if (candidatos.length > 1) {
+        par = [...candidatos].sort((a, b) => {
           const d = distancia(a.item, item) - distancia(b.item, item);
           return Number.isFinite(d) && d !== 0 ? d : Math.abs(a.pos - c.index) - Math.abs(b.pos - c.index);
         })[0];
@@ -139,7 +180,9 @@ export function leerBagues(paginas) {
         genero: unisex ? 'unisex' : enc?.genero || null,
         ml: enc?.ml || 50,
         precio: par?.precio ?? null,
+        // En un 2x1 la lista ES el precio; no hay un "antes" tachado de la tienda.
         precio_anterior: par?.lista ?? null,
+        ...(par?.promo ? { promo: par.promo, precio_c_u_promo: par.cu } : {}),
         pagina: pagina.n,
         piramide,
         avisos,

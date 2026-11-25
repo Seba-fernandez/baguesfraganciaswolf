@@ -10,7 +10,9 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { leerPromos, codigosDeRegla, paginasImpresas, proponerPromosCiclo } from '../../src/lib/ciclo/leerPromos.js';
+import { leerPromos, codigosDeRegla, paginasImpresas, proponerPromosCiclo, promosDelPdf, propuestaDePromos, promosCicloResultantes } from '../../src/lib/ciclo/leerPromos.js';
+import { leerBagues } from '../../src/lib/ciclo/leerBagues.js';
+import { compararCiclo } from '../../src/lib/ciclo/comparar.js';
 import { calcularCarrito } from '../../src/lib/promos.js';
 
 const F = path.join(import.meta.dirname, 'fixtures');
@@ -112,6 +114,133 @@ ok('el precio del par se valida contra c/u: dos precios que no son mitad uno del
   assert.equal(x.reglas.length, 0);
 });
 
+
+// ---- leerBagues en las paginas con 2x1 (bug del 24/11: devolvia precio null para ~80 perfumes
+// y comparar.js dejaba el precio de noviembre sin avisar)
+function verificarLector(paginas, etiqueta) {
+  const leidos = leerBagues(paginas);
+  const regla = leerPromos(paginas).reglas.find((x) => x.desde === 2);
+  const enRango = new Set(codigosDeRegla(paginas, regla).codigos);
+  const delRango = leidos.filter((p) => enRango.has(p.codigo));
+
+  ok(`${etiqueta}: los ${enRango.size} perfumes del 2x1 salen con precio $30.999 (antes: null)`, () => {
+    assert.equal(enRango.size, 78);
+    assert.equal(delRango.length, 78);
+    assert.deepEqual(delRango.filter((p) => !p.precio).map((p) => p.codigo), []);
+    assert.ok(delRango.every((p) => p.precio === 30999 && p.precio_anterior === null && p.promo === '2x1' && p.precio_c_u_promo === 15499));
+    assert.ok(delRango.every((p) => !p.avisos.some((a) => /precio/.test(a))));
+  });
+  ok(`${etiqueta}: las págs. 30 a 33 (sin promo) siguen igual: lista $33.599, $25.199 c/u`, () => {
+    const resto = leidos.filter((p) => !enRango.has(p.codigo) && p.precio);
+    assert.equal(resto.length, 9);
+    assert.ok(resto.every((p) => p.precio === 25199 && p.precio_anterior === 33599 && !p.promo));
+  });
+  ok(`${etiqueta}: lo que de verdad no se lee (la contratapa "precio especial" es imagen) sigue en null CON aviso`, () => {
+    const sin = leidos.filter((p) => !p.precio);
+    assert.deepEqual(sin.map((p) => p.codigo).sort(), ['10281136', '10282087']);
+    assert.ok(sin.every((p) => p.avisos.some((a) => /no encontré el precio/.test(a))));
+  });
+  return leidos;
+}
+
+ok('cada mitad del pliego usa los precios de su lado (2x1 a la izquierda, otro precio a la derecha)', () => {
+  const mixto = [{ n: 1, ancho: 964, alto: 590, items: [
+    { x: 29, y: 300, s: 'Arizona' }, { x: 29, y: 310, s: 'Type Sauvage' }, { x: 29, y: 320, s: 'by Bagués' }, { x: 29, y: 330, s: '10282038' },
+    { x: 28, y: 518, s: '$30.999' }, { x: 28, y: 543, s: '$15.499' }, { x: 114, y: 543, s: 'c/u' },
+    { x: 533, y: 300, s: 'Bellagio' }, { x: 533, y: 310, s: 'Type Code' }, { x: 533, y: 320, s: 'by Bagués' }, { x: 533, y: 330, s: '10282109' },
+    { x: 853, y: 118, s: '$33.599' }, { x: 853, y: 142, s: '$25.199' }, { x: 921, y: 142, s: 'c/u' },
+  ] }];
+  const r = leerBagues(mixto);
+  assert.deepEqual(r.map((p) => [p.codigo, p.precio, p.precio_anterior]), [['10282038', 30999, null], ['10282109', 25199, 33599]]);
+});
+
+ok('un precio que NO es el doble de un c/u no se toma por precio de 2x1 (no se inventa)', () => {
+  const raro = [{ n: 1, ancho: 964, alto: 590, items: [
+    { x: 29, y: 300, s: 'Arizona Type Sauvage by Bagués 10282038' },
+    { x: 28, y: 518, s: '$30.999' }, { x: 28, y: 530, s: 'Llevalos todos' }, { x: 28, y: 543, s: '$20.000' }, { x: 114, y: 543, s: 'c/u' },
+  ] }];
+  const [p] = leerBagues(raro);
+  assert.equal(p.precio, null);
+  assert.ok(p.avisos.some((a) => /no encontré el precio/.test(a)));
+});
+
+const leidosC12 = verificarLector(paginas, 'fixture');
+
+// ---- un precio ilegible bloquea en vez de conservar el viejo
+const baseNoviembre = () => {
+  const filas = leidosC12.map((p, i) => ({
+    id: `p${i}`, nombre: `Perfume ${p.codigo}`, inspirado_en: p.type, activo: true,
+    presentaciones: [{ codigo: p.codigo, linea: 'bagues', ml: 50, precio: 24399, precio_anterior: null, nombre_proveedor: p.caja, type: p.type, activo: true, grupo_promo: p.promo ? 'disenador' : 'arabe' }],
+  }));
+  return filas;
+};
+ok('comparar: con el lector roto (precio null) NO conserva el de noviembre: bloquea y nombra el código', () => {
+  const roto = leidosC12.map((p) => ({ ...p, precio: null, precio_anterior: null, promo: undefined }));
+  const r = compararCiclo(baseNoviembre(), { unlock: null, bagues: roto });
+  assert.equal(r.resumen.sinPrecio, roto.length);
+  assert.ok(r.bloqueos.length >= 1 && r.forzables.length === 0, 'bloquea y no se puede forzar');
+  assert.match(r.bloqueos[0], /No pude leer el precio de 89 perfumes/);
+  assert.ok(r.bloqueos[0].includes('10282038'));
+  assert.deepEqual(r.operaciones, [], 'no queda ninguna operación de precio ni de desactivar');
+});
+ok('comparar: con el lector arreglado, los 78 precios cambian de $24.399 a $30.999 y solo quedan 2 por decidir', () => {
+  const r = compararCiclo(baseNoviembre(), { unlock: null, bagues: leidosC12 });
+  assert.equal(r.grupos.precios.filter((x) => x.despues.precio === 30999).length, 78);
+  assert.equal(r.grupos.sinPrecio.length, 2);
+  assert.ok(r.bloqueos.some((b) => b.includes('10282087') && b.includes('10281136')));
+  const r2 = compararCiclo(baseNoviembre(), { unlock: null, bagues: leidosC12 }, { decisionesPrecio: { 10282087: { modo: 'mantener' }, 10281136: { modo: 'precio', precio: 22000 } } });
+  assert.deepEqual(r2.bloqueos, []);
+});
+
+// ---- las promos conectadas al flujo: propuesta atada a los códigos del rango
+ok('propuesta: la regla 2x1 se ata a los 78 códigos del rango, no al grupo; el árabe (30 a 33) queda afuera', () => {
+  const promos = promosDelPdf(paginas);
+  const prop = propuestaDePromos(promos, baseNoviembre(), [{ grupo: 'disenador', precio_par: 24399 }, { grupo: 'arabe', precio_par: 25000, titulo: '25% off' }], leidosC12);
+  const nav = prop.reglas.find((r) => r.regla.desde === 2);
+  assert.equal(nav.codigos.length, 78);
+  assert.equal(nav.promo.grupo, 'disenador');
+  assert.equal(nav.promo.precio_par, 30999);
+  assert.deepEqual(nav.bloqueos, []);
+  assert.deepEqual(nav.cambiosGrupo, [], 'ya están en disenador: no se toca ninguna presentación');
+  assert.equal(nav.fuera.length, 0);
+  assert.equal(nav.sinCambios, false);
+  const arabes = leidosC12.filter((p) => !p.promo && p.precio).map((p) => p.codigo);
+  assert.ok(arabes.every((c) => !nav.codigos.includes(c)));
+  // lo que se escribe: reemplaza SOLO disenador; el árabe queda tal cual
+  const final = promosCicloResultantes([{ grupo: 'disenador', precio_par: 24399 }, { grupo: 'arabe', precio_par: 25000, titulo: '25% off' }], [nav]);
+  assert.equal(final.length, 2);
+  assert.equal(final.find((x) => x.grupo === 'disenador').precio_par, 30999);
+  assert.deepEqual(final.find((x) => x.grupo === 'arabe'), { grupo: 'arabe', precio_par: 25000, titulo: '25% off' });
+});
+
+ok('propuesta: si un código del rango está en el grupo árabe, la regla BLOQUEA (no se regala producto)', () => {
+  const filas = baseNoviembre();
+  filas[0].presentaciones[0].grupo_promo = 'arabe';
+  const nav = propuestaDePromos(promosDelPdf(paginas), filas, [], leidosC12).reglas.find((r) => r.regla.desde === 2);
+  assert.equal(nav.bloqueos.length, 1);
+  assert.match(nav.bloqueos[0], /descuento simple/);
+  assert.ok(nav.bloqueos[0].includes(filas[0].presentaciones[0].codigo));
+  assert.ok(!nav.cambiosGrupo.some((c) => c.codigo === filas[0].presentaciones[0].codigo), 'no se le cambia el grupo al árabe');
+});
+
+ok('propuesta: códigos sin grupo pasan a "disenador" y los de otro lado con ese grupo se avisan', () => {
+  const filas = baseNoviembre();
+  delete filas[3].presentaciones[0].grupo_promo;
+  filas.push({ id: 'x', nombre: 'Suelto', activo: true, presentaciones: [{ codigo: '10289999', linea: 'bagues', ml: 50, precio: 20000, activo: true, grupo_promo: 'disenador' }] });
+  const nav = propuestaDePromos(promosDelPdf(paginas), filas, [], leidosC12).reglas.find((r) => r.regla.desde === 2);
+  assert.equal(nav.cambiosGrupo.length, 1);
+  assert.equal(nav.cambiosGrupo[0].a, 'disenador');
+  assert.deepEqual(nav.fuera.map((f) => f.codigo), ['10289999']);
+  assert.ok(nav.avisos.some((a) => /también se cobrarían como 2x1/.test(a)));
+});
+
+ok('propuesta: la misma promo ya cargada se marca "sin cambios"', () => {
+  const filas = baseNoviembre();
+  const primera = propuestaDePromos(promosDelPdf(paginas), filas, [], leidosC12).reglas.find((r) => r.regla.desde === 2);
+  const otra = propuestaDePromos(promosDelPdf(paginas), filas, [primera.promo], leidosC12).reglas.find((r) => r.regla.desde === 2);
+  assert.equal(otra.sinCambios, true);
+});
+
 // ---- contra el PDF entero, si esta a mano
 const RUTA = process.env.BAGUES_C12_PDF || '/mnt/user-data/uploads/Catálogo_Bagues_C1226.pdf';
 if (fs.existsSync(RUTA)) {
@@ -119,6 +248,11 @@ if (fs.existsSync(RUTA)) {
   const { leerPdf } = await import('../../src/lib/ciclo/pdf.js');
   const completo = await leerPdf(pdfjs, fs.readFileSync(RUTA));
   verificar(completo, 'PDF entero');
+  const todos = verificarLector(completo, 'PDF entero');
+  ok('PDF entero: de 89 perfumes leídos, 80 salían con precio null; ahora 2 (la contratapa)', () => {
+    assert.equal(todos.length, 89);
+    assert.equal(todos.filter((p) => !p.precio).length, 2);
+  });
   ok('PDF entero: 51 hojas y 78 códigos en el rango de Navidad', () => {
     assert.equal(completo.length, 51);
     const regla = leerPromos(completo).reglas.find((x) => x.desde === 2);

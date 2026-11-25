@@ -3,11 +3,15 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App, { precargarCatalogo } from './App.jsx'
 import { escucharErrores } from './lib/errores.js'
+import { recuperarCargaFallida } from './lib/recuperar.js'
 import { cargarMetricas } from './lib/metricas.js'
 
 // Los errores que le pasen a una clienta quedan anotados (ver lib/errores.js),
 // y las visitas y la velocidad reales se miden despues de cargar (lib/metricas.js).
 escucharErrores()
+// Va despues de escucharErrores a proposito: el error se anota antes de recargar
+// (si no, se perderia justo la visibilidad del problema). Ver lib/recuperar.js.
+recuperarCargaFallida()
 cargarMetricas()
 
 // Ni ThemeProvider ni AuthProvider ni global.css viven acá: son del panel y se

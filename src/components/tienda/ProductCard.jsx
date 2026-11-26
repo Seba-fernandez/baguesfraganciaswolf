@@ -55,7 +55,9 @@ export default function ProductCard({ producto, onOpen, onElegir, promos = {}, p
         type="button"
         className={s.media}
         onClick={() => onOpen(producto)}
-        aria-label={`Ver ${titulo}`}
+        // El nombre accesible tiene que incluir lo que se ve (WCAG 2.5.3): con
+        // la etiqueta "2x1" encima de la foto, "Ver Sauvage" sola no alcanza.
+        aria-label={hayPromo ? `Ver ${titulo}, 2x1` : `Ver ${titulo}`}
       >
         <ProductThumb producto={producto} linea={base?.linea} prioridad={prioridad} aparece />
         {hayPromo && <span className={s.promoTag}>2x1</span>}

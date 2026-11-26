@@ -41,6 +41,7 @@
   opacity: 0.9;
 }
 
+.inicial::before, .familia::before { content: attr(data-texto); }
 .familia {
   position: absolute; left: 0; right: 0; bottom: 12px;
   text-align: center; font-size: 0.66rem; letter-spacing: 0.16em;

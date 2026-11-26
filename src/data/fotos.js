@@ -7,6 +7,7 @@ export const FOTO_UNLOCK = new Set([
   "bagues-baccarat-rouge",
   "unlock-212-heroes-fem",
   "unlock-212-heroes-hom",
+  "unlock-212-vip-party",
   "unlock-212-vip-rose",
   "unlock-acqua-di-gio",
   "unlock-ange-ou-demon",

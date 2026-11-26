@@ -360,6 +360,29 @@ def agregar_desde_catalogo(page, indice):
     return precio
 
 
+def total_con_promos(items, promos):
+    """El total que tiene que dar el cajon, calculado aca y no con lib/promos.js
+    (un oraculo aparte): 2x1 de a pares por grupo, lo demas por unidad."""
+    import math
+    reglas = {p["grupo"]: p for p in (promos or []) if isinstance(p, dict) and p.get("grupo")}
+    grupos, sin = {}, 0
+    for it in items or []:
+        cant = int(it.get("cantidad") or 0)
+        g = it.get("grupo_promo")
+        if g and g in reglas:
+            grupos[g] = grupos.get(g, 0) + cant
+        else:
+            sin += float(it.get("precio") or 0) * cant
+    return int(sin + sum(math.ceil(u / 2) * float(reglas[g].get("precio_par") or 0) for g, u in grupos.items()))
+
+
+def promos_de(resp):
+    """settings.promos_ciclo de una respuesta de PostgREST (lista o fila)."""
+    filas = resp.json()
+    fila = filas[0] if isinstance(filas, list) and filas else filas
+    return (fila or {}).get("promos_ciclo") or []
+
+
 def flujo_pedido(browser, base):
     """UX-7, CONFIANZA-1 (cajon), REG-1 (codigo y suma)."""
     ctx, page = nuevo(browser, MOVIL)
@@ -369,6 +392,11 @@ def flujo_pedido(browser, base):
         if "/rest/v1/products" in resp.url and resp.request.method == "GET":
             try:
                 productos["filas"] = resp.json()
+            except Exception:
+                pass
+        if "/rest/v1/settings" in resp.url and resp.request.method == "GET":
+            try:
+                productos["promos"] = promos_de(resp)
             except Exception:
                 pass
     page.on("response", guardar)
@@ -382,6 +410,9 @@ def flujo_pedido(browser, base):
     texto_cajon = cajon.inner_text()
     m = re.search(r"Total estimado\s*\$\s*([\d.]+)", texto_cajon)
     total = int(m.group(1).replace(".", "")) if m else None
+    items_cajon = page.evaluate("() => { try { return JSON.parse(localStorage.getItem('bgw-carrito-v2') || '[]'); } catch { return []; } }")
+    esperado = total_con_promos(items_cajon, productos.get("promos"))
+    unidades = sum(int(it.get("cantidad") or 0) for it in items_cajon)
     boton1 = page.evaluate("""() => [...document.querySelectorAll('[role=dialog][aria-label="Tu pedido"] button.tbtn, [role=dialog][aria-label="Tu pedido"] .tbtn')]
        .map(b => b.innerText.trim()).filter(Boolean).pop() || ''""")
     # paso de datos
@@ -442,8 +473,12 @@ def flujo_pedido(browser, base):
         chk("REG-1 codigo", "bloqueante", "alta", "El codigo de proveedor llega al mensaje de WhatsApp",
             len(codigos) == 2 and all(c in validos for c in codigos),
             f"codigos en el mensaje: {codigos}; existen en la base: {all(c in validos for c in codigos) if codigos else False}")
-        chk("REG-1 suma", "bloqueante", "alta", "El cajon suma bien dos productos",
-            total is not None and total == p1 + p2, f"{p1} + {p2} = {p1 + p2}; cajon dice {total}")
+        # Desde el 2x1 de Navidad (11/2026) dos del mismo grupo cuestan el par:
+        # el total esperado sale de las promos del ciclo, no de sumar precios.
+        grupos = sorted({it.get("grupo_promo") or "-" for it in items_cajon})
+        chk("REG-1 suma", "bloqueante", "alta", "El cajon suma bien dos productos (con el 2x1 del ciclo, si hay)",
+            total is not None and unidades == 2 and total == esperado,
+            f"{p1} + {p2}; grupos {grupos}; promos del ciclo {len(productos.get('promos') or [])}; esperado {esperado}; cajon dice {total}")
     if quiere("CONFIANZA-1"):
         req = {"seña 50 %": r"se[ñn]a del 50\s?%", "transferencia o efectivo": r"transferencia o efectivo",
                "envio gratis": r"env[ií]o gratis", "no pagas nada aca": r"no pag[aá]s nada ac[aá]"}
@@ -752,11 +787,21 @@ def contenido(browser, base):
     # cajas detras del vidrio y la ventana), sin frascos sueltos encima. Se
     # carga el archivo del fondo y se mide su ancho real: Vercel contesta un
     # archivo que no existe con HTML y 200, asi que el codigo no alcanza.
+    # Navidad (11/2026): la escena va en capas (fondo, luces, frascos,
+    # destello) dentro de [data-hero=escena]; se carga cada una y se mide.
     escena = page.evaluate("""async () => { const e = document.querySelector('#inicio-hero [data-hero=escena]');
+        const medir = (url) => new Promise((ok) => { const i = new Image(); i.onload = () => ok(i.naturalWidth); i.onerror = () => ok(0); i.src = url; });
+        const primera = (el) => (getComputedStyle(el).backgroundImage.match(/url\\(["']?([^"')]+)/) || [])[1];
+        const capas = e ? [...e.querySelectorAll(':scope > div')] : [];
+        if (capas.length) {
+          const urls = capas.map(primera).filter((u) => u && !u.startsWith('data:'));
+          const anchos = await Promise.all(urls.map(medir));
+          return { capas: true, fondo: urls.map((u) => u.split('/').slice(-2).join('/')).join(' '), urls, anchos, frasco: anchos.length ? Math.min(...anchos) : 0 };
+        }
         const fondo = e ? getComputedStyle(e).backgroundImage : '';
         const url = (fondo.match(/url\\(["']?([^"')]+)/) || [])[1];
-        const ancho = url ? await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i.naturalWidth); i.onerror = () => ok(0); i.src = url; }) : 0;
-        return { fondo, frasco: ancho }; }""")
+        const ancho = url ? await medir(url) : 0;
+        return { capas: false, fondo, frasco: ancho }; }""")
     page.goto(base + "/catalogo", wait_until="domcontentloaded")
     esperar_catalogo(page)
     catalogo = texto_completo(page)
@@ -793,8 +838,13 @@ def contenido(browser, base):
         chk("PANEL-1", "contenido", "baja", "El pie publico no enlaza al panel y /panel sigue cargando el ingreso",
             pie_panel == 0 and panel_ok, f"enlaces a panel en el pie: {pie_panel}; /panel muestra 'Ingresar con Google': {panel_ok}")
     if quiere("REG-1"):
-        chk("REG-1 portada", "visual", "alta", "La portada muestra la escena horneada del hero (la imagen carga de verdad)",
-            "/hero/c/" in escena["fondo"] and escena["frasco"] >= 700, f"fondo: {escena['fondo'][-40:]}; ancho real {escena['frasco']} px")
+        if escena.get("capas"):
+            ok = len(escena["urls"]) >= 3 and all("/hero/navidad/" in u for u in escena["urls"]) and escena["frasco"] >= 700
+            detalle = f"capas: {escena['fondo']}; anchos reales {escena['anchos']} px"
+        else:
+            ok = "/hero/c/" in escena["fondo"] and escena["frasco"] >= 700
+            detalle = f"fondo: {escena['fondo'][-40:]}; ancho real {escena['frasco']} px"
+        chk("REG-1 portada", "visual", "alta", "La portada muestra la escena horneada del hero (la imagen carga de verdad)", ok, detalle)
 
 
 # ---------------------------------------------------------------------------
@@ -1591,6 +1641,11 @@ def portada_con_datos(browser, op, ciclo=None, movimiento=None):
                 datos["filas"] = resp.json()
             except Exception:
                 pass
+        if "/rest/v1/settings" in resp.url and resp.request.method == "GET":
+            try:
+                datos["promos"] = promos_de(resp)
+            except Exception:
+                pass
     page.on("response", guardar)
     page.goto(BASE + "/", wait_until="load")
     try:
@@ -1633,6 +1688,7 @@ def e3_b1(browser, base):
           };
         }""")
         res[nombre]["filas"] = publicables(datos)
+        res[nombre]["promos"] = datos.get("promos") or []
         res[nombre]["html"] = page.request.get(BASE + "/").text() if nombre == "844" else ""
         ctx.close()
 
@@ -1661,11 +1717,22 @@ def e3_b1(browser, base):
     txt = m["textoDatos"]
     servido = re.search(r'data-qa="hero-datos"[^>]*>(.*?)</p>', res["844"]["html"], re.S)
     servido_txt = re.sub(r"<[^>]+>", "", servido.group(1)) if servido else None
-    # Desde el 23/10 sin la cantidad de aromas (Sebas: el envio pesa mas).
-    chk("E3-B1 datos", "conversion", "alta", "Linea 'Desde $ X · Envios a todo el pais' con X real, sin numeros escritos en el HTML",
-        bool(re.fullmatch(rf"Desde \$\s?{re.escape(desde_txt)} · Envíos a todo el país", txt))
-        and servido_txt is not None and not re.search(r"\d", servido_txt) and m["pesoDatos"] == "600",
-        f"se ve: '{txt}'; base: desde {desde_txt}, {n} aromas; HTML servido: '{(servido_txt or 'no hay')[:60]}'; peso {m['pesoDatos']}")
+    sin_numeros = servido_txt is not None and not re.search(r"\d", servido_txt)
+    par = max((float(p.get("precio_par") or 0) for p in res["844"]["promos"] if isinstance(p, dict)), default=0)
+    if txt.startswith("Antes"):
+        # Navidad (11/2026): en lugar de "Desde" va la placa del 2x1. El
+        # tachado es el precio del par y el "c/u" su mitad para abajo, los dos
+        # sacados de settings.promos_ciclo (Hero.jsx).
+        fmt = lambda v: f"{int(v):,}".replace(",", ".")
+        ok = par > 0 and bool(re.match(rf"Antes \$\s?{re.escape(fmt(par))} \$\s?{re.escape(fmt(par // 2))} c/u", txt)) and sin_numeros
+        chk("E3-B1 datos", "conversion", "alta", "Placa del 2x1 con el precio del par y su mitad sacados del ciclo, sin numeros escritos en el HTML",
+            ok, f"se ve: '{txt[:70]}'; ciclo: par {fmt(par) if par else 'sin 2x1'}; HTML servido: '{(servido_txt or 'no hay')[:60]}'")
+    else:
+        # Desde el 23/10 sin la cantidad de aromas (Sebas: el envio pesa mas).
+        chk("E3-B1 datos", "conversion", "alta", "Linea 'Desde $ X · Envios a todo el pais' con X real, sin numeros escritos en el HTML",
+            bool(re.fullmatch(rf"Desde \$\s?{re.escape(desde_txt)} · Envíos a todo el país", txt))
+            and sin_numeros and m["pesoDatos"] == "600",
+            f"se ve: '{txt}'; base: desde {desde_txt}, {n} aromas; HTML servido: '{(servido_txt or 'no hay')[:60]}'; peso {m['pesoDatos']}")
     sellos = {k: (v["corona"], v["coronaTops"], v["marcaPx"]) for k, v in res.items()}
     # Una linea: los textos del sello se solapan en vertical (el de arriba
     # termina despues de que empieza el otro) y lo escrito mide 30 px o menos
@@ -1794,7 +1861,8 @@ def e3_b4(browser, base):
               fam: ciudad ? getComputedStyle(ciudad).fontFamily : '', nosotros: !!document.getElementById('nosotros'),
               palabras: [...c.querySelectorAll('p')].map(p => p.innerText).join(' ').split(/\\s+/).filter(Boolean).length,
               desborda: filas.some(a => { const e = a.querySelector('[class*=ciudad]'); return e && e.scrollWidth > e.clientWidth + 1; }) }; }""")
-        res[nombre]["filas"] = publicables(datos) if res[nombre] else []
+        res[nombre]["filas"] = publicables(datos)
+        res[nombre]["promos"] = datos.get("promos") or [] if res[nombre] else []
         if nombre == "390" and res[nombre] and res[nombre]["hrefs"]:
             page.locator('#ciudades [data-qa=ciudades] a').first.evaluate("(a) => a.click()")
             res[nombre]["abre"] = esperar_ficha(page)

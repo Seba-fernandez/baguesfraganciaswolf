@@ -100,11 +100,14 @@ export default function ProductThumb({ producto, src, alt, ratio = PROPORCION.ta
   }
 
   const tono = tonoDe(producto?.familia_olfativa || producto?.inspirado_en);
+  // La inicial y la familia son dibujo, no texto: van en ::before (attr). Como
+  // texto, el boton que envuelve la foto ("Ver Black XS") mostraba palabras
+  // que su nombre accesible no tiene (axe, label-content-name-mismatch).
   return (
     <div className={`${s.wrap} ${s.ph} ${s[tono]}`} style={{ aspectRatio: ratio }} aria-hidden="true">
-      <span className={s.inicial}>{inicialDe(producto)}</span>
+      <span className={s.inicial} data-texto={inicialDe(producto)} />
       {producto?.familia_olfativa && (
-        <span className={s.familia}>{producto.familia_olfativa}</span>
+        <span className={s.familia} data-texto={producto.familia_olfativa} />
       )}
     </div>
   );

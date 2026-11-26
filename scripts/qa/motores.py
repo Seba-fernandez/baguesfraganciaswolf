@@ -31,7 +31,10 @@ import sys
 from playwright.sync_api import sync_playwright
 
 ANCHOS = [375, 390, 768, 1024, 1440]
-AROMA = 'bagues-la-bomba'
+# La ficha se abre por su link (?aroma=). El aroma sale de la primera tarjeta
+# del catalogo: uno fijo (era bagues-la-bomba) deja de existir cuando sale
+# del ciclo y la prueba se cuelga esperando una ficha que no se abre.
+AROMA = None
 
 MEDIR = """(nombre) => {
   const vw = innerWidth, vh = innerHeight, fallas = [];
@@ -116,7 +119,12 @@ def main():
                 pg.goto(a.url + '/catalogo', wait_until='networkidle')
                 pg.wait_for_selector('article', timeout=20000)
                 revisar('catalogo')
-                pg.goto(a.url + f'/catalogo?aroma={AROMA}', wait_until='networkidle')
+                aroma = AROMA
+                if not aroma:
+                    pg.evaluate("document.querySelector('article button').click()")
+                    pg.wait_for_function("new URLSearchParams(location.search).get('aroma')", timeout=10000)
+                    aroma = pg.evaluate("new URLSearchParams(location.search).get('aroma')")
+                pg.goto(a.url + f'/catalogo?aroma={aroma}', wait_until='networkidle')
                 pg.wait_for_selector('[data-dialogo=ficha]', timeout=20000)
                 revisar('ficha')
                 pg.goto(a.url + '/catalogo', wait_until='networkidle')

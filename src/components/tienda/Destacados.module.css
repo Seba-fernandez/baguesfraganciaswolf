@@ -1,117 +1,85 @@
-/* Los mas pedidos (rediseño D, plano 4): el climax. Una banda vino que, al
-   llegar, TAPA LA PANTALLA ENTERA (Sebas, 25/11: "como slime", arriba y abajo,
-   sin importar el dispositivo) y se despega del borde de abajo recien cuando
-   se sigue bajando.
+/* Los mas pedidos (rediseño D, plano 4): el climax. Una banda vino con los
+   bordes curvos, la fila de los que mas salen y un selector abajo.
 
-   Como esta hecho, y por que:
-   - La banda es real, no un truco: la pista mide una pantalla chica (svh,
-     estable aunque la barra del navegador suba y baje: cero saltos) mas una
-     pausa. La escena va pegada (position: sticky) durante esa pausa. Es el
-     sticky nativo: lo hace el compositor, no se secuestra el scroll y se puede
-     pasar de largo a toda velocidad.
-   - Los bordes curvos vienen DIBUJADOS (svg con la onda trazada, dos capas:
-     vino y vino hondo). Lo unico que se anima es transform (translate y
-     scaleY) de la hoja que los lleva. Nada de clip-path, filter ni border-radius.
-   - Dos caminos. Con animation-timeline (Chrome reciente, Safari 26): las hojas
-     van atadas al scroll, se estiran y se asientan a la medida del dedo. Sin
-     el (casi todo celular hoy): dos centinelas con IntersectionObserver
-     prenden clases y las mismas hojas se asientan con una transicion corta.
-     Sin movimiento o sin JS: la banda queda quieta, con sus bordes ondulados.
-   - --onda es lo que sobresale arriba y abajo. Es menos que el relleno de las
-     secciones vecinas (72 a 140 px): tapa papel, nunca un texto. La seccion
-     lo resta con margen negativo: no empuja nada (cero CLS). */
+   26/11: se saco el slime (hojas que se estiraban con scaleY y una pausa
+   pegada con sticky). Con el dedo, la pagina se quedaba quieta un tramo y se
+   sentia trabada. Ahora el movimiento esta en lo que se toca, no en el scroll:
+   - el titulo sube palabra por palabra al entrar (una vez, con una clase);
+   - en el celular la tarjeta del medio queda entera y las de los costados se
+     achican apenas, siguiendo al dedo;
+   - una pildora corre con la fila y el contador rueda;
+   - el + pasa a tilde con una onda, las flechas son magneticas.
+   Todo con transform y opacity. Sin oyente de scroll de la pagina.
+
+   --onda es lo que sobresale arriba y abajo: menos que el relleno de las
+   secciones vecinas, tapa papel y nunca un texto. La seccion lo resta con
+   margen negativo: no empuja nada (cero CLS). */
 .section {
-  --onda: clamp(52px, 10vw, 140px);
-  --pausa: 26svh;
+  --onda: clamp(30px, 6vw, 84px);
   position: relative; z-index: 2;
   margin-block: calc(var(--onda) * -1);
-  padding-block: var(--onda);
   color: var(--crema);
-  /* Tapa el recorte de content-visibility (tienda.css): las hojas sobresalen. */
-  content-visibility: visible;
 }
 :global(.tienda) > main > section.section:not(#inicio-hero) {
   content-visibility: visible; contain-intrinsic-size: none;
 }
-.pista {
-  position: relative;
-  min-height: calc(100svh + var(--pausa));
-  display: grid; align-items: start;
-  background: var(--vino);
-}
-.escena {
-  position: sticky; top: 0; z-index: 1;
-  min-height: 100svh;
-  display: grid; align-content: center;
-  /* La barra fija arriba no tapa el titulo: se centra en lo que queda. */
-  padding-block: calc(var(--bar-h, 74px) + 12px) 28px;
-  /* La luz de rubi, lejos de los bordes para que las ondas no tengan costura. */
-  background: radial-gradient(60% 30% at 50% 40%, rgba(158, 35, 53, 0.42), rgba(158, 35, 53, 0) 72%);
-}
-.marco { position: relative; }
-.centinela { position: absolute; left: 0; top: 0; width: 1px; height: 1px; pointer-events: none; }
-.centinelaBase { top: auto; bottom: 0; }
 
-/* Las hojas: arriba y abajo, fuera de la pista, dentro del relleno. */
-.hoja { position: absolute; left: 0; right: 0; height: var(--onda); pointer-events: none; z-index: 0; }
-.hoja svg {
+.borde { position: relative; height: var(--onda); overflow: hidden; pointer-events: none; }
+.borde svg {
   position: absolute; top: 0; left: 50%; translate: -50% 0;
   width: max(100%, 900px); height: 100%; display: block;
 }
-.topeFrente, .topeFondo { top: 0; transform-origin: 50% 100%; }
-.baseFrente, .baseFondo { bottom: 0; transform-origin: 50% 0; }
-.baseFrente svg, .baseFondo svg { rotate: 180deg; }
-.topeFrente path, .baseFrente path { fill: var(--vino); }
-.topeFondo path, .baseFondo path { fill: var(--vino-hondo); }
-/* El canto hondo asoma 16 px mas alla del vino. */
-.topeFondo { top: -16px; height: calc(var(--onda) + 16px); }
-.baseFondo { bottom: -16px; height: calc(var(--onda) + 16px); }
-.topeFondo svg, .baseFondo svg { height: 100%; }
+.borde path { fill: var(--vino); }
+.bordeBase svg { rotate: 180deg; }
+/* Sin costura entre la curva y la banda: se pisan un pixel. */
+.bordeTope { margin-bottom: -1px; }
+.bordeBase { margin-top: -1px; }
 
-@media (prefers-reduced-motion: no-preference) {
-  /* ---- Camino nativo: atado al scroll, sin hilo principal ---- */
-  @supports (animation-timeline: view()) {
-    .section { view-timeline: --banda block; }
-    .hoja { will-change: transform; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: --banda; }
-    .topeFrente { animation-name: llega-frente; animation-range: entry 0% entry 75%; }
-    .topeFondo { animation-name: llega-fondo; animation-range: entry 0% entry 75%; }
-    .baseFrente { animation-name: sale-frente; animation-range: exit 0% exit 55%; }
-    .baseFondo { animation-name: sale-fondo; animation-range: exit 0% exit 55%; }
-  }
-  /* ---- Camino alternativo: IntersectionObserver + transicion ---- */
-  [data-liquido='io'] .topeFrente, [data-liquido='io'] .topeFondo,
-  [data-liquido='io'] .baseFrente, [data-liquido='io'] .baseFondo {
-    will-change: transform;
-    transition: transform 0.7s cubic-bezier(0.22, 1.25, 0.4, 1);
-  }
-  [data-liquido='io'] .topeFondo { transition-duration: 0.56s; }
-  [data-liquido='io']:not(.llego) .topeFrente { transform: translate3d(0, 62%, 0) scaleY(1.45); }
-  [data-liquido='io']:not(.llego) .topeFondo { transform: translate3d(0, 18%, 0) scaleY(1.8); }
-  [data-liquido='io']:not(.sale) .baseFrente { transform: translate3d(0, -60%, 0) scaleY(0.25); }
-  [data-liquido='io']:not(.sale) .baseFondo { transform: translate3d(0, -30%, 0) scaleY(0.15); }
+.banda {
+  position: relative;
+  padding-block: clamp(36px, 7vw, 96px) clamp(40px, 6vw, 84px);
+  background:
+    radial-gradient(70% 45% at 50% 30%, rgba(158, 35, 53, 0.36), rgba(158, 35, 53, 0) 72%),
+    var(--vino);
 }
-/* La onda sale estirada y chorreando, y se asienta: la de adelante (vino)
-   llega rezagada, la honda va delante y deja el canto. Solo transform. */
-@keyframes llega-frente { from { transform: translate3d(0, 62%, 0) scaleY(1.45); } to { transform: none; } }
-@keyframes llega-fondo { from { transform: translate3d(0, 18%, 0) scaleY(1.8); } to { transform: none; } }
-@keyframes sale-frente { from { transform: translate3d(0, -60%, 0) scaleY(0.25); } to { transform: none; } }
-@keyframes sale-fondo { from { transform: translate3d(0, -30%, 0) scaleY(0.15); } to { transform: none; } }
+.marco { position: relative; }
 
+/* ---------- el titulo: palabra por palabra, desde una mascara ---------- */
 .head { margin-bottom: clamp(24px, 4vw, 44px); }
 :global(.tienda) .titulo {
   font-family: var(--f-titulo); font-weight: 600;
   font-size: clamp(2.8rem, 8vw, 5.6rem); line-height: 0.95; letter-spacing: -0.005em;
   color: var(--crema); text-shadow: none;
 }
+/* La mascara: cada palabra en su caja recortada, con aire abajo para que los
+   descendentes (la p de pedidos) no se corten. */
+.palabra { display: inline-block; overflow: clip; padding-bottom: 0.12em; margin-bottom: -0.12em; vertical-align: top; }
+.sube { display: inline-block; }
 .bajada { margin-top: 12px; color: var(--crema-suave); font-size: 1.04rem; line-height: 1.5; max-width: 40ch; }
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-entrada] .sube {
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+  [data-entrada] .bajada {
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.22s, opacity 0.9s var(--ease) 0.22s;
+  }
+  [data-entrada] .riel { transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.35s; transform-origin: 0 50%; }
+  [data-entrada='espera'] .sube { transform: translate3d(0, 105%, 0); }
+  [data-entrada='espera'] .bajada { transform: translate3d(0, 14px, 0); opacity: 0; }
+  [data-entrada='espera'] .riel { transform: scaleX(0); }
+}
 
 .carrusel { position: relative; }
 
-/* El eje vertical va en hidden a propósito: con solo overflow-x el otro eje
+/* El eje vertical va en hidden a proposito: con solo overflow-x el otro eje
    quedaba scrolleable y el gesto vertical se trababa en la pista. Snap
    proximity: mandatory pelea con el dedo. En el celular la pista sale a sangre
-   y las tarjetas se centran, así la del medio es la nítida. */
+   y las tarjetas se centran, asi la del medio es la nitida. `position` para
+   que las tarjetas midan su lugar contra la fila (irA). */
 .fila {
+  position: relative;
   display: grid; grid-auto-flow: column; grid-auto-columns: 62vw;
   gap: 14px;
   margin-inline: -20px; padding: 4px 19vw 8px;
@@ -119,21 +87,18 @@
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
   scrollbar-width: none;
-  view-timeline-axis: inline;
 }
 .fila::-webkit-scrollbar { display: none; }
-/* Tablet parada (600 a 779): con 62vw la tarjeta medía 476 px y la foto
-   ocupaba la pantalla entera. Más chica, con las de al lado asomando. */
+/* Tablet parada (600 a 779): con 62vw la tarjeta media 476 px y la foto
+   ocupaba la pantalla entera. Mas chica, con las de al lado asomando. */
 @media (min-width: 600px) and (max-width: 779px) {
   .fila { grid-auto-columns: 42vw; padding-inline: 29vw; }
 }
 /* Escritorio: la fila vive dentro de la columna de la pagina y se corta a
-   la misma distancia de los dos bordes (Sebas, 23/10: "que haya un corte al
-   mismo tamano que en la izquierda"). Antes llegaba hasta el borde derecho de
-   la pantalla y se veia despareja. Entran tarjetas enteras, nunca una
-   cortada: tres hasta 1000 px, cuatro hasta 1240 y cinco arriba. Las flechas
-   pasan de a una tanda. Los 2 px de relleno son para que el foco del teclado
-   no quede recortado contra el corte. Arriba y abajo, aire para la sombra. */
+   la misma distancia de los dos bordes (Sebas, 23/10). Entran tarjetas
+   enteras, nunca una cortada: tres hasta 1000 px, cuatro hasta 1240 y cinco
+   arriba. Los 2 px de relleno son para que el foco del teclado no quede
+   recortado. Arriba y abajo, aire para la sombra. */
 @media (min-width: 780px) {
   .fila {
     --tarjetas: 3;
@@ -146,21 +111,42 @@
 @media (min-width: 1000px) { .fila { --tarjetas: 4; } }
 @media (min-width: 1240px) { .fila { --tarjetas: 5; } }
 
-/* Las flechas tambien en el celular (Sebas, 23/10): sobre las tarjetas que
-   asoman a los costados, mas chicas. La de la izquierda aparece apenas se
-   corre la fila, con el dedo o con la otra flecha. Con pantalla tactil ancha
-   sin mouse (tablet) siguen ocultas: ahi se desliza. */
+/* ---------- la tarjeta del medio, entera (solo celular) ----------
+   La fila cuenta cual es la del medio (data-activa) y las tarjetas cambian
+   con una transicion: la que llega crece, la que se va se achica. Un solo
+   camino para todos los navegadores. Atarla al dedo con animation-timeline
+   se probo y costaba 3 fps al bajar la pagina con el procesador frenado 6x
+   (Chrome recalcula las 14 lineas de tiempo aunque la fila no se mueva). */
+@media (max-width: 779px) and (prefers-reduced-motion: no-preference) {
+  .item:not(.espera) {
+    transform: scale(0.9); transform-origin: 50% 60%;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .item:not(.espera) .info { opacity: 0.45; transition: opacity 0.45s var(--ease); }
+  .item[data-activa] { transform: none; }
+  .item[data-activa] .info { opacity: 1; }
+}
+
+/* ---------- flechas ----------
+   Tambien en el celular (Sebas, 23/10): sobre las tarjetas que asoman, mas
+   chicas. La de la izquierda aparece apenas se corre la fila. En escritorio
+   son magneticas: el JSX les corre `translate` unos pixeles hacia el mouse. */
 .flecha {
   position: absolute; top: 40%; translate: 0 -50%; z-index: 4; /* translate y no transform: el toque del vidrio usa transform */
   width: 40px; height: 40px; border-radius: 50%;
   display: grid; place-items: center;
   border: 0; cursor: pointer;
+  transition:
+    opacity var(--dur) var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease),
+    color var(--dur) var(--ease), transform 0.42s cubic-bezier(0.3, 1.7, 0.5, 1),
+    translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.flechaIzq {
-  left: -8px;
-  transition: opacity var(--dur) var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease),
-    color var(--dur) var(--ease), transform 0.42s cubic-bezier(0.3, 1.7, 0.5, 1);
+.flecha > svg { transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s var(--ease), opacity 0.2s var(--ease); }
+@media (hover: hover) {
+  .flechaIzq:hover > svg { transform: translateX(-2px); }
+  .flechaDer:hover > svg { transform: translateX(2px); }
 }
+.flechaIzq { left: -8px; }
 .flechaOculta { opacity: 0; pointer-events: none; }
 .flechaDer { right: -8px; }
 @media (min-width: 780px) {
@@ -176,12 +162,12 @@
   display: flex; flex-direction: column; gap: 0; width: 100%;
   background: none; border: 0; padding: 0; text-align: left; cursor: pointer; color: inherit;
 }
-/* El + en vidrio liquido (el mismo .tglass-clear de las flechas: en Chromium
-   de escritorio lleva la lente del canto, ver lib/vidrioLiquido.js). Casi sin
-   tinte ni desenfoque, para que el frasco se siga viendo nitido a traves: lo
-   que lo hace vidrio es el filo especular, el reflejo de arriba y la lente. */
-/* Una caja del tamano de la foto, encima de ella, para apoyar el + en su
-   esquina (el + no puede ir dentro del boton que abre la ficha). */
+.abrir:focus-visible { outline: 2px solid var(--crema); outline-offset: 4px; }
+
+/* ---------- el + (vidrio liquido) y su tilde ----------
+   Una caja del tamano de la foto, encima de ella, para apoyar el + en su
+   esquina. Al agregar: el + gira y se va, entra la tilde y una onda crema se
+   abre desde el boton y se apaga. */
 .sobreFoto { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; z-index: 3; }
 .mas {
   position: absolute; right: 12px; bottom: 12px; pointer-events: auto;
@@ -190,7 +176,22 @@
   border: 0; cursor: pointer;
 }
 .mas svg { filter: drop-shadow(0 1px 1.5px rgba(20, 3, 5, 0.45)); }
+.mas .icoMas, .mas .icoHecho {
+  grid-area: 1 / 1;
+  transition: opacity var(--dur) var(--ease), transform 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.mas .icoHecho { opacity: 0; transform: scale(0.4) rotate(-20deg); }
+.mas[data-estado='hecho'] .icoMas { opacity: 0; transform: rotate(90deg) scale(0.5); }
+.mas[data-estado='hecho'] .icoHecho { opacity: 1; transform: none; }
+.mas .onda {
+  position: absolute; inset: 0; z-index: 0; border-radius: 50%;
+  border: 1.5px solid var(--crema);
+  opacity: 0; pointer-events: none;
+  animation: onda 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes onda { from { transform: scale(0.8); opacity: 0.7; } to { transform: scale(1.9); opacity: 0; } }
 .mas:focus-visible { outline: 2px solid var(--crema); outline-offset: 3px; }
+
 .media {
   position: relative; display: block; overflow: hidden;
   /* Sombra un poco mas marcada que la de las familias: sobre el vino hace
@@ -198,14 +199,20 @@
   box-shadow: 0 2px 4px rgba(20, 3, 5, 0.3), 0 20px 36px -16px rgba(20, 3, 5, 0.75);
   transition: box-shadow var(--dur) var(--ease);
 }
-@media (hover: hover) { .item:hover .media { box-shadow: 0 3px 6px rgba(20, 3, 5, 0.34), 0 28px 44px -18px rgba(20, 3, 5, 0.85); } }
+.item .media :global(img) { transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
 
 .info { display: flex; flex-direction: column; gap: 3px; padding-top: 12px; }
-.nombre { font-family: var(--f-display); font-weight: 600; font-size: 1.36rem; color: var(--crema); line-height: 1.15; }
-.item:hover .nombre { color: #fff; }
-.abrir:focus-visible { outline: 2px solid var(--crema); outline-offset: 4px; }
-.item .media :global(img) { transition: transform var(--dur-slow) var(--ease); }
-@media (hover: hover) { .item:hover .media :global(img) { transform: scale(1.04); } }
+/* El nombre lleva un subrayado que se dibuja de izquierda a derecha al pasar
+   el mouse (scaleX, nada de width). */
+.nombre {
+  position: relative; align-self: flex-start;
+  font-family: var(--f-display); font-weight: 600; font-size: 1.36rem; color: var(--crema); line-height: 1.15;
+}
+.nombre::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+  background: currentColor; transform: scaleX(0); transform-origin: 100% 50%;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
 .casa { font-family: var(--f-quote); font-style: italic; font-size: 1rem; color: var(--crema-suave); }
 .precio {
   margin-top: 8px;
@@ -213,6 +220,51 @@
   font-family: var(--f-mono); font-size: 0.95rem; font-weight: 500; color: var(--crema);
 }
 .antes { font-size: 0.82rem; color: var(--crema-suave); text-decoration-color: var(--crema-suave); }
+/* La flecha "ver" junto al precio: aparece solo con mouse. */
+.ver { align-self: center; opacity: 0; transform: translateX(-8px); transition: opacity var(--dur) var(--ease), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+
+@media (hover: hover) {
+  .item:hover .media { box-shadow: 0 3px 6px rgba(20, 3, 5, 0.34), 0 28px 44px -18px rgba(20, 3, 5, 0.85); }
+  .item:hover .media :global(img) { transform: scale(1.045); }
+  .item:hover .nombre::after { transform: scaleX(1); transform-origin: 0 50%; }
+  .item:hover .ver { opacity: 1; transform: none; }
+}
+.abrir:focus-visible .ver { opacity: 1; transform: none; }
+
+/* ---------- el selector: contador que rueda y pildora que corre ---------- */
+.selector {
+  display: flex; align-items: center; gap: 18px;
+  margin-top: clamp(14px, 2.4vw, 26px);
+  transition: opacity var(--dur) var(--ease);
+}
+.selectorOculto { opacity: 0; pointer-events: none; }
+.contador {
+  flex-shrink: 0; display: inline-flex; align-items: baseline;
+  font-family: var(--f-mono); font-size: 0.82rem; letter-spacing: 0.04em; color: var(--crema);
+}
+.rueda { display: inline-flex; overflow: clip; }
+.cifra { display: inline-block; animation: rueda 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes rueda { from { transform: translate3d(0, 70%, 0); opacity: 0; } to { transform: none; opacity: 1; } }
+.de { margin-left: 0.5em; color: var(--crema-suave); }
+.pista { position: relative; flex: 1; height: 44px; display: flex; max-width: 420px; }
+.riel {
+  position: absolute; left: 0; right: 0; top: 50%; height: 1px; margin-top: -0.5px;
+  background: rgba(250, 239, 234, 0.22);
+}
+.pildora {
+  position: absolute; left: 0; top: -1.5px; height: 4px; border-radius: 2px;
+  background: var(--crema);
+  will-change: transform;
+}
+/* Cada tramo es un boton de 44 px de alto: el dedo cae siempre en alguno. */
+.tramo { flex: 1; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; position: relative; }
+.tramo::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 3px; height: 3px; margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%; background: var(--crema); opacity: 0; transform: scale(0.5);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+@media (hover: hover) { .tramo:hover::after { opacity: 0.8; transform: scale(1.6); } }
+.tramo:focus-visible { outline: 2px solid var(--crema); outline-offset: -8px; border-radius: 4px; }
 
 /* Tarjetas de espera, mientras llega la base: mismo 3:4 y casi el mismo alto. */
 .espera { cursor: default; }

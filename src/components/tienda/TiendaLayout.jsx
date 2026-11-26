@@ -198,7 +198,8 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
           onClick={() => setOpen(true)}
           aria-label={`${CABECERA.verPedido} (${count} ${count === 1 ? 'ítem' : 'ítems'})`}
         >
-          <CartIcon />
+          {/* El carrito da un latido al sumar (la key reinicia la animacion). */}
+          <span key={`c${ultimo?.t ?? 0}`} className={`${s.icoCarrito} ${ultimo ? s.latido : ''}`}><CartIcon /></span>
           {/* La key cambia en cada agregado: reinicia el pulso del numero. */}
           {count > 0 && (
             <span key={ultimo?.t ?? 0} className={`${s.badge} ${ultimo ? s.pulso : ''} tnum`}>{count}</span>

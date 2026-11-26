@@ -42,7 +42,14 @@ Por eso el fondo, la placa del precio y los frascos entran solo con movimiento. 
 
 ## 4. Números medidos en este proyecto
 
-**Líquido de destacados.** Chrome headless, 390 px, scroll por CDP, mediana de 3, CPU con throttling 6x.
+**Destacados sin slime (26/11/2026).** Sebas sintió raro el slime: la pausa pegada hacía que el scroll pareciera trabado. Se sacó y el movimiento pasó a lo que se toca: el título sube palabra por palabra al entrar, la tarjeta del medio queda entera y las otras se achican (transición por `data-activa`), una píldora y un contador siguen a la fila, el `+` pasa a tilde con una onda, el carrito da un latido y las flechas son magnéticas. Medido en Chromium con Playwright (Windows), 390 px, dpr 2, CPU 6x, versión vieja y nueva servidas en local e intercaladas:
+
+- Bajando la página: vieja 54, nueva 51 fps. La vieja sin su pausa pegada da 52: parte de su ventaja era tener la escena quieta mientras el dedo bajaba.
+- Deslizando la fila: vieja 59, nueva 60.
+- Atar la escala de las tarjetas al dedo con `animation-timeline: view(inline)` costaba 3 fps al bajar la página, aunque la fila no se moviera (Chrome recalcula las 14 líneas de tiempo). Por eso va con una transición, igual en todos los navegadores.
+- Las tarjetas van con `memo` y el `+` con `useCallback`: al cambiar la activa solo se dibujan de nuevo las dos que cambian.
+
+**Líquido de destacados (ya no está, 25/11/2026).** Chrome headless, 390 px, scroll por CDP, mediana de 3, CPU con throttling 6x.
 
 - Camino nativo: 48 a 53 fps. Camino alternativo: 41 a 49 fps.
 - La misma sección SIN animar, en el mismo entorno: 46 fps.

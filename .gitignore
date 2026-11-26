@@ -37,7 +37,10 @@ videos/
 /cuadros/
 *.trace.json
 
-# Documentación interna: vive en el proyecto de Claude, no en el repo público
-/CLAUDE.md
-/docs/
+# Documentacion interna: vive en el proyecto de Claude, no en el repo publico.
+# El CLAUDE.md SI se versiona (es el contexto que necesita Claude Code en un clon
+# nuevo) y no lleva nada sensible: lo privado va en CLAUDE.local.md.
+/CLAUDE.local.md
+/docs/*
+!/docs/ANIMACION-Y-VELOCIDAD.md
 /skills-lock.json

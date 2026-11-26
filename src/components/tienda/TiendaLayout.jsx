@@ -141,7 +141,9 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
       const barra = document.querySelector('.tienda > header');
       const y = (barra?.offsetHeight || 74) + 2;
       const debajo = document.elementsFromPoint(Math.min(24, innerWidth - 1), y).find((e) => !e.closest('.tienda > header'));
-      const nueva = !debajo ? 'noche'
+      // Los panos de "Los mas pedidos" tienen pointer-events none: elementsFromPoint
+      // no los ve, asi que con la banda inmersa la luz es noche (vino que cubre todo).
+      const nueva = !debajo || document.querySelector('[data-inmerso]') ? 'noche'
         : debajo.closest('#inicio-hero') && !debajo.closest('[data-hero=cinta]') ? 'hero'
         : debajo.closest('.dia') ? 'dia'
         : 'noche';

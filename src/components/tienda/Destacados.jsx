@@ -2,26 +2,12 @@ import { Fragment, memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useCart } from '../../contexts/CartContext';
 import { ahorroDe, esPublicable, lineaTarjeta, presentacionesActivas, presentacionPorDefecto, tituloDe } from '../../lib/producto';
 import { precargarFoto } from '../../lib/fotos';
+import { medirDeNuevo } from '../../lib/alScroll';
 import { pesos } from '../../lib/format';
 import { DESTACADOS, TARJETA, conDatos } from '../../config/contenido';
 import { PROPORCION } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
 import s from './Destacados.module.css';
-
-/**
- * El borde de la banda: una curva DIBUJADA y quieta (26/11: el slime que se
- * estiraba y la pausa pegada se sentian raros, como si el scroll se trabara).
- * La de abajo es la misma girada 180 grados.
- */
-const ONDA = 'M0 100V58C160 30 330 14 520 26C700 38 820 70 1010 64C1180 58 1320 30 1440 22V100Z';
-
-function Borde({ clase }) {
-  return (
-    <div className={`${s.borde} ${clase}`} aria-hidden="true">
-      <svg viewBox="0 0 1440 100" preserveAspectRatio="none" focusable="false"><path d={ONDA} /></svg>
-    </div>
-  );
-}
 
 const dos = (n) => String(n).padStart(2, '0');
 
@@ -89,6 +75,9 @@ const Tarjeta = memo(function Tarjeta({ p, activa, onOpen, onMas }) {
  * Los más pedidos (rediseño D, plano 4: el clímax). La sección entera del vino
  * de la marca, con las fotos sobre la misma pared del hero. Una fila que se
  * desliza; precio a pagar en crema y el de lista tachado (no negociable 11).
+ *
+ * Banda recta que, al quedar en pantalla, se expande en vino hasta cubrirla
+ * entera (dos panos con scaleY) y vuelve a su lugar al seguir de largo.
  *
  * El movimiento (26/11, "a la altura de un estudio"): nada atado a pausar el
  * scroll. El titulo sube palabra por palabra al entrar; en el celular la
@@ -162,6 +151,25 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
     return () => { io.disconnect(); delete sec.dataset.entrada; };
   }, [hay]);
 
+  // La banda inmersiva: cuando la seccion toca la franja central de la
+  // pantalla se marca data-inmerso y los dos panos vino (scaleY) cubren todo.
+  // Un IntersectionObserver, sin oyente de scroll nuevo. Como la barra decide
+  // su color con elementsFromPoint (que no ve los panos, pointer-events none),
+  // al cambiar la marca se pide una pasada a alScroll (medirDeNuevo) y la
+  // barra mira data-inmerso. Sin JS o con movimiento reducido: banda recta.
+  useEffect(() => {
+    const sec = seccionRef.current;
+    if (!hay || !sec || typeof IntersectionObserver === 'undefined') return undefined;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) sec.dataset.inmerso = '';
+      else delete sec.dataset.inmerso;
+      medirDeNuevo();
+    }, { rootMargin: '-40% 0px -40% 0px' });
+    io.observe(sec);
+    return () => { io.disconnect(); delete sec.dataset.inmerso; medirDeNuevo(); };
+  }, [hay]);
+
   /** El + de la tarjeta: con un tamano agrega directo; con mas, la hoja.
    *  Estable (useCallback): las tarjetas van con memo y, al cambiar la activa
    *  mientras se desliza la fila, solo se vuelven a dibujar las dos que cambian. */
@@ -216,7 +224,8 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
 
   return (
     <section className={s.section} ref={seccionRef}>
-      <Borde clase={s.bordeTope} />
+      <div className={s.pano} data-pano="arriba" aria-hidden="true" />
+      <div className={s.pano} data-pano="abajo" aria-hidden="true" />
       <div className={s.banda}>
         <div className={`tw ${s.marco}`}>
           <header className={s.head}>
@@ -305,7 +314,6 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
           </div>
         </div>
       </div>
-      <Borde clase={s.bordeBase} />
     </section>
   );
 }

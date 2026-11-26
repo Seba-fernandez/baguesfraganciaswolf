@@ -189,6 +189,7 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
 - **El pie se pintaba encima de la ficha.** Los diálogos van fuera de `<main>`,
   como hermanos, y con un diálogo abierto el resto queda `inert`.
 - **`content-visibility: auto` esconde errores en las pruebas.**
+- **`content-visibility: auto` también recorta lo que sobresale de la sección** (los paños del telón de Destacados). La regla de `tienda.css` lleva dos `:not(#id)`: la que lo apaga tiene que empatarlos o pierde.
 - **`inert` le saca el foco a lo que queda adentro.**
 - **El `::after` que agranda un área táctil se mide desde adentro del borde.**
 - **`naturalWidth` con `srcset` viene dividido por la densidad.**

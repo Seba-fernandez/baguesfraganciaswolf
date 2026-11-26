@@ -28,16 +28,36 @@ FAMILIAS = {
     # nombre: (archivo generado, color de etiqueta, gradacion rgb)
     'citricos':   ('textura_citricos_gen.webp',   '#d9c45a', (1.00, 0.97, 0.86)),
     'florales':   ('textura_florales_gen.webp',   '#e0708a', (1.00, 0.94, 0.95)),
-    'dulces':     ('textura_dulces_gen.webp',     '#b8693a', (1.00, 0.93, 0.86)),
-    'amaderados': ('textura_amaderados_gen.webp', '#7a4a2c', (1.00, 0.94, 0.88)),
+    'dulces':     ('textura_dulces_gen.webp',     '#ecd3b0', (1.00, 0.88, 0.70)),
+    'amaderados': ('textura_amaderados_gen.webp', '#3f4a33', (0.80, 0.93, 0.84)),
     'ambar':      ('textura_ambar_gen.webp',      '#c9772a', (1.00, 0.92, 0.82)),
 }
 
-def textura_base(archivo, grad):
+# 26/11/2026, pedido de Sebas: "diferenciar bien los colores y composicion en
+# familias, de dulce y amaderado, son muy similares". Los dos eran marrones con
+# etiqueta marron. Ajustes opcionales por familia (las otras tres no los
+# tienen y salen igual que antes):
+#   recorte: (x0, y0, lado) en fraccion de la textura; se toma ese cuadrado.
+#   sat: 1 deja el color, menos de 1 lo apaga hacia gris.
+#   gamma: sobre el valor (menos de 1 aclara, mas de 1 oscurece).
+AJUSTES = {
+    # vaina de vainilla con los hilos de crema, en diagonal; clara y cremosa
+    'dulces':     dict(recorte=(0.42, 0.18, 0.58), sat=0.95, gamma=0.70),
+    # veta recta de cedro; oscura, fria, con un dejo de verde musgo
+    'amaderados': dict(recorte=(0.40, 0.00, 0.60), sat=0.60, gamma=1.30),
+}
+
+def textura_base(archivo, grad, recorte=None, sat=1.0, gamma=1.0):
     im = Image.open(os.path.join(H.GEN, archivo)).convert('RGB')
+    if recorte:
+        x0, y0, l = recorte; w_, h_ = im.size
+        im = im.crop((round(x0 * w_), round(y0 * h_), round((x0 + l) * w_), round((y0 + l) * h_)))
     im = im.resize((1200, 1200), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.4, percent=60, threshold=2))
     a = np.asarray(im).astype(np.float32) / 255
-    a = a * np.array(grad, np.float32)
+    if sat != 1.0:
+        gris = a @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+        a = gris[..., None] + (a - gris[..., None]) * sat
+    a = np.clip(a * np.array(grad, np.float32), 0, 1) ** gamma
     # bajar un poco la clave para que viva en la paleta noir, sin apagarla
     a = a ** 1.08
     yy, xx = np.mgrid[0:1200, 0:1200].astype(np.float32) / 1200
@@ -126,7 +146,7 @@ def hacer_texturas():
     out = os.path.join(SAL, 'texturas'); os.makedirs(out, exist_ok=True)
     res = {}
     for nombre, (arch, col, grad) in FAMILIAS.items():
-        tex = textura_base(arch, grad)
+        tex = textura_base(arch, grad, **AJUSTES.get(nombre, {}))
         Image.fromarray(a_u8(tex)).save(os.path.join(out, f'textura_{nombre}.png'), optimize=True)
         pes = H.exportar_peso(tex, os.path.join(out, f'textura_{nombre}'), max_kb=160, q_webp=84, q_avif=62)
         fr = textura_en_frasco(tex, col)
@@ -142,7 +162,7 @@ def familias_web(foto_en_etiqueta):
     recortados a la silueta y a 240 y 420 px de ancho."""
     out = os.path.join(SAL, 'familias_foto' if foto_en_etiqueta else 'familias_color'); os.makedirs(out, exist_ok=True)
     for nombre, (arch, col, grad) in FAMILIAS.items():
-        fr = a_u8(textura_en_frasco(textura_base(arch, grad), col, foto_en_etiqueta))
+        fr = a_u8(textura_en_frasco(textura_base(arch, grad, **AJUSTES.get(nombre, {})), col, foto_en_etiqueta))
         im = Image.fromarray(fr); im = im.crop(im.getchannel('A').point(lambda v: 255 if v > 8 else 0).getbbox())
         for ancho in (240, 420):
             im.resize((ancho, round(im.height * ancho / im.width)), Image.LANCZOS).save(os.path.join(out, f'{nombre}-{ancho}.webp'), quality=84, method=6)

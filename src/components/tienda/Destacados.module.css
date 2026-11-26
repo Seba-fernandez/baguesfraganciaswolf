@@ -1,42 +1,52 @@
-/* Los mas pedidos (rediseño D, plano 4): el climax. Una banda vino con los
-   bordes curvos, la fila de los que mas salen y un selector abajo.
+/* Los mas pedidos (rediseño D, plano 4): el climax. Una banda vino RECTA, la
+   fila de los que mas salen y un selector abajo.
 
-   26/11: se saco el slime (hojas que se estiraban con scaleY y una pausa
-   pegada con sticky). Con el dedo, la pagina se quedaba quieta un tramo y se
-   sentia trabada. Ahora el movimiento esta en lo que se toca, no en el scroll:
+   Inmersion (26/11): cuando la seccion queda en la franja central de la
+   pantalla, dos panos de vino liso (uno arriba, otro abajo, cada uno de una
+   pantalla de alto) pasan de scaleY(0) a scaleY(1) y cubren todo: "ahora solo
+   estoy en esta seccion". Es color liso, escalar no deforma. Los panos son
+   absolutos y salen del flujo: no empujan ni aprietan a las vecinas. Al seguir
+   de largo vuelven en 0,5 s, sin rebote. Solo transform. El disparador es un
+   IntersectionObserver (data-inmerso), sin oyente de scroll.
+
+   Antes: se saco el slime (hojas que se estiraban con scaleY y una pausa
+   pegada con sticky) y despues los bordes curvos. Con el dedo, la pagina se
+   quedaba quieta un tramo y se sentia trabada. El movimiento del resto esta en
+   lo que se toca, no en el scroll:
    - el titulo sube palabra por palabra al entrar (una vez, con una clase);
    - en el celular la tarjeta del medio queda entera y las de los costados se
      achican apenas, siguiendo al dedo;
    - una pildora corre con la fila y el contador rueda;
    - el + pasa a tilde con una onda, las flechas son magneticas.
-   Todo con transform y opacity. Sin oyente de scroll de la pagina.
-
-   --onda es lo que sobresale arriba y abajo: menos que el relleno de las
-   secciones vecinas, tapa papel y nunca un texto. La seccion lo resta con
-   margen negativo: no empuja nada (cero CLS). */
+   Todo con transform y opacity. */
 .section {
-  --onda: clamp(30px, 6vw, 84px);
   position: relative; z-index: 2;
-  margin-block: calc(var(--onda) * -1);
   color: var(--crema);
 }
-:global(.tienda) > main > section.section:not(#inicio-hero) {
+/* content-visibility: auto (tienda.css) recorta la pintura a la caja de la
+   seccion y los panos no se verian afuera. Los dos :not(#id) empatan los de
+   la regla de tienda.css y la clase de mas la gana: con uno solo perdia y los
+   panos quedaban cortados (el de abajo no tapaba "Como funciona"). */
+:global(.tienda) > main > section.section:not(#inicio-hero):not(#catalogo) {
   content-visibility: visible; contain-intrinsic-size: none;
 }
 
-.borde { position: relative; height: var(--onda); overflow: hidden; pointer-events: none; }
-.borde svg {
-  position: absolute; top: 0; left: 50%; translate: -50% 0;
-  width: max(100%, 900px); height: 100%; display: block;
+/* Los panos: detras del contenido de la propia seccion (z 0, la banda va en
+   z 1) y por encima de las vecinas (la seccion es z 2). En reposo, planos. */
+.pano {
+  position: absolute; left: 0; right: 0; height: 100svh; z-index: 0;
+  background: var(--vino); pointer-events: none;
+  transform: scaleY(0);
 }
-.borde path { fill: var(--vino); }
-.bordeBase svg { rotate: 180deg; }
-/* Sin costura entre la curva y la banda: se pisan un pixel. */
-.bordeTope { margin-bottom: -1px; }
-.bordeBase { margin-top: -1px; }
+.pano[data-pano='arriba'] { bottom: 100%; transform-origin: 50% 100%; }
+.pano[data-pano='abajo'] { top: 100%; transform-origin: 50% 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .pano { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+  [data-inmerso] .pano { transform: scaleY(1); }
+}
 
 .banda {
-  position: relative;
+  position: relative; z-index: 1;
   padding-block: clamp(36px, 7vw, 96px) clamp(40px, 6vw, 84px);
   background:
     radial-gradient(70% 45% at 50% 30%, rgba(158, 35, 53, 0.36), rgba(158, 35, 53, 0) 72%),

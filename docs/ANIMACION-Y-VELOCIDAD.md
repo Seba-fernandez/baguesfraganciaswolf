@@ -42,6 +42,8 @@ Por eso el fondo, la placa del precio y los frascos entran solo con movimiento. 
 
 ## 4. Números medidos en este proyecto
 
+**Destacados con telón (26/11/2026, después).** Sebas no quiso los bordes curvos: la banda es recta y, cuando la sección toca la franja central de la pantalla (IntersectionObserver con `rootMargin: -40% 0px -40% 0px`), dos paños de vino liso de `100svh` (arriba y abajo, `position: absolute`) pasan de `scaleY(0)` a `scaleY(1)` en 0,5 s y cubren todo. Al seguir de largo vuelven. No empujan a las vecinas ni pausan el scroll. La barra pasa a noche con `data-inmerso` (elementsFromPoint no ve los paños) y se re-mide con `medirDeNuevo()`. Medido igual que abajo, intercalado contra producción: bajando 59 contra 58 fps, deslizando la fila 60 contra 60. Trampa: `content-visibility: auto` de `tienda.css` recorta la pintura a la caja de la sección; la regla que lo apaga en `Destacados.module.css` necesita los dos `:not(#id)` para ganarle.
+
 **Destacados sin slime (26/11/2026).** Sebas sintió raro el slime: la pausa pegada hacía que el scroll pareciera trabado. Se sacó y el movimiento pasó a lo que se toca: el título sube palabra por palabra al entrar, la tarjeta del medio queda entera y las otras se achican (transición por `data-activa`), una píldora y un contador siguen a la fila, el `+` pasa a tilde con una onda, el carrito da un latido y las flechas son magnéticas. Medido en Chromium con Playwright (Windows), 390 px, dpr 2, CPU 6x, versión vieja y nueva servidas en local e intercaladas:
 
 - Bajando la página: vieja 54, nueva 51 fps. La vieja sin su pausa pegada da 52: parte de su ventaja era tener la escena quieta mientras el dedo bajaba.

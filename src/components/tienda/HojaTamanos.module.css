@@ -1,6 +1,6 @@
 /* La misma superficie que el cajon del pedido: fondo solido --bg-2 (sin
    backdrop-filter, que trababa el celular), canto de luz arriba y caida. */
-.overlay { position: fixed; inset: 0; z-index: 100; background: rgba(12, 7, 4, 0.66); animation: fade 0.2s ease both; }
+.overlay { position: fixed; inset: 0; z-index: 100; background: rgba(12, 7, 4, 0.66); animation: fade 0.36s var(--ease) both; }
 
 .hoja {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
@@ -10,7 +10,7 @@
   border-radius: 0;
   background: var(--bg-2);
   box-shadow: 0 -24px 60px -20px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  animation: sube 0.3s var(--ease) both;
+  animation: sube 0.45s var(--hoja) both;
 }
 /* Escritorio: placa chica centrada. Centrada con margin auto y no con
    transform, que lo usa la animacion de entrada. */

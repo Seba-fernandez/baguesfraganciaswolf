@@ -51,7 +51,7 @@
      Sebas, 23/10): una de contacto corta y una caida larga y muy suave. Al
      pasar el mouse, apenas mas honda. */
   box-shadow: 0 1px 2px rgba(42, 10, 14, 0.1), 0 14px 28px -14px rgba(42, 10, 14, 0.38);
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: transform var(--soltar-dur) var(--soltar), box-shadow var(--dur) var(--ease);
 }
 /* La repisa: una franja más oscura abajo, donde se apoya el frasco. */
 .ventana::after {
@@ -62,7 +62,7 @@
 .frasco {
   position: relative; z-index: 1;
   width: 58%; height: auto; margin-bottom: 9%;
-  transition: transform var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease), opacity var(--soltar-dur) var(--soltar);
 }
 /* La sombra del frasco en la repisa: una elipse pintada, no un
    filter: drop-shadow. El filtro (desenfoque de 14 px sobre cada frasco, a
@@ -86,6 +86,13 @@
   .link:hover .ventana { transform: translateY(-6px); box-shadow: 0 2px 4px rgba(42, 10, 14, 0.12), 0 22px 36px -16px rgba(42, 10, 14, 0.48); }
   .link:hover .nombre { color: var(--rubi); }
   .link:hover .frasco { transform: translateY(-3px) scale(1.02); }
+}
+/* El toque: la ventana se hunde y el frasco se oscurece; al soltar vuelve
+   suave. Con mouse sigue levantada la mitad que en el hover (sin salto). */
+.link:active .ventana { transform: scale(0.985); transition: transform var(--apretar), box-shadow var(--dur) var(--ease); }
+.link:active .frasco { opacity: 0.9; transition: transform var(--dur) var(--ease), opacity 120ms; }
+@media (hover: hover) {
+  .link:active .ventana { transform: translateY(-3px) scale(0.985); }
 }
 .link:focus-visible { outline: none; }
 .link:focus-visible .ventana { outline: 2px solid var(--rubi); outline-offset: 3px; }

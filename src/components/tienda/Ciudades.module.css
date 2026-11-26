@@ -44,7 +44,7 @@
   column-gap: 16px; row-gap: 6px;
   padding-block: 14px;
   color: inherit;
-  transition: background-color var(--dur) var(--ease);
+  transition: background-color var(--dur) var(--ease), transform var(--soltar-dur) var(--soltar);
 }
 .caja {
   grid-area: caja;
@@ -52,7 +52,7 @@
   background: var(--vino);
   overflow: hidden;
 }
-.caja img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease); }
+.caja img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease), opacity var(--soltar-dur) var(--soltar); }
 .ciudad {
   grid-area: ciudad;
   font-family: var(--f-titulo); font-weight: 600;
@@ -88,6 +88,9 @@
 }
 .link:focus-visible { outline: 2px solid var(--rubi); outline-offset: 4px; }
 .link:active .ciudad { color: var(--rubi); }
+/* El toque: la fila se hunde y la foto se oscurece; al soltar vuelve suave. */
+.link:active { transform: scale(0.985); transition: background-color var(--dur) var(--ease), transform var(--apretar); }
+.link:active .caja img { opacity: 0.9; transition-duration: var(--dur-slow), 120ms; }
 
 .vacia .caja { background: var(--papel-hondo); }
 

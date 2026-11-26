@@ -3,7 +3,7 @@
   /* el fondo y el canto los pone .tglass-lite */
   border-radius: 0; /* rediseño D: lo que se mira es recto */
   overflow: hidden;
-  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  transition: border-color var(--dur) var(--ease), transform var(--soltar-dur) var(--soltar);
   /* Muchas tarjetas: no renderizar lo que no se ve. CSS puro, cero JS. */
   content-visibility: auto;
   contain-intrinsic-size: auto 320px;
@@ -11,6 +11,14 @@
 /* Solo con mouse: en el celular el hover queda "pegado" despues de tocar y la
    tarjeta quedaba levantada 2 px al volver de la ficha. */
 @media (hover: hover) { .card:hover { transform: translateY(-2px); } }
+
+/* El toque: la tarjeta se hunde y la foto se oscurece un instante; al soltar
+   vuelve suave. Con mouse conserva el -1 px del hover para no pegar un salto.
+   No cuenta si lo que se esta tocando es el "+" (tiene su propio gesto). */
+.card:active:not(:has(.add:active)) { transform: scale(0.985); transition: border-color var(--dur) var(--ease), transform var(--apretar); }
+@media (hover: hover) { .card:hover:active:not(:has(.add:active)) { transform: translateY(-1px) scale(0.985); } }
+.media img { transition: opacity var(--soltar-dur) var(--soltar); }
+.card:active:not(:has(.add:active)) .media img { opacity: 0.9; transition-duration: 120ms; }
 
 .media { position: relative; display: block; width: 100%; border: 0; padding: 0; background: none; cursor: pointer; }
 
@@ -66,7 +74,8 @@
   flex-shrink: 0; width: 44px; height: 44px; min-height: 0; padding: 0;
   border-radius: 50%;
 }
-.add:active { transform: scale(0.92); }
+/* Doble clase: le gana al :active de .tbtn (0,3,0) en tienda.css. */
+.add.add:active:not(:disabled) { transform: scale(0.94); }
 /* El + y la tilde estan los dos; se cruzan con opacity y transform (nada que
    recalcule el layout), en la curva del sistema y sin rebote. */
 .add svg { transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease); }

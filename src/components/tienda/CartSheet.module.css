@@ -1,8 +1,9 @@
 .overlay {
   position: fixed; inset: 0; background: rgba(6, 10, 8, 0.55);
-  z-index: 100; animation: fade 0.22s ease both;
+  z-index: 100; animation: fade 0.36s var(--ease) both;
 }
-.overlaySale { animation: fadeOut 0.22s ease both; }
+/* La salida dura 0.3 s: CartSheet.jsx desmonta a los 300 ms. */
+.overlaySale { animation: fadeOut 0.3s var(--hoja) both; }
 
 /* Cajon lateral, no sheet de pantalla completa. Entra desde la derecha como un
    menu: angosto, comodo, sin tapar todo. Fondo solido (nada de backdrop-filter,
@@ -16,9 +17,9 @@
   padding: 20px 20px calc(24px + env(safe-area-inset-bottom));
   background: var(--bg-2);
   box-shadow: -26px 0 60px -24px rgba(0, 0, 0, 0.8), inset 1px 0 0 rgba(255, 255, 255, 0.08);
-  animation: drawer-in 0.28s var(--ease) both;
+  animation: drawer-in 0.45s var(--hoja) both;
 }
-.sale { animation: drawer-out 0.24s var(--ease) both; }
+.sale { animation: drawer-out 0.3s var(--hoja) both; }
 
 @media (min-width: 768px) {
   .sheet {

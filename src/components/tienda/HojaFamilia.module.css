@@ -4,7 +4,7 @@
 .capa {
   position: fixed; inset: 0; z-index: 90;
   background: rgba(24, 5, 6, 0.52);
-  animation: aparece 0.24s var(--ease) both;
+  animation: aparece 0.36s var(--ease) both;
 }
 .hoja {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 91;
@@ -12,7 +12,8 @@
   background: var(--papel);
   padding: 0 16px calc(24px + env(safe-area-inset-bottom));
   box-shadow: 0 -24px 60px -20px rgba(0, 0, 0, 0.55);
-  animation: sube 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* Entra como una hoja de iOS: lento al final, sin golpe (Sebas, 26/11). */
+  animation: sube 0.45s var(--hoja) both;
 }
 @media (min-width: 820px) {
   .hoja {
@@ -61,7 +62,13 @@
   min-height: 40px; padding: 8px 15px; border-radius: var(--r-pill, 999px);
   font-size: 0.82rem; font-weight: 500; white-space: nowrap;
   background: none; border: 1px solid var(--filete); color: var(--tinta-suave); cursor: pointer;
-  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  transition:
+    background-color 280ms var(--ease), color 280ms var(--ease), border-color 280ms var(--ease),
+    transform var(--soltar-dur) var(--soltar);
+}
+.chip:active {
+  transform: scale(0.96);
+  transition: background-color 280ms var(--ease), color 280ms var(--ease), border-color 280ms var(--ease), transform var(--apretar);
 }
 .chip:hover { color: var(--tinta); border-color: var(--tinta-suave); }
 .chip:focus-visible { outline: 2px solid var(--rubi); outline-offset: 2px; }

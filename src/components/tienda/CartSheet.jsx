@@ -50,7 +50,7 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
       setPaso('carrito');
       setFormErr(null);
       setAvisos({});
-    }, 240);
+    }, 300); // = duracion de drawer-out / fadeOut en CartSheet.module.css
     return () => clearTimeout(t);
   }, [open, montado]);
 

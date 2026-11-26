@@ -151,21 +151,36 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
     return () => { io.disconnect(); delete sec.dataset.entrada; };
   }, [hay]);
 
-  // La banda inmersiva: cuando la seccion toca la franja central de la
-  // pantalla se marca data-inmerso y los dos panos vino (scaleY) cubren todo.
-  // Un IntersectionObserver, sin oyente de scroll nuevo. Como la barra decide
-  // su color con elementsFromPoint (que no ve los panos, pointer-events none),
-  // al cambiar la marca se pide una pasada a alScroll (medirDeNuevo) y la
-  // barra mira data-inmerso. Sin JS o con movimiento reducido: banda recta.
+  // La banda inmersiva: los dos panos vino (scaleY) cubren todo cuando la
+  // seccion ya ocupa casi toda la pantalla. Un IntersectionObserver sin
+  // rootMargin y con muchos umbrales (de a 0,02), sin oyente de scroll nuevo.
+  // Disparo "cloc" (Sebas, 26/11: "que no aparezca taaan antes ni que haya que
+  // scrollear demasiado; como un cloc que se acomoda en los topes y apenas
+  // scrolleas se despega"): prende cuando se ve el 90 % de lo que podria verse
+  // y apaga por debajo del 85 % (con 80 % hacian falta ~150 px para
+  // despegarlo en el celular; asi, ~100). Entre medio no cambia (histeresis):
+  // no titila en el borde. Como la barra decide su color con elementsFromPoint
+  // (que no ve los panos, pointer-events none), solo cuando el estado cambia
+  // de verdad se pide una pasada a alScroll (medirDeNuevo) y la barra mira
+  // data-inmerso. Sin JS o con movimiento reducido: banda recta.
   useEffect(() => {
     const sec = seccionRef.current;
     if (!hay || !sec || typeof IntersectionObserver === 'undefined') return undefined;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const umbrales = Array.from({ length: 51 }, (_, i) => i / 50);
+    let dentro = false;
     const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) sec.dataset.inmerso = '';
+      const visible = e.intersectionRect.height;
+      const cabe = Math.min(e.boundingClientRect.height, window.innerHeight);
+      let ahora = dentro;
+      if (visible >= cabe * 0.9) ahora = true;
+      else if (visible < cabe * 0.85) ahora = false;
+      if (ahora === dentro) return;
+      dentro = ahora;
+      if (dentro) sec.dataset.inmerso = '';
       else delete sec.dataset.inmerso;
       medirDeNuevo();
-    }, { rootMargin: '-40% 0px -40% 0px' });
+    }, { threshold: umbrales });
     io.observe(sec);
     return () => { io.disconnect(); delete sec.dataset.inmerso; medirDeNuevo(); };
   }, [hay]);

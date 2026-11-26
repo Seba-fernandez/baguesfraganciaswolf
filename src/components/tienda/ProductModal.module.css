@@ -1,5 +1,5 @@
 /* Fondo opaco, no negro (Sebas, 23/10): la pagina se apaga sin desaparecer. */
-.overlay { position: fixed; inset: 0; background: rgba(24, 5, 6, 0.52); z-index: 100; animation: fade 0.24s var(--ease); }
+.overlay { position: fixed; inset: 0; background: rgba(24, 5, 6, 0.52); z-index: 100; animation: fade 0.36s var(--ease); }
 /* Fondo solido, sin vidrio: la ficha tapa casi toda la pantalla, no hace falta
    ver a traves, y un backdrop-filter aca solo costaba GPU al abrir. */
 .sheet {
@@ -14,7 +14,8 @@
   background: var(--bg-2);
   box-shadow: 0 -24px 60px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transform-origin: bottom center;
-  animation: sheet-sube 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* Curva de hoja de iOS: llega suave, sin golpe (Sebas, 26/11). */
+  animation: sheet-sube 0.45s var(--hoja) both;
 }
 @keyframes sheet-sube {
   from { opacity: 0; transform: translateY(24px) scale(0.985); }

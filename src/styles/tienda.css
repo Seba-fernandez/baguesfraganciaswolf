@@ -120,6 +120,13 @@
   --dur: 300ms;
   --dur-slow: 560ms;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Tacto acolchado (Sebas, 26/11): al tocar se hunde rapido y suave
+     (--apretar) y al soltar vuelve despacio, con un rebote de 1 % como mucho
+     (--soltar). --hoja es la curva de las hojas de iOS para los dialogos. */
+  --apretar: 120ms cubic-bezier(0.4, 0, 0.6, 1);
+  --soltar-dur: 460ms;
+  --soltar: cubic-bezier(0.34, 1.12, 0.64, 1);
+  --hoja: cubic-bezier(0.32, 0.72, 0, 1);
 
   --wrap: min(1280px, 92vw);
 
@@ -356,7 +363,7 @@
   transition:
     background var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease),
-    transform var(--dur-fast) var(--ease);
+    transform var(--soltar-dur) var(--soltar);
 }
 .tglass {
   background:
@@ -477,14 +484,16 @@
   background: var(--crema);
   -webkit-backdrop-filter: none; backdrop-filter: none;
   box-shadow: none;
-  transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
+  transition: background var(--dur) var(--ease), transform var(--soltar-dur) var(--soltar);
 }
 .tbtn:not(.clear):not(.ghost)::before,
 .tbtn:not(.clear):not(.ghost)::after { content: none; }
 @media (hover: hover) {
   .tbtn:not(.clear):not(.ghost):hover { background: #fff7f3; }
 }
-.tbtn:active { transform: scale(0.985); }
+/* Se hunde rapido y vuelve suave. :not(:disabled) sube la especificidad para
+   ganarle al transition de arriba, que lleva :not() doble. */
+.tbtn:active:not(:disabled) { transform: scale(0.97); transition: transform var(--apretar); }
 .tbtn:focus-visible,
 .tglass-clear:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .tbtn:disabled { opacity: 0.42; cursor: not-allowed; }
@@ -559,7 +568,7 @@ html.lenis, html.lenis body { height: auto; }
    - una banda mas oscura por dentro del borde y una sombra suave abajo, que
      lo despegan del fondo claro;
    - el icono cambia de color: crema sobre vino, tinta sobre papel;
-   - al tocar crece con rebote, se llena de blanco y el icono se desenfoca.
+   - al tocar crece apenas, se llena de blanco y el icono se desenfoca.
    La luz de abajo la da .dia (la seccion o la barra) o data-luz="dia" (el
    volver arriba, que flota y la mide en cada cuadro). */
 .tglass-clear {
@@ -582,7 +591,7 @@ html.lenis, html.lenis body { height: auto; }
     background 0.3s var(--ease),
     box-shadow 0.3s var(--ease),
     color var(--dur) var(--ease),
-    transform 0.42s cubic-bezier(0.3, 1.7, 0.5, 1);
+    transform var(--soltar-dur) var(--soltar);
 }
 .tienda .tglass-clear { color: var(--vc-glifo); }
 .tglass-clear > svg { transition: filter 0.2s var(--ease), opacity 0.2s var(--ease); }
@@ -606,12 +615,13 @@ html.lenis, html.lenis body { height: auto; }
   .dia .tglass-clear:hover,
   .tglass-clear[data-luz='dia']:hover { background: rgba(255, 255, 255, 0.86); }
 }
-/* El toque: crece, se llena de luz y el icono pierde foco por un instante. */
+/* El toque: crece apenas, se llena de luz y el icono pierde foco por un
+   instante. Sin resorte fuerte: la vuelta usa la curva de --soltar. */
 .tienda .tglass-clear:active:not(:disabled) {
-  transform: scale(1.12);
+  transform: scale(1.06);
   background: rgba(255, 255, 255, 0.9);
   color: var(--tinta);
-  transition-duration: 0.3s, 0.3s, 0.12s, 0.16s;
+  transition-duration: 0.3s, 0.3s, 0.12s, 0.2s;
 }
 .tglass-clear:active:not(:disabled) > svg { filter: blur(0.7px); opacity: 0.75; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {

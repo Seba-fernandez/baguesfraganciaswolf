@@ -82,7 +82,14 @@
   min-height: 40px; padding: 8px 15px; border-radius: var(--r-pill);
   font-size: 0.82rem; font-weight: 500; white-space: nowrap;
   background: none; border: 1px solid var(--line); color: var(--ink-dim); cursor: pointer;
-  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  transition:
+    background-color 280ms var(--ease), color 280ms var(--ease), border-color 280ms var(--ease),
+    transform var(--soltar-dur) var(--soltar);
+}
+/* Se hunde un poco al tocar y vuelve suave; el cambio de estado va en color. */
+.chip:active {
+  transform: scale(0.96);
+  transition: background-color 280ms var(--ease), color 280ms var(--ease), border-color 280ms var(--ease), transform var(--apretar);
 }
 .chip:hover { color: var(--ink); border-color: var(--line-bright); }
 .chip:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }

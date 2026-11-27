@@ -15,10 +15,22 @@
 
   /* Escondido: no ocupa lugar ni recibe toques hasta que aparece. */
   opacity: 0; transform: translateY(10px); pointer-events: none;
+}
+/* Doble clase y .tienda: el vidrio (tienda.css) trae su propia lista de
+   transiciones y esta tiene que ganarle para el aparecer/desaparecer. */
+:global(.tienda) .boton.boton {
   transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease),
-              color var(--dur) var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease);
+              color var(--dur) var(--ease), background-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 .visible { opacity: 1; transform: none; pointer-events: auto; }
+/* Visible y apretado: el :active del vidrio (scale 1,06) manda. Lista completa
+   y especificidad propia (5 contra los 4 del vidrio): gana sin depender del
+   orden de las hojas. */
+:global(.tienda) .boton.boton.visible:active {
+  transform: scale(1.06);
+  transition: opacity var(--dur) var(--ease), transform var(--apretar),
+              color var(--dur) var(--ease), background-color 0.22s var(--ease), box-shadow 0.3s var(--ease);
+}
 
 
 /* En pantalla ancha se corre un poco mas adentro y queda mas discreto. */

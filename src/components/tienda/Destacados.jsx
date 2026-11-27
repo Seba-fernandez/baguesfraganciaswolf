@@ -5,8 +5,9 @@ import { precargarFoto } from '../../lib/fotos';
 import { medirDeNuevo } from '../../lib/alScroll';
 import { pesos } from '../../lib/format';
 import { DESTACADOS, TARJETA, conDatos } from '../../config/contenido';
-import { PROPORCION } from '../../config/ajustes';
+import { PROPORCION, CANTIDAD_MAXIMA } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
+import { FlechaIzq, FlechaDer } from './Iconos';
 import s from './Destacados.module.css';
 
 const dos = (n) => String(n).padStart(2, '0');
@@ -89,7 +90,7 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
   const seccionRef = useRef(null);
   const filaRef = useRef(null);
   const pildoraRef = useRef(null);
-  const { addItem } = useCart();
+  const { addItem, cantidadDe } = useCart();
   const destacados = products.filter((p) => p.activo && p.destacado && esPublicable(p));
   const total = destacados.length;
 
@@ -169,6 +170,7 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
     const umbrales = Array.from({ length: 51 }, (_, i) => i / 50);
     let dentro = false;
+    let demora = 0;
     const io = new IntersectionObserver(([e]) => {
       const visible = e.intersectionRect.height;
       const cabe = Math.min(e.boundingClientRect.height, window.innerHeight);
@@ -179,10 +181,13 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
       dentro = ahora;
       if (dentro) sec.dataset.inmerso = '';
       else delete sec.dataset.inmerso;
-      medirDeNuevo();
+      // La barra cambia de luz cuando el vino ya cubre (o ya se fue) su franja:
+      // al instante quedaba ~120 ms con letra clara sobre papel.
+      clearTimeout(demora);
+      demora = setTimeout(medirDeNuevo, dentro ? 160 : 220);
     }, { threshold: umbrales });
     io.observe(sec);
-    return () => { io.disconnect(); delete sec.dataset.inmerso; medirDeNuevo(); };
+    return () => { io.disconnect(); clearTimeout(demora); delete sec.dataset.inmerso; medirDeNuevo(); };
   }, [hay]);
 
   /** El + de la tarjeta: con un tamano agrega directo; con mas, la hoja.
@@ -192,8 +197,10 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
     const base = presentacionPorDefecto(p);
     if (!base) return;
     if (presentacionesActivas(p).length > 1 && onElegir) onElegir(p);
+    // Con la linea en el tope no hay nada que sumar: se abre la ficha, que lo explica.
+    else if (cantidadDe(p.id, base.ml) >= CANTIDAD_MAXIMA) onOpen(p);
     else addItem(p, base, 1);
-  }, [onElegir, addItem]);
+  }, [onElegir, onOpen, addItem, cantidadDe]);
   // Mientras carga se dibuja la vidriera con su titulo y tarjetas de espera
   // del mismo tamano: aparecer de golpe empujaba lo de abajo (CLS, etapa 3B).
   // Tambien es lo que trae el HTML pre-generado.
@@ -220,18 +227,10 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
     else irA(activa <= 0 ? ultimaTanda : Math.max(0, activa - paso));
   }
 
-  // Flechas magneticas (escritorio, con mouse): se corren unos pixeles hacia
-  // el puntero y vuelven al soltarlo. `translate` y no `transform`: el toque
-  // del vidrio usa transform.
-  function iman(e) {
-    if (e.pointerType !== 'mouse') return;
-    const b = e.currentTarget;
-    const r = b.getBoundingClientRect();
-    const dx = ((e.clientX - r.left) / r.width - 0.5) * 8;
-    const dy = ((e.clientY - r.top) / r.height - 0.5) * 8;
-    b.style.translate = `${dx.toFixed(1)}px calc(-50% + ${dy.toFixed(1)}px)`;
-  }
-  function soltar(e) { e.currentTarget.style.translate = ''; }
+  // El iman y la elevacion de las flechas los pone el sistema global
+  // (lib/flotante.js) con --fx/--fy. Aca solo se compone con el centrado
+  // vertical: el inline le gana al `translate: 0 -50%` del modulo.
+  const centrada = { translate: 'var(--fx, 0px) calc(-50% + var(--fy, 0px))' };
 
   const palabras = DESTACADOS.titulo.split(' ');
   const hayPaginas = !cargando && total > visibles;
@@ -262,15 +261,12 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
               type="button"
               className={`${s.flecha} ${s.flechaIzq} ${alInicio ? s.flechaOculta : ''} tglass-clear`}
               onClick={() => mover(-1)}
-              onPointerMove={iman}
-              onPointerLeave={soltar}
+              style={centrada}
               aria-label="Anterior"
               tabIndex={alInicio ? -1 : undefined}
               aria-hidden={alInicio || undefined}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="m15 18-6-6 6-6" />
-              </svg>
+              <FlechaIzq size={20} strokeWidth={1.8} />
             </button>
 
             <div className={s.fila} ref={filaRef}>
@@ -293,13 +289,10 @@ export default function Destacados({ products, onOpen, onElegir, cargando = fals
               type="button"
               className={`${s.flecha} ${s.flechaDer} tglass-clear`}
               onClick={() => mover(1)}
-              onPointerMove={iman}
-              onPointerLeave={soltar}
+              style={centrada}
               aria-label="Siguiente"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="m9 18 6-6-6-6" />
-              </svg>
+              <FlechaDer size={20} strokeWidth={1.8} />
             </button>
           </div>
 

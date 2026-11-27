@@ -3,6 +3,7 @@ import { useCart } from '../../contexts/CartContext';
 import { presentacionesActivas, presentacionPorDefecto, tituloDe, lineaTarjeta } from '../../lib/producto';
 import { pesos } from '../../lib/format';
 import { TARJETA, conDatos } from '../../config/contenido';
+import { CANTIDAD_MAXIMA } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
 import { precargarFoto } from '../../lib/fotos';
 import s from './ProductCard.module.css';
@@ -22,7 +23,7 @@ import s from './ProductCard.module.css';
  * `prioridad`: la primera fila del catalogo baja su foto sin esperar (LCP).
  */
 export default function ProductCard({ producto, onOpen, onElegir, promos = {}, prioridad = 0 }) {
-  const { addItem, ultimo } = useCart();
+  const { addItem, ultimo, cantidadDe } = useCart();
   // Despues de agregar, el + pasa a tilde 1,2 s: confirma sin abrir nada.
   // Vale venga de donde venga el agregado (el +, la hoja o la ficha).
   const [hecho, setHecho] = useState(false);
@@ -42,6 +43,8 @@ export default function ProductCard({ producto, onOpen, onElegir, promos = {}, p
   function mas() {
     if (!base) return;
     if (varios && onElegir) onElegir(producto);
+    // Con la linea en el tope no hay nada que sumar: se abre la ficha, que lo explica.
+    else if (cantidadDe(producto.id, base.ml) >= CANTIDAD_MAXIMA) onOpen(producto);
     else addItem(producto, base, 1);
   }
 

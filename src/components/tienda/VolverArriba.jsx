@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { VOLVER_ARRIBA } from '../../config/contenido';
 import { VOLVER_ARRIBA_DESDE } from '../../config/ajustes';
 import { alScroll, medirDeNuevo } from '../../lib/alScroll.js';
+import { FlechaArriba } from './Iconos';
 import s from './VolverArriba.module.css';
 
 /**
@@ -55,10 +56,7 @@ export default function VolverArriba({ oculto = false }) {
       tabIndex={visible && !oculto ? 0 : -1}
       aria-hidden={!visible || oculto}
     >
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M12 19V5" />
-        <path d="M5 12l7-7 7 7" />
-      </svg>
+      <FlechaArriba size={17} strokeWidth={1.8} />
     </button>
   );
 }

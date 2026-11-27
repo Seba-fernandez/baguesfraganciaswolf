@@ -9,7 +9,9 @@ import { detalleLinea } from '../../lib/producto';
 import { envioGratis } from '../../lib/envio';
 import { PEDIDO, conDatos } from '../../config/contenido';
 import TiraCiclo from './TiraCiclo';
-import { ENVIO_GRATIS_DESDE } from '../../config/ajustes';
+import { ENVIO_GRATIS_DESDE, CANTIDAD_MAXIMA } from '../../config/ajustes';
+import AvisoMayorista from './AvisoMayorista';
+import { Mas, Menos } from './Iconos';
 import s from './CartSheet.module.css';
 
 export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
@@ -141,15 +143,21 @@ export default function CartSheet({ settings, onVerPromo, refRespaldo }) {
                           {it.grupo_promo && gruposActivos.has(it.grupo_promo) ? <span className={s.itemSello}>2x1</span> : null}
                         </p>
                         <div className={s.stepper}>
-                          <button type="button" onClick={() => setCantidad(it.key, it.cantidad - 1)} aria-label="Restar">-</button>
+                          <button type="button" onClick={() => setCantidad(it.key, it.cantidad - 1)} aria-label={PEDIDO.restar}><Menos size={16} /></button>
                           <span className="tnum">{it.cantidad}</span>
-                          <button type="button" onClick={() => setCantidad(it.key, it.cantidad + 1)} aria-label="Sumar">+</button>
+                          <button
+                            type="button"
+                            onClick={() => { if (it.cantidad < CANTIDAD_MAXIMA) setCantidad(it.key, it.cantidad + 1); }}
+                            aria-disabled={it.cantidad >= CANTIDAD_MAXIMA ? 'true' : undefined}
+                            aria-label={PEDIDO.sumar}
+                          ><Mas size={16} /></button>
                         </div>
                       </div>
                       <div className={s.itemDer}>
                         <span className={`${s.itemPrecio} tnum`}>{pesos(it.precio * it.cantidad)}</span>
-                        <button className={s.quitar} onClick={() => removeItem(it.key)}>Quitar</button>
+                        <button className={s.quitar} onClick={() => removeItem(it.key)} aria-label={conDatos(PEDIDO.quitarA, { nombre: it.nombre, ml: it.ml })}>{PEDIDO.quitar}</button>
                       </div>
+                      <AvisoMayorista clave={it.key} cantidad={it.cantidad} nombre={it.nombre} ml={it.ml} whatsapp={settings?.whatsapp_owner} className={s.avisoItem} />
                     </div>
                   ))}
                 </div>

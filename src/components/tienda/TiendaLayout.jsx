@@ -15,6 +15,7 @@ import VolverArriba from './VolverArriba';
 import AvisoAgregado from './AvisoAgregado';
 import { MARCA, CABECERA, LEGAL, PIE, COMO_FUNCIONA } from '../../config/contenido';
 import { linkWhatsApp } from '../../lib/whatsapp';
+import { Bolsa, WhatsApp, Instagram, Documento } from './Iconos.jsx';
 import '../../styles/tienda.css';
 import s from './TiendaLayout.module.css';
 
@@ -22,13 +23,6 @@ import s from './TiendaLayout.module.css';
 // (mismo criterio que SESION en TiendaShell): el estado de una entrada
 // sobrevive a recargar y sin la marca el cajon se tomaria por abierto.
 const SESION_PEDIDO = Math.random().toString(36).slice(2);
-
-const CartIcon = () => (
-  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
-    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-  </svg>
-);
 
 export default function TiendaLayout({ children, ficha = null, hoja = null, capa = null, settings, onVerPromo }) {
   const { count, open, setOpen, ultimo } = useCart();
@@ -45,7 +39,22 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
 
   // Lente de vidrio liquido en el canto de cada superficie de vidrio (solo
   // Chromium de escritorio; ver src/lib/vidrioLiquido.js).
-  useEffect(() => montarVidrioLiquido(raiz.current), []);
+  // Y el sistema flotante (iman, flotar, acercarse el cursor), que llega
+  // aparte y despues: si no esta, la pagina anda igual.
+  useEffect(() => {
+    const a = montarVidrioLiquido(raiz.current);
+    let b;
+    let vivo = true;
+    // Solo con mouse y sin reduced-motion: en el celular ni se descarga.
+    const conMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+      && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (conMouse) {
+      import('../../lib/flotante.js')
+        .then((m) => { if (vivo) b = m.montarFlotantes(raiz.current); })
+        .catch(() => {});
+    }
+    return () => { vivo = false; a?.(); b?.(); };
+  }, []);
 
   const ubicacion = useLocation();
   const { pathname, hash } = ubicacion;
@@ -188,11 +197,20 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
 
       <header className={`${s.bar} ${luz === 'dia' ? 'dia' : ''}`} data-luz={luz} inert={inert}>
         <Link to="/" className={s.marca} onClick={alTocarMarca}>
-          {MARCA.nombre} <span className={s.marcaWolf}>{MARCA.complemento}</span>
+          <span className={s.marcaTexto}>
+            {MARCA.nombre}{' '}<span className={s.marcaWolf}>{MARCA.complemento}</span>
+          </span>
         </Link>
-        <nav className={s.nav}>
-          <Link to="/catalogo" onClick={alTocarCatalogo}>{CABECERA.catalogo}</Link>
-          <a href="/#como">{CABECERA.como}</a>
+        <nav className={s.nav} aria-label={CABECERA.etiqueta}>
+          <Link
+            to="/catalogo"
+            className={s.link}
+            onClick={alTocarCatalogo}
+            aria-current={pathname === '/catalogo' ? 'page' : undefined}
+          >
+            <span className={s.linkTexto}>{CABECERA.catalogo}</span>
+          </Link>
+          <a href="/#como" className={s.link}><span className={s.linkTexto}>{CABECERA.como}</span></a>
         </nav>
         <button
           ref={botonPedido}
@@ -201,7 +219,7 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
           aria-label={`${CABECERA.verPedido} (${count} ${count === 1 ? 'ítem' : 'ítems'})`}
         >
           {/* El carrito da un latido al sumar (la key reinicia la animacion). */}
-          <span key={`c${ultimo?.t ?? 0}`} className={`${s.icoCarrito} ${ultimo ? s.latido : ''}`}><CartIcon /></span>
+          <span key={`c${ultimo?.t ?? 0}`} className={`${s.icoCarrito} ${ultimo ? s.latido : ''}`}><Bolsa size={22} /></span>
           {/* La key cambia en cada agregado: reinicia el pulso del numero. */}
           {count > 0 && (
             <span key={ultimo?.t ?? 0} className={`${s.badge} ${ultimo ? s.pulso : ''} tnum`}>{count}</span>
@@ -217,29 +235,23 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
         <p className={`tw ${s.firma}`} aria-hidden="true">
           {MARCA.nombre} <span className={s.firmaWolf}>{MARCA.complemento}</span>
         </p>
-        <div className={`tw ${s.fcols}`}>
-          <div className={s.fcol}>
-            <h4 className={s.ftitulo}>{PIE.tienda}</h4>
-            <Link to="/catalogo" onClick={alTocarCatalogo}>{CABECERA.catalogo}</Link>
-            <a href="/#como">{CABECERA.como}</a>
-            {settings?.link_catalogo && (
-              <a href={settings.link_catalogo} target="_blank" rel="noopener noreferrer">{PIE.catalogoPdf}</a>
-            )}
-          </div>
-          <div className={s.fcol}>
-            <h4 className={s.ftitulo}>{PIE.contacto}</h4>
-            {settings?.whatsapp_owner && (
-              <a href={linkWhatsApp(settings.whatsapp_owner, COMO_FUNCIONA.mensajeConsulta)} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            )}
-            {settings?.instagram_user && (
-              <a href={`https://instagram.com/${settings.instagram_user}`} target="_blank" rel="noopener noreferrer">Instagram</a>
-            )}
-          </div>
-          <p className={s.copy}>
-            © {new Date().getFullYear()} {MARCA.nombre} {MARCA.complemento}<br />
-            {settings?.aclaracion_pedido || PIE.aclaracionPorDefecto}
-          </p>
-        </div>
+        <nav className={`tw ${s.fenlaces}`} aria-label={PIE.etiqueta}>
+          {settings?.link_catalogo && (
+            <a href={settings.link_catalogo} target="_blank" rel="noopener noreferrer" className={s.flink}>
+              <Documento size={18} /><span className={s.flinkTexto}>{PIE.catalogoPdf}</span>
+            </a>
+          )}
+          {settings?.whatsapp_owner && (
+            <a href={linkWhatsApp(settings.whatsapp_owner, COMO_FUNCIONA.mensajeConsulta)} target="_blank" rel="noopener noreferrer" className={s.flink}>
+              <WhatsApp size={18} /><span className={s.flinkTexto}>{PIE.whatsapp}</span>
+            </a>
+          )}
+          {settings?.instagram_user && (
+            <a href={`https://instagram.com/${settings.instagram_user}`} target="_blank" rel="noopener noreferrer" className={s.flink}>
+              <Instagram size={18} /><span className={s.flinkTexto}>{PIE.instagram}</span>
+            </a>
+          )}
+        </nav>
 
         <div className={`tw ${s.legal}`}>
           <h4 className={s.ftitulo}>{LEGAL.titulo}</h4>
@@ -247,6 +259,12 @@ export default function TiendaLayout({ children, ficha = null, hoja = null, capa
             <p key={parrafo.slice(0, 24)}>{parrafo}</p>
           ))}
         </div>
+
+        <p className={`tw ${s.copy}`}>
+          © {new Date().getFullYear()} {MARCA.nombre} {MARCA.complemento}
+          <span className={s.punto} aria-hidden="true"> · </span>
+          {settings?.aclaracion_pedido || PIE.aclaracionPorDefecto}
+        </p>
       </footer>
 
       <VolverArriba oculto={hayDialogo || avisoVisible} />

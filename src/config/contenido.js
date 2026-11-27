@@ -20,6 +20,7 @@ export const CABECERA = {
   catalogo: 'Catálogo',
   como: 'Cómo funciona',
   verPedido: 'Ver pedido',
+  etiqueta: 'Secciones',
 };
 
 export const INICIO = {
@@ -184,6 +185,11 @@ export const CATALOGO = {
  * en el lugar donde se piden.
  */
 export const PEDIDO = {
+  // Los botones del cantidad del cajon y el de quitar ({nombre} y {ml} lo arman).
+  restar: 'Restar',
+  sumar: 'Sumar',
+  quitar: 'Quitar',
+  quitarA: 'Quitar {nombre} ({ml} ml) del pedido',
   privacidad: 'Tu nombre y tu WhatsApp los uso solo para coordinar este pedido.',
   // Los dos botones dicen lo que va a pasar: que el pedido sigue por WhatsApp.
   seguir: 'Seguir por WhatsApp',
@@ -252,6 +258,12 @@ export const HOJA_TAMANOS = {
 };
 
 export const FICHA = {
+  // Nota de la ficha cuando el tamano entra en el 2x1 ({par} y {uno} van en pesos).
+  promoPares: 'Llevando de a pares: {par} el par, {uno} cada uno.',
+  // Los botones de la cantidad de la barra, y lo que dice el resumen sin cupo.
+  restar: 'Restar',
+  sumar: 'Sumar',
+  enElMaximo: 'En el máximo',
   agregar: 'Agregar',
   // El botón de la barra fija. En el celular se ve "Agregar" (no entra más al
   // lado del precio y la cantidad); el lector de pantalla lee la frase entera.
@@ -281,11 +293,30 @@ export const FICHA = {
   // La flecha para volver al perfume que se estaba mirando antes de tocar un
   // "Si te gusta este" (se lee: "Volver a Kenzo Homme").
   volverA: 'Volver a {nombre}',
-  // Las notas y la descripcion van plegadas para que los parecidos se vean
-  // antes; este boton las abre.
+  // Las notas se ven siempre; este boton abre solo la descripcion larga, y
+  // aparece solo si el perfume la tiene.
   verMas: 'Ver más',
   verMenos: 'Ver menos',
   linkManual: 'Copialo desde acá:',
+};
+
+/**
+ * El aviso de compra por cantidad (AvisoMayorista), en la ficha y en el
+ * pedido. Sale desde MAYORISTA_DESDE unidades de un mismo perfume; al llegar a
+ * CANTIDAD_MAXIMA cambia al texto de tope. {maximo} es ese numero y {nombre} y
+ * {ml} arman el mensaje que llega a WhatsApp.
+ */
+export const AVISO_MAYORISTA = {
+  etiqueta: 'Aviso por cantidad',
+  titulo: '¿Comprás por cantidad?',
+  bajada: 'Si es para revender o para regalar en cantidad, escribime por WhatsApp y te paso precio por mayor.',
+  boton: 'Consultar por WhatsApp',
+  mensaje: 'Hola! Quiero consultar precio por mayor de {nombre} ({ml} ml).',
+  tituloTope: 'Llegaste al máximo',
+  bajadaTope: 'Por la web podés pedir hasta {maximo} unidades de cada perfume. Para más, escribime por WhatsApp.',
+  botonTope: 'Escribirme por WhatsApp',
+  mensajeTope: 'Hola! Quiero pedir más de {maximo} unidades de {nombre} ({ml} ml).',
+  cerrar: 'Cerrar aviso',
 };
 
 /**
@@ -377,10 +408,11 @@ export const LEGAL = {
 };
 
 export const PIE = {
-  tienda: 'Tienda',
-  contacto: 'Contacto',
   catalogoPdf: 'Catálogo en PDF',
   aclaracionPorDefecto: 'Venta particular en Córdoba',
+  whatsapp: 'WhatsApp',
+  instagram: 'Instagram',
+  etiqueta: 'Contacto y catálogo',
 };
 
 export const VOLVER_ARRIBA = 'Volver arriba';

@@ -13,7 +13,7 @@ import path from 'node:path';
 import { leerPromos, codigosDeRegla, paginasImpresas, proponerPromosCiclo, promosDelPdf, propuestaDePromos, promosCicloResultantes } from '../../src/lib/ciclo/leerPromos.js';
 import { leerBagues } from '../../src/lib/ciclo/leerBagues.js';
 import { compararCiclo } from '../../src/lib/ciclo/comparar.js';
-import { calcularCarrito } from '../../src/lib/promos.js';
+import { calcularCarrito, precioCadaUno } from '../../src/lib/promos.js';
 
 const F = path.join(import.meta.dirname, 'fixtures');
 const paginas = JSON.parse(fs.readFileSync(path.join(F, 'bagues-c12-promos.json'), 'utf8'));
@@ -261,5 +261,12 @@ if (fs.existsSync(RUTA)) {
 } else {
   console.log('  --  PDF entero: no está en esta máquina, se prueba solo con el fixture');
 }
+
+ok('precioCadaUno: la mitad del par hacia abajo, como el catálogo ($30.999 -> $15.499)', () => {
+  assert.equal(precioCadaUno(30999), 15499);
+  assert.equal(precioCadaUno(30000), 15000);
+  assert.equal(precioCadaUno(0), 0);
+  assert.equal(precioCadaUno(undefined), 0);
+});
 
 console.log(`\n${n} pruebas, todas pasan.`);

@@ -83,6 +83,11 @@
 .add[data-estado='hecho'] .icoMas { opacity: 0; transform: rotate(90deg) scale(0.6); }
 .add[data-estado='hecho'] .icoHecho { opacity: 1; transform: none; }
 .add:disabled { opacity: 0.4; cursor: not-allowed; }
+/* Hover del +: el boton sube 1 px y se enciende un brillo (lo pone .tbtn en
+   tienda.css); el signo gira un poco, con --soltar. Solo con mouse. */
+@media (hover: hover) {
+  .add.add:hover:not(:disabled):not([data-estado='hecho']) .icoMas { transform: rotate(90deg) scale(1.08); transition-duration: var(--soltar-dur); transition-timing-function: var(--soltar); }
+}
 
 /* En pantallas mas anchas la tarjeta tiene aire de sobra: agranda un toque. */
 @media (min-width: 560px) {

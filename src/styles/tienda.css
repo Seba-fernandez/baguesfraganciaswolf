@@ -52,6 +52,10 @@
 @font-face { font-family: 'Figtree Respaldo Android'; font-weight: 600; src: local('Roboto Bold'), local('Roboto-Bold'); size-adjust: 101.99%; ascent-override: 93.15%; descent-override: 24.51%; line-gap-override: 0%; }
 
 .tienda {
+  /* Sin el resaltado celeste que pinta Android (y Safari, gris) al tocar un
+     link o boton: cada control ya tiene su propia reaccion al apretar. Se
+     hereda; el foco de teclado (:focus-visible) sigue igual. */
+  -webkit-tap-highlight-color: transparent;
   /* --- Paleta Ámbar Noir. Base cálida (espresso), acento rosa-vino, y un
      dorado de arena para los brillos: el archetipo "luxury fragrance"
      (tinta + oro cálido), no el verde botánico de antes. --- */
@@ -349,7 +353,6 @@
   position: relative;
   isolation: isolate;
 }
-.tglass-clear,
 .tbtn.clear,
 .tbtn.ghost,
 .tglass,
@@ -363,7 +366,8 @@
   transition:
     background var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease),
-    transform var(--soltar-dur) var(--soltar);
+    transform var(--soltar-dur) var(--soltar),
+    translate var(--soltar-dur) var(--soltar);
 }
 .tglass {
   background:
@@ -390,7 +394,6 @@
   }
 }
 
-.tglass-clear::before,
 .tbtn::before,
 .tglass::before,
 .tglass-lite::before {
@@ -415,7 +418,6 @@
   opacity: 0.85;
   transition: opacity var(--dur) var(--ease);
 }
-.tglass-clear::after,
 .tbtn::after,
 .tglass::after,
 .tglass-lite::after {
@@ -436,27 +438,24 @@
 /* Hover: el vidrio se aclara, el filo se enciende y el reflejo se corre, como
    si la luz resbalara por la cara. Sin crecer: un vidrio no se infla. */
 @media (hover: hover) {
-  .tglass-clear:hover,
   .tbtn.clear:hover,
   .tbtn.ghost:hover {
     background:
       linear-gradient(180deg, rgba(255, 250, 240, 0.14) 0%, rgba(255, 250, 240, 0) 46%),
       var(--v-tinte-hover);
   }
-  .tglass-clear:hover::before,
   .tbtn:hover::before { opacity: 1; }
-  .tglass-clear:hover::after,
   .tbtn:hover::after { transform: translateX(8%); }
 }
 
 /* Sin backdrop-filter (Firefox viejo, modos de ahorro): cae a un vidrio solido
    tenue. Se pierde el efecto, nunca la lectura. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .tglass-clear, .tbtn.clear, .tbtn.ghost { background: rgba(70, 52, 40, 0.72); }
+  .tbtn.clear, .tbtn.ghost { background: rgba(70, 52, 40, 0.72); }
   .tglass, .tglass-lite { background: var(--bg-2); }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .tglass-clear, .tbtn.clear, .tbtn.ghost { background: #3a2a20; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .tbtn.clear, .tbtn.ghost { background: #3a2a20; backdrop-filter: none; -webkit-backdrop-filter: none; }
   .tglass, .tglass-lite { background: var(--bg-2); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 
@@ -484,12 +483,24 @@
   background: var(--crema);
   -webkit-backdrop-filter: none; backdrop-filter: none;
   box-shadow: none;
-  transition: background var(--dur) var(--ease), transform var(--soltar-dur) var(--soltar);
+  transition: background var(--dur) var(--ease), transform var(--soltar-dur) var(--soltar), translate var(--soltar-dur) var(--soltar);
 }
-.tbtn:not(.clear):not(.ghost)::before,
-.tbtn:not(.clear):not(.ghost)::after { content: none; }
+.tbtn:not(.clear):not(.ghost)::before { content: none; }
+/* Brillo de hover, muy suave: una luz arriba que aparece con opacity (nada
+   que repinte el layout). Sube 1 px con `translate` para no pisar el
+   `transform: scale` del :active. Solo con mouse. */
+.tbtn:not(.clear):not(.ghost)::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: -1; /* debajo del texto; .tbtn isola */
+  border-radius: inherit;
+  background: radial-gradient(120% 150% at 50% -20%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 62%);
+  opacity: 0; transform: none;
+  transition: opacity var(--soltar-dur) var(--soltar);
+}
+.dia .tbtn:not(.clear):not(.ghost)::after { content: ''; background: radial-gradient(120% 150% at 50% -20%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 62%); }
 @media (hover: hover) {
   .tbtn:not(.clear):not(.ghost):hover { background: #fff7f3; }
+  .tbtn:not(:disabled):hover { translate: 0 -1px; }
+  .tbtn:not(.clear):not(.ghost):not(:disabled):hover::after { opacity: 1; }
 }
 /* Se hunde rapido y vuelve suave. :not(:disabled) sube la especificidad para
    ganarle al transition de arriba, que lleva :not() doble. */
@@ -558,79 +569,119 @@ html.lenis, html.lenis body { height: auto; }
 .dia :is(.tbtn, .tglass-clear):focus-visible { outline-color: var(--rubi); }
 .dia h1, .dia h2, .dia h3 { color: var(--tinta); text-shadow: none; }
 
-/* ---------- vidrio de los controles, como el de iOS (Sebas, 23/10) ----------
-   Flechas, volver arriba, carrito, paginador y el + de los destacados. Antes
-   eran casi transparentes: sobre vino andaban, pero sobre papel el vidrio se
-   aplanaba o directamente desaparecia (el volver arriba). Del video de Sebas
-   (Liquid Glass de Apple), lo que hace que se lea sobre cualquier fondo:
-   - cuerpo claro y esmerilado: lo de atras se ve desenfocado y mas claro;
-   - un filo de luz fino (el ::before de arriba);
-   - una banda mas oscura por dentro del borde y una sombra suave abajo, que
-     lo despegan del fondo claro;
-   - el icono cambia de color: crema sobre vino, tinta sobre papel;
-   - al tocar crece apenas, se llena de blanco y el icono se desenfoca.
-   La luz de abajo la da .dia (la seccion o la barra) o data-luz="dia" (el
-   volver arriba, que flota y la mide en cada cuadro). */
+/* ---------- vidrio de los controles: humo de vino (Sebas, 27/11) ----------
+   Flechas, volver arriba, carrito, paginador. Antes era un vidrio claro
+   estilo iOS que sobre la pared vino se veia lechoso y generico. Ahora es
+   vidrio ahumado, de la misma casa que la web:
+   - cuerpo vino hondo translucido, con desenfoque moderado;
+   - un filo de luz crema de 1 px arriba (inset) y un anillo interior casi
+     invisible que marca el grosor;
+   - sombra de contacto corta + caida larga; la caida "abierta" es una capa
+     (::before) que sube de opacity al pasar el cursor;
+   - un brillo (::after): un gradiente fijo que se mueve con `translate` hacia
+     el cursor (--gx/--gy, en px), siempre adentro de la forma;
+   - de dia (.dia o data-luz="dia"): vidrio claro con tinta.
+   El movimiento lo pone src/lib/flotante.js con las variables --fx, --fy
+   (para `translate`), --el (elevacion) y --gl (brillo): ver arriba. Sin JS o
+   en tactil quedan todas en su valor de reposo. */
 .tglass-clear {
-  --vc-tinte-1: rgba(255, 246, 242, 0.24);
-  --vc-tinte-2: rgba(255, 246, 242, 0.08);
+  --vc-cuerpo: rgba(75, 18, 23, 0.46);       /* color de fondo (se anima) */
+  --vc-cuerpo-hover: rgba(98, 26, 33, 0.56);
+  --vc-cuerpo-toque: rgba(250, 239, 234, 0.3);
+  --vc-luz: rgba(250, 239, 234, 0.14);       /* velo de arriba */
   --vc-glifo: var(--crema);
+  --vc-filo: rgba(250, 239, 234, 0.36);
+  --vc-anillo: rgba(250, 239, 234, 0.08);
+  --vc-contacto: rgba(14, 2, 3, 0.55);
+  --vc-caida: rgba(14, 2, 3, 0.6);
+  --vc-brillo: rgba(250, 239, 234, 0.34);
   border: 0; /* el volver arriba traia el borde de boton del navegador */
-  background: linear-gradient(180deg, var(--vc-tinte-1), var(--vc-tinte-2));
-  -webkit-backdrop-filter: var(--lente,) blur(7px) saturate(1.8) brightness(1.08);
-  backdrop-filter: var(--lente,) blur(7px) saturate(1.8) brightness(1.08);
+  background-color: var(--vc-cuerpo);
+  background-image: linear-gradient(180deg, var(--vc-luz), rgba(250, 239, 234, 0) 55%);
+  -webkit-backdrop-filter: var(--lente,) blur(10px) saturate(1.25) brightness(0.9);
+  backdrop-filter: var(--lente,) blur(10px) saturate(1.25) brightness(0.9);
   box-shadow:
-    inset 0 1px 0.5px rgba(255, 255, 255, 0.7),
-    inset 0 -1px 0.5px rgba(255, 255, 255, 0.28),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.22),
-    inset 0 -9px 14px -10px rgba(36, 6, 4, 0.34),
-    0 1px 3px rgba(20, 4, 6, 0.22),
-    0 12px 26px -12px rgba(20, 4, 6, 0.55);
+    inset 0 1px 0 var(--vc-filo),
+    inset 0 0 0 1px var(--vc-anillo),
+    inset 0 -10px 14px -10px rgba(14, 2, 3, 0.4),
+    0 1px 2px var(--vc-contacto),
+    0 12px 24px -14px var(--vc-caida);
   color: var(--vc-glifo);
+  cursor: pointer;
+  /* translate: el desplazamiento de flotante.js. Sin especificidad: lo que
+     ya se posiciona con translate (las flechas) lo compone en su JSX. */
+}
+:where(.tglass-clear, [data-flotante]) { translate: var(--fx, 0px) var(--fy, 0px); }
+.tienda .tglass-clear {
+  color: var(--vc-glifo);
+  /* sin `translate` en la lista: lo mueve el resorte de flotante.js */
   transition:
-    background 0.3s var(--ease),
+    background-color 0.3s var(--ease),
     box-shadow 0.3s var(--ease),
     color var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
     transform var(--soltar-dur) var(--soltar);
 }
-.tienda .tglass-clear { color: var(--vc-glifo); }
+/* Capa de sombra abierta: mas larga y suave, aparece con opacity. */
+.tglass-clear::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border-radius: inherit;
+  box-shadow: 0 18px 30px -12px var(--vc-caida), 0 6px 12px -6px var(--vc-contacto);
+  opacity: var(--el, 0);
+}
+/* Brillo especular que sigue al cursor, adentro del circulo. */
+.tglass-clear::after {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  border-radius: inherit;
+  /* Gradiente fijo: su disco visible (70 % del lado corto / 2) nunca sale de
+     la forma, porque flotante.js limita --gx/--gy a ese margen. */
+  background: radial-gradient(circle closest-side, var(--vc-brillo), rgba(250, 239, 234, 0) 70%);
+  translate: var(--gx, 0px) var(--gy, 0px);
+  opacity: var(--gl, 0);
+}
 .tglass-clear > svg { transition: filter 0.2s var(--ease), opacity 0.2s var(--ease); }
 .dia .tglass-clear,
 .tglass-clear[data-luz='dia'] {
-  --vc-tinte-1: rgba(255, 255, 255, 0.72);
-  --vc-tinte-2: rgba(255, 255, 255, 0.42);
+  --vc-cuerpo: rgba(255, 255, 255, 0.58);
+  --vc-cuerpo-hover: rgba(255, 255, 255, 0.78);
+  --vc-cuerpo-toque: rgba(255, 255, 255, 0.95);
+  --vc-luz: rgba(255, 255, 255, 0.7);
   --vc-glifo: var(--tinta);
+  --vc-filo: rgba(255, 255, 255, 0.95);
+  --vc-anillo: rgba(42, 10, 14, 0.12);
+  --vc-contacto: rgba(42, 10, 14, 0.22);
+  --vc-caida: rgba(42, 10, 14, 0.4);
+  --vc-brillo: rgba(255, 255, 255, 0.9);
   box-shadow:
-    inset 0 1px 0.5px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 0.5px rgba(255, 255, 255, 0.6),
-    inset 0 0 0 0.5px rgba(42, 10, 14, 0.1),
-    inset 0 -9px 14px -10px rgba(42, 10, 14, 0.2),
-    0 1px 3px rgba(42, 10, 14, 0.14),
-    0 12px 26px -12px rgba(42, 10, 14, 0.42);
+    inset 0 1px 0 var(--vc-filo),
+    inset 0 0 0 1px var(--vc-anillo),
+    inset 0 -10px 14px -10px rgba(42, 10, 14, 0.14),
+    0 1px 2px var(--vc-contacto),
+    0 12px 24px -14px var(--vc-caida);
 }
 @media (hover: hover) {
-  .tglass-clear:hover {
-    background: linear-gradient(180deg, var(--vc-tinte-1), var(--vc-tinte-1));
-  }
-  .dia .tglass-clear:hover,
-  .tglass-clear[data-luz='dia']:hover { background: rgba(255, 255, 255, 0.86); }
+  .tglass-clear:hover:not(:disabled) { background-color: var(--vc-cuerpo-hover); }
 }
-/* El toque: crece apenas, se llena de luz y el icono pierde foco por un
-   instante. Sin resorte fuerte: la vuelta usa la curva de --soltar. */
+/* El toque (acolchonado): crece 1,06 y se aclara suave, sin llenarse de
+   blanco de golpe. Baja rapido (--apretar) y vuelve con --soltar. */
 .tienda .tglass-clear:active:not(:disabled) {
   transform: scale(1.06);
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--tinta);
-  transition-duration: 0.3s, 0.3s, 0.12s, 0.2s;
+  background-color: var(--vc-cuerpo-toque);
+  transition:
+    background-color 0.22s var(--ease),
+    box-shadow 0.3s var(--ease),
+    color var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    transform var(--apretar);
 }
-.tglass-clear:active:not(:disabled) > svg { filter: blur(0.7px); opacity: 0.75; }
+.tglass-clear:active:not(:disabled) > svg { filter: blur(0.6px); opacity: 0.8; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .tglass-clear { background: rgba(120, 70, 74, 0.82); }
-  .dia .tglass-clear, .tglass-clear[data-luz='dia'] { background: #fff; }
+  .tglass-clear { --vc-cuerpo: rgba(75, 18, 23, 0.92); }
+  .dia .tglass-clear, .tglass-clear[data-luz='dia'] { --vc-cuerpo: #fff; }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .tglass-clear { background: #5a2a30; backdrop-filter: none; -webkit-backdrop-filter: none; }
-  .dia .tglass-clear, .tglass-clear[data-luz='dia'] { background: #fff; }
+  .tglass-clear { --vc-cuerpo: #4b1217; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .dia .tglass-clear, .tglass-clear[data-luz='dia'] { --vc-cuerpo: #fff; }
 }
 @media (prefers-reduced-motion: reduce) {
   .tienda .tglass-clear:active:not(:disabled) { transform: none; }

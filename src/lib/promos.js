@@ -78,6 +78,15 @@ export function calcularCarrito(items, promosCiclo) {
   return { total, sinPromo, grupos, ahorroTotal };
 }
 
+/**
+ * Lo que sale cada uno dentro de un 2x1: la mitad del par, SIEMPRE hacia
+ * abajo, como lo imprime el catalogo de la proveedora ($30.999 el par, $15.499
+ * c/u). La ficha usa esto para no discrepar con el hero por un peso.
+ */
+export function precioCadaUno(precioPar) {
+  return Math.floor((Number(precioPar) || 0) / 2);
+}
+
 /** Texto del ciclo para el hero: "Ciclo 09/26 · hasta el 18/09". */
 export function textoCiclo(settings) {
   const nombre = settings?.ciclo_nombre || '';

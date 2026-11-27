@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { INICIO, INICIO_NAVIDAD } from '../../config/contenido';
 import { HERO_NAVIDAD } from '../../config/ajustes';
 import { pesos } from '../../lib/format';
+import { precioCadaUno } from '../../lib/promos';
 import Flecha from './Flecha';
 import s from './Hero.module.css';
 import n from './HeroNavidad.module.css';
@@ -108,7 +109,7 @@ export default function Hero({
                   <del>{parNavidad ? pesos(parNavidad) : ''}</del>
                 </span>
                 <span className={n.ahora}>
-                  <span className={n.ahoraNum} data-hero="precio">{parNavidad ? pesos(Math.floor(parNavidad / 2)) : ''}</span>
+                  <span className={n.ahoraNum} data-hero="precio">{parNavidad ? pesos(precioCadaUno(parNavidad)) : ''}</span>
                   <span className={n.cu}> {INICIO_NAVIDAD.porUno}</span>
                 </span>
               </p>

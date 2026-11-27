@@ -42,8 +42,19 @@ export const ENVIO_GRATIS_DESDE = 60000;
 // Se prende con true; el texto está en DUDA, en contenido.js.
 export const MOSTRAR_DUDA = false;
 
-/** Unidades maximas de un mismo aroma en un pedido. */
-export const CANTIDAD_MAXIMA = 9;
+/**
+ * Unidades maximas de un mismo aroma y tamano (una linea del pedido). Es 20
+ * porque la funcion de la base crear_pedido_web() convierte en 1, sin avisar,
+ * cualquier linea con mas de 20: pasarse de aca cambiaria el pedido en
+ * silencio. CartContext la hace valer en la ficha y en el cajon.
+ */
+export const CANTIDAD_MAXIMA = 20;
+
+/**
+ * Desde cuantas unidades de un mismo perfume sale el aviso "comprás por
+ * cantidad" (AvisoMayorista), que manda a WhatsApp por precio por mayor.
+ */
+export const MAYORISTA_DESDE = 6;
 
 /** A cuantos pixeles de scroll aparece el boton de volver arriba. */
 export const VOLVER_ARRIBA_DESDE = 900;

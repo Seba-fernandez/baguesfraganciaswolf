@@ -1459,23 +1459,30 @@ def ficha_volver_mas(browser, base):
     ctx, page, _ = catalogo_con_datos(browser, ESCRITORIO)
     page.locator("article").nth(3).locator("button").first.evaluate("e => e.click()")
     esperar_ficha(page)
+    # 27/11 (Sebas): las notas se ven siempre; "Ver mas" despliega solo la
+    # descripcion larga y existe solo si el perfume la tiene. Al desplegar, el
+    # ancho del contenido no se mueve ni 1 px (antes se corria el margen
+    # derecho porque aparecia la barra de scroll).
     m = page.evaluate(f"""() => {{ const d = document.querySelector('{FICHA}');
         const r = (s) => d.querySelector(s)?.getBoundingClientRect();
-        const mas = d.querySelector('[data-qa=ficha-mas]');
         return {{ tam: d.querySelectorAll('[class*=opciones] button').length, filaAbajo: Math.round(r('[class*=parecidosFila]')?.bottom || 0),
-                 barra: Math.round(r('[class*=barra]')?.top || 0), plegadoAlto: Math.round(mas?.getBoundingClientRect().height ?? -1),
-                 inert: mas?.hasAttribute('inert') }}; }}""")
-    page.locator(f"{FICHA} [data-qa=ficha-ver-mas]").evaluate("e => e.click()")
-    page.wait_for_timeout(500)
-    abierto = page.evaluate(f"""() => {{ const d = document.querySelector('{FICHA}'); const mas = d.querySelector('[data-qa=ficha-mas]');
-        return [Math.round(mas.getBoundingClientRect().height), mas.hasAttribute('inert'), d.querySelectorAll('[data-qa=piramide] [data-qa=nota]').length,
-                d.querySelector('[data-qa=ficha-ver-mas]').getAttribute('aria-expanded')]; }}""")
+                 barra: Math.round(r('[class*=barra]')?.top || 0), notas: d.querySelectorAll('[data-qa=piramide] [data-qa=nota]').length,
+                 boton: !!d.querySelector('[data-qa=ficha-ver-mas]'), mas: !!d.querySelector('[data-qa=ficha-mas]'),
+                 ancho: r('[data-qa=piramide]')?.width ?? -1 }}; }}""")
+    abierto = None
+    if m["boton"]:
+        page.locator(f"{FICHA} [data-qa=ficha-ver-mas]").evaluate("e => e.click()")
+        page.wait_for_timeout(600)
+        abierto = page.evaluate(f"""() => {{ const d = document.querySelector('{FICHA}'); const mas = d.querySelector('[data-qa=ficha-mas]');
+            return [Math.round(mas?.getBoundingClientRect().height ?? 0), d.querySelector('[data-qa=ficha-ver-mas]').getAttribute('aria-expanded'),
+                    d.querySelector('[data-qa=piramide]')?.getBoundingClientRect().width ?? -1]; }}""")
     ctx.close()
-    chk("FICHA-2 ver mas", "conversion", "media", "Notas plegadas detras de 'Ver mas' (abre y cierra) y, a 1440x900 con dos tamanos, los parecidos enteros arriba de la barra",
-        m["plegadoAlto"] == 0 and m["inert"] and abierto[0] > 40 and not abierto[1] and abierto[2] > 0 and abierto[3] == "true"
-        and (m["tam"] > 2 or 0 < m["filaAbajo"] <= m["barra"]),
-        f"plegado {m['plegadoAlto']} px (inert {m['inert']}); abierto {abierto[0]} px con {abierto[2]} notas; "
-        f"{m['tam']} tamanos, parecidos terminan en {m['filaAbajo']} y la barra arranca en {m['barra']}")
+    ok_mas = (abierto is None) or (abierto[0] > 20 and abierto[1] == "true" and abs(abierto[2] - m["ancho"]) < 0.5)
+    chk("FICHA-2 ver mas", "conversion", "media", "Notas a la vista; 'Ver mas' solo con descripcion larga, despliega sin mover el ancho; a 1440x900 los parecidos arriba de la barra",
+        m["notas"] > 0 and not m["mas"] and ok_mas and (m["tam"] > 2 or 0 < m["filaAbajo"] <= m["barra"]),
+        f"{m['notas']} notas a la vista; ver mas: {m['boton']}"
+        + (f" (abierto {abierto[0]} px, ancho {m['ancho']:.1f} -> {abierto[2]:.1f})" if abierto else "")
+        + f"; {m['tam']} tamanos, parecidos terminan en {m['filaAbajo']} y la barra arranca en {m['barra']}")
 
 
 def e3_a7(browser, base):
@@ -2005,8 +2012,22 @@ def e3_b8(browser, base):
         len(portada) <= 1, f"{len(portada)}: {portada}")
     pkg = json.load(open(os.path.join(AQUI, "..", "..", "package.json")))
     deps = {**pkg.get("dependencies", {}), **pkg.get("devDependencies", {})}
-    chk("E3-B8 motion", "rendimiento", "baja", "La dependencia 'motion' (sin uso) ya no esta en package.json (repo local)",
-        "motion" not in deps, f"motion: {deps.get('motion', 'no esta')}")
+    # 27/11: motion volvio con uso (solo su resorte, en lib/flotante.js, con
+    # import dinamico y solo en escritorio). Se pide que, si esta, nada mas la
+    # importe y que no sea un import estatico (no puede entrar al arranque).
+    usos = []
+    for raiz_src, _, archivos in os.walk(os.path.join(AQUI, "..", "..", "src")):
+        for a in archivos:
+            if a.endswith((".js", ".jsx")):
+                txt = open(os.path.join(raiz_src, a), encoding="utf-8").read()
+                estatico = bool(re.search(r"from ['\"]motion", txt))
+                dinamico = bool(re.search(r"import\(['\"]motion", txt))
+                if estatico or dinamico:
+                    usos.append((a, estatico))
+    ok_motion = ("motion" not in deps and not usos) or (
+        "motion" in deps and bool(usos) and all(a == "flotante.js" and not est for a, est in usos))
+    chk("E3-B8 motion", "rendimiento", "baja", "'motion' solo si se usa: unicamente lib/flotante.js y con import dinamico (repo local)",
+        ok_motion, f"motion: {deps.get('motion', 'no esta')}; usos: {usos or 'ninguno'}")
 
 
 def e3_b9(browser, base):

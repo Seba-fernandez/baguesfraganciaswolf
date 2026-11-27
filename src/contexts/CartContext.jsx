@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { calcularCarrito } from '../lib/promos';
 import { tituloDe, detalleLinea } from '../lib/producto';
+import { recortarCantidad } from '../lib/mayorista.js';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'bgw-carrito-v2'; // v2: el item ahora lleva codigo y grupo_promo
@@ -38,11 +39,16 @@ export function CartProvider({ children, promosCiclo = [] }) {
   // "agregado" de TiendaLayout. `t` cambia en cada agregado, aunque sea el mismo.
   const [ultimo, setUltimo] = useState(null);
   const cargado = useRef(false);
+  // Siempre lo ultimo que hay en el pedido, para que addItem sepa cuanto sumo de
+  // verdad sin depender de cuando React corre el updater.
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setItems(JSON.parse(raw));
+      // Un carrito guardado antes del tope puede traer lineas de mas.
+      if (raw) setItems(JSON.parse(raw).map((it) => ({ ...it, cantidad: recortarCantidad(it.cantidad) })).filter((it) => it.cantidad > 0));
     } catch { /* sin carrito guardado, o almacenamiento bloqueado */ }
     cargado.current = true;
   }, []);
@@ -54,15 +60,21 @@ export function CartProvider({ children, promosCiclo = [] }) {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch { /* noop */ }
   }, [items]);
 
+  // Devuelve cuantas unidades sumo de verdad (0 si la linea ya estaba en el
+  // tope). Si no sumo nada, no hay "ultimo agregado": ni tilde ni latido.
   const addItem = useCallback((producto, presentacion, cantidad = 1) => {
-    if (!presentacion) return;
+    if (!presentacion) return 0;
     const key = keyOf(producto.id, presentacion.ml);
-    setItems((prev) => {
-      const existe = prev.find((it) => it.key === key);
-      if (existe) {
-        return prev.map((it) => (it.key === key ? { ...it, cantidad: it.cantidad + cantidad } : it));
-      }
-      return [...prev, {
+    const prev = itemsRef.current;
+    const existe = prev.find((it) => it.key === key);
+    const antes = existe ? existe.cantidad : 0;
+    const despues = recortarCantidad(antes + cantidad);
+    const sumo = despues - antes;
+    if (sumo <= 0) return 0;
+    const next = existe
+      // Nunca por encima del tope: la base convertiria en 1 lo que lo pase.
+      ? prev.map((it) => (it.key === key ? { ...it, cantidad: despues } : it))
+      : [...prev, {
         key,
         productId: producto.id,
         nombre: tituloDe(producto),
@@ -73,10 +85,11 @@ export function CartProvider({ children, promosCiclo = [] }) {
         nombre_proveedor: presentacion.nombre_proveedor || '',
         grupo_promo: presentacion.grupo_promo || null,
         precio: Number(presentacion.precio) || 0,
-        cantidad,
+        cantidad: despues,
         imagen_url: producto.imagen_url || '',
       }];
-    });
+    itemsRef.current = next;
+    setItems(next);
     const abreCajon = !cajonYaVisto();
     if (abreCajon) {
       marcarCajonVisto();
@@ -91,17 +104,25 @@ export function CartProvider({ children, promosCiclo = [] }) {
       abrioCajon: abreCajon,
       t: Date.now(),
     });
+    return sumo;
   }, []);
 
   const removeItem = useCallback((key) => setItems((prev) => prev.filter((it) => it.key !== key)), []);
 
   const setCantidad = useCallback((key, cantidad) => {
+    const tope = recortarCantidad(cantidad);
     setItems((prev) =>
-      cantidad <= 0
+      tope <= 0
         ? prev.filter((it) => it.key !== key)
-        : prev.map((it) => (it.key === key ? { ...it, cantidad } : it))
+        : prev.map((it) => (it.key === key ? { ...it, cantidad: tope } : it))
     );
   }, []);
+
+  // Cuantas unidades de esa linea (producto + tamano) hay ya en el pedido.
+  const cantidadDe = useCallback(
+    (productId, ml) => items.find((it) => it.key === keyOf(productId, ml))?.cantidad || 0,
+    [items]
+  );
 
   const clear = useCallback(() => setItems([]), []);
 
@@ -116,7 +137,7 @@ export function CartProvider({ children, promosCiclo = [] }) {
   const value = {
     items, addItem, removeItem, setCantidad, clear,
     total: cuenta.total, totalLista, ahorro: cuenta.ahorroTotal, grupos: cuenta.grupos,
-    count, open, setOpen, ultimo,
+    count, open, setOpen, ultimo, cantidadDe,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

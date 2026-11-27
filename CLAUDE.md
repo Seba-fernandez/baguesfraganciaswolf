@@ -56,13 +56,15 @@ una clave secreta en un archivo.**
 React 18, Vite 5, React Router 7. CSS Modules y variables CSS, sin Tailwind ni
 biblioteca de componentes. PostgreSQL en Supabase con RLS en todas las tablas.
 Portada pre-generada como HTML en el build. Movimiento en CSS nativo, salvo
-Lenis (5,7 kB) para la ruedita en escritorio.
+Lenis (5,7 kB) para la ruedita en escritorio y el resorte de `motion`
+(2 kB gzip, diferido, solo escritorio) para el vidrio flotante.
 
 ```
 src/
   config/         contenido.js (todo texto visible) y ajustes.js (números)
   components/
     tienda/       la web pública
+                  Iconos.jsx: íconos propios (trazo 1,5 sobre grilla de 24)
     panel/        el panel; PanelApp.jsx es la puerta
     layout/       estructura del panel
     auth/         ingreso al panel: solo Google
@@ -73,6 +75,8 @@ src/
     apiTienda.js    lectura de la tienda con fetch, SIN supabase-js
     busqueda.js     el buscador del catálogo
     alScroll.js     un solo oyente de scroll, una pasada por cuadro
+    flotante.js     imán y flotar del vidrio (solo escritorio): inclina, sube y mueve el brillo
+    mayorista.js    tope y aviso por cantidad del pedido
     recuperar.js    rescate cuando un chunk viejo ya no existe
     promos.js       el 2x1 por grupos
     producto.js     presentaciones, título, pirámide, ahorro
@@ -229,6 +233,15 @@ Cada una costó un error real. Antes de "arreglar" algo parecido, leer esto.
   mata a sí mismo.** Y `servir.mjs` guarda en memoria lo comprimido: después de
   un build, reiniciarlo.
 - **Las tareas programadas de GitHub solo corren desde `main`.**
+- **En Windows (`core.autocrlf=true`) el build falla en local**: con CRLF los
+  hashes de los scripts de `index.html` no coinciden con la CSP y algún test
+  que busca `\n` falla. Para verificar, una copia en LF (`git worktree add` con
+  `core.autocrlf=false` y los cambios pasados por `tr -d '\r'`). Y antes de
+  commitear, cada archivo tocado en LF: si entra con CRLF, el diff lo muestra
+  reescrito entero.
+- **La base guarda como 1 cualquier línea de pedido con más de 20 unidades**
+  (`crear_pedido_web`, sin avisar): por eso `CANTIDAD_MAXIMA` es 20 y el aviso
+  de compra por mayor sale desde `MAYORISTA_DESDE` (`lib/mayorista.js`).
 
 ## 11. Antes de dar algo por hecho
 

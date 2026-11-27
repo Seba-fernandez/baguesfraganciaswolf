@@ -8,10 +8,13 @@ import {
 import { pesos } from '../../lib/format';
 import { copiarTexto, linkDeAroma } from '../../lib/compartir';
 import { parecidos } from '../../lib/parecidos';
+import { calcularCarrito, precioCadaUno } from '../../lib/promos';
+import { disponibleDe } from '../../lib/mayorista.js';
 import { fotoDe, fotoChica } from '../../lib/fotos';
 import { FICHA, PARECIDOS, conDatos } from '../../config/contenido';
-import { CANTIDAD_MAXIMA } from '../../config/ajustes';
 import ProductThumb from './ProductThumb';
+import AvisoMayorista from './AvisoMayorista';
+import { Mas, Menos } from './Iconos';
 import s from './ProductModal.module.css';
 
 /**
@@ -28,8 +31,9 @@ import s from './ProductModal.module.css';
  */
 export default function ProductModal({
   producto, onClose, promos = {}, disparador = null, todos = [], onAbrir, previo = null, onVolver, mlInicial = null,
+  whatsapp = '',
 }) {
-  const { addItem } = useCart();
+  const { addItem, cantidadDe } = useCart();
   const opciones = presentacionesActivas(producto);
   // El tamano con que arranca: el que se tenia elegido si se vuelve con la
   // flecha (y sigue en el ciclo); si no, el de siempre.
@@ -41,9 +45,11 @@ export default function ProductModal({
   const [cant, setCant] = useState(1);
   const hoja = useRef(null);
   const cerrarRef = useRef(null);
+  const tituloRef = useRef(null);
   const copiarRef = useRef(null);
   const infoRef = useRef(null);
-  // Las notas y la descripcion, plegadas hasta tocar "Ver mas".
+  const barraRef = useRef(null);
+  // La descripcion larga, plegada hasta tocar "Ver mas" (las notas se ven siempre).
   const [masAbierto, setMasAbierto] = useState(false);
   // '' sin tocar, 'ok' copiado, 'manual' el navegador no dejo copiar.
   const [copia, setCopia] = useState('');
@@ -65,8 +71,8 @@ export default function ProductModal({
     if (hoja.current) hoja.current.scrollTop = 0;
     if (infoRef.current) infoRef.current.scrollTop = 0;
     // Si el boton que se toco desaparecio (la flecha, al volver al primero),
-    // el foco no se pierde: pasa al cerrar.
-    if (hoja.current && !hoja.current.contains(document.activeElement)) cerrarRef.current?.focus({ preventScroll: true });
+    // el foco no se pierde: pasa al titulo.
+    if (hoja.current && !hoja.current.contains(document.activeElement)) tituloRef.current?.focus({ preventScroll: true });
   }, [producto]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Compartir: en el telefono, el menu propio (WhatsApp, Instagram...); donde
@@ -86,8 +92,10 @@ export default function ProductModal({
     if (ok) setTimeout(() => setCopia((c) => (c === 'ok' ? '' : c)), 2200);
   }
 
-  // Foco adentro al abrir, Escape cierra y al cerrar vuelve a la tarjeta.
-  useDialogo({ abierto: true, onCerrar: onClose, refInicial: cerrarRef, disparador });
+  // Foco adentro al abrir, Escape cierra y al cerrar vuelve a la tarjeta. El
+  // foco inicial va al titulo y no al boton de cerrar: con un toque, el anillo
+  // del boton se veia como un error (el titulo no lleva anillo, se lee igual).
+  useDialogo({ abierto: true, onCerrar: onClose, refInicial: tituloRef, disparador });
 
   useBloqueoScroll();
 
@@ -96,11 +104,60 @@ export default function ProductModal({
   const promo = elegida?.grupo_promo ? promos[elegida.grupo_promo] : null;
   const frase = fraseDe(producto);
   const piramide = piramideDe(producto);
-  const hayMas = piramide.length > 0 || Boolean(producto.descripcion_larga);
+  // "Ver mas" solo existe si hay algo que abrir: la descripcion larga.
+  const hayMas = Boolean(producto.descripcion_larga);
+  // El tope es por linea (aroma y tamano): lo que ya hay en el pedido cuenta.
+  const enPedido = elegida ? cantidadDe(producto.id, elegida.ml) : 0;
+  const disponible = disponibleDe(enPedido);
+  // Lo que se esta eligiendo, nunca mas de lo que entra (si el pedido ya tiene
+  // 18, la ficha deja elegir hasta 2).
+  const cantEf = Math.min(cant, Math.max(1, disponible));
+  const cantTotal = enPedido + (disponible > 0 ? cantEf : 0);
   const sugeridos = parecidos(producto, todos, 3);
   // Los costados de la foto en el celular: su propio borde, estirado a lo
   // ancho, asi el estudio sigue hasta el filo de la hoja (E3-B7).
+  // El subtotal de la barra con el 2x1 del ciclo, el mismo motor que el
+  // cajon: 6 de un perfume en 2x1 son 3 pares, no 6 precios (antes la barra
+  // decia $ 185.994 y el cajon cobraba $ 92.997).
+  const subtotal = elegida
+    ? calcularCarrito([{ cantidad: cantEf, precio: elegida.precio, grupo_promo: elegida.grupo_promo }], Object.values(promos)).total
+    : 0;
   const fondoFoto = fotoChica(producto.imagen_url || fotoDe(producto, elegida?.linea));
+
+  // El alto real de la barra (crece con el aviso) va a la hoja como --alto-barra:
+  // asi lo que se trae a la vista queda arriba de la barra y no debajo. Tambien
+  // el hueco izquierdo de la columna (scrollbar-gutter: stable both-edges),
+  // --g-izq, para que en escritorio la barra llegue hasta el borde de la foto.
+  const hayBarra = Boolean(elegida);
+  useEffect(() => {
+    const el = barraRef.current;
+    const raiz = hoja.current;
+    if (!el || !raiz || typeof ResizeObserver === 'undefined') return undefined;
+    const info = infoRef.current;
+    // Cuando el aviso por cantidad entra, la barra crece de golpe (~150 px en
+    // el celular): se ve un bloque vacio antes del fundido del aviso. FLIP: la
+    // barra arranca corrida hacia abajo lo que crecio y sube a su lugar con la
+    // curva de las hojas. ResizeObserver corre antes de pintar, asi que el
+    // salto no llega a verse. Solo transform, solo al crecer.
+    let altoPrevio = 0;
+    const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const medir = () => {
+      const alto = el.getBoundingClientRect().height;
+      const crecio = alto - altoPrevio;
+      if (altoPrevio && crecio > 24 && !quieto && el.animate) {
+        el.animate([{ transform: `translateY(${crecio}px)` }, { transform: 'none' }],
+          { duration: 450, easing: 'cubic-bezier(0.32, 0.72, 0, 1)' });
+      }
+      altoPrevio = alto;
+      raiz.style.setProperty('--alto-barra', `${Math.ceil(alto)}px`);
+      if (info) raiz.style.setProperty('--g-izq', `${Math.max(0, (info.offsetWidth - info.clientWidth) / 2)}px`);
+    };
+    medir();
+    const ro = new ResizeObserver(medir);
+    ro.observe(el);
+    if (info) ro.observe(info);
+    return () => { ro.disconnect(); raiz.style.removeProperty('--alto-barra'); raiz.style.removeProperty('--g-izq'); };
+  }, [hayBarra]);
 
   /** La razon de cada sugerencia, a la vista. */
   const razon = (r) => (r.comparte.length
@@ -109,7 +166,8 @@ export default function ProductModal({
 
   function sumar() {
     if (!elegida) return;
-    addItem(producto, elegida, cant);
+    if (disponible <= 0) return;
+    addItem(producto, elegida, cantEf);
     onClose();
   }
 
@@ -179,7 +237,7 @@ export default function ProductModal({
 
         <div className={s.info} ref={infoRef}>
           {FICHA.para[producto.genero] && <p className={s.para}>{FICHA.para[producto.genero]}</p>}
-          <h2 className={s.nombre}>{titulo}</h2>
+          <h2 ref={tituloRef} tabIndex={-1} className={s.nombre}>{titulo}</h2>
           {frase && <p className={s.frase} data-qa="frase">{frase}</p>}
           <p className={s.inspirado}>{FICHA.inspirado}</p>
 
@@ -195,7 +253,7 @@ export default function ProductModal({
                       type="button"
                       className={`${s.opcion} ${on ? s.opcionOn : ''}`}
                       aria-pressed={on}
-                      onClick={() => setMl(p.ml)}
+                      onClick={() => { setMl(p.ml); setCant(1); }}
                     >
                       <span className={s.opIzq}>
                         <span className={`${s.opMl} tnum`}>{p.ml} ml</span>
@@ -220,21 +278,18 @@ export default function ProductModal({
 
           {promo && (
             <p className={`${s.promoNota} tnum`}>
-              Llevando de a pares: {pesos(promo.precio_par)} el par, {pesos(Math.round(promo.precio_par / 2))} cada uno.
+              {conDatos(FICHA.promoPares, { par: pesos(promo.precio_par), uno: pesos(precioCadaUno(promo.precio_par)) })}
             </p>
           )}
 
           {/* Familia y notas como el elenco de una serie: rotulo en negrita y
               los datos seguidos, sin pastillas (no se tocan, no son botones).
-              La familia queda a la vista; las notas y la descripcion se
-              pliegan detras de "Ver mas" (Sebas, 23/10), asi los parecidos
-              suben unos 240 px: en escritorio entran sin bajar. Plegadas
-              siguen en la pagina (inert, para que el teclado no entre). */}
+              Las dos se ven siempre; "Ver mas" abre solo la descripcion larga
+              y existe solo si el perfume la tiene. */}
           {(producto.familia_olfativa || piramide.length > 0 || producto.descripcion_larga) && (
             <div className={s.ficha}>
               {/* La familia y, a su lado, "Ver mas": en un renglon, asi el
-                  boton no suma alto (medido: con los dos tamanos de Kenzo, los
-                  parecidos quedaban 75 px debajo de la barra en escritorio). */}
+                  boton no suma alto. */}
               <div className={s.familiaFila}>
                 {producto.familia_olfativa && (
                   <dl className={s.lineas}>
@@ -250,7 +305,6 @@ export default function ProductModal({
                     className={s.verMas}
                     onClick={() => setMasAbierto((v) => !v)}
                     aria-expanded={masAbierto}
-                    aria-controls="ficha-mas"
                     data-qa="ficha-ver-mas"
                   >
                     {masAbierto ? FICHA.verMenos : FICHA.verMas}
@@ -260,27 +314,21 @@ export default function ProductModal({
                   </button>
                 )}
               </div>
-              {hayMas && (
-                <div
-                  id="ficha-mas"
-                  className={`${s.plegable} ${masAbierto ? s.plegableAbierto : ''}`}
-                  inert={masAbierto ? undefined : ''}
-                  data-qa="ficha-mas"
-                >
-                  <div className={s.plegableDentro}>
-                    {piramide.length > 0 && (
-                      <dl className={s.lineas} data-qa="piramide">
-                        {piramide.map((f) => (
-                          <div key={f.etapa} className={s.linea}>
-                            <dt data-qa="etapa">{f.etapa}</dt>
-                            <dd>{f.notas.map((n, i) => <span key={n} data-qa="nota">{i ? ', ' : ''}{n}</span>)}</dd>
-                          </div>
-                        ))}
-                      </dl>
-                    )}
-                    {producto.descripcion_larga && <p className={s.desc}>{producto.descripcion_larga}</p>}
-                  </div>
-                </div>
+              {piramide.length > 0 && (
+                <dl className={s.lineas} data-qa="piramide">
+                  {piramide.map((f) => (
+                    <div key={f.etapa} className={s.linea}>
+                      <dt data-qa="etapa">{f.etapa}</dt>
+                      <dd>{f.notas.map((n, i) => <span key={n} data-qa="nota">{i ? ', ' : ''}{n}</span>)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+              {/* Solo se dibuja abierta: aparece con opacidad y 6 px de
+                  movimiento, y el alto cambia de golpe una vez (sin animar
+                  height). Cerrada no existe: el teclado no entra. */}
+              {hayMas && masAbierto && (
+                <p className={`${s.desc} ${s.masAbierto}`} data-qa="ficha-mas">{producto.descripcion_larga}</p>
               )}
             </div>
           )}
@@ -302,19 +350,42 @@ export default function ProductModal({
           )}
 
           {elegida && (
-            <div className={s.barra}>
-              <span className={`${s.resumen} tnum`}>
-                <span className={s.resumenMl}>{elegida.ml} ml</span>
-                <span className={s.resumenPrecio}>{pesos(elegida.precio * cant)}</span>
-              </span>
-              <div className={s.stepper} role="group" aria-label="Cantidad">
-                <button type="button" onClick={() => setCant((c) => Math.max(1, c - 1))} aria-label="Restar">-</button>
-                <span className="tnum" aria-live="polite">{cant}</span>
-                <button type="button" onClick={() => setCant((c) => Math.min(CANTIDAD_MAXIMA, c + 1))} aria-label="Sumar">+</button>
+            <div className={s.barra} ref={barraRef}>
+              {/* Arriba de la barra y adentro de ella: queda a la vista mientras
+                  se elige la cantidad, y no tapa ni el boton ni el total. */}
+              <AvisoMayorista
+                clave={`${producto.id}::${elegida.ml}`}
+                cantidad={cantTotal}
+                nombre={titulo}
+                ml={elegida.ml}
+                whatsapp={whatsapp}
+                className={s.avisoBarra}
+                fijoEnTope
+              />
+              <div className={s.barraFila}>
+                <span className={`${s.resumen} tnum`}>
+                  <span className={s.resumenMl}>{elegida.ml} ml</span>
+                  <span className={s.resumenPrecio}>{disponible > 0 ? pesos(subtotal) : FICHA.enElMaximo}</span>
+                </span>
+                <div className={s.stepper} role="group" aria-label="Cantidad">
+                  <button
+                    type="button"
+                    onClick={() => { if (cantEf > 1) setCant(cantEf - 1); }}
+                    aria-disabled={cantEf <= 1 ? 'true' : undefined}
+                    aria-label={FICHA.restar}
+                  ><Menos size={18} /></button>
+                  <span className="tnum" aria-live="polite">{cantEf}</span>
+                  <button
+                    type="button"
+                    onClick={() => { if (cantEf < disponible) setCant(cantEf + 1); }}
+                    aria-disabled={cantEf >= disponible ? 'true' : undefined}
+                    aria-label={FICHA.sumar}
+                  ><Mas size={18} /></button>
+                </div>
+                <button type="button" className={`tbtn ${s.agregar}`} onClick={sumar} disabled={disponible <= 0} data-qa="agregar-ficha">
+                  <span>{FICHA.agregarCorto}<span className={s.agregarResto}>{FICHA.agregarResto}</span></span>
+                </button>
               </div>
-              <button type="button" className={`tbtn ${s.agregar}`} onClick={sumar} data-qa="agregar-ficha">
-                <span>{FICHA.agregarCorto}<span className={s.agregarResto}>{FICHA.agregarResto}</span></span>
-              </button>
             </div>
           )}
         </div>

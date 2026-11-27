@@ -151,14 +151,13 @@
    chicas. La de la izquierda aparece apenas se corre la fila. En escritorio
    son magneticas: el JSX les corre `translate` unos pixeles hacia el mouse. */
 .flecha {
-  position: absolute; top: 40%; translate: 0 -50%; z-index: 4; /* translate y no transform: el toque del vidrio usa transform */
+  position: absolute; top: 40%; translate: 0 -50%; z-index: 4; /* translate y no transform: el toque del vidrio usa transform; el iman lo suma el JSX con --fx/--fy */
   width: 40px; height: 40px; border-radius: 50%;
   display: grid; place-items: center;
   border: 0; cursor: pointer;
   transition:
     opacity var(--dur) var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease),
-    color var(--dur) var(--ease), transform 0.42s cubic-bezier(0.3, 1.7, 0.5, 1),
-    translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    color var(--dur) var(--ease), transform 0.42s cubic-bezier(0.3, 1.7, 0.5, 1);
 }
 .flecha > svg { transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s var(--ease), opacity 0.2s var(--ease); }
 @media (hover: hover) {

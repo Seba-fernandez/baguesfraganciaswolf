@@ -5,19 +5,24 @@ import { CartProvider, useCart } from '../../contexts/CartContext';
 import { indexarPromos } from '../../lib/promos';
 import { desdeYLista, esPublicable, tituloDe } from '../../lib/producto';
 import { escribirFamilias, leerFamilias } from '../../lib/filtros';
-import { RASTRO_MAXIMO } from '../../config/ajustes';
+import { RASTRO_MAXIMO, CANTIDAD_MAXIMA } from '../../config/ajustes';
 import { lazy, Suspense } from 'react';
 import TiendaLayout from './TiendaLayout';
 import { fotoDe } from '../../lib/fotos';
 
 /** La hoja de tamanos con el carrito: agrega el tamano elegido y se cierra. */
 function HojaConCarrito({ producto, onClose, ...resto }) {
-  const { addItem } = useCart();
+  const { addItem, cantidadDe } = useCart();
   return (
     <HojaTamanos
       producto={producto}
       onClose={onClose}
-      onAgregar={(presentacion) => { addItem(producto, presentacion, 1); onClose(); }}
+      onAgregar={(presentacion) => {
+        // Con la linea en el tope no se suma nada: se pasa a la ficha, que lo explica.
+        if (cantidadDe(producto.id, presentacion.ml) >= CANTIDAD_MAXIMA && resto.onVerFicha) { resto.onVerFicha(); return; }
+        addItem(producto, presentacion, 1);
+        onClose();
+      }}
       {...resto}
     />
   );
@@ -265,6 +270,7 @@ export default function TiendaShell() {
               onAbrir={abrir}
               previo={previo}
               onVolver={volver}
+              whatsapp={settings?.whatsapp_owner || ''}
               mlInicial={location.state?.mlVuelta ?? null}
             />
           </Suspense>

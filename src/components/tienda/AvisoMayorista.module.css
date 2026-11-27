@@ -1,0 +1,79 @@
+/* El aviso por cantidad. Lo que se mira es recto (radio de superficie, 2 px);
+   el boton, que se toca, es redondo. Entra y sale solo con transform y
+   opacity. */
+.vivo { position: relative; width: 100%; min-width: 0; }
+
+.aviso {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; gap: 12px;
+  padding: 12px 6px 12px 14px;
+  background: var(--bg-3);
+  border: 1px solid rgba(250, 239, 234, 0.15);
+  border-radius: var(--r-surface);
+  color: var(--ink);
+  /* Entra como las hojas de iOS: sube unos px y aparece. `backwards`, no
+     `both`: el transform inline del arrastre tiene que poder ganarle. */
+  animation: aviso-entra 0.45s var(--hoja) backwards;
+}
+@keyframes aviso-entra {
+  from { opacity: 0; transform: translateY(12px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Se lo puede arrastrar hacia un costado. pan-y deja el scroll vertical al
+   navegador: con none el aviso era una zona muerta dentro del cajon. */
+.aviso:not(.arrastrable) { padding-right: 14px; }
+.arrastrable { touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+
+/* El texto de la region viva, solo para el lector de pantalla. */
+.soloLector {
+  position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+/* En el tope, el borde toma el acento: es lo unico que cambia de peso. */
+.tope { border-color: var(--amber); }
+
+.icono {
+  display: inline-flex; margin-top: 1px; color: var(--amber);
+  /* Un vaiven de 2 px, una sola vez, justo despues de entrar. */
+  animation: aviso-vaiven 0.5s var(--ease) 0.4s 1 backwards;
+}
+@keyframes aviso-vaiven {
+  0%, 100% { transform: translateX(0); }
+  30% { transform: translateX(2px); }
+  65% { transform: translateX(-2px); }
+}
+
+.texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.titulo { font-size: 0.92rem; font-weight: 600; line-height: 1.25; }
+.bajada { font-size: 0.8rem; line-height: 1.4; color: var(--ink-dim); }
+
+/* `.tienda a` (0,1,1) le ganaria a una clase sola: va con :global(.tienda). */
+:global(.tienda) .boton {
+  position: relative; align-self: flex-start;
+  display: inline-flex; align-items: center; min-height: 40px; margin-top: 6px; padding: 0 16px;
+  border: 1px solid var(--line-bright); border-radius: var(--r-pill);
+  color: var(--ink); font-size: 0.8rem; font-weight: 500;
+  transition: background var(--dur-fast) var(--ease), transform var(--soltar-dur) var(--soltar);
+}
+.boton::after { content: ''; position: absolute; inset: -3px -1px; }
+:global(.tienda) .boton:hover { background: rgba(250, 239, 234, 0.08); }
+:global(.tienda) .boton:active { transform: scale(0.97); transition: transform var(--apretar); }
+.boton:focus-visible, .cerrar:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+/* 32 px a la vista, 44 al dedo (el ::after cubre el aire de alrededor). */
+.cerrar {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; margin: 0 2px 0 0; border: 0; border-radius: 50%;
+  background: none; color: var(--ink-dim); cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), transform var(--soltar-dur) var(--soltar);
+}
+.cerrar::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; }
+.cerrar:hover { background: rgba(250, 239, 234, 0.08); color: var(--ink); }
+.cerrar:active { transform: scale(0.94); transition: transform var(--apretar); }
+
+@media (prefers-reduced-motion: reduce) {
+  .aviso { animation: none; }
+  .icono { animation: none; }
+  .boton, .cerrar { transition: none; }
+}

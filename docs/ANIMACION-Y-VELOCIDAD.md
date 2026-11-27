@@ -38,7 +38,7 @@ Por eso el fondo, la placa del precio y los frascos entran solo con movimiento. 
 - View Transitions del mismo documento: Chrome 111+ y Safari 18+. Es lo viable para la entrada de la ficha de producto, con FLIP como alternativa en iOS viejo.
 - View Transitions entre documentos: no hacen falta en una SPA.
 - Lenis envuelve el scroll nativo y no rompe sticky ni anclas. Queda solo en escritorio.
-- No hay GSAP ni Framer Motion instalados y no se agregan.
+- No hay GSAP ni Framer Motion y no se agregan. Única excepción: `motion`, y solo su generador `spring` (la física del resorte, sin el motor de animación), para `lib/flotante.js` (imán y flotar del vidrio). Entra por `import()` dinámico, solo con mouse y sin reduced-motion, así que el celular no lo descarga. Peso medido en el build (27/11/2026): el chunk del resorte pesa 4,1 kB (1,96 kB gzip) y el de `flotante` 3,5 kB (1,69 kB gzip), ambos diferidos; el paquete principal no cambia. Se dejó en vez de escribir un resorte propio porque pasa de la velocidad que traía un resorte al siguiente sin saltos y no hay nada que mantener; si algún día pasa de 3 kB gzip, se reemplaza por uno propio (amortiguado, unas 25 líneas).
 
 ## 4. Números medidos en este proyecto
 

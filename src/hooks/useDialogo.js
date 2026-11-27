@@ -34,7 +34,8 @@ export default function useDialogo({ abierto, onCerrar, refInicial, refRespaldo,
 
   useEffect(() => {
     if (!abierto) return undefined;
-    refInicial?.current?.focus();
+    // preventScroll: el foco entra sin mover la hoja (la ficha ya esta en su lugar).
+    refInicial?.current?.focus({ preventScroll: true });
     const onKey = (e) => {
       if (e.key === 'Escape') { cerrar.current?.(); return; }
       if (e.key !== 'Tab') return;

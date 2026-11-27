@@ -54,9 +54,10 @@
 
 .lista { display: flex; flex-direction: column; }
 .item {
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+  display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0 14px;
   padding: 14px 0; border-bottom: 1px solid var(--line);
 }
+.avisoItem { margin-top: 10px; }
 .itemInfo { flex: 1; min-width: 0; }
 .itemNombre { font-weight: 500; font-size: 0.94rem; color: var(--ink); }
 .itemMeta {
@@ -77,12 +78,17 @@
   position: relative;
   width: 38px; height: 38px; border-radius: 50%; border: 0;
   background: none; color: var(--ink-dim); cursor: pointer; font-size: 1.05rem;
+  display: grid; place-items: center; padding: 0;
 }
 /* El círculo se ve de 38 px para que el renglón no crezca, pero el dedo tiene
    44: el ::after agranda el área que recibe el toque. */
 .stepper button::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; }
-.stepper button:hover { color: var(--ink); background: var(--bg); }
+/* Solo con mouse: en el celular el :hover queda pegado despues del toque
+   y el boton se veia marcado (un circulo oscuro tras sumar). */
+@media (hover: hover) { .stepper button:hover { color: var(--ink); background: var(--bg); } }
 .stepper button:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; }
+/* En el tope el + queda apagado pero no deshabilitado: asi no pierde el foco. */
+.stepper button[aria-disabled='true'] { opacity: 0.35; cursor: default; background: none; color: var(--ink-dim); }
 .stepper span { min-width: 22px; text-align: center; font-size: 0.85rem; }
 
 .itemDer { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }

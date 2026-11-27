@@ -6,9 +6,13 @@
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
   max-width: 960px; margin: 0 auto;
   max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain;
+  /* Reserva el lugar de la barra de scroll: al desplegar "Ver mas" la hoja
+     pasa a desbordar, aparece la barra y, sin esto, el contenido se corria
+     el ancho de la barra hacia la izquierda. Con el hueco fijo no se mueve. */
+  scrollbar-gutter: stable;
   /* Lo que se trae a la vista dentro de la hoja (el ultimo tamano, el foco
      con Tab) se apoya arriba de la barra fija de agregar, no debajo (E3-B7). */
-  scroll-padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  scroll-padding-bottom: calc(var(--alto-barra, 92px) + 8px);
   border-radius: 0;
   display: grid; grid-template-columns: 1fr;
   background: var(--bg-2);
@@ -35,6 +39,8 @@
     width: min(calc(var(--alto) * 0.75 + 520px), 94vw); max-width: none;
     grid-template-columns: minmax(0, calc(var(--alto) * 0.75)) minmax(420px, 1fr);
     overflow: hidden;
+    /* Aca la hoja no se desplaza: el que lo hace es .info (con su propio hueco). */
+    scrollbar-gutter: auto;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -132,6 +138,9 @@
 /* Orden para decidir (celular): para, nombre, frase, tamanos, piramide,
    descripcion, aviso y la barra de agregar pegada abajo. */
 .info { padding: 22px 20px 0; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+/* El foco inicial de la ficha va al titulo (useDialogo): se lee, pero no lleva
+   anillo. */
+.nombre:focus, .nombre:focus-visible { outline: none; }
 .para { font-size: 0.78rem; color: var(--ink-faint); letter-spacing: 0.02em; }
 :global(.tienda) .nombre { font-family: var(--f-display); font-weight: 500; font-size: clamp(2rem, 3.4vw, 2.6rem); line-height: 1.05; margin-top: -4px; }
 /* La frase sale de familia y momento (lib/producto.js, fraseDe). Cormorant
@@ -149,23 +158,14 @@
 .ficha { display: flex; flex-direction: column; gap: 7px; padding-top: 14px; margin-top: 4px; border-top: 1px solid var(--line); }
 .lineas { display: flex; flex-direction: column; gap: 7px; margin: 0; }
 
-/* Las notas y la descripcion, plegadas (Sebas, 23/10: "ver mas"). Se abren
-   animando el alto de la fila de la grilla de 0fr a 1fr: un toque, no algo
-   atado al scroll, asi que no traba. */
+/* "Ver mas" abre solo la descripcion larga. Aparece con opacidad y 6 px de
+   movimiento (transform), y el alto cambia de golpe una sola vez: animar el
+   alto (o grid-template-rows) es layout en cada cuadro. */
 .familiaFila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .familiaFila > .lineas { min-width: 0; }
-.plegable {
-  display: grid; grid-template-rows: 0fr;
-  transition: grid-template-rows 0.32s var(--ease), margin-top 0.32s var(--ease);
-  margin-top: -7px; /* plegada no deja el hueco de la grilla */
-}
-.plegableAbierto { grid-template-rows: 1fr; margin-top: 4px; }
-.plegableDentro {
-  min-height: 0; overflow: hidden;
-  display: flex; flex-direction: column; gap: 7px;
-}
-.plegableDentro .desc { margin-top: 6px; }
-@media (prefers-reduced-motion: reduce) { .plegable { transition: none; } }
+.masAbierto { margin-top: 4px; animation: mas-entra 0.38s var(--hoja) backwards; }
+@keyframes mas-entra { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .masAbierto { animation: none; } }
 /* "Ver mas": redondo porque se toca. 40 px a la vista, 44 al dedo. */
 .verMas {
   position: relative; flex-shrink: 0;
@@ -241,13 +241,17 @@
    respeta la franja del gesto de inicio del celular. */
 .barra {
   position: sticky; bottom: 0; z-index: 4;
-  display: flex; align-items: center; gap: 10px;
+  display: flex; flex-direction: column; align-items: stretch;
   margin: 6px -20px 0;
   padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
   background: var(--bg-2);
   border-top: 1px solid var(--line);
   box-shadow: 0 -18px 26px -18px rgba(10, 5, 3, 0.85);
 }
+.barraFila { display: flex; align-items: center; gap: 10px; }
+/* El aviso por cantidad, arriba de la fila: el margen va en la tarjeta (no un
+   gap de la barra) para que, sin aviso, la barra mida lo de siempre. */
+.avisoBarra { margin-bottom: 10px; }
 .resumen { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; margin-right: auto; }
 .resumenMl { font-size: 0.76rem; color: var(--ink-faint); }
 .resumenPrecio { font-family: var(--f-mono); font-size: 1.06rem; font-weight: 500; color: var(--ink); white-space: nowrap; }
@@ -256,10 +260,15 @@
   position: relative;
   width: 40px; height: 40px; border-radius: 50%; border: 0;
   background: none; color: var(--ink-dim); font-size: 1.15rem; cursor: pointer;
+  display: grid; place-items: center; padding: 0;
 }
 /* Se ve de 40 px; el dedo tiene 44 (el ::after cubre el aire de alrededor). */
 .stepper button::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; }
-.stepper button:hover { color: var(--ink); background: var(--bg); }
+/* Solo con mouse: en el celular el :hover queda pegado despues del toque
+   y el boton se veia marcado (un circulo oscuro tras sumar). */
+@media (hover: hover) { .stepper button:hover { color: var(--ink); background: var(--bg); } }
+/* En el tope (o en 1) el boton queda apagado, no escondido. */
+.stepper button[aria-disabled='true'] { opacity: 0.35; cursor: default; background: none; color: var(--ink-dim); }
 .stepper span { min-width: 22px; text-align: center; font-size: 0.92rem; }
 .agregar { flex-shrink: 0; padding-inline: 22px; }
 /* " al pedido": en el celular no entra al lado del precio y la cantidad. Se
@@ -283,12 +292,21 @@
   .banda { display: none; }
   /* Un poco menos de aire entre bloques que en el celular: con dos tamanos,
      la fila de parecidos entra entera arriba de la barra a 900 px de alto. */
-  .info { padding: 32px 36px 0; gap: 10px; overflow-y: auto; overscroll-behavior: contain; }
+  .info { padding: 32px 36px 0; gap: 10px; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable both-edges; scroll-padding-bottom: calc(var(--alto-barra, 92px) + 8px); }
   .parecidos { gap: 10px; padding-top: 14px; margin-top: 2px; }
+  /* 27/11: con las notas siempre a la vista, la fila no entraba a 900 px de
+     alto (quedaba 58 px debajo de la barra). En escritorio los parecidos van
+     en 1:1 con el frasco al centro (las fotos lo tienen centrado) y la
+     columna respira 2 px menos entre bloques. */
+  .parecido > :first-child { aspect-ratio: 1 / 1 !important; }
+  .parecido img { object-position: 50% 58%; }
+  .info { gap: 8px; }
   .ficha { padding-top: 12px; margin-top: 2px; }
   /* El mismo orden que en el celular (Sebas, 23/10): el tamano y el precio
      arriba, la familia, las notas y la descripcion despues. */
-  .barra { margin: 4px -36px 0; padding: 14px 36px; box-shadow: 0 -14px 20px -16px rgba(10, 5, 3, 0.8); }
+  /* A la izquierda se suma el hueco reservado de la barra de scroll (--g-izq): la
+     barra llega al filo de la foto y a la derecha toca la barra de scroll. */
+  .barra { margin: 4px -36px 0 calc(-36px - var(--g-izq, 0px)); padding: 14px 36px 14px calc(36px + var(--g-izq, 0px)); box-shadow: 0 -14px 20px -16px rgba(10, 5, 3, 0.8); }
   .info { padding-bottom: 0; }
 }
 

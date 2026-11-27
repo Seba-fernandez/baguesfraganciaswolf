@@ -124,7 +124,18 @@ def main():
                     pg.evaluate("document.querySelector('article button').click()")
                     pg.wait_for_function("new URLSearchParams(location.search).get('aroma')", timeout=10000)
                     aroma = pg.evaluate("new URLSearchParams(location.search).get('aroma')")
-                pg.goto(a.url + f'/catalogo?aroma={aroma}', wait_until='networkidle')
+                    # El toque abre la ficha con una navegacion propia de la app:
+                    # se la deja terminar, si no el goto de abajo choca con ella.
+                    pg.wait_for_load_state('networkidle')
+                    pg.wait_for_timeout(400)
+                for intento in range(2):
+                    try:
+                        pg.goto(a.url + f'/catalogo?aroma={aroma}', wait_until='networkidle')
+                        break
+                    except Exception:
+                        if intento:
+                            raise
+                        pg.wait_for_timeout(600)
                 pg.wait_for_selector('[data-dialogo=ficha]', timeout=20000)
                 revisar('ficha')
                 pg.goto(a.url + '/catalogo', wait_until='networkidle')

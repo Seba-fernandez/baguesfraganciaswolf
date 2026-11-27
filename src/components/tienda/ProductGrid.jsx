@@ -246,10 +246,16 @@ export default function ProductGrid({
               ))}
             </div>
           </div>
-          {(Object.keys(promos).length > 0 || conRebajados) && (
+          {/* Mientras carga, el renglon queda reservado con una pastilla
+              invisible: "2x1" y "Rebajados" llegan con los datos y, a 390,
+              abrian una fila nueva que empujaba la grilla 52 px (CLS 0,037). */}
+          {(cargando || Object.keys(promos).length > 0 || conRebajados) && (
             <div className={s.renglon}>
               <span className={s.rotulo}>{CATALOGO.filtros.ademas}</span>
               <div className={s.chips}>
+                {cargando && (
+                  <span className={s.chip} style={{ visibility: 'hidden' }} aria-hidden="true">{CATALOGO.filtros.rebajados}</span>
+                )}
                 {Object.values(promos).map((p) => (
                   <Pastilla
                     key={p.grupo}
@@ -264,7 +270,7 @@ export default function ProductGrid({
                     {p.titulo || (p.grupo === 'arabe' ? CATALOGO.filtros.promoArabe : CATALOGO.filtros.promoDisenador)}
                   </Pastilla>
                 ))}
-                {conRebajados && (
+                {!cargando && conRebajados && (
                   <Pastilla activa={rebaja} onClick={() => setRebaja(!rebaja)}>{CATALOGO.filtros.rebajados}</Pastilla>
                 )}
               </div>
